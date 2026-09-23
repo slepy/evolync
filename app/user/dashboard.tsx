@@ -1,0 +1,267 @@
+import { useCallback, useEffect } from "react";
+import { useRouter } from "expo-router";
+import { YStack, Text, Button, ScrollView, Spinner, XStack } from "tamagui";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { View } from "react-native";
+import { Header, HeaderSelector, HeaderTitle } from "@/modules/core/components";
+import School from "@/database/models/School";
+import { SchoolRepository } from "@/modules/school/repositories";
+import { DashboardStatCard } from "@/modules/dashboard/components/DashboardStatCard";
+import { useStore } from "@/store";
+import { withObservables } from "@nozbe/watermelondb/react";
+import {
+  CreditCard,
+  Calendar,
+  CalendarDays,
+  ShoppingBag,
+  PersonStanding,
+  Tags,
+  Building2,
+} from "lucide-react-native";
+
+// ============================================================================
+// Inner component — receives reactive schools list from WatermelonDB
+// ============================================================================
+
+interface UserDashboardInnerProps {
+  schools: School[];
+}
+
+function UserDashboardInner({ schools }: UserDashboardInnerProps) {
+  const router = useRouter();
+  const insets = useSafeAreaInsets();
+  const schoolMemberships = useStore((s) => s.schoolMemberships);
+
+  // Fetch schools from Supabase for memberships not yet in local DB (foreign org schools)
+  useEffect(() => {
+    for (const m of schoolMemberships) {
+      const exists = schools.some((s) => s.id === m.schoolId);
+      if (!exists) {
+        SchoolRepository.findByIdOrFetchFromSupabase(m.schoolId).catch(
+          console.error,
+        );
+      }
+    }
+  }, [schoolMemberships, schools]);
+  const activeMembershipId = useStore((s) => s.activeMembershipId);
+  const setActiveMembershipId = useStore((s) => s.setActiveMembershipId);
+  const organization = useStore((s) => s.organization);
+
+  const activeMembership =
+    schoolMemberships.find((m) => m.memberId === activeMembershipId) ?? null;
+
+  const activeSchool = activeMembership
+    ? (schools.find((s) => s.id === activeMembership.schoolId) ?? null)
+    : null;
+
+  const memberSchoolIds = new Set(schoolMemberships.map((m) => m.schoolId));
+  const memberSchools = schools.filter((s) => memberSchoolIds.has(s.id));
+
+  // Wait for active school to arrive from sync before rendering
+  const activeMembershipLoaded = !activeMembership || !!activeSchool;
+
+  const ORG_OPTION_ID = organization ? `org:${organization.id}` : null;
+
+  const handleContextSelect = useCallback(
+    async (optionId: string) => {
+      if (ORG_OPTION_ID && optionId === ORG_OPTION_ID) {
+        router.replace("/organization/dashboard" as any);
+        return;
+      }
+      setActiveMembershipId(optionId);
+      const AsyncStorage =
+        require("@react-native-async-storage/async-storage").default;
+      await AsyncStorage.setItem("activeMembershipId", optionId);
+    },
+    [ORG_OPTION_ID, setActiveMembershipId, router],
+  );
+
+  const membershipOptions = schoolMemberships.map((m) => {
+    const school = schools.find((s) => s.id === m.schoolId);
+    return {
+      id: m.memberId,
+      label: school?.name ?? m.schoolId,
+      icon: Building2,
+      iconColor: "$blue11",
+    };
+  });
+
+  const selectorOptions = [
+    ...(ORG_OPTION_ID && organization
+      ? [
+          {
+            id: ORG_OPTION_ID,
+            label: organization.name,
+            icon: Building2,
+            iconColor: "$blue11",
+          },
+        ]
+      : []),
+    ...membershipOptions,
+  ];
+
+  const selectedOption = activeMembership
+    ? {
+        id: activeMembership.memberId,
+        label: activeSchool?.name ?? activeMembership.schoolId,
+        icon: Building2,
+        iconColor: "$blue11",
+      }
+    : null;
+
+  const schoolCards = [
+    {
+      id: "payments",
+      title: t("dashboardPayments"),
+      Icon: CreditCard,
+      iconColor: "$jadeGreen",
+      iconBackground: "$jadeGreenLighter",
+      onPress: () => router.push("/user/payments"),
+    },
+    {
+      id: "attendance",
+      title: t("dashboardAttendance"),
+      Icon: Calendar,
+      iconColor: "$darkBlue",
+      iconBackground: "$darkBlueLighter",
+      onPress: () => router.push("/user/attendance"),
+    },
+    {
+      id: "events",
+      title: t("eventsTitle"),
+      Icon: CalendarDays,
+      iconColor: "$chineseGold",
+      iconBackground: "$chineseGoldLighter",
+      onPress: () => router.push("/user/events"),
+    },
+    {
+      id: "orders",
+      title: t("dashboardOrders"),
+      Icon: ShoppingBag,
+      iconColor: "$purple11",
+      iconBackground: "$purple3",
+      onPress: () => router.push("/user/orders"),
+    },
+  ];
+
+  const alwaysVisibleCards = [
+    {
+      id: "threed",
+      title: t("techniquesNotebook"),
+      Icon: PersonStanding,
+      iconColor: "$chineseCyan",
+      iconBackground: "$chineseCyanLighter",
+      onPress: () => router.push("/techniques" as any),
+    },
+    {
+      id: "tags",
+      title: t("tagsPicker"),
+      Icon: Tags,
+      iconColor: "$chineseCoral",
+      iconBackground: "$chineseCoralLighter",
+      onPress: () => router.push("/tags" as any),
+    },
+  ];
+
+  const headerCenter =
+    selectedOption && selectorOptions.length > 0 ? (
+      <HeaderSelector
+        selectedOption={selectedOption}
+        options={selectorOptions}
+        onSelect={handleContextSelect}
+      />
+    ) : (
+      <HeaderTitle text={t("userDashboard")} />
+    );
+
+  if (!activeMembershipLoaded) {
+    return (
+      <View style={{ flex: 1, paddingTop: insets.top }}>
+        <Header centerContent={<HeaderTitle text={t("userDashboard")} />} />
+        <YStack flex={1} alignItems="center" justifyContent="center">
+          <Spinner size="large" />
+        </YStack>
+      </View>
+    );
+  }
+
+  const renderCards = (cards: typeof schoolCards) => (
+    <XStack gap="$3" flexWrap="wrap">
+      {cards.map((card) => (
+        <YStack key={card.id} width="30%">
+          <DashboardStatCard
+            title={card.title}
+            Icon={card.Icon}
+            iconColor={card.iconColor}
+            iconBackground={card.iconBackground}
+            onPress={card.onPress}
+          />
+        </YStack>
+      ))}
+    </XStack>
+  );
+
+  return (
+    <View style={{ flex: 1, paddingTop: insets.top }}>
+      <Header centerContent={headerCenter} />
+
+      <ScrollView>
+        <YStack padding="$4" gap="$4">
+          {memberSchools.length === 0 ? (
+            <YStack padding="$4" gap="$4" alignItems="center">
+              <Text fontSize="$6" color="$gray11" textAlign="center">
+                {t("notInAnySchool")}
+              </Text>
+              <Button onPress={() => router.push("/school/join")}>
+                {t("joinSchool")}
+              </Button>
+            </YStack>
+          ) : activeMembership ? (
+            <YStack marginBottom="$2">
+              {renderCards([...schoolCards, ...alwaysVisibleCards])}
+            </YStack>
+          ) : (
+            <YStack padding="$4" alignItems="center">
+              <Text fontSize="$4" color="$gray11" textAlign="center">
+                {t("pendingMembershipInfo")}
+              </Text>
+            </YStack>
+          )}
+
+          {(memberSchools.length === 0 || !activeMembership) && (
+            <YStack marginBottom="$2">{renderCards(alwaysVisibleCards)}</YStack>
+          )}
+        </YStack>
+      </ScrollView>
+    </View>
+  );
+}
+
+// ============================================================================
+// Reactive wrapper — observes all schools from WatermelonDB
+// ============================================================================
+
+const enhance = withObservables([], () => ({
+  schools: SchoolRepository.observeAll(),
+}));
+
+const UserDashboardEnhanced = enhance(UserDashboardInner);
+
+export default function UserDashboard() {
+  const insets = useSafeAreaInsets();
+  const schoolMemberships = useStore((s) => s.schoolMemberships);
+
+  // Show spinner until store is hydrated (memberships still loading)
+  if (schoolMemberships === undefined) {
+    return (
+      <View style={{ flex: 1, paddingTop: insets.top }}>
+        <Header centerContent={<HeaderTitle text={t("userDashboard")} />} />
+        <YStack flex={1} alignItems="center" justifyContent="center">
+          <Spinner size="large" />
+        </YStack>
+      </View>
+    );
+  }
+
+  return <UserDashboardEnhanced />;
+}

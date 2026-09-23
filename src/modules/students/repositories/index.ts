@@ -1,0 +1,1 @@
+export { StudentRepository } from "./studentRepository";

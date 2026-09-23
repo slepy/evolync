@@ -1,0 +1,55 @@
+diff --git a/node_modules/tamagui/src/views/EnsureFlexed.tsx b/node_modules/tamagui/src/views/EnsureFlexed.tsx
+index 1edb46f..74d5e6f 100644
+--- a/node_modules/tamagui/src/views/EnsureFlexed.tsx
++++ b/node_modules/tamagui/src/views/EnsureFlexed.tsx
+@@ -3,13 +3,16 @@ import { Text, styled } from '@tamagui/core'
+ // expands flex elements when they should push a far as they "want" naturally
+ 
+ export const EnsureFlexed = styled(Text, {
++  name: 'EnsureFlexed',
+   opacity: 0,
+   lineHeight: 0,
+   height: 0,
+   display: 'flex',
+   fontSize: 200,
+   children: 'wwwwwwwwwwwwwwwwwww',
+-  pointerEvents: 'none',
++  // Use userSelect instead of pointerEvents to avoid deprecation warning
++  userSelect: 'none',
++  cursor: 'default',
+ })
+ 
+ // @tamgui/core checks for this in spacing
+diff --git a/node_modules/tamagui/src/views/VisuallyHidden.tsx b/node_modules/tamagui/src/views/VisuallyHidden.tsx
+index 53bf6ba..1acf7af 100644
+--- a/node_modules/tamagui/src/views/VisuallyHidden.tsx
++++ b/node_modules/tamagui/src/views/VisuallyHidden.tsx
+@@ -1,6 +1,7 @@
+ import { Stack, styled } from '@tamagui/core'
+ 
+ export const VisuallyHidden = styled(Stack, {
++  name: 'VisuallyHidden',
+   position: 'absolute',
+   width: 1,
+   height: 1,
+@@ -8,7 +9,9 @@ export const VisuallyHidden = styled(Stack, {
+   zIndex: -10000,
+   overflow: 'hidden',
+   opacity: 0.00000001,
+-  pointerEvents: 'none',
++  // Use userSelect instead of pointerEvents to avoid deprecation warning
++  userSelect: 'none',
++  cursor: 'default',
+ 
+   variants: {
+     preserveDimensions: {
+@@ -28,7 +31,8 @@ export const VisuallyHidden = styled(Stack, {
+         zIndex: 1,
+         overflow: 'visible',
+         opacity: 1,
+-        pointerEvents: 'auto',
++        userSelect: 'auto',
++        cursor: 'auto',
+       },
+     } as const,
+   },

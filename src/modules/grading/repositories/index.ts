@@ -1,0 +1,1 @@
+export { GradingRankRepository } from "./gradingRankRepository";

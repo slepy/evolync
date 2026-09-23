@@ -1,0 +1,6 @@
+# Supabase configuration file
+# See: https://supabase.com/docs/guides/cli/config
+
+[functions.sync]
+# Disable built-in JWT verification - we handle auth manually in the function
+verify_jwt = false
