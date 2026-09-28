@@ -154,6 +154,7 @@ export const updateEventSchema = z
       .optional(),
     visibility: eventVisibilitySchema.optional(),
     schoolId: z.string().uuid().optional(),
+    whitelistedMemberIds: z.array(z.string().uuid()).optional(),
     status: eventStatusSchema.optional(),
   })
   .refine(
@@ -168,6 +169,30 @@ export const updateEventSchema = z
     {
       message: "eventValidationEndDateBeforeStart",
       path: ["endDate"],
+    }
+  )
+  .refine(
+    (data) => {
+      if (data.visibility === EVENT_VISIBILITY.SCHOOL) {
+        return !!data.schoolId;
+      }
+      return true;
+    },
+    {
+      message: "eventValidationSchoolIdRequired",
+      path: ["schoolId"],
+    }
+  )
+  .refine(
+    (data) => {
+      if (data.visibility === EVENT_VISIBILITY.WHITELIST) {
+        return data.whitelistedMemberIds && data.whitelistedMemberIds.length > 0;
+      }
+      return true;
+    },
+    {
+      message: "eventValidationWhitelistRequired",
+      path: ["whitelistedMemberIds"],
     }
   );
 

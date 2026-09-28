@@ -1,6 +1,7 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import Event from "@/database/models/Event";
 import { EVENT_STATUS } from "@/database/models/Event";
+import EventParticipant from "@/database/models/EventParticipant";
 import { EventParticipantRepository } from "../repositories";
 import { EventRepository } from "../repositories";
 import type { EventParticipantStatus } from "@/database/models/EventParticipant";
@@ -18,7 +19,8 @@ export interface StudentEvent {
  * Hook for loading events that a specific student is assigned to
  *
  * Features:
- * - Reactive to local database changes
+ * - Reactive to local database changes (an instructor changing this student's
+ *   participation status elsewhere updates this list live, no remount needed)
  * - Returns events with participant status
  * - Optional filtering of cancelled events
  * - Sorted by start date (most recent first)
@@ -31,10 +33,6 @@ export const useStudentEvents = (
   const [events, setEvents] = useState<StudentEvent[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Track if we've done initial load to prevent re-loading on every render
-  const hasLoaded = useRef(false);
-
-  // Load event data via repositories (one-time load, not continuous observation)
   useEffect(() => {
     if (!studentId) {
       setEvents([]);
@@ -42,14 +40,12 @@ export const useStudentEvents = (
       return;
     }
 
-    // Only load once per studentId
-    if (hasLoaded.current) return;
-    hasLoaded.current = true;
+    setIsLoading(true);
 
-    const loadData = async () => {
+    const subscription = EventParticipantRepository.observeByMemberId(
+      studentId,
+    ).subscribe(async (participants: EventParticipant[]) => {
       try {
-        const participants = await EventParticipantRepository.findByMemberId(studentId);
-
         if (participants.length === 0) {
           setEvents([]);
           setIsLoading(false);
@@ -94,15 +90,10 @@ export const useStudentEvents = (
       } finally {
         setIsLoading(false);
       }
-    };
+    });
 
-    loadData();
+    return () => subscription.unsubscribe();
   }, [studentId, options?.includeCancelled]);
-
-  // Reset hasLoaded when studentId changes
-  useEffect(() => {
-    hasLoaded.current = false;
-  }, [studentId]);
 
   return {
     events,

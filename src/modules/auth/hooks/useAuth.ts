@@ -2,10 +2,13 @@ import { supabase } from '@/config/supabase';
 import { useStore, type AuthError, type LoginCredentials } from '@/store';
 import type { AuthError as SupabaseAuthError } from '@supabase/supabase-js';
 import { useRouter } from 'expo-router';
-import * as SecureStore from 'expo-secure-store';
 import * as WebBrowser from 'expo-web-browser';
 import { useCallback, useEffect } from 'react';
-import { Platform } from 'react-native';
+import {
+  safeStorageDelete,
+  safeStorageGet,
+  safeStorageSet,
+} from '../services/secureStorage';
 
 // Safe network check that handles NetInfo errors gracefully
 const checkNetworkConnection = async (): Promise<boolean> => {
@@ -22,46 +25,6 @@ const checkNetworkConnection = async (): Promise<boolean> => {
 // ============================================================================
 // Helpers
 // ============================================================================
-
-// Safe storage operations that work on both native and web
-const safeStorageGet = async (key: string): Promise<string | null> => {
-  if (Platform.OS === 'web') {
-    // Web uses localStorage via AsyncStorage
-    try {
-      const AsyncStorage = require('@react-native-async-storage/async-storage').default;
-      return await AsyncStorage.getItem(key);
-    } catch {
-      return null;
-    }
-  }
-  return await SecureStore.getItemAsync(key);
-};
-
-const safeStorageSet = async (key: string, value: string): Promise<void> => {
-  if (Platform.OS === 'web') {
-    try {
-      const AsyncStorage = require('@react-native-async-storage/async-storage').default;
-      await AsyncStorage.setItem(key, value);
-    } catch (error) {
-      console.error('Storage set error:', error);
-    }
-  } else {
-    await SecureStore.setItemAsync(key, value);
-  }
-};
-
-const safeStorageDelete = async (key: string): Promise<void> => {
-  if (Platform.OS === 'web') {
-    try {
-      const AsyncStorage = require('@react-native-async-storage/async-storage').default;
-      await AsyncStorage.removeItem(key);
-    } catch (error) {
-      console.error('Storage delete error:', error);
-    }
-  } else {
-    await SecureStore.deleteItemAsync(key);
-  }
-};
 
 const mapSupabaseError = (error: SupabaseAuthError | Error): AuthError => {
   const message = error.message.toLowerCase();

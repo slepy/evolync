@@ -15,6 +15,7 @@ import React, { useRef } from "react";
 import { KeyboardAvoidingView, Platform, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { ScrollView, YStack } from "tamagui";
+import { useRequireOrganizationOwner } from "@/modules/organization/hooks/useRequireOrganizationOwner";
 
 /**
  * Screen for creating a new school
@@ -29,6 +30,7 @@ import { ScrollView, YStack } from "tamagui";
  * - Auto-navigation on success
  */
 export default function CreateSchoolScreen() {
+  useRequireOrganizationOwner();
   const router = useRouter();
   const formRef = useRef<CreateSchoolFormHandle>(null);
   const { createSchool, isLoading, error, reset } = useCreateSchool();

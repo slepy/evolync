@@ -21,7 +21,6 @@ export { default as BodyPosePreset } from './BodyPosePreset'
 export { default as Technique } from './Technique'
 export { default as Sequence } from './Sequence'
 export { default as SequenceStep } from './SequenceStep'
-export { default as StepTechnique } from './StepTechnique'
 
 // Techniques Notes Module
 export { default as TechniqueNoteDocument } from './TechniqueNoteDocument'

@@ -18,6 +18,10 @@ import {
   PaymentRecordRepository,
 } from "../repositories";
 import { MemberStatus } from "@/modules/students";
+import {
+  createPaymentCycleSchema,
+  paymentRecordEditSchema,
+} from "../validation";
 
 // ============================================================================
 // Payment Cycles
@@ -34,6 +38,8 @@ import { MemberStatus } from "@/modules/students";
 export const createPaymentCycle = async (
   data: CreatePaymentCycleDto,
 ): Promise<PaymentCycle> => {
+  createPaymentCycleSchema.parse(data);
+
   // Check for existing cycle with same period
   const existingCycles = await PaymentCycleRepository.findBySchoolId(
     data.schoolId,
@@ -121,55 +127,6 @@ export const createPaymentCycle = async (
   return cycle;
 };
 
-/**
- * Gets a payment cycle by ID
- */
-export const getPaymentCycleById = async (
-  cycleId: string,
-): Promise<PaymentCycle | null> => {
-  return PaymentCycleRepository.findById(cycleId);
-};
-
-/**
- * Gets all payment cycles for a school, ordered by period_start descending
- */
-export const getPaymentCyclesForSchool = async (
-  schoolId: string,
-): Promise<PaymentCycle[]> => {
-  return PaymentCycleRepository.findBySchoolId(schoolId);
-};
-
-/**
- * Updates payment cycle notes
- */
-export const updatePaymentCycle = async (
-  cycleId: string,
-  data: { notes?: string },
-): Promise<PaymentCycle> => {
-  const updated = await PaymentCycleRepository.update(cycleId, data);
-
-  sync().catch((err) => {
-    console.error("[updatePaymentCycle] Sync failed:", err);
-  });
-
-  return updated;
-};
-
-/**
- * Soft deletes a payment cycle and its payment records
- */
-export const deletePaymentCycle = async (cycleId: string): Promise<void> => {
-  // Soft delete all payment records for this cycle
-  await PaymentRecordRepository.softDeleteByCycleId(cycleId);
-
-  // Soft delete the cycle
-  await PaymentCycleRepository.softDelete(cycleId);
-
-  sync().catch((err) => {
-    console.error("[deletePaymentCycle] Sync failed:", err);
-  });
-};
-
 // ============================================================================
 // Payment Records
 // ============================================================================
@@ -183,6 +140,13 @@ export const deletePaymentCycle = async (cycleId: string): Promise<void> => {
 export const upsertPaymentRecord = async (
   data: UpsertPaymentRecordDto,
 ): Promise<PaymentRecord> => {
+  paymentRecordEditSchema.parse({
+    amount: data.amount,
+    currency: data.currency,
+    status: data.status,
+    method: data.method,
+  });
+
   // Check if record already exists
   const existingRecord = await PaymentRecordRepository.findByCycleAndMember(
     data.paymentCycleId,
@@ -230,77 +194,10 @@ export const getPaymentRecordsForCycle = async (
 };
 
 /**
- * Mark a payment as paid
- * Creates the payment record if it doesn't exist (upsert behavior)
- */
-export const markPaymentAsPaid = async (
-  cycleId: string,
-  memberId: string,
-  method: PaymentMethod = "cash",
-  amount: number = 0,
-  currency: string = "PLN",
-): Promise<PaymentRecord> => {
-  const existingRecord = await PaymentRecordRepository.findByCycleAndMember(
-    cycleId,
-    memberId,
-  );
-
-  let record: PaymentRecord;
-
-  if (existingRecord) {
-    // Update existing record
-    record = await PaymentRecordRepository.update(existingRecord.id, {
-      status: "paid",
-      method,
-      paymentDate: new Date(),
-    });
-  } else {
-    // Create new record if it doesn't exist
-    record = await PaymentRecordRepository.create({
-      paymentCycleId: cycleId,
-      schoolMemberId: memberId,
-      amount,
-      currency,
-      status: "paid",
-      method,
-      paymentDate: new Date(),
-    });
-  }
-
-  sync().catch((err) => {
-    console.error("[markPaymentAsPaid] Sync failed:", err);
-  });
-
-  return record;
-};
-
-/**
- * Bulk create payment records for all members in a cycle
- * Useful when creating a new cycle
- */
-export const bulkCreatePaymentRecords = async (
-  cycleId: string,
-  memberIds: string[],
-  defaultAmount: number,
-  defaultCurrency: string = "PLN",
-): Promise<PaymentRecord[]> => {
-  await PaymentRecordRepository.bulkCreate(
-    cycleId,
-    memberIds,
-    defaultAmount,
-    defaultCurrency,
-  );
-
-  sync().catch((err) => {
-    console.error("[bulkCreatePaymentRecords] Sync failed:", err);
-  });
-
-  return await getPaymentRecordsForCycle(cycleId);
-};
-
-/**
  * Bulk save payment records for a cycle
  * Upserts each payment record with the provided data
+ *
+ * Atomic: all records commit in a single database.batch(), or none do.
  */
 export const bulkSavePaymentList = async (
   cycleId: string,
@@ -312,18 +209,51 @@ export const bulkSavePaymentList = async (
     method: PaymentMethod;
   }>,
 ): Promise<void> => {
-  for (const item of paymentList) {
-    await upsertPaymentRecord({
-      paymentCycleId: cycleId,
-      schoolMemberId: item.memberId,
-      status: item.status as any,
+  paymentList.forEach((item) =>
+    paymentRecordEditSchema.parse({
       amount: item.amount,
       currency: item.currency,
+      status: item.status,
       method: item.method,
-      paymentDate:
-        item.status === "paid" ? new Date().toISOString() : undefined,
+    }),
+  );
+
+  const existingRecords = await PaymentRecordRepository.findByCycleId(cycleId);
+  const existingByMember = new Map(
+    existingRecords.map((r) => [r.schoolMemberId, r]),
+  );
+  const collection = database.get<PaymentRecord>("payment_records");
+
+  const operations = paymentList.map((item) => {
+    const existing = existingByMember.get(item.memberId);
+    const paymentDate = item.status === "paid" ? new Date() : undefined;
+
+    if (existing) {
+      return existing.prepareUpdate((r) => {
+        r.status = item.status as any;
+        r.amount = item.amount;
+        r.currency = item.currency;
+        r.method = item.method;
+        if (paymentDate) r.paymentDate = paymentDate;
+      });
+    }
+    return collection.prepareCreate((r) => {
+      r._raw.id = uuidv4();
+      r.paymentCycleId = cycleId;
+      r.schoolMemberId = item.memberId;
+      r.status = item.status as any;
+      r.amount = item.amount;
+      r.currency = item.currency;
+      r.method = item.method;
+      if (paymentDate) r.paymentDate = paymentDate;
     });
-  }
+  });
+
+  await database.write(async () => {
+    if (operations.length > 0) {
+      await database.batch(operations);
+    }
+  });
 
   sync().catch((err) => {
     console.error("[bulkSavePaymentList] Sync failed:", err);
@@ -333,6 +263,8 @@ export const bulkSavePaymentList = async (
 /**
  * Bulk update payment records by ID
  * Updates each record by ID with the new data
+ *
+ * Atomic: all records commit in a single database.batch(), or none do.
  */
 export const bulkUpdatePaymentRecords = async (
   updates: Array<{
@@ -343,15 +275,37 @@ export const bulkUpdatePaymentRecords = async (
     method: PaymentMethod;
   }>,
 ): Promise<void> => {
-  for (const { recordId, status, amount, currency, method } of updates) {
-    await PaymentRecordRepository.update(recordId, {
-      status: status as any,
-      amount,
-      currency,
-      method,
-      paymentDate: status === "paid" ? new Date() : undefined,
+  updates.forEach((u) =>
+    paymentRecordEditSchema.parse({
+      amount: u.amount,
+      currency: u.currency,
+      status: u.status,
+      method: u.method,
+    }),
+  );
+
+  const collection = database.get<PaymentRecord>("payment_records");
+  const records = await Promise.all(
+    updates.map((u) => collection.find(u.recordId)),
+  );
+  const updateByRecordId = new Map(updates.map((u) => [u.recordId, u]));
+
+  const operations = records.map((record) => {
+    const update = updateByRecordId.get(record.id)!;
+    return record.prepareUpdate((r) => {
+      r.status = update.status as any;
+      r.amount = update.amount;
+      r.currency = update.currency;
+      r.method = update.method;
+      if (update.status === "paid") r.paymentDate = new Date();
     });
-  }
+  });
+
+  await database.write(async () => {
+    if (operations.length > 0) {
+      await database.batch(operations);
+    }
+  });
 
   sync().catch((err) => {
     console.error("[bulkUpdatePaymentRecords] Sync failed:", err);

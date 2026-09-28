@@ -5,6 +5,8 @@ import "react-native-get-random-values";
 import "react-native-url-polyfill/auto";
 
 import "@/core/i18n/config"; // Initialize i18n immediately
+import { useAuth } from "@/modules/auth/hooks/useAuth";
+import { registerSignOutHandler } from "@/modules/core/utils/signOutBridge";
 import { useSyncStore } from "@/database/hooks/useSyncStore";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { DefaultTheme, ThemeProvider } from "@react-navigation/native";
@@ -58,9 +60,18 @@ export default function RootLayout() {
 function RootLayoutNav() {
   useSyncStore({ autoSyncOnline: true, autoSyncOnForeground: true });
 
-  const [languageKey, setLanguageKey] = useState(i18n.language);
+  // Register the real sign-out implementation for the shared Header component
+  // to call via the core-owned bridge, so `core` never imports `auth` directly.
+  const { signOut } = useAuth();
   useEffect(() => {
-    const handler = (lng: string) => setLanguageKey(lng);
+    registerSignOutHandler(signOut);
+  }, [signOut]);
+
+  // Force a re-render (not a remount) on language change so screens using the
+  // non-reactive global t() pick up the new strings without losing navigation state.
+  const [, forceLanguageRerender] = useState(i18n.language);
+  useEffect(() => {
+    const handler = (lng: string) => forceLanguageRerender(lng);
     i18n.on("languageChanged", handler);
     return () => i18n.off("languageChanged", handler);
   }, []);
@@ -76,7 +87,6 @@ function RootLayoutNav() {
             }}
           >
             <Stack
-              key={languageKey}
               screenOptions={{
                 headerShown: false,
                 contentStyle: { backgroundColor: "#F8FAFC" },

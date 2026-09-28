@@ -1,3 +1,4 @@
+import { database } from "@/database";
 import { sync } from "@/database/sync";
 import Event, {
   EVENT_STATUS,
@@ -337,19 +338,34 @@ export const getParticipantCounts = async (
 /**
  * Bulk save participant statuses for an event
  * Similar to bulkSaveAttendanceList in attendance module
+ *
+ * Atomic: all participants commit in a single database.batch(), or none do.
  */
 export const bulkSaveParticipantStatuses = async (
   eventId: string,
   participantList: Array<{ participantId: string; status: EventParticipantStatus }>,
   changedBy: string
 ): Promise<void> => {
-  for (const item of participantList) {
-    await EventParticipantRepository.updateStatus(
-      item.participantId,
-      item.status,
-      changedBy
-    );
-  }
+  const collection = database.get<EventParticipant>("event_participants");
+  const participants = await Promise.all(
+    participantList.map((item) => collection.find(item.participantId))
+  );
+  const statusByParticipantId = new Map(
+    participantList.map((item) => [item.participantId, item.status])
+  );
+
+  const operations = participants.map((participant) =>
+    participant.prepareUpdate((r) => {
+      r.status = statusByParticipantId.get(r.id)!;
+      r.statusChangedBy = changedBy;
+    })
+  );
+
+  await database.write(async () => {
+    if (operations.length > 0) {
+      await database.batch(operations);
+    }
+  });
 
   sync().catch((err) => {
     console.error("[bulkSaveParticipantStatuses] Sync failed:", err);

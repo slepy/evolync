@@ -26,6 +26,7 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import { KeyboardAvoidingView, Platform, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { ScrollView, YStack } from "tamagui";
+import { useRequireOrganizationOwner } from "@/modules/organization/hooks/useRequireOrganizationOwner";
 
 /**
  * Screen for editing school settings
@@ -39,6 +40,7 @@ import { ScrollView, YStack } from "tamagui";
  * - Auto-sync on load
  */
 export default function SchoolSettingsScreen() {
+  useRequireOrganizationOwner();
   const { schoolId } = useLocalSearchParams<{ schoolId: string }>();
   const router = useRouter();
   const formRef = useRef<SchoolSettingsFormHandle>(null);
@@ -126,7 +128,7 @@ export default function SchoolSettingsScreen() {
     <View style={{ flex: 1, paddingTop: insets.top }}>
       <Header
         onBack={() => router.back()}
-        centerContent={<HeaderTitle text={t("settingsTitle")} />}
+        centerContent={<HeaderTitle text={t("settingsSchool")} />}
       />
 
       <KeyboardAvoidingView

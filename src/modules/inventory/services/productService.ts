@@ -422,37 +422,3 @@ export const deleteProductVariant = async (variantId: string): Promise<void> => 
     console.error("[deleteProductVariant] Sync failed:", err);
   });
 };
-
-// ============================================================================
-// Update Stock Quantity
-// ============================================================================
-
-/**
- * Updates stock quantity for a product variant (increment/decrement)
- */
-export const updateStockQuantity = async (
-  variantId: string,
-  quantityChange: number
-): Promise<ProductVariantResponseDto> => {
-  const variantsCollection = database.get<ProductVariant>("product_variants");
-
-  // Business logic: validate stock availability
-  const variant = await database.write(async () => {
-    const existingVariant = await variantsCollection.find(variantId);
-    const newQuantity = existingVariant.stockQuantity + quantityChange;
-
-    if (newQuantity < 0) {
-      throw new Error("inventoryErrorInsufficientStock");
-    }
-
-    return await existingVariant.update((record) => {
-      record.stockQuantity = newQuantity;
-    });
-  });
-
-  sync().catch((err) => {
-    console.error("[updateStockQuantity] Sync failed:", err);
-  });
-
-  return mapVariantToDto(variant);
-};

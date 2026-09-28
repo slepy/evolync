@@ -30,6 +30,17 @@ export const useUpdateEvent = (eventId: string | undefined, organizationId?: str
         setIsUpdating(true);
         setError(null);
 
+        // Whitelist visibility requires at least one selected member — the
+        // schoolId-required case is already validated inside updateEvent()
+        // (it can fall back to the existing event's schoolId); whitelist
+        // membership isn't part of UpdateEventDto, so it's checked here.
+        if (
+          formData.visibility === "whitelist" &&
+          (!whitelistMemberIds || whitelistMemberIds.length === 0)
+        ) {
+          throw new Error(t("eventValidationWhitelistRequired"));
+        }
+
         const dto: UpdateEventDto = {
           name: formData.name,
           shortNote: formData.shortNote,

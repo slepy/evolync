@@ -3,6 +3,7 @@ import {
   type PaymentStatus,
   type PaymentMethod,
 } from "@/database/models/PaymentRecord";
+import type PaymentRecord from "@/database/models/PaymentRecord";
 import {
   PaymentCycleRepository,
   PaymentRecordRepository,
@@ -42,48 +43,68 @@ export interface StudentPaymentItem {
 }
 
 /**
- * Hook for fetching and editing payment records for a specific student
+ * Hook for observing and editing payment records for a specific student
  *
  * Uses local state pattern like usePaymentRecords:
  * - updateLocal() for immediate UI updates
  * - saveAll() to commit all changes to database via service
  * - discardChanges() to revert to saved state
+ *
+ * Reactive: the underlying records are observed via WatermelonDB, so a change
+ * made elsewhere (e.g. another screen editing the same student's payments)
+ * is reflected here live. Any locally pending (unsaved) edit for a record is
+ * preserved across a live update — only records with no pending edit re-seed
+ * from the fresh data.
  */
 export const useStudentPayments = (studentId: string | undefined) => {
   const [payments, setPayments] = useState<StudentPaymentItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
 
-  // Track if we've done initial load to prevent re-loading on every render
-  const hasLoaded = useRef(false);
-
-  // Track original data for change detection
+  // Track original (last-known-committed) data for change detection
   const originalDataRef = useRef<Map<string, OriginalPaymentData>>(new Map());
+  // Track the current in-render payments so the observe callback can preserve
+  // unsaved local edits when new data streams in.
+  const paymentsRef = useRef<StudentPaymentItem[]>([]);
+  paymentsRef.current = payments;
 
-  // Load payment data via repositories (one-time load, not continuous observation)
   useEffect(() => {
     if (!studentId) {
       setPayments([]);
+      originalDataRef.current.clear();
       setIsLoading(false);
       return;
     }
 
-    // Only load once per studentId
-    if (hasLoaded.current) return;
-    hasLoaded.current = true;
+    setIsLoading(true);
 
-    const loadData = async () => {
+    const subscription = PaymentRecordRepository.observeByMemberId(
+      studentId,
+    ).subscribe(async (records: PaymentRecord[]) => {
       try {
-        const records = await PaymentRecordRepository.findByMemberId(studentId);
-
         const cycleIds = [...new Set(records.map((r) => r.paymentCycleId))];
         const cycles = await PaymentCycleRepository.findByIds(cycleIds);
         const cycleMap = new Map(cycles.map((c) => [c.id, c]));
+
+        const previousById = new Map(
+          paymentsRef.current.map((item) => [item.recordId, item]),
+        );
 
         const items: StudentPaymentItem[] = records
           .map((record) => {
             const cycle = cycleMap.get(record.paymentCycleId);
             if (!cycle) return null;
+
+            const original = originalDataRef.current.get(record.id);
+            const previous = previousById.get(record.id);
+            const hasPendingEdit =
+              previous !== undefined &&
+              original !== undefined &&
+              (previous.status !== original.status ||
+                previous.amount !== original.amount ||
+                previous.currency !== original.currency ||
+                previous.method !== original.method);
+
             return {
               recordId: record.id,
               cycle: {
@@ -91,28 +112,27 @@ export const useStudentPayments = (studentId: string | undefined) => {
                 periodStart: cycle.periodStart,
                 periodEnd: cycle.periodEnd,
               },
-              // Editable fields
-              status: record.status,
-              amount: record.amount,
-              currency: record.currency,
-              method: record.method,
+              // Preserve an unsaved local edit; otherwise seed from the fresh record
+              status: hasPendingEdit ? previous!.status : record.status,
+              amount: hasPendingEdit ? previous!.amount : record.amount,
+              currency: hasPendingEdit ? previous!.currency : record.currency,
+              method: hasPendingEdit ? previous!.method : record.method,
             };
           })
           .filter((item): item is StudentPaymentItem => item !== null);
 
-        // Sort by period end date (most recent first)
         items.sort(
-          (a, b) => b.cycle.periodEnd.getTime() - a.cycle.periodEnd.getTime()
+          (a, b) => b.cycle.periodEnd.getTime() - a.cycle.periodEnd.getTime(),
         );
 
-        // Store original data for change tracking
+        // Original data always reflects the latest committed (DB) state
         originalDataRef.current.clear();
-        items.forEach((item) => {
-          originalDataRef.current.set(item.recordId, {
-            status: item.status,
-            amount: item.amount,
-            currency: item.currency,
-            method: item.method,
+        records.forEach((record) => {
+          originalDataRef.current.set(record.id, {
+            status: record.status,
+            amount: record.amount,
+            currency: record.currency,
+            method: record.method,
           });
         });
 
@@ -122,14 +142,9 @@ export const useStudentPayments = (studentId: string | undefined) => {
       } finally {
         setIsLoading(false);
       }
-    };
+    });
 
-    loadData();
-  }, [studentId]);
-
-  // Reset hasLoaded when studentId changes
-  useEffect(() => {
-    hasLoaded.current = false;
+    return () => subscription.unsubscribe();
   }, [studentId]);
 
   // Update local payment state (UI only, no database write)

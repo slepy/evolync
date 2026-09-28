@@ -14,6 +14,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { Button, Input, Text, YStack, useTheme } from "tamagui";
 import { GradingRankRepository } from "../repositories";
 import { deleteRank, updateRank } from "../services/gradingService";
+import { updateRankSchema } from "../validation";
 import { ColorPickerSheet } from "./ColorPickerSheet";
 
 export const GradingRankEditScreen: React.FC = () => {
@@ -28,6 +29,7 @@ export const GradingRankEditScreen: React.FC = () => {
   const [color, setColor] = useState<string | null>(null);
   const [colorPickerOpen, setColorPickerOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [errorText, setErrorText] = useState<string | null>(null);
   const { isDirty, markDirty } = useDirtyFlag();
 
   useEffect(() => {
@@ -46,6 +48,7 @@ export const GradingRankEditScreen: React.FC = () => {
 
   const handleNameChange = (value: string) => {
     setName(value);
+    setErrorText(null);
     if (value.trim() !== (initialName ?? "").trim()) markDirty();
   };
 
@@ -55,11 +58,27 @@ export const GradingRankEditScreen: React.FC = () => {
   };
 
   const handleSave = async () => {
-    if (!rankId || !name.trim()) return;
+    if (!rankId || !organization) return;
+
+    const result = updateRankSchema.safeParse({
+      name: name.trim(),
+      color: color ?? undefined,
+    });
+    if (!result.success) {
+      setErrorText(t(result.error.issues[0].message));
+      return;
+    }
+
     setIsLoading(true);
+    setErrorText(null);
     try {
-      await updateRank(rankId, { name: name.trim(), color: color ?? undefined });
+      await updateRank(organization.id, rankId, {
+        name: result.data.name,
+        color: result.data.color ?? undefined,
+      });
       router.back();
+    } catch (err) {
+      setErrorText(t(err instanceof Error ? err.message : "errorUnknown"));
     } finally {
       setIsLoading(false);
     }
@@ -123,6 +142,12 @@ export const GradingRankEditScreen: React.FC = () => {
             onPress={() => setColorPickerOpen(true)}
           />
         </YStack>
+
+        {errorText && (
+          <Text fontSize="$3" color="$imperialRedDark">
+            {errorText}
+          </Text>
+        )}
       </YStack>
 
       <ColorPickerSheet

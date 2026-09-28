@@ -62,32 +62,22 @@ export default function UserOrdersScreen() {
       ) : (
         <ScrollView>
           <YStack gap="$2" paddingVertical="$3">
-            {orders.map(
-              (item) => (
-                console.log(
-                  "Rendering order:",
-                  item.order.id,
-                  "with details:",
-                  item,
-                ),
-                (
-                  <OrderCardUser
-                    key={item.order.id}
-                    displayName={
-                      item.itemCount === 1
-                        ? (item.productName ?? "")
-                        : `${item.itemCount} ${t("items")}`
-                    }
-                    status={item.order.status}
-                    totalsByCurrency={item.totalsByCurrency}
-                    createdAt={item.order.createdAt}
-                    onPress={() =>
-                      router.push(`/user/orders/${item.order.id}` as never)
-                    }
-                  />
-                )
-              ),
-            )}
+            {orders.map((item) => (
+              <OrderCardUser
+                key={item.order.id}
+                displayName={
+                  item.itemCount === 1
+                    ? (item.productName ?? "")
+                    : `${item.itemCount} ${t("items")}`
+                }
+                status={item.order.status}
+                totalsByCurrency={item.totalsByCurrency}
+                createdAt={item.order.createdAt}
+                onPress={() =>
+                  router.push(`/user/orders/${item.order.id}` as never)
+                }
+              />
+            ))}
           </YStack>
         </ScrollView>
       )}

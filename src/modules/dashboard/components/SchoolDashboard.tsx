@@ -29,17 +29,6 @@ interface SchoolDashboardProps {
   schools: School[];
 }
 
-// Mock data structure (will be replaced with real data from WatermelonDB)
-// interface MockSchool {
-//   id: string;
-//   name: string;
-// }
-
-interface MockDashboardData {
-  overduePayments: number;
-  unreadAnnouncements: number;
-}
-
 // ============================================================================
 // SchoolDashboard Component
 // ============================================================================
@@ -70,12 +59,6 @@ const SchoolDashboardComponent: React.FC<SchoolDashboardProps> = ({
   // ==========================================================================
 
   const currentSchool = schools.find((s) => s.id === schoolId) ?? null;
-
-  // Mock dashboard data
-  const mockData: MockDashboardData = {
-    overduePayments: 0,
-    unreadAnnouncements: 0,
-  };
 
   // ==========================================================================
   // Event Handlers
@@ -125,20 +108,6 @@ const SchoolDashboardComponent: React.FC<SchoolDashboardProps> = ({
     if (todaySession) {
       router.push(`/school/${schoolId}/attendance/${todaySession.id}`);
     }
-  };
-
-  /**
-   * Communication module navigation
-   * @param schoolId
-   */
-  const handleNavigateToCommunication = (schoolId: string) => {
-    console.log("Navigate to Communication module");
-    // TODO: router.push(`/school/${schoolId}/communication`);
-  };
-
-  const handleNewAnnouncement = () => {
-    console.log("Create new announcement");
-    // TODO: router.push(`/school/${schoolId}/communication/create`);
   };
 
   /**
@@ -206,7 +175,7 @@ const SchoolDashboardComponent: React.FC<SchoolDashboardProps> = ({
                   Icon={CreditCard}
                   iconColor="$jadeGreen"
                   iconBackground="$jadeGreenLighter"
-                  badgeCount={mockData.overduePayments}
+                  badgeCount={dashboardData.overduePayments}
                   onPress={() => handleNavigateToPayments(schoolId)}
                 />
               </YStack>
@@ -232,20 +201,9 @@ const SchoolDashboardComponent: React.FC<SchoolDashboardProps> = ({
                 />
               </YStack>
 
-              {/* <YStack width="30%">
-                <DashboardStatCard
-                  title={t("dashboardAnnouncements")}
-                  Icon={MessageSquare}
-                  iconColor="$pink11"
-                  iconBackground="$pink3"
-                  badgeCount={mockData.unreadAnnouncements}
-                  onPress={() => handleNavigateToCommunication(schoolId)}
-                />
-              </YStack> */}
-
               <YStack width="30%">
                 <DashboardStatCard
-                  title={t("settingsTitle")}
+                  title={t("settingsSchool")}
                   Icon={Settings}
                   iconColor="$inkBlackLight"
                   iconBackground="$softGrayLight"
@@ -279,7 +237,6 @@ const SchoolDashboardComponent: React.FC<SchoolDashboardProps> = ({
 
         {/* Floating Action Button */}
         <DashboardFAB
-          onNewAnnouncement={handleNewAnnouncement}
           onAddStudent={handleAddStudent}
           onMarkAttendance={handleMarkAttendance}
           onEditAttendance={handleEditAttendance}

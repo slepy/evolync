@@ -11,5 +11,4 @@ export {
 export {
   saveTechnique,
   updateTechnique,
-  deleteTechnique,
 } from "./techniqueService";

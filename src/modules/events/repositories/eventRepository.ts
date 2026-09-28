@@ -146,6 +146,8 @@ export const EventRepository = {
   async findByIds(ids: string[]): Promise<Event[]> {
     if (ids.length === 0) return [];
     const collection = database.get<Event>("events");
-    return await collection.query(Q.where("id", Q.oneOf(ids))).fetch();
+    return await collection
+      .query(Q.where("id", Q.oneOf(ids)), Q.where("deleted_at", null))
+      .fetch();
   },
 };

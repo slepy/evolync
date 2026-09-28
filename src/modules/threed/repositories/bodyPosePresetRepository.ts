@@ -22,13 +22,6 @@ export const BodyPosePresetRepository = {
     });
   },
 
-  async findAll(): Promise<BodyPosePreset[]> {
-    const collection = database.get<BodyPosePreset>("body_pose_presets");
-    return await collection
-      .query(Q.where("deleted_at", null))
-      .fetch();
-  },
-
   async findByUserId(userId: string): Promise<BodyPosePreset[]> {
     const collection = database.get<BodyPosePreset>("body_pose_presets");
     return await collection
@@ -61,13 +54,6 @@ export const BodyPosePresetRepository = {
         Q.where("deleted_at", null)
       )
       .fetch();
-  },
-
-  observeAll() {
-    const collection = database.get<BodyPosePreset>("body_pose_presets");
-    return collection
-      .query(Q.where("deleted_at", null))
-      .observe();
   },
 
   observeByUserId(userId: string) {

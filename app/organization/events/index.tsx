@@ -17,6 +17,7 @@ import React, { useState } from "react";
 import { FlatList, Platform, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Button, Spinner, Text, XStack, YStack, useTheme } from "tamagui";
+import { useRequireOrganizationOwner } from "@/modules/organization/hooks/useRequireOrganizationOwner";
 
 // ============================================================================
 // EventsListScreen
@@ -33,6 +34,7 @@ import { Button, Spinner, Text, XStack, YStack, useTheme } from "tamagui";
  * - Offline support
  */
 export default function EventsListScreen() {
+  useRequireOrganizationOwner();
   const router = useRouter();
   const theme = useTheme();
   const { organization } = useStore();

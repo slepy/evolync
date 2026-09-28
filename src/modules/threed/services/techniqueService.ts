@@ -3,6 +3,7 @@ import { useStore } from "@/store";
 import type Technique from "@/database/models/Technique";
 import { TechniqueRepository } from "../repositories";
 import type { CreateTechniqueDto, UpdateTechniqueDto } from "../types";
+import { createTechniqueSchema, updateTechniqueSchema } from "../validation";
 
 export const saveTechnique = async (
   data: CreateTechniqueDto
@@ -10,12 +11,14 @@ export const saveTechnique = async (
   const { user } = useStore.getState();
   if (!user) throw new Error("threedErrorNoUser");
 
+  const parsed = createTechniqueSchema.parse(data);
+
   const technique = await TechniqueRepository.create({
     userId: user.id,
-    title: data.title,
-    description: data.description,
-    bodyPart: data.bodyPart,
-    data: JSON.stringify(data.techniqueData),
+    title: parsed.title,
+    description: parsed.description,
+    bodyPart: parsed.bodyPart,
+    data: JSON.stringify(parsed.techniqueData),
   });
 
   sync().catch(console.error);
@@ -26,14 +29,8 @@ export const updateTechnique = async (
   techniqueId: string,
   data: UpdateTechniqueDto
 ): Promise<Technique> => {
-  const technique = await TechniqueRepository.update(techniqueId, data);
+  const parsed = updateTechniqueSchema.parse(data);
+  const technique = await TechniqueRepository.update(techniqueId, parsed);
   sync().catch(console.error);
   return technique;
-};
-
-export const deleteTechnique = async (
-  techniqueId: string
-): Promise<void> => {
-  await TechniqueRepository.softDelete(techniqueId);
-  sync().catch(console.error);
 };

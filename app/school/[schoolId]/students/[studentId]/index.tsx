@@ -23,10 +23,8 @@ import { useStudentAttendance } from "@/modules/attendance/hooks";
 import { STATUS_CONFIG as ATTENDANCE_STATUS_CONFIG } from "@/modules/attendance/constants";
 import { OrderCardUser, useMemberOrders } from "@/modules/orders";
 import { useGradingRanks } from "@/modules/grading/hooks/useGradingRanks";
-import {
-  assignRankToStudent,
-  findRankById,
-} from "@/modules/grading/services/gradingService";
+import { findRankById } from "@/modules/grading/services/gradingService";
+import { assignRankToStudent } from "@/modules/students/services";
 import { SchoolRepository } from "@/modules/school/repositories";
 import {
   useStudentEvents,
@@ -49,6 +47,7 @@ import React, { useEffect, useMemo, useReducer, useState } from "react";
 import { Alert, ScrollView, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Button, Tabs, Text, XStack, YStack, useTheme } from "tamagui";
+import { useRequireOrganizationOwner } from "@/modules/organization/hooks/useRequireOrganizationOwner";
 
 // ============================================================================
 // Constants
@@ -195,6 +194,7 @@ function AttendanceStats({ present, absent, excused }: AttendanceStatsProps) {
 // ============================================================================
 
 export default function StudentDetailsScreen() {
+  useRequireOrganizationOwner();
   const router = useRouter();
   const theme = useTheme();
   const { schoolId, studentId } = useLocalSearchParams<{
@@ -273,7 +273,7 @@ export default function StudentDetailsScreen() {
     saveAll: saveEventStatuses,
     hasChanges: hasEventChanges,
     isSaving: isEventSaving,
-  } = useStudentEventStatuses(studentEvents);
+  } = useStudentEventStatuses(studentEvents, { isInstructor: true });
 
   // Rank assignment handler (local state only, saved with save button)
   const hasRankChanges = pendingRankId !== undefined;

@@ -2,7 +2,6 @@ import { GoogleAuthButton } from "@/modules/auth/components/GoogleAuthButton";
 import { LoginPrompt } from "@/modules/auth/components/LoginPrompt";
 import { RegisterInstructorForm } from "@/modules/auth/components/RegisterInstructorForm";
 import { AppLogo } from "@/modules/core/components/AppLogo";
-import { Divider } from "@/modules/core/components/Divider";
 import { useRouter } from "expo-router";
 import React from "react";
 import { KeyboardAvoidingView, Platform } from "react-native";

@@ -1,6 +1,7 @@
 import { ChevronDown } from "lucide-react-native";
 import React, { createContext, useContext, useState } from "react";
-import { Card, XStack, YStack, useTheme } from "tamagui";
+import { XStack, YStack, useTheme } from "tamagui";
+import { BaseCard } from "./BaseCard";
 import { CardInfo } from "./CardInfo";
 import { StatusIndicator } from "./StatusIndicator";
 import { Thumbnail } from "./Thumbnail";
@@ -123,14 +124,16 @@ export function AccordionSection({
   };
 
   return (
-    <Card
-      animation="quick"
+    <BaseCard
+      onPress={() => {}}
       backgroundColor="rgba(255, 255, 255, 0.7)"
       borderColor="$borderColor"
       borderWidth={1}
       padding="$2"
       marginVertical={marginVertical}
       marginHorizontal={marginHorizontal}
+      pressStyle={{}}
+      hoverStyle={{}}
     >
       {/* Custom Header */}
       {renderHeader ? (
@@ -194,7 +197,7 @@ export function AccordionSection({
           {children}
         </YStack>
       )}
-    </Card>
+    </BaseCard>
   );
 }
 

@@ -32,6 +32,7 @@ import React, { useState, useCallback } from "react";
 import { Alert, View } from "react-native";
 import { confirmDelete } from "@/modules/core/utils/confirmDelete";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useRequireOrganizationOwner } from "@/modules/organization/hooks/useRequireOrganizationOwner";
 import {
   Button,
   Card,
@@ -56,6 +57,7 @@ import {
  * - Navigation to participants list
  */
 export default function EventDetailsScreen() {
+  useRequireOrganizationOwner();
   const { eventId } = useLocalSearchParams<{ eventId: string }>();
   const router = useRouter();
   const theme = useTheme();

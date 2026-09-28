@@ -14,6 +14,10 @@ import {
   TrainingSessionRepository,
   AttendanceRecordRepository,
 } from "../repositories";
+import {
+  attendanceStatusSchema,
+  createTrainingSessionSchema,
+} from "../validation";
 
 // ============================================================================
 // Training Sessions
@@ -28,6 +32,8 @@ import {
 export const createTrainingSession = async (
   data: CreateTrainingSessionDto
 ): Promise<TrainingSession> => {
+  createTrainingSessionSchema.parse({ date: data.date, notes: data.notes });
+
   const session = await TrainingSessionRepository.create({
     schoolId: data.schoolId,
     sessionDate: new Date(data.date),
@@ -60,35 +66,66 @@ export const getTrainingSessionsForSchool = async (
   return TrainingSessionRepository.findBySchoolId(schoolId);
 };
 
+/** Start/end of the UTC calendar day containing `date`. */
+const utcDayBounds = (date: Date): { start: Date; end: Date } => {
+  const start = new Date(
+    Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate(), 0, 0, 0, 0)
+  );
+  const end = new Date(
+    Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate(), 23, 59, 59, 999)
+  );
+  return { start, end };
+};
+
 /**
  * Gets or creates a training session for a specific date
  * Useful for "create today's session" flow
+ *
+ * Session-per-day boundaries are computed in UTC (not device-local time) so
+ * every device agrees on which calendar day a session belongs to, regardless
+ * of local timezone offset.
  */
 export const getOrCreateSessionForDate = async (
   schoolId: string,
   date: string // ISO date string
 ): Promise<TrainingSession> => {
+  createTrainingSessionSchema.parse({ date });
+
   const targetDate = new Date(date);
+  const { start: startOfDay, end: endOfDay } = utcDayBounds(targetDate);
 
-  // Check if session already exists for this date
-  const startOfDay = new Date(targetDate);
-  startOfDay.setHours(0, 0, 0, 0);
-  const endOfDay = new Date(targetDate);
-  endOfDay.setHours(23, 59, 59, 999);
+  // Atomic check-then-create: the existence check and the creation happen
+  // inside the same database.write() so two near-simultaneous calls for the
+  // same school+date can't both miss the existing session and create two.
+  let created = false;
+  const session = await database.write(async () => {
+    const existingSessions =
+      await TrainingSessionRepository.findBySchoolIdAndDateRange(
+        schoolId,
+        startOfDay,
+        endOfDay
+      );
 
-  const existingSessions =
-    await TrainingSessionRepository.findBySchoolIdAndDateRange(
-      schoolId,
-      startOfDay,
-      endOfDay
-    );
+    if (existingSessions.length > 0) {
+      return existingSessions[0];
+    }
 
-  if (existingSessions.length > 0) {
-    return existingSessions[0];
+    const sessionsCollection = database.get<TrainingSession>("training_sessions");
+    created = true;
+    return await sessionsCollection.create((record) => {
+      record._raw.id = uuidv4();
+      record.schoolId = schoolId;
+      record.sessionDate = targetDate;
+    });
+  });
+
+  if (created) {
+    sync().catch((err) => {
+      console.error("[getOrCreateSessionForDate] Sync failed:", err);
+    });
   }
 
-  // Create new session
-  return createTrainingSession({ schoolId, date });
+  return session;
 };
 
 /**
@@ -131,33 +168,39 @@ export const deleteTrainingSession = async (
 /**
  * Upserts an attendance record (creates or updates)
  *
+ * The existence check and the conditional create/update happen inside one
+ * database.write() so two near-simultaneous calls for the same session+member
+ * can't both miss the existing record and create a duplicate.
+ *
  * @param data - Attendance data (sessionId, memberId, status)
  * @returns Created or updated AttendanceRecord
  */
 export const upsertAttendanceRecord = async (
   data: UpsertAttendanceDto
 ): Promise<AttendanceRecord> => {
-  // Check if record already exists
-  const existingRecord = await AttendanceRecordRepository.findBySessionAndMember(
-    data.trainingSessionId,
-    data.schoolMemberId
-  );
+  attendanceStatusSchema.parse(data.status);
 
-  let record: AttendanceRecord;
+  const record = await database.write(async () => {
+    const existingRecord =
+      await AttendanceRecordRepository.findBySessionAndMember(
+        data.trainingSessionId,
+        data.schoolMemberId
+      );
 
-  if (existingRecord) {
-    // Update existing record
-    record = await AttendanceRecordRepository.update(existingRecord.id, {
-      status: data.status,
+    if (existingRecord) {
+      return await existingRecord.update((r) => {
+        r.status = data.status;
+      });
+    }
+
+    const collection = database.get<AttendanceRecord>("attendance_records");
+    return await collection.create((r) => {
+      r._raw.id = uuidv4();
+      r.trainingSessionId = data.trainingSessionId;
+      r.schoolMemberId = data.schoolMemberId;
+      r.status = data.status;
     });
-  } else {
-    // Create new record
-    record = await AttendanceRecordRepository.create({
-      trainingSessionId: data.trainingSessionId,
-      schoolMemberId: data.schoolMemberId,
-      status: data.status,
-    });
-  }
+  });
 
   sync().catch((err) => {
     console.error("[upsertAttendanceRecord] Sync failed:", err);
@@ -175,47 +218,81 @@ export const getAttendanceForSession = async (
   return AttendanceRecordRepository.findBySessionId(sessionId);
 };
 
+/** Builds one batched find-or-create/update operation per (session, member, status) triple. */
+const prepareUpsertOperations = async (
+  sessionId: string,
+  items: Array<{ memberId: string; status: AttendanceStatus }>
+) => {
+  items.forEach((item) => attendanceStatusSchema.parse(item.status));
+
+  const existingRecords = await AttendanceRecordRepository.findBySessionId(sessionId);
+  const existingByMember = new Map(
+    existingRecords.map((r) => [r.schoolMemberId, r])
+  );
+  const collection = database.get<AttendanceRecord>("attendance_records");
+
+  return items.map((item) => {
+    const existing = existingByMember.get(item.memberId);
+    if (existing) {
+      return existing.prepareUpdate((r) => {
+        r.status = item.status;
+      });
+    }
+    return collection.prepareCreate((r) => {
+      r._raw.id = uuidv4();
+      r.trainingSessionId = sessionId;
+      r.schoolMemberId = item.memberId;
+      r.status = item.status;
+    });
+  });
+};
+
 /**
  * Bulk upsert attendance records for multiple members
  * Useful for "mark all present/absent" functionality
+ *
+ * Atomic: all records commit in a single database.batch(), or none do.
  */
 export const bulkUpsertAttendance = async (
   sessionId: string,
   memberIds: string[],
   status: AttendanceStatus
 ): Promise<AttendanceRecord[]> => {
-  // Upsert each member's attendance
-  for (const memberId of memberIds) {
-    await upsertAttendanceRecord({
-      trainingSessionId: sessionId,
-      schoolMemberId: memberId,
-      status,
-    });
-  }
+  const operations = await prepareUpsertOperations(
+    sessionId,
+    memberIds.map((memberId) => ({ memberId, status }))
+  );
+
+  await database.write(async () => {
+    if (operations.length > 0) {
+      await database.batch(operations);
+    }
+  });
 
   sync().catch((err) => {
     console.error("[bulkUpsertAttendance] Sync failed:", err);
   });
 
-  // Return fresh records from database
   return await getAttendanceForSession(sessionId);
 };
 
 /**
  * Bulk save attendance list for a session
  * Upserts each attendance record with the provided status
+ *
+ * Atomic: all records commit in a single database.batch(), or none do.
  */
 export const bulkSaveAttendanceList = async (
   sessionId: string,
   attendanceList: Array<{ memberId: string; status: AttendanceStatus }>
 ): Promise<void> => {
-  for (const item of attendanceList) {
-    await upsertAttendanceRecord({
-      trainingSessionId: sessionId,
-      schoolMemberId: item.memberId,
-      status: item.status,
-    });
-  }
+  const operations = await prepareUpsertOperations(sessionId, attendanceList);
+
+  await database.write(async () => {
+    if (operations.length > 0) {
+      await database.batch(operations);
+    }
+  });
 
   sync().catch((err) => {
     console.error("[bulkSaveAttendanceList] Sync failed:", err);
@@ -225,13 +302,31 @@ export const bulkSaveAttendanceList = async (
 /**
  * Bulk update attendance record statuses
  * Updates each record by ID with the new status
+ *
+ * Atomic: all records commit in a single database.batch(), or none do.
  */
 export const bulkUpdateAttendanceStatus = async (
   updates: Array<{ recordId: string; status: AttendanceStatus }>
 ): Promise<void> => {
-  for (const { recordId, status } of updates) {
-    await AttendanceRecordRepository.update(recordId, { status });
-  }
+  updates.forEach((u) => attendanceStatusSchema.parse(u.status));
+
+  const collection = database.get<AttendanceRecord>("attendance_records");
+  const records = await Promise.all(
+    updates.map((u) => collection.find(u.recordId))
+  );
+  const statusByRecordId = new Map(updates.map((u) => [u.recordId, u.status]));
+
+  const operations = records.map((record) =>
+    record.prepareUpdate((r) => {
+      r.status = statusByRecordId.get(r.id)!;
+    })
+  );
+
+  await database.write(async () => {
+    if (operations.length > 0) {
+      await database.batch(operations);
+    }
+  });
 
   sync().catch((err) => {
     console.error("[bulkUpdateAttendanceStatus] Sync failed:", err);
@@ -252,6 +347,8 @@ export const createSessionWithAttendance = async (
   sessionDate: Date,
   attendanceList: Array<{ memberId: string; status: AttendanceStatus }>
 ): Promise<TrainingSession> => {
+  attendanceList.forEach((item) => attendanceStatusSchema.parse(item.status));
+
   const sessionId = uuidv4();
 
   await database.write(async () => {

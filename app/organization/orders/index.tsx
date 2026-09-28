@@ -1,8 +1,9 @@
 import { OrdersListScreen, useOrganizationOrders } from "@/modules/orders";
-import type { OrderWithDetails } from "@/modules/orders/types/orders";
+import type { OrderWithDetails } from "@/modules/orders/types/dto";
 import { useStore } from "@/store";
 import { useRouter } from "expo-router";
 import React from "react";
+import { useRequireOrganizationOwner } from "@/modules/organization/hooks/useRequireOrganizationOwner";
 
 /**
  * Organization Orders Screen
@@ -13,6 +14,7 @@ import React from "react";
  * OrdersListScreen component.
  */
 export default function OrganizationOrdersScreen() {
+  useRequireOrganizationOwner();
   const router = useRouter();
   const { organization } = useStore();
 

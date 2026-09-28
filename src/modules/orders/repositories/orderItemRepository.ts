@@ -53,6 +53,17 @@ export const OrderItemRepository = {
     });
   },
 
+  async countByVariantIds(variantIds: string[]): Promise<number> {
+    if (variantIds.length === 0) return 0;
+    const orderItemsCollection = database.get<OrderItem>("order_items");
+    return await orderItemsCollection
+      .query(
+        Q.where("product_variant_id", Q.oneOf(variantIds)),
+        Q.where("deleted_at", null),
+      )
+      .fetchCount();
+  },
+
   // Observable methods for reactive UI
   observeByOrderId(orderId: string) {
     const orderItemsCollection = database.get<OrderItem>("order_items");

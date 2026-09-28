@@ -58,6 +58,43 @@ export const StudentRepository = {
       .fetch();
   },
 
+  async findOfflineBySchoolId(schoolId: string): Promise<SchoolMember[]> {
+    const membersCollection = database.get<SchoolMember>("school_members");
+    return await membersCollection
+      .query(
+        Q.where("school_id", schoolId),
+        Q.where("status", MemberStatus.OFFLINE),
+        Q.where("deleted_at", null),
+      )
+      .fetch();
+  },
+
+  async findByCurrentRankId(rankId: string): Promise<SchoolMember[]> {
+    const membersCollection = database.get<SchoolMember>("school_members");
+    return await membersCollection
+      .query(
+        Q.where("current_rank_id", rankId),
+        Q.where("deleted_at", null),
+      )
+      .fetch();
+  },
+
+  async findByUserIdAndSchoolId(
+    userId: string,
+    schoolId: string,
+  ): Promise<SchoolMember | null> {
+    const membersCollection = database.get<SchoolMember>("school_members");
+    const members = await membersCollection
+      .query(
+        Q.where("user_id", userId),
+        Q.where("school_id", schoolId),
+        Q.where("deleted_at", null),
+      )
+      .fetch();
+
+    return members[0] ?? null;
+  },
+
   async findByEmailAndSchoolId(
     email: string,
     schoolId: string,

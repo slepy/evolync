@@ -22,8 +22,10 @@ import { KeyboardAvoidingView, Platform, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { ScrollView, YStack } from "tamagui";
 import SchoolMember from "@/database/models/SchoolMember";
+import { useRequireOrganizationOwner } from "@/modules/organization/hooks/useRequireOrganizationOwner";
 
 export default function EditStudentScreen() {
+  useRequireOrganizationOwner();
   const { schoolId, studentId } = useLocalSearchParams<{
     schoolId: string;
     studentId: string;

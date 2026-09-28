@@ -3,9 +3,20 @@ import { useRouter } from "expo-router";
 import { YStack, Text, Button, ScrollView, Spinner, XStack } from "tamagui";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { View } from "react-native";
-import { Header, HeaderSelector, HeaderTitle } from "@/modules/core/components";
+import {
+  BaseCard,
+  CardInfo,
+  Header,
+  HeaderSelector,
+  HeaderTitle,
+} from "@/modules/core/components";
 import School from "@/database/models/School";
-import { SchoolRepository } from "@/modules/school/repositories";
+import { JoinRequestStatus } from "@/database/models/SchoolJoinRequest";
+import {
+  SchoolJoinRequestRepository,
+  SchoolRepository,
+} from "@/modules/school/repositories";
+import { usePendingJoinRequests } from "@/modules/school/hooks";
 import { DashboardStatCard } from "@/modules/dashboard/components/DashboardStatCard";
 import { useStore } from "@/store";
 import { withObservables } from "@nozbe/watermelondb/react";
@@ -16,6 +27,7 @@ import {
   ShoppingBag,
   PersonStanding,
   Tags,
+  X,
   Building2,
 } from "lucide-react-native";
 
@@ -46,6 +58,8 @@ function UserDashboardInner({ schools }: UserDashboardInnerProps) {
   const activeMembershipId = useStore((s) => s.activeMembershipId);
   const setActiveMembershipId = useStore((s) => s.setActiveMembershipId);
   const organization = useStore((s) => s.organization);
+  const user = useStore((s) => s.user);
+  const pendingJoinRequests = usePendingJoinRequests(user?.id);
 
   const activeMembership =
     schoolMemberships.find((m) => m.memberId === activeMembershipId) ?? null;
@@ -207,6 +221,40 @@ function UserDashboardInner({ schools }: UserDashboardInnerProps) {
 
       <ScrollView>
         <YStack padding="$4" gap="$4">
+          {pendingJoinRequests.length > 0 && (
+            <YStack gap="$2">
+              {pendingJoinRequests.map((request) => {
+                const school = schools.find((s) => s.id === request.schoolId);
+                const isRejected = request.status === JoinRequestStatus.REJECTED;
+                return (
+                  <BaseCard key={request.id} onPress={() => {}}>
+                    <XStack alignItems="center" gap="$2">
+                      <CardInfo
+                        displayName={school?.name ?? request.schoolId}
+                        subtitle={
+                          isRejected
+                            ? t("joinRequestRejectedCardStatus")
+                            : t("joinRequestPendingCardStatus")
+                        }
+                      />
+                      {isRejected && (
+                        <Button
+                          size="$2"
+                          circular
+                          chromeless
+                          icon={<X size={16} />}
+                          onPress={() =>
+                            SchoolJoinRequestRepository.softDelete(request.id)
+                          }
+                        />
+                      )}
+                    </XStack>
+                  </BaseCard>
+                );
+              })}
+            </YStack>
+          )}
+
           {memberSchools.length === 0 ? (
             <YStack padding="$4" gap="$4" alignItems="center">
               <Text fontSize="$6" color="$gray11" textAlign="center">

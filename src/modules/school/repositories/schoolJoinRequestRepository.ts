@@ -1,5 +1,7 @@
 import { database } from "@/database";
-import SchoolJoinRequest from "@/database/models/SchoolJoinRequest";
+import SchoolJoinRequest, {
+  JoinRequestStatus,
+} from "@/database/models/SchoolJoinRequest";
 import { Q } from "@nozbe/watermelondb";
 import { v4 as uuidv4 } from "uuid";
 
@@ -21,6 +23,7 @@ export const SchoolJoinRequestRepository = {
         record.userId = data.userId;
         record.displayName = data.displayName;
         record.email = data.email;
+        record.status = JoinRequestStatus.PENDING;
         if (data.avatarUrl !== undefined) record.avatarUrl = data.avatarUrl;
         if (data.phoneNumber !== undefined) record.phoneNumber = data.phoneNumber;
         (record._raw as any).created_at = now;
@@ -44,6 +47,16 @@ export const SchoolJoinRequestRepository = {
     return results[0] ?? null;
   },
 
+  async markRejected(id: string): Promise<void> {
+    const collection = database.get<SchoolJoinRequest>("school_join_requests");
+    const record = await collection.find(id);
+    await database.write(async () => {
+      await record.update((r) => {
+        r.status = JoinRequestStatus.REJECTED;
+      });
+    });
+  },
+
   async softDelete(id: string): Promise<void> {
     const collection = database.get<SchoolJoinRequest>("school_join_requests");
     const record = await collection.find(id);
@@ -54,17 +67,34 @@ export const SchoolJoinRequestRepository = {
     });
   },
 
+  /** Pending-only — rejected requests are no longer actionable by the instructor. */
   observeBySchoolId(schoolId: string) {
     const collection = database.get<SchoolJoinRequest>("school_join_requests");
     return collection
-      .query(Q.where("school_id", schoolId), Q.where("deleted_at", null))
+      .query(
+        Q.where("school_id", schoolId),
+        Q.where("deleted_at", null),
+        Q.where("status", Q.notEq(JoinRequestStatus.REJECTED)),
+      )
+      .observe();
+  },
+
+  /** All statuses — the student's own dashboard shows both pending and rejected. */
+  observeByUserId(userId: string) {
+    const collection = database.get<SchoolJoinRequest>("school_join_requests");
+    return collection
+      .query(Q.where("user_id", userId), Q.where("deleted_at", null))
       .observe();
   },
 
   observeCountBySchoolId(schoolId: string) {
     const collection = database.get<SchoolJoinRequest>("school_join_requests");
     return collection
-      .query(Q.where("school_id", schoolId), Q.where("deleted_at", null))
+      .query(
+        Q.where("school_id", schoolId),
+        Q.where("deleted_at", null),
+        Q.where("status", Q.notEq(JoinRequestStatus.REJECTED)),
+      )
       .observeCount();
   },
 };

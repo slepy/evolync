@@ -5,6 +5,7 @@ import SchoolMember from "@/database/models/SchoolMember";
 import { MemberStatus, type CreateStudentDto } from "../types";
 import { StudentRepository } from "../repositories";
 import { SchoolJoinRequestRepository } from "@/modules/school/repositories/schoolJoinRequestRepository";
+import { SchoolSettingsRepository } from "@/modules/school/repositories";
 import { PaymentRecordRepository } from "@/modules/payments/repositories/paymentRecordRepository";
 import { EventParticipantRepository } from "@/modules/events/repositories/eventParticipantRepository";
 
@@ -184,6 +185,15 @@ export const approveJoinRequest = async (
   let memberId: string;
 
   if (mode === "existing" && existingMemberId) {
+    const targetMember = await StudentRepository.findById(existingMemberId);
+    if (
+      !targetMember ||
+      targetMember.schoolId !== schoolId ||
+      targetMember.status !== MemberStatus.OFFLINE
+    ) {
+      throw new Error("existingMemberNotEligible");
+    }
+
     // Activate the explicitly selected offline member
     await StudentRepository.update(existingMemberId, {
       userId: request.userId,
@@ -214,8 +224,13 @@ export const approveJoinRequest = async (
   }
 
   // Add to selected payment cycles
-  for (const cycleId of cycleIds) {
-    await PaymentRecordRepository.bulkCreate(cycleId, [memberId], 0, "PLN");
+  if (cycleIds.length > 0) {
+    const schoolSettings = await SchoolSettingsRepository.findBySchoolId(schoolId);
+    const amount = schoolSettings?.defaultPaymentAmount ?? 0;
+    const currency = schoolSettings?.defaultCurrency ?? "PLN";
+    for (const cycleId of cycleIds) {
+      await PaymentRecordRepository.bulkCreate(cycleId, [memberId], amount, currency);
+    }
   }
 
   // Add to selected events
@@ -240,10 +255,12 @@ export const approveJoinRequest = async (
 // ============================================================================
 
 /**
- * Rejects (soft-deletes) a school join request without creating a member.
+ * Rejects a school join request without creating a member. The request row is
+ * marked 'rejected' (not soft-deleted) so the student can see the outcome on
+ * their dashboard; it's soft-deleted later when they dismiss that card.
  */
 export const rejectJoinRequest = async (requestId: string): Promise<void> => {
-  await SchoolJoinRequestRepository.softDelete(requestId);
+  await SchoolJoinRequestRepository.markRejected(requestId);
 
   sync().catch((err) => {
     console.error("[rejectJoinRequest] Sync failed:", err);
@@ -263,4 +280,22 @@ export const rejectJoinRequest = async (requestId: string): Promise<void> => {
  */
 export const observeStudentsCount = (schoolId: string) => {
   return StudentRepository.observeCount(schoolId);
+};
+
+// ============================================================================
+// Assign Rank
+// ============================================================================
+
+/**
+ * Sets (or clears) a student's current grading rank.
+ */
+export const assignRankToStudent = async (
+  studentId: string,
+  rankId: string | null,
+): Promise<void> => {
+  await StudentRepository.update(studentId, {
+    currentRankId: rankId ?? undefined,
+  } as any);
+
+  sync().catch(console.error);
 };

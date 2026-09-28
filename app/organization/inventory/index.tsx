@@ -14,6 +14,7 @@ import React, { useEffect, useState } from "react";
 import { FlatList, Platform, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Text, YStack } from "tamagui";
+import { useRequireOrganizationOwner } from "@/modules/organization/hooks/useRequireOrganizationOwner";
 
 /**
  * Inventory list screen
@@ -27,6 +28,7 @@ import { Text, YStack } from "tamagui";
  * - FAB for adding new products
  */
 export default function InventoryScreen() {
+  useRequireOrganizationOwner();
   const { organization } = useStore();
   const [products, setProducts] = useState<ProductResponseDto[]>([]);
   const [loading, setLoading] = useState(true);

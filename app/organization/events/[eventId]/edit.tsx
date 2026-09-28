@@ -20,6 +20,7 @@ import React, { useRef, useState, useEffect } from "react";
 import { KeyboardAvoidingView, Platform, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { ScrollView, Text, YStack } from "tamagui";
+import { useRequireOrganizationOwner } from "@/modules/organization/hooks/useRequireOrganizationOwner";
 
 /**
  * Screen for editing an event
@@ -33,6 +34,7 @@ import { ScrollView, Text, YStack } from "tamagui";
  * - Auto-navigation on success
  */
 export default function EditEventScreen() {
+  useRequireOrganizationOwner();
   const { eventId } = useLocalSearchParams<{ eventId: string }>();
   const router = useRouter();
   const formRef = useRef<EventFormHandle>(null);

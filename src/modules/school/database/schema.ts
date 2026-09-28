@@ -38,6 +38,7 @@ export const schoolSchema = [
       { name: "email", type: "string" },
       { name: "avatar_url", type: "string", isOptional: true },
       { name: "phone_number", type: "string", isOptional: true },
+      { name: "status", type: "string", isOptional: true }, // 'pending' | 'rejected'
       { name: "created_at", type: "number" },
       { name: "updated_at", type: "number" },
       { name: "deleted_at", type: "number", isOptional: true },

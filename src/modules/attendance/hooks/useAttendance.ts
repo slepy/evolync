@@ -7,6 +7,7 @@ import SchoolMember from "@/database/models/SchoolMember";
 import { useStore } from "@/store";
 import { AttendanceRecordRepository } from "../repositories";
 import { StudentRepository } from "@/modules/students/repositories";
+import { MemberStatus } from "@/modules/students/types";
 import { bulkSaveAttendanceList } from "../services";
 
 /**
@@ -16,6 +17,8 @@ export interface AttendanceWithMember {
   record: AttendanceRecord | null;
   member: SchoolMember;
   status: AttendanceStatus;
+  /** True when the member has since been archived — historical value is kept, editing is not allowed. */
+  disabled: boolean;
 }
 
 /**
@@ -78,6 +81,7 @@ export const useAttendance = (
                 record,
                 member,
                 status: record.status,
+                disabled: member.status === MemberStatus.ARCHIVED,
               };
             })
             .filter((item): item is AttendanceWithMember => item !== null);
@@ -114,7 +118,9 @@ export const useAttendance = (
     (memberId: string, newStatus: AttendanceStatus) => {
       setAttendanceList((prev) =>
         prev.map((item) =>
-          item.member.id === memberId ? { ...item, status: newStatus } : item,
+          item.member.id === memberId && !item.disabled
+            ? { ...item, status: newStatus }
+            : item,
         ),
       );
     },

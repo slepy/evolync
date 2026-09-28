@@ -9,6 +9,7 @@ import {
   PaymentRecordRepository,
   usePaymentCycles,
 } from "@/modules/payments";
+import { SchoolSettingsRepository } from "@/modules/school/repositories";
 import { useFocusEffect, useLocalSearchParams, useRouter } from "expo-router";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { FlatList, Platform, View } from "react-native";
@@ -49,6 +50,17 @@ export default function PaymentsScreen() {
   // Ref to store cycle IDs for focus effect
   const cycleIdsRef = useRef<string[]>([]);
 
+  // School's configured default currency (fallback for a cycle with zero records)
+  const [defaultCurrency, setDefaultCurrency] = useState("PLN");
+  useEffect(() => {
+    if (!schoolId) return;
+    SchoolSettingsRepository.findBySchoolId(schoolId)
+      .then((settings) => {
+        if (settings?.defaultCurrency) setDefaultCurrency(settings.defaultCurrency);
+      })
+      .catch(console.error);
+  }, [schoolId]);
+
   // Update ref when cycles change
   useEffect(() => {
     cycleIdsRef.current = cycles.map((c: PaymentCycle) => c.id);
@@ -73,12 +85,12 @@ export default function PaymentsScreen() {
             .filter((r) => r.status === PaymentStatusEnum.PAID)
             .reduce((sum, r) => sum + r.amount, 0),
           totalAmount: cycleRecords.reduce((sum, r) => sum + r.amount, 0),
-          currency: cycleRecords[0]?.currency || "PLN",
+          currency: cycleRecords[0]?.currency || defaultCurrency,
         };
       }
       return stats;
     },
-    [],
+    [defaultCurrency],
   );
 
   // Function to fetch and calculate stats via repository

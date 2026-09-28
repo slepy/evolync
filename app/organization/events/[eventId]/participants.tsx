@@ -15,6 +15,7 @@ import React from "react";
 import { FlatList, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Text, YStack, useTheme } from "tamagui";
+import { useRequireOrganizationOwner } from "@/modules/organization/hooks/useRequireOrganizationOwner";
 
 /**
  * Screen for managing event participants
@@ -29,6 +30,7 @@ import { Text, YStack, useTheme } from "tamagui";
  * - Offline support
  */
 export default function EventParticipantsScreen() {
+  useRequireOrganizationOwner();
   const { eventId } = useLocalSearchParams<{ eventId: string }>();
   const router = useRouter();
   const theme = useTheme();

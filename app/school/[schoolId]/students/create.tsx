@@ -15,6 +15,7 @@ import React, { useRef } from "react";
 import { KeyboardAvoidingView, Platform, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { ScrollView, YStack, Text } from "tamagui";
+import { useRequireOrganizationOwner } from "@/modules/organization/hooks/useRequireOrganizationOwner";
 
 /**
  * Screen for creating a new student (Shadow User)
@@ -27,6 +28,7 @@ import { ScrollView, YStack, Text } from "tamagui";
  * - Works without internet connection
  */
 export default function CreateStudentScreen() {
+  useRequireOrganizationOwner();
   const { schoolId } = useLocalSearchParams<{ schoolId: string }>();
   const router = useRouter();
   const formRef = useRef<StudentFormHandle>(null);

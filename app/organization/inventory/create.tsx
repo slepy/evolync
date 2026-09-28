@@ -15,6 +15,7 @@ import React, { useRef } from "react";
 import { KeyboardAvoidingView, Platform, ScrollView, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { YStack } from "tamagui";
+import { useRequireOrganizationOwner } from "@/modules/organization/hooks/useRequireOrganizationOwner";
 
 /**
  * Screen for creating a new product
@@ -29,6 +30,7 @@ import { YStack } from "tamagui";
  * - Auto-navigation on success
  */
 export default function CreateProductScreen() {
+  useRequireOrganizationOwner();
   const router = useRouter();
   const scrollViewRef = useRef<ScrollView>(null);
   const formRef = useRef<ProductFormHandle>(null);

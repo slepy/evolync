@@ -18,24 +18,33 @@ interface ProductCardProps {
   onPress: () => void;
 }
 
-/**
- * Gets the lowest price from variants
- */
-const getLowestPrice = (variants: ProductVariantResponseDto[]): string => {
-  if (variants.length === 0) return "-";
-
-  const lowest = variants.reduce(
-    (min, v) => (v.price < min.price ? v : min),
-    variants[0],
-  );
-  return formatPrice(lowest.price, lowest.currency);
-};
+interface CurrencyGroupSummary {
+  currency: string;
+  lowestPrice: number;
+  totalStock: number;
+}
 
 /**
- * Gets total stock across all variants
+ * Groups variants by currency, then computes the lowest price and total
+ * stock per currency group. A product's variants aren't guaranteed to share
+ * one currency, so this avoids blending unrelated currencies into one
+ * meaningless number.
  */
-const getTotalStock = (variants: ProductVariantResponseDto[]): number => {
-  return variants.reduce((sum, v) => sum + v.stockQuantity, 0);
+const getSummaryByCurrency = (
+  variants: ProductVariantResponseDto[],
+): CurrencyGroupSummary[] => {
+  const groups = new Map<string, ProductVariantResponseDto[]>();
+  for (const variant of variants) {
+    const list = groups.get(variant.currency) ?? [];
+    list.push(variant);
+    groups.set(variant.currency, list);
+  }
+
+  return Array.from(groups.entries()).map(([currency, group]) => ({
+    currency,
+    lowestPrice: group.reduce((min, v) => Math.min(min, v.price), group[0].price),
+    totalStock: group.reduce((sum, v) => sum + v.stockQuantity, 0),
+  }));
 };
 
 /**
@@ -75,9 +84,16 @@ export const ProductCard: React.FC<ProductCardProps> = ({
   variants,
   onPress,
 }) => {
-  const totalStock = getTotalStock(variants);
-  const stockStatus = getStockStatus(totalStock);
-  const lowestPrice = getLowestPrice(variants);
+  const summaries = getSummaryByCurrency(variants);
+  const showFromPrefix = variants.length > 1;
+
+  const priceSubtitle = summaries
+    .map((s) =>
+      showFromPrefix
+        ? `${t("from")} ${formatPrice(s.lowestPrice, s.currency)}`
+        : formatPrice(s.lowestPrice, s.currency),
+    )
+    .join(" · ");
 
   return (
     <BaseCard onPress={onPress}>
@@ -91,26 +107,28 @@ export const ProductCard: React.FC<ProductCardProps> = ({
         />
 
         {/* Content */}
-        <CardInfo
-          displayName={name}
-          subtitle={
-            variants.length > 1 ? `${t("from")} ${lowestPrice}` : lowestPrice
-          }
-        />
+        <CardInfo displayName={name} subtitle={priceSubtitle} />
 
         {/* Price and Stock Row */}
         <YStack gap="$1" alignItems="flex-end" flex={1}>
-          {/* Stock Badge */}
-          <XStack
-            backgroundColor={stockStatus.bgColor}
-            paddingHorizontal="$1.5"
-            paddingVertical={2}
-            borderRadius="$1"
-          >
-            <Text fontSize="$1" fontWeight="500" color={stockStatus.color}>
-              {stockStatus.label} ({totalStock})
-            </Text>
-          </XStack>
+          {/* One stock badge per currency group */}
+          {summaries.map((s) => {
+            const stockStatus = getStockStatus(s.totalStock);
+            return (
+              <XStack
+                key={s.currency}
+                backgroundColor={stockStatus.bgColor}
+                paddingHorizontal="$1.5"
+                paddingVertical={2}
+                borderRadius="$1"
+              >
+                <Text fontSize="$1" fontWeight="500" color={stockStatus.color}>
+                  {stockStatus.label} ({s.totalStock})
+                  {summaries.length > 1 ? ` ${s.currency}` : ""}
+                </Text>
+              </XStack>
+            );
+          })}
 
           {/* Variants Count */}
           {variants.length > 1 && (

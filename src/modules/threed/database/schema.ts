@@ -50,17 +50,4 @@ export const threedSchema = [
       { name: "deleted_at", type: "number", isOptional: true },
     ],
   }),
-  tableSchema({
-    name: "step_techniques",
-    columns: [
-      { name: "step_id", type: "string", isIndexed: true },
-      { name: "technique_id", type: "string", isIndexed: true },
-      { name: "model_slot", type: "number" }, // 0=Main, 1=Partner
-      { name: "root_position", type: "string" }, // JSON string (Vec3)
-      { name: "root_rotation", type: "string" }, // JSON string (Quat)
-      { name: "created_at", type: "number" },
-      { name: "updated_at", type: "number" },
-      { name: "deleted_at", type: "number", isOptional: true },
-    ],
-  }),
 ];

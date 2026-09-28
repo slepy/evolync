@@ -19,8 +19,13 @@ export {
 } from "./repositories";
 
 // Hooks
-export { useTrainingSessions, useAttendance } from "./hooks";
-export type { AttendanceWithMember } from "./hooks";
+export {
+  useTrainingSessions,
+  useAttendance,
+  useTodaySession,
+  useStudentAttendance,
+} from "./hooks";
+export type { AttendanceWithMember, StudentAttendanceItem } from "./hooks";
 
 // Services
 export {
@@ -33,6 +38,8 @@ export {
   upsertAttendanceRecord,
   getAttendanceForSession,
   bulkUpsertAttendance,
+  bulkSaveAttendanceList,
+  bulkUpdateAttendanceStatus,
   createSessionWithAttendance,
 } from "./services";
 

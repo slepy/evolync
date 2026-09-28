@@ -29,5 +29,5 @@ export const ORDER_STATUS_FILTER = {
   COMPLETED: "completed",
 } as const;
 
-export type OrderStatusFilter =
+export type OrderStatusFilterValue =
   (typeof ORDER_STATUS_FILTER)[keyof typeof ORDER_STATUS_FILTER];

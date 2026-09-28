@@ -1,5 +1,5 @@
 import { OrdersListScreen, useOrders } from "@/modules/orders";
-import type { OrderWithDetails } from "@/modules/orders/types/orders";
+import type { OrderWithDetails } from "@/modules/orders/types/dto";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import React from "react";
 

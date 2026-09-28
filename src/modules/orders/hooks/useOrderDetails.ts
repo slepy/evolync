@@ -5,9 +5,7 @@ import { useStore } from "@/store";
 import {
   updateOrderStatus,
   deleteOrder,
-  removeOrderItems,
-  addOrderItems,
-  updateOrderItemQuantities,
+  updateOrderItems,
 } from "../services";
 import type { CreateOrderItemDto } from "../types/dto";
 import { OrderRepository, OrderItemRepository } from "../repositories";
@@ -216,20 +214,13 @@ export const useOrderDetails = (orderId: string | undefined) => {
         setIsUpdating(true);
         setError(null);
 
-        // Remove items first
-        if (itemIdsToRemove.length > 0) {
-          await removeOrderItems(itemIdsToRemove);
-        }
-
-        // Update quantities
-        if (quantityUpdates.length > 0) {
-          await updateOrderItemQuantities(quantityUpdates);
-        }
-
-        // Then add new items
-        if (itemsToAdd.length > 0) {
-          await addOrderItems(orderId, itemsToAdd);
-        }
+        // Remove + update quantities + add, all in a single atomic batch
+        await updateOrderItems(
+          orderId,
+          itemIdsToRemove,
+          itemsToAdd,
+          quantityUpdates,
+        );
       } catch (err) {
         const message =
           err instanceof Error ? err.message : t("errorUpdateFailed");

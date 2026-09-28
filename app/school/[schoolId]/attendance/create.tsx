@@ -67,6 +67,7 @@ export default function CreateAttendanceScreen() {
           record: null,
           member,
           status: DEFAULT_ATTENDANCE_STATUS,
+          disabled: false,
         }));
 
         // Sort by display name

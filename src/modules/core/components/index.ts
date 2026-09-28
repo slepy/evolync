@@ -37,7 +37,6 @@ export { TextInput } from "./TextInput";
 export { ErrorBanner } from "./ErrorBanner";
 
 // Layout
-export { Divider } from "./Divider";
 export { LoadingScreen } from "./LoadingScreen";
 export type { LoadingScreenProps } from "./LoadingScreen";
 

@@ -79,7 +79,7 @@ export const PaymentRecordRepository = {
     cycleId: string,
     memberIds: string[],
     defaultAmount: number,
-    defaultCurrency: string = "PLN"
+    defaultCurrency: string
   ): Promise<void> {
     const recordsCollection = database.get<PaymentRecord>("payment_records");
     await database.write(async () => {

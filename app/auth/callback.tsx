@@ -1,27 +1,12 @@
 import { supabase } from "@/config/supabase";
+import { useAuth } from "@/modules/auth/hooks/useAuth";
+import { safeStorageSet } from "@/modules/auth/services/secureStorage";
 import { AppLogo } from "@/modules/core/components/AppLogo";
 import { useStore } from "@/store";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useEffect } from "react";
-import { Platform } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Spinner, Text, YStack } from "tamagui";
-
-// Safe storage helper for web compatibility
-const safeStorageSet = async (key: string, value: string): Promise<void> => {
-  if (Platform.OS === "web") {
-    try {
-      const AsyncStorage =
-        require("@react-native-async-storage/async-storage").default;
-      await AsyncStorage.setItem(key, value);
-    } catch (error) {
-      console.error("Storage set error:", error);
-    }
-  } else {
-    const SecureStore = require("expo-secure-store");
-    await SecureStore.setItemAsync(key, value);
-  }
-};
 
 // ============================================================================
 // AuthCallbackScreen Component
@@ -30,7 +15,8 @@ const safeStorageSet = async (key: string, value: string): Promise<void> => {
 export default function AuthCallbackScreen() {
   const router = useRouter();
   const params = useLocalSearchParams();
-  const { setUser, setSession, setError } = useStore();
+  const { setError } = useStore();
+  const { checkSession } = useAuth();
 
   useEffect(() => {
     const handleOAuthCallback = async () => {
@@ -66,12 +52,10 @@ export default function AuthCallbackScreen() {
         // Save session to storage
         await safeStorageSet("session", JSON.stringify(data.session));
 
-        // Update global state
-        setUser(data.session.user);
-        setSession(data.session);
-
-        // Navigate to main screen
-        router.replace("/");
+        // checkSession() picks up the just-saved session, verifies it,
+        // syncs organization/school-membership state, triggers a data sync,
+        // and navigates on — the same sequence every other login path runs.
+        await checkSession();
       } catch (error) {
         console.error("OAuth callback error:", error);
         setError({

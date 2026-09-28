@@ -15,7 +15,7 @@ import { Text, YStack, useTheme } from "tamagui";
 import {
   ORDER_STATUS_FILTER,
   ORDER_TAB,
-  type OrderStatusFilter as OrderStatusFilterType,
+  type OrderStatusFilterValue as OrderStatusFilterType,
   type OrderTabType,
 } from "../types/enums";
 import type { AggregatedProduct, OrderWithDetails } from "../types/dto";

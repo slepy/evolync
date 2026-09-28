@@ -3,7 +3,7 @@ import React from "react";
 import { ScrollView } from "react-native";
 import {
   ORDER_STATUS_FILTER,
-  type OrderStatusFilter as OrderStatusFilterType,
+  type OrderStatusFilterValue as OrderStatusFilterType,
 } from "../types/enums";
 
 const getOrderStatusLabel = (status: OrderStatusFilterType): string => {

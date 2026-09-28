@@ -6,6 +6,7 @@ import {
 import { useDirtyFlag } from "@/modules/core/hooks";
 import { LoadingScreen } from "@/modules/core/components/LoadingScreen";
 import { confirmDelete } from "@/modules/core/utils/confirmDelete";
+import { OrderItemRepository } from "@/modules/orders/repositories";
 
 import {
   ProductForm,
@@ -23,6 +24,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { KeyboardAvoidingView, Platform, ScrollView, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Button, Text, useTheme, YStack } from "tamagui";
+import { useRequireOrganizationOwner } from "@/modules/organization/hooks/useRequireOrganizationOwner";
 
 /**
  * Screen for editing an existing product
@@ -37,6 +39,7 @@ import { Button, Text, useTheme, YStack } from "tamagui";
  * - Auto-navigation on success
  */
 export default function EditProductScreen() {
+  useRequireOrganizationOwner();
   const router = useRouter();
   const { productId } = useLocalSearchParams<{ productId: string }>();
   const scrollViewRef = useRef<ScrollView>(null);
@@ -50,9 +53,22 @@ export default function EditProductScreen() {
   const { isDirty, markDirty, reset: resetDirty } = useDirtyFlag();
   const theme = useTheme();
 
-  const handleDelete = () => {
+  const handleDelete = async () => {
     if (!productId) return;
-    confirmDelete(t("delete"), t("inventoryDeleteProductConfirm"), async () => {
+
+    const variantIds = initialData?.variants.map((v) => v.id).filter(Boolean) as
+      | string[]
+      | undefined;
+    const orderCount = variantIds?.length
+      ? await OrderItemRepository.countByVariantIds(variantIds)
+      : 0;
+
+    const message =
+      orderCount > 0
+        ? t("inventoryDeleteProductConfirmWithOrders", { count: orderCount })
+        : t("inventoryDeleteProductConfirm");
+
+    confirmDelete(t("delete"), message, async () => {
       await deleteProduct(productId);
       router.back();
     });

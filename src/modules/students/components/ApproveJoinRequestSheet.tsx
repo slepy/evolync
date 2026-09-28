@@ -3,6 +3,10 @@ import SchoolMember from "@/database/models/SchoolMember";
 import Event from "@/database/models/Event";
 import PaymentCycle from "@/database/models/PaymentCycle";
 import { StudentRepository } from "../repositories";
+import {
+  formatPhoneNumber,
+  parsePhoneNumber,
+} from "@/modules/core/utils/phoneHelpers";
 import { PaymentCycleRepository } from "@/modules/payments/repositories/paymentCycleRepository";
 import { PaymentRecordRepository } from "@/modules/payments/repositories/paymentRecordRepository";
 import { EventRepository } from "@/modules/events/repositories/eventRepository";
@@ -86,16 +90,25 @@ export const ApproveJoinRequestSheet: React.FC<
   const loadData = async () => {
     setLoading(true);
     try {
-      // Load existing offline members
-      const members = await StudentRepository.findBySchoolId(schoolId);
+      // Load existing offline (shadow) members only — active/archived members
+      // are not valid link targets for a new join request
+      const members = await StudentRepository.findOfflineBySchoolId(schoolId);
       setExistingMembers(members);
 
-      // Auto-select member with matching email or phone
-      const matched = members.find(
-        (m) =>
-          (request.email && m.email === request.email) ||
-          (request.phoneNumber && m.phoneNumber === request.phoneNumber),
+      // Auto-select member with matching email or phone (normalized so casing/
+      // whitespace/formatting differences don't cause a missed match)
+      const normalizedEmail = request.email?.trim().toLowerCase();
+      const normalizedPhone = formatPhoneNumber(
+        parsePhoneNumber(request.phoneNumber),
       );
+      const matched = members.find((m) => {
+        const memberEmail = m.email?.trim().toLowerCase();
+        const memberPhone = formatPhoneNumber(parsePhoneNumber(m.phoneNumber));
+        return (
+          (normalizedEmail && memberEmail === normalizedEmail) ||
+          (normalizedPhone && memberPhone === normalizedPhone)
+        );
+      });
       if (matched) {
         setSelectedMemberId(matched.id);
         setMode("existing");

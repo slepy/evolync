@@ -23,7 +23,6 @@ import BodyPosePreset from "./models/BodyPosePreset";
 import Technique from "./models/Technique";
 import Sequence from "./models/Sequence";
 import SequenceStep from "./models/SequenceStep";
-import StepTechnique from "./models/StepTechnique";
 import TechniqueNoteDocument from "./models/TechniqueNoteDocument";
 import TechniqueNoteRow from "./models/TechniqueNoteRow";
 import Tag from "./models/Tag";
@@ -54,7 +53,6 @@ export const database = new Database({
     Technique,
     Sequence,
     SequenceStep,
-    StepTechnique,
     TechniqueNoteDocument,
     TechniqueNoteRow,
     Tag,

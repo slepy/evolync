@@ -105,17 +105,23 @@ export const TrainingSessionRepository = {
   observeTodayBySchoolId(schoolId: string) {
     const sessionsCollection =
       database.get<TrainingSession>("training_sessions");
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const tomorrow = new Date(today);
-    tomorrow.setDate(tomorrow.getDate() + 1);
+    // UTC-day boundaries, not device-local — every device agrees on which
+    // calendar day "today" is regardless of timezone offset.
+    const now = new Date();
+    const todayStart = Date.UTC(
+      now.getUTCFullYear(),
+      now.getUTCMonth(),
+      now.getUTCDate(),
+      0, 0, 0, 0
+    );
+    const tomorrowStart = todayStart + 24 * 60 * 60 * 1000;
 
     return sessionsCollection
       .query(
         Q.where("school_id", schoolId),
         Q.where("deleted_at", null),
-        Q.where("date", Q.gte(today.getTime())),
-        Q.where("date", Q.lt(tomorrow.getTime()))
+        Q.where("date", Q.gte(todayStart)),
+        Q.where("date", Q.lt(tomorrowStart))
       )
       .observe();
   },
@@ -125,7 +131,7 @@ export const TrainingSessionRepository = {
     const sessionsCollection =
       database.get<TrainingSession>("training_sessions");
     return await sessionsCollection
-      .query(Q.where("id", Q.oneOf(ids)))
+      .query(Q.where("id", Q.oneOf(ids)), Q.where("deleted_at", null))
       .fetch();
   },
 };

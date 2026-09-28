@@ -38,6 +38,7 @@ export const AttendanceListItem: React.FC<AttendanceListItemProps> = ({
 
   // Cycle through statuses on tap
   const handlePress = () => {
+    if (item.disabled) return;
     const currentIndex = STATUS_CYCLE.indexOf(item.status);
     const nextIndex = (currentIndex + 1) % STATUS_CYCLE.length;
     const nextStatus = STATUS_CYCLE[nextIndex];
@@ -45,7 +46,7 @@ export const AttendanceListItem: React.FC<AttendanceListItemProps> = ({
   };
 
   return (
-    <BaseCard onPress={handlePress}>
+    <BaseCard onPress={handlePress} opacity={item.disabled ? 0.5 : 1}>
       <XStack gap="$3" alignItems="center">
         <Thumbnail rankColor={rank?.color} imageUrl={item.member.avatarUrl} />
 

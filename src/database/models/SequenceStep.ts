@@ -1,7 +1,5 @@
-import type { Query } from "@nozbe/watermelondb";
 import { Model } from "@nozbe/watermelondb";
 import {
-  children,
   date,
   field,
   readonly,
@@ -9,16 +7,11 @@ import {
 } from "@nozbe/watermelondb/decorators";
 import type { StepData } from "@/modules/threed/types";
 import type Sequence from "./Sequence";
-import type StepTechnique from "./StepTechnique";
 
 export default class SequenceStep extends Model {
   static table = "sequence_steps";
   static associations = {
     sequences: { type: "belongs_to" as const, key: "sequence_id" },
-    step_techniques: {
-      type: "has_many" as const,
-      foreignKey: "step_id",
-    },
   };
 
   @field("sequence_id") sequenceId!: string;
@@ -27,7 +20,6 @@ export default class SequenceStep extends Model {
   @field("data") data?: string;
 
   @relation("sequences", "sequence_id") sequence!: Sequence;
-  @children("step_techniques") stepTechniques!: Query<StepTechnique>;
 
   @readonly @date("created_at") createdAt!: Date;
   @readonly @date("updated_at") updatedAt!: Date;

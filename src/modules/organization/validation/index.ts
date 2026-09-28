@@ -1,1 +1,1 @@
-export * from "./gradingSchema";
+export {};

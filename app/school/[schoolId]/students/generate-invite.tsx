@@ -11,8 +11,10 @@ import React, { useEffect, useState } from "react";
 import { View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { ScrollView, YStack, Text, XStack, Label, RadioGroup } from "tamagui";
+import { useRequireOrganizationOwner } from "@/modules/organization/hooks/useRequireOrganizationOwner";
 
 export default function GenerateInviteScreen() {
+  useRequireOrganizationOwner();
   const { schoolId } = useLocalSearchParams<{ schoolId: string }>();
   const router = useRouter();
   const { createInvite, isLoading, error } = useCreateInvite();

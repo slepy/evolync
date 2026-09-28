@@ -1,9 +1,9 @@
 import { useCallback, useEffect, useState } from "react";
-import {
+import { database } from "@/database";
+import EventParticipant, {
   EVENT_PARTICIPANT_STATUS,
   type EventParticipantStatus,
 } from "@/database/models/EventParticipant";
-import { EventParticipantRepository } from "../repositories";
 import { useStore } from "@/store";
 import { sync } from "@/database/sync";
 import type { StudentEvent } from "./useStudentEvents";
@@ -115,16 +115,27 @@ export const useStudentEventStatuses = (
         (event) => event.localStatus !== event.participantStatus,
       );
 
-      // Update each participant status in database
-      const updatePromises = changedEvents.map((event) =>
-        EventParticipantRepository.updateStatus(
-          event.participantId,
-          event.localStatus,
-          user.id,
-        ),
+      // Update all changed participants atomically — one batch, commit or nothing
+      const collection = database.get<EventParticipant>("event_participants");
+      const participants = await Promise.all(
+        changedEvents.map((event) => collection.find(event.participantId)),
+      );
+      const statusByParticipantId = new Map(
+        changedEvents.map((event) => [event.participantId, event.localStatus]),
       );
 
-      await Promise.all(updatePromises);
+      const operations = participants.map((participant) =>
+        participant.prepareUpdate((r) => {
+          r.status = statusByParticipantId.get(r.id)!;
+          r.statusChangedBy = user.id;
+        }),
+      );
+
+      await database.write(async () => {
+        if (operations.length > 0) {
+          await database.batch(operations);
+        }
+      });
 
       // Update local state so participantStatus matches localStatus (clear pending changes)
       setLocalEvents((prev) =>

@@ -1,8 +1,14 @@
 import { sync } from "@/database/sync";
+import { StudentRepository } from "@/modules/students/repositories";
 import { SchoolInviteRepository, SchoolRepository } from "../repositories";
 import { SchoolJoinRequestRepository } from "../repositories/schoolJoinRequestRepository";
 
-// Import supabase using require to avoid Metro bundler issues
+// Import supabase using require to avoid Metro bundler issues.
+// This one remaining direct call is a deliberate, narrow exception: an invite
+// code is a public, short-lived lookup key with no privacy stakes, and the
+// joining student's device has no local copy of a school they don't belong to
+// yet (sync is scoped to the user's own memberships) — a WatermelonDB-only
+// lookup would break joining by code across devices entirely.
 const { supabase } = require("@/config/supabase");
 
 /**
@@ -75,40 +81,19 @@ export const joinSchool = async (
     throw new Error("joinRequestPending");
   }
 
-  // Also check Supabase in case the record isn't synced locally yet
-  try {
-    const { data } = await supabase
-      .from("school_join_requests")
-      .select("id")
-      .eq("user_id", userId)
-      .eq("school_id", invite.schoolId)
-      .is("deleted_at", null)
-      .maybeSingle();
-
-    if (data) {
-      throw new Error("joinRequestPending");
-    }
-  } catch (err: any) {
-    if (err?.message === "joinRequestPending") throw err;
-    // Network error: ignore and continue (offline-first)
-  }
-
   // ── 3. Guard: already an active member ──────────────────────────────────────
-  try {
-    const { data } = await supabase
-      .from("school_members")
-      .select("id, status")
-      .eq("user_id", userId)
-      .eq("school_id", invite.schoolId)
-      .is("deleted_at", null)
-      .maybeSingle();
+  // Both guards now check local WatermelonDB only (per CLAUDE.md's direct-Supabase
+  // allow-list). If this device has never synced a record for this user/school
+  // yet, the check fails open (no local record found) — Supabase's own unique
+  // constraints on school_join_requests/school_members are the backstop, exactly
+  // as already documented for the offline/never-synced case.
+  const existingMember = await StudentRepository.findByUserIdAndSchoolId(
+    userId,
+    invite.schoolId,
+  );
 
-    if (data?.status === "active") {
-      throw new Error("alreadySchoolMember");
-    }
-  } catch (err: any) {
-    if (err?.message === "alreadySchoolMember") throw err;
-    // Network error: ignore and continue
+  if (existingMember?.status === "active") {
+    throw new Error("alreadySchoolMember");
   }
 
   // ── 4. Create join request locally ──────────────────────────────────────────

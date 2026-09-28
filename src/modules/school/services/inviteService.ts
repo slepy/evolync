@@ -1,6 +1,31 @@
 import { sync } from "@/database/sync";
 import { useStore } from "@/store";
+import * as Crypto from "expo-crypto";
 import { SchoolInviteRepository } from "../repositories/schoolInviteRepository";
+
+const CODE_ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+const CODE_LENGTH = 6;
+const MAX_GENERATION_ATTEMPTS = 5;
+
+const generateInviteCode = (): string => {
+  const bytes = Crypto.getRandomBytes(CODE_LENGTH);
+  let code = "";
+  for (let i = 0; i < CODE_LENGTH; i++) {
+    code += CODE_ALPHABET[bytes[i] % CODE_ALPHABET.length];
+  }
+  return code;
+};
+
+const generateUniqueInviteCode = async (): Promise<string> => {
+  for (let attempt = 0; attempt < MAX_GENERATION_ATTEMPTS; attempt++) {
+    const code = generateInviteCode();
+    const existing = await SchoolInviteRepository.findByCode(code);
+    if (!existing) {
+      return code;
+    }
+  }
+  throw new Error("inviteCodeGenerationFailed");
+};
 
 /**
  * Creates a new school invite in the local database
@@ -18,7 +43,7 @@ export const createInvite = async (
   if (!user?.id) {
     throw new Error("User must be logged in to create an invite");
   }
-  const code = Math.random().toString(36).substring(2, 8).toUpperCase();
+  const code = await generateUniqueInviteCode();
   await SchoolInviteRepository.invalidateActiveInvites(schoolId);
   const invite = await SchoolInviteRepository.create({
     schoolId,

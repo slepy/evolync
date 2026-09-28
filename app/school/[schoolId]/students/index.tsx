@@ -12,10 +12,12 @@ import React, { useEffect, useState, useCallback } from "react";
 import { Platform, ScrollView, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Button, Text, XStack, YStack } from "tamagui";
+import { useRequireOrganizationOwner } from "@/modules/organization/hooks/useRequireOrganizationOwner";
 
 type Tab = "students" | "requests";
 
 export default function StudentsListScreen() {
+  useRequireOrganizationOwner();
   const { schoolId } = useLocalSearchParams<{ schoolId: string }>();
   const [students, setStudents] = useState<SchoolMember[]>([]);
   const [requestsCount, setRequestsCount] = useState(0);

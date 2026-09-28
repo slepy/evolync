@@ -106,6 +106,17 @@ export const OrderRepository = {
       .observe();
   },
 
+  observeCountBySchoolIds(schoolIds: string[], status: string) {
+    const ordersCollection = database.get<Order>("orders");
+    return ordersCollection
+      .query(
+        Q.where("school_id", Q.oneOf(schoolIds)),
+        Q.where("status", status),
+        Q.where("deleted_at", null)
+      )
+      .observeCount();
+  },
+
   async findBySchoolIds(schoolIds: string[]): Promise<Order[]> {
     const ordersCollection = database.get<Order>("orders");
     return await ordersCollection

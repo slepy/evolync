@@ -29,29 +29,35 @@ export const useStudentAttendance = (studentId: string | undefined) => {
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Track if we've done initial load to prevent re-loading on every render
-  const hasLoaded = useRef(false);
-
-  // Track local changes: recordId -> newStatus
+  // Track local changes: recordId -> newStatus (survives across live updates)
   const localChangesRef = useRef<Map<string, AttendanceStatus>>(new Map());
 
-  // Load attendance data via repositories (one-time load, not continuous observation)
+  // Observe attendance data reactively — a change made elsewhere (e.g. from an
+  // active training-session screen) is reflected here live. Pending local
+  // edits (localChangesRef) are re-applied on top of every fresh emission.
   useEffect(() => {
     if (!studentId) {
       setAttendance([]);
+      localChangesRef.current.clear();
       setIsLoading(false);
       return;
     }
 
-    // Only load once per studentId
-    if (hasLoaded.current) return;
-    hasLoaded.current = true;
+    localChangesRef.current.clear();
+    setIsLoading(true);
 
-    const loadData = async () => {
+    const subscription = AttendanceRecordRepository.observeByMemberId(
+      studentId,
+    ).subscribe(async (records: AttendanceRecord[]) => {
       try {
-        const records: AttendanceRecord[] = await AttendanceRecordRepository.findByMemberId(studentId);
+        // A record removed/renamed remotely can no longer carry a pending edit
+        const recordIds = new Set(records.map((r) => r.id));
+        for (const recordId of localChangesRef.current.keys()) {
+          if (!recordIds.has(recordId)) {
+            localChangesRef.current.delete(recordId);
+          }
+        }
 
-        // Fetch session info for each record via repository
         const sessionIds = [...new Set(records.map((r: AttendanceRecord) => r.trainingSessionId))];
         const sessions = await TrainingSessionRepository.findByIds(sessionIds);
         const sessionMap = new Map(sessions.map((s) => [s.id, s]));
@@ -79,14 +85,9 @@ export const useStudentAttendance = (studentId: string | undefined) => {
       } finally {
         setIsLoading(false);
       }
-    };
+    });
 
-    loadData();
-  }, [studentId]);
-
-  // Reset hasLoaded when studentId changes
-  useEffect(() => {
-    hasLoaded.current = false;
+    return () => subscription.unsubscribe();
   }, [studentId]);
 
   // Calculate statistics based on local status (reflects pending changes)

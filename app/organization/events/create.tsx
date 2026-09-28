@@ -17,6 +17,7 @@ import React, { useRef, useState, useEffect } from "react";
 import { KeyboardAvoidingView, Platform, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { ScrollView, YStack } from "tamagui";
+import { useRequireOrganizationOwner } from "@/modules/organization/hooks/useRequireOrganizationOwner";
 
 /**
  * Screen for creating a new event
@@ -30,6 +31,7 @@ import { ScrollView, YStack } from "tamagui";
  * - Auto-navigation on success
  */
 export default function CreateEventScreen() {
+  useRequireOrganizationOwner();
   const router = useRouter();
   const formRef = useRef<EventFormHandle>(null);
   const { organization } = useStore();

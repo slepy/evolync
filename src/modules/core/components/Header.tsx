@@ -1,10 +1,10 @@
-import { useAuth } from "@/modules/auth/hooks/useAuth";
 import { AppLogo } from "@/modules/core/components/AppLogo";
 import {
   OptionsSheet,
   type OptionItem,
 } from "@/modules/core/components/OptionsSheet";
 import { SyncStatusBar } from "@/modules/core/components/SyncStatusBar";
+import { signOut } from "@/modules/core/utils/signOutBridge";
 import { ArrowLeft, LogOut, Settings, User } from "lucide-react-native";
 import { useRouter } from "expo-router";
 import React, { useMemo, useState } from "react";
@@ -56,7 +56,6 @@ export const Header: React.FC<HeaderProps> = ({
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const theme = useTheme();
   const router = useRouter();
-  const { signOut } = useAuth();
 
   // ==========================================================================
   // Menu Options Configuration
@@ -95,7 +94,7 @@ export const Header: React.FC<HeaderProps> = ({
         },
       },
     ],
-    [signOut],
+    [],
   );
 
   // ==========================================================================

@@ -8,6 +8,17 @@ import {
 export default schemaMigrations({
   migrations: [
     {
+      toVersion: 18,
+      steps: [
+        addColumns({
+          table: "school_join_requests",
+          columns: [
+            { name: "status", type: "string", isOptional: true },
+          ],
+        }),
+      ],
+    },
+    {
       toVersion: 3,
       steps: [
         createTable({
@@ -333,6 +344,43 @@ export default schemaMigrations({
     {
       toVersion: 17,
       steps: [
+        createTable({
+          name: "product_variants",
+          columns: [
+            { name: "product_id", type: "string", isIndexed: true },
+            { name: "name", type: "string" },
+            { name: "price", type: "number" },
+            { name: "currency", type: "string" },
+            { name: "stock_quantity", type: "number" },
+            { name: "created_at", type: "number" },
+            { name: "updated_at", type: "number" },
+            { name: "deleted_at", type: "number", isOptional: true },
+          ],
+        }),
+        createTable({
+          name: "orders",
+          columns: [
+            { name: "school_id", type: "string", isIndexed: true },
+            { name: "school_member_id", type: "string", isIndexed: true },
+            { name: "status", type: "string" },
+            { name: "created_at", type: "number" },
+            { name: "updated_at", type: "number" },
+            { name: "deleted_at", type: "number", isOptional: true },
+          ],
+        }),
+        createTable({
+          name: "order_items",
+          columns: [
+            { name: "order_id", type: "string", isIndexed: true },
+            { name: "product_variant_id", type: "string", isIndexed: true },
+            { name: "quantity", type: "number" },
+            { name: "unit_price", type: "number" },
+            { name: "currency", type: "string" },
+            { name: "created_at", type: "number" },
+            { name: "updated_at", type: "number" },
+            { name: "deleted_at", type: "number", isOptional: true },
+          ],
+        }),
         unsafeExecuteSql("DELETE FROM taggables;"),
       ],
     },

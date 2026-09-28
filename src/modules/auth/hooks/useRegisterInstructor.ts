@@ -1,25 +1,10 @@
 import { useRouter } from "expo-router";
-import * as SecureStore from "expo-secure-store";
-import { Platform } from "react-native";
 import { useState } from "react";
 import { useStore } from "@/store";
 import { supabase } from "@/config/supabase";
 import { registerInstructor } from "../services/registerInstructor";
+import { safeStorageSet } from "../services/secureStorage";
 import type { RegisterInstructorRequest } from "../types/registerDto";
-
-const safeStorageSet = async (key: string, value: string): Promise<void> => {
-  if (Platform.OS === "web") {
-    try {
-      const AsyncStorage =
-        require("@react-native-async-storage/async-storage").default;
-      await AsyncStorage.setItem(key, value);
-    } catch (storageError) {
-      console.error("Storage set error:", storageError);
-    }
-  } else {
-    await SecureStore.setItemAsync(key, value);
-  }
-};
 
 const waitForAuthContext = async (timeoutMs = 3000): Promise<boolean> => {
   const startedAt = Date.now();

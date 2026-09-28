@@ -22,7 +22,6 @@ export {
   TechniqueRepository,
   SequenceRepository,
   SequenceStepRepository,
-  StepTechniqueRepository,
 } from "./repositories";
 
 // Hooks
@@ -46,7 +45,6 @@ export {
   deleteStep,
   saveTechnique,
   updateTechnique,
-  deleteTechnique,
 } from "./services";
 
 // Types (V1 kept for backward compat, V2 for new FK system)

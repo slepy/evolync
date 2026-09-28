@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import PaymentCycle from "@/database/models/PaymentCycle";
 import { useStore } from "@/store";
-import { createPaymentCycle, deletePaymentCycle } from "../services";
+import { createPaymentCycle } from "../services";
 import type { CreatePaymentCycleDto } from "../types";
 import { PaymentCycleRepository } from "../repositories";
 
@@ -66,19 +66,6 @@ export const usePaymentCycles = (schoolId: string | undefined) => {
     [schoolId]
   );
 
-  // Delete a cycle
-  const handleDeleteCycle = useCallback(async (cycleId: string) => {
-    try {
-      setError(null);
-      await deletePaymentCycle(cycleId);
-    } catch (err) {
-      const message =
-        err instanceof Error ? err.message : t("errorDeleteFailed");
-      setError(message);
-      throw err;
-    }
-  }, []);
-
   // Manual refresh - triggers global sync
   const refresh = useCallback(async () => {
     try {
@@ -99,7 +86,6 @@ export const usePaymentCycles = (schoolId: string | undefined) => {
     isLoading,
     error,
     createCycle: handleCreateCycle,
-    deleteCycle: handleDeleteCycle,
     refresh,
   };
 };

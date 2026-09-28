@@ -5,7 +5,6 @@ import {
 import {
   CalendarCheck,
   CalendarPlus,
-  MessageSquare,
   UserPlus,
 } from "lucide-react-native";
 import React, { useMemo } from "react";
@@ -16,8 +15,6 @@ import { Platform } from "react-native";
 // ============================================================================
 
 interface DashboardFABProps {
-  /** Callback when "New Announcement" is pressed */
-  onNewAnnouncement: () => void;
   /** Callback when "Add Student" is pressed */
   onAddStudent: () => void;
   /** Callback when "Mark Attendance" is pressed (new session) */
@@ -42,13 +39,11 @@ interface DashboardFABProps {
  * - Follows Material Design FAB patterns
  *
  * Quick actions include:
- * - New Announcement
  * - Add Student
  * - New Order
  * - Mark Attendance
  */
 export const DashboardFAB: React.FC<DashboardFABProps> = ({
-  onNewAnnouncement,
   onAddStudent,
   onMarkAttendance,
   onEditAttendance,
@@ -80,22 +75,8 @@ export const DashboardFAB: React.FC<DashboardFABProps> = ({
           ? (onEditAttendance ?? onMarkAttendance)
           : onMarkAttendance,
       },
-      {
-        id: "announcement",
-        label: t("dashboardNewAnnouncement"),
-        icon: MessageSquare,
-        iconColor: "$pink11",
-        iconBackground: "$pink3",
-        onPress: onNewAnnouncement,
-      },
     ],
-    [
-      onNewAnnouncement,
-      onAddStudent,
-      onMarkAttendance,
-      onEditAttendance,
-      hasTodaySession,
-    ],
+    [onAddStudent, onMarkAttendance, onEditAttendance, hasTodaySession],
   );
 
   // ==========================================================================
