@@ -1,8 +1,5 @@
 {
-  "lastTask": {
-    "source": "skill",
-    "ref": "om-setup-agent-pipeline"
-  },
+  "lastTask": null,
   "recentSources": [
     {
       "source": "skill",
