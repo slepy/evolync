@@ -248,7 +248,7 @@ export default function OrderDetailsScreen() {
   const rank = useRankById(orderDetails?.member?.currentRankId);
 
   if (isLoading || !cartInitialized) {
-    return <LoadingScreen showLogo={false} spinnerColor="$blue11" />;
+    return <LoadingScreen />;
   }
 
   if (!orderDetails) {

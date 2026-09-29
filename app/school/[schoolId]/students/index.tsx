@@ -191,33 +191,35 @@ export default function StudentsListScreen() {
         paddingTop="$2"
       >
         {activeTab === "students" ? (
-          <ScrollView
-            contentContainerStyle={{ paddingBottom: 20 }}
-            style={{ flex: 1 }}
-          >
-            {loading ? (
-              <LoadingScreen showLogo={false} spinnerColor="$purple10" />
-            ) : students.length === 0 ? (
-              <YStack gap="$2" alignItems="center" marginTop="$10">
-                <Text color="$inkBlackLight" textAlign="center">
-                  {t("emptyNoStudents")}
-                </Text>
-              </YStack>
-            ) : (
-              students.map((item) => (
-                <StudentCard
-                  key={item.id}
-                  displayName={item.displayName ?? ""}
-                  email={item.email}
-                  status={item.status}
-                  userId={item.userId}
-                  rankId={item.currentRankId}
-                  avatarUrl={item.avatarUrl}
-                  onPress={() => handleStudentPress(item.id)}
-                />
-              ))
-            )}
-          </ScrollView>
+          loading ? (
+            <LoadingScreen />
+          ) : (
+            <ScrollView
+              contentContainerStyle={{ paddingBottom: 20 }}
+              style={{ flex: 1 }}
+            >
+              {students.length === 0 ? (
+                <YStack gap="$2" alignItems="center" marginTop="$10">
+                  <Text color="$inkBlackLight" textAlign="center">
+                    {t("emptyNoStudents")}
+                  </Text>
+                </YStack>
+              ) : (
+                students.map((item) => (
+                  <StudentCard
+                    key={item.id}
+                    displayName={item.displayName ?? ""}
+                    email={item.email}
+                    status={item.status}
+                    userId={item.userId}
+                    rankId={item.currentRankId}
+                    avatarUrl={item.avatarUrl}
+                    onPress={() => handleStudentPress(item.id)}
+                  />
+                ))
+              )}
+            </ScrollView>
+          )
         ) : (
           <JoinRequestsTab schoolId={schoolId} />
         )}

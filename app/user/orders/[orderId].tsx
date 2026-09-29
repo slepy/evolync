@@ -216,7 +216,7 @@ export default function UserOrderDetailsScreen() {
   };
 
   if (isLoading || (isEditable && !cartInitialized)) {
-    return <LoadingScreen showLogo={false} spinnerColor="$blue11" />;
+    return <LoadingScreen />;
   }
 
   if (!orderDetails) {

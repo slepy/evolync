@@ -118,7 +118,7 @@ export default function PaymentsScreen() {
   };
 
   if (isLoading || isStatsLoading) {
-    return <LoadingScreen showLogo={false} spinnerColor="$green10" />;
+    return <LoadingScreen />;
   }
 
   return (

@@ -49,7 +49,7 @@ export default function EditStudentScreen() {
   }, [studentId]);
 
   if (!student) {
-    return <LoadingScreen showLogo={false} spinnerColor="$purple10" />;
+    return <LoadingScreen />;
   }
 
   const onSubmit = async (data: StudentFormValues) => {

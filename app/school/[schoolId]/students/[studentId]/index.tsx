@@ -350,7 +350,7 @@ export default function StudentDetailsScreen() {
   );
 
   if (!student) {
-    return <LoadingScreen showLogo={false} spinnerColor="$purple10" />;
+    return <LoadingScreen />;
   }
 
   const displayName = student.displayName || t("emptyNoName");
