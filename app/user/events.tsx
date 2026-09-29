@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Alert, View } from "react-native";
 import { useRouter } from "expo-router";
 import { YStack, Text, ScrollView, XStack, Button, useTheme } from "tamagui";
@@ -9,6 +9,7 @@ import {
   HeaderTitle,
   SubmitComponent,
 } from "@/modules/core/components";
+import { useDirtyFlag } from "@/modules/core/hooks";
 import { useStore } from "@/store";
 import { StudentEventCard } from "@/modules/students/components";
 import {
@@ -32,8 +33,17 @@ export default function UserEventsScreen() {
     includeCancelled: true,
   });
 
-  const { localEvents, toggleStatus, saveAll, hasChanges, isSaving } =
-    useStudentEventStatuses(allEvents, { isInstructor: false });
+  const {
+    localEvents,
+    toggleStatus,
+    saveAll,
+    hasChanges: hasChangesRaw,
+    isSaving,
+  } = useStudentEventStatuses(allEvents, { isInstructor: false });
+  const { isDirty: hasChanges, markDirty, reset: resetDirty } = useDirtyFlag();
+  useEffect(() => {
+    if (hasChangesRaw) markDirty();
+  }, [hasChangesRaw, markDirty]);
 
   const today = new Date();
   today.setHours(0, 0, 0, 0);
@@ -48,6 +58,7 @@ export default function UserEventsScreen() {
   const handleSave = async () => {
     try {
       await saveAll();
+      resetDirty();
     } catch (error) {
       console.error("[UserEvents] Save failed:", error);
       Alert.alert(t("error"), t("errorSaveFailed"));

@@ -13,3 +13,5 @@ export { LoginForm } from "./LoginForm";
 export { RegisterInstructorForm } from "./RegisterInstructorForm";
 export { RegisterForm } from "./RegisterForm";
 export { ProfileForm, type ProfileFormHandle } from "./ProfileForm";
+export { ForgotPasswordForm } from "./ForgotPasswordForm";
+export { ResetPasswordForm } from "./ResetPasswordForm";

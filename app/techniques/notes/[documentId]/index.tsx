@@ -19,7 +19,7 @@ import { confirmDelete } from "@/modules/core/utils/confirmDelete";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { Trash2 } from "lucide-react-native";
 import React, { useEffect, useState } from "react";
-import { View } from "react-native";
+import { KeyboardAvoidingView, Platform, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Button, useTheme } from "tamagui";
 import type TechniqueNoteDocument from "@/database/models/TechniqueNoteDocument";
@@ -142,13 +142,18 @@ export default function NoteDocumentScreen() {
         }
       />
 
-      <NoteDocumentForm
-        documentId={documentId}
-        initialTitle={document?.title ?? ""}
-        initialRows={initialRows}
-        onSave={handleSave}
-        isSaving={isSaving}
-      />
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        style={{ flex: 1 }}
+      >
+        <NoteDocumentForm
+          documentId={documentId}
+          initialTitle={document?.title ?? ""}
+          initialRows={initialRows}
+          onSave={handleSave}
+          isSaving={isSaving}
+        />
+      </KeyboardAvoidingView>
     </View>
   );
 }

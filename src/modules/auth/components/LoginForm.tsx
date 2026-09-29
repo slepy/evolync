@@ -1,4 +1,5 @@
 import { SubmitButton } from "@/modules/core/components";
+import { useRouter } from "expo-router";
 import { Eye, EyeOff } from "lucide-react-native";
 import React, { useState } from "react";
 import { Pressable, StyleSheet, TextInput } from "react-native";
@@ -47,6 +48,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({
   isLoading,
   errors,
 }) => {
+  const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -150,8 +152,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({
           backgroundColor: "rgba(245, 158, 11, 0.15)",
         }}
         onPress={() => {
-          // TODO: Navigate to forgot password screen
-          console.log("Navigate to forgot password");
+          router.push("/auth/forgot-password" as any);
         }}
       >
         {t("forgotPassword")}

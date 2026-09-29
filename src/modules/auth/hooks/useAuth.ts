@@ -53,6 +53,22 @@ const mapSupabaseError = (error: SupabaseAuthError | Error): AuthError => {
     };
   }
 
+  if (message.includes('password') && (message.includes('weak') || message.includes('should be at least'))) {
+    return {
+      code: 'unknown',
+      message: t('errorWeakPassword'),
+      recoverable: true,
+    };
+  }
+
+  if (message.includes('same') && message.includes('password')) {
+    return {
+      code: 'unknown',
+      message: t('errorSamePassword'),
+      recoverable: true,
+    };
+  }
+
   return {
     code: 'unknown',
     message: t('errorUnknownMessage'),
@@ -248,6 +264,82 @@ export const useAuth = () => {
       setLoading(false);
     }
   }, [router, setUser, setSession, setLoading, setError, clearError]);
+
+  // ==========================================================================
+  // Request Password Reset Email
+  // ==========================================================================
+
+  const sendPasswordResetEmail = useCallback(async (email: string): Promise<boolean> => {
+    try {
+      setLoading(true);
+      clearError();
+
+      const isConnected = await checkNetworkConnection();
+      if (!isConnected) {
+        setError({
+          code: 'network_error',
+          message: t('errorNoInternetMessage'),
+          recoverable: true,
+        });
+        return false;
+      }
+
+      const { error: resetError } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: 'evolync://auth/reset-password',
+      });
+
+      if (resetError) {
+        setError(mapSupabaseError(resetError));
+        return false;
+      }
+
+      return true;
+    } catch (error) {
+      console.error('sendPasswordResetEmail error:', error);
+      setError(mapSupabaseError(error as Error));
+      return false;
+    } finally {
+      setLoading(false);
+    }
+  }, [setLoading, setError, clearError]);
+
+  // ==========================================================================
+  // Set New Password (from recovery link)
+  // ==========================================================================
+
+  const updatePassword = useCallback(async (newPassword: string): Promise<boolean> => {
+    try {
+      setLoading(true);
+      clearError();
+
+      const isConnected = await checkNetworkConnection();
+      if (!isConnected) {
+        setError({
+          code: 'network_error',
+          message: t('errorNoInternetMessage'),
+          recoverable: true,
+        });
+        return false;
+      }
+
+      const { error: updateError } = await supabase.auth.updateUser({
+        password: newPassword,
+      });
+
+      if (updateError) {
+        setError(mapSupabaseError(updateError));
+        return false;
+      }
+
+      return true;
+    } catch (error) {
+      console.error('updatePassword error:', error);
+      setError(mapSupabaseError(error as Error));
+      return false;
+    } finally {
+      setLoading(false);
+    }
+  }, [setLoading, setError, clearError]);
 
   // ==========================================================================
   // Sign In with Google OAuth
@@ -493,5 +585,7 @@ export const useAuth = () => {
     signOut,
     checkSession,
     clearError,
+    sendPasswordResetEmail,
+    updatePassword,
   };
 };

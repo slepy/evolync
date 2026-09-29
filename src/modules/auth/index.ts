@@ -24,3 +24,11 @@ export {
   profileSchema,
   type ProfileFormValues,
 } from "./validation/profileSchema";
+export {
+  forgotPasswordSchema,
+  type ForgotPasswordFormValues,
+} from "./validation/forgotPasswordSchema";
+export {
+  resetPasswordSchema,
+  type ResetPasswordFormValues,
+} from "./validation/resetPasswordSchema";

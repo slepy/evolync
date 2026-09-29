@@ -4,3 +4,18 @@
 [functions.sync]
 # Disable built-in JWT verification - we handle auth manually in the function
 verify_jwt = false
+
+[auth]
+# Deep link the app already listens on for OAuth (evolync://auth/callback)
+# plus the new password-recovery screen (evolync://auth/reset-password).
+# NOTE: `supabase config push` replaces the *entire* hosted [auth] config with
+# what's declared here, so any other auth setting (site_url, SMTP, MFA, etc.)
+# not also declared in this file would fall back to CLI defaults. Do not run
+# `supabase config push` blindly — either mirror the full hosted config here
+# first, or add this redirect URL manually via Dashboard → Authentication →
+# URL Configuration instead.
+additional_redirect_urls = ["evolync://auth/callback", "evolync://auth/reset-password"]
+
+[auth.email.template.recovery]
+subject = "Resetowanie hasła — Evolync"
+content_path = "./supabase/email-templates/reset-password.html"

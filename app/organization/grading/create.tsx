@@ -11,6 +11,7 @@ import { ColorPickerSheet } from "@/modules/grading/components";
 import { useRequireOrganizationOwner } from "@/modules/organization/hooks/useRequireOrganizationOwner";
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
+import { KeyboardAvoidingView, Platform } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Button, Input, Text, YStack } from "tamagui";
 
@@ -69,56 +70,61 @@ export default function CreateGradingRankRoute() {
         centerContent={<HeaderTitle text={t("gradingAddRank")} />}
       />
 
-      <YStack flex={1} padding="$6" gap="$4">
-        <YStack gap="$2">
-          <Text fontSize="$3" color="$softGrayDark">
-            {t("gradingRankNamePlaceholder")}
-          </Text>
-          <Input
-            value={name}
-            onChangeText={handleNameChange}
-            placeholder={t("gradingRankNamePlaceholder")}
-            autoFocus
-          />
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        style={{ flex: 1 }}
+      >
+        <YStack flex={1} padding="$6" gap="$4">
+          <YStack gap="$2">
+            <Text fontSize="$3" color="$softGrayDark">
+              {t("gradingRankNamePlaceholder")}
+            </Text>
+            <Input
+              value={name}
+              onChangeText={handleNameChange}
+              placeholder={t("gradingRankNamePlaceholder")}
+              autoFocus
+            />
+          </YStack>
+
+          <YStack gap="$2">
+            <Text fontSize="$3" color="$softGrayDark">
+              {t("gradingPickColor")}
+            </Text>
+            <Button
+              height={44}
+              borderRadius="$4"
+              borderWidth={1}
+              borderColor="$softGrayLight"
+              backgroundColor={color || "$softGrayLight"}
+              pressStyle={{ scale: 0.98 }}
+              onPress={() => setColorPickerOpen(true)}
+            />
+          </YStack>
+
+          {errorText && (
+            <Text fontSize="$3" color="$imperialRedDark">
+              {errorText}
+            </Text>
+          )}
         </YStack>
 
-        <YStack gap="$2">
-          <Text fontSize="$3" color="$softGrayDark">
-            {t("gradingPickColor")}
-          </Text>
-          <Button
-            height={44}
-            borderRadius="$4"
-            borderWidth={1}
-            borderColor="$softGrayLight"
-            backgroundColor={color || "$softGrayLight"}
-            pressStyle={{ scale: 0.98 }}
-            onPress={() => setColorPickerOpen(true)}
-          />
-        </YStack>
-
-        {errorText && (
-          <Text fontSize="$3" color="$imperialRedDark">
-            {errorText}
-          </Text>
-        )}
-      </YStack>
-
-      <ColorPickerSheet
-        open={colorPickerOpen}
-        onOpenChange={setColorPickerOpen}
-        currentColor={color}
-        onSelectColor={handleSelectColor}
-      />
-
-      {isDirty && (
-        <SubmitComponent
-          onPress={handleSave}
-          isLoading={isLoading}
-          disabled={isLoading}
-          title={t("save")}
+        <ColorPickerSheet
+          open={colorPickerOpen}
+          onOpenChange={setColorPickerOpen}
+          currentColor={color}
+          onSelectColor={handleSelectColor}
         />
-      )}
+
+        {isDirty && (
+          <SubmitComponent
+            onPress={handleSave}
+            isLoading={isLoading}
+            disabled={isLoading}
+            title={t("save")}
+          />
+        )}
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 }

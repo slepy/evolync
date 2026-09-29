@@ -12,6 +12,7 @@ import {
   SubmitComponent,
 } from "@/modules/core/components";
 import { LoadingScreen } from "@/modules/core/components/LoadingScreen";
+import { useDirtyFlag } from "@/modules/core/hooks";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { Users } from "lucide-react-native";
 import React, { useEffect, useState } from "react";
@@ -41,6 +42,7 @@ export default function AttendanceDetailScreen() {
   const insets = useSafeAreaInsets();
 
   const [session, setSession] = useState<TrainingSession | null>(null);
+  const { isDirty, markDirty, reset: resetDirty } = useDirtyFlag();
 
   const {
     attendanceList,
@@ -74,12 +76,14 @@ export default function AttendanceDetailScreen() {
     memberId: string,
     newStatus: AttendanceStatus,
   ) => {
+    markDirty();
     toggleStatus(memberId, newStatus);
   };
 
   const handleSave = async () => {
     try {
       await saveAll();
+      resetDirty();
       // Navigate back to sessions list
       router.back();
     } catch (err) {
@@ -151,13 +155,15 @@ export default function AttendanceDetailScreen() {
           }
         />
 
-        {/* Save Button - always visible */}
-        <SubmitComponent
-          onPress={handleSave}
-          isLoading={isSaving}
-          disabled={isSaving}
-          title={t("attendanceSave")}
-        />
+        {/* Save Button - only visible when attendance has changed */}
+        {isDirty && (
+          <SubmitComponent
+            onPress={handleSave}
+            isLoading={isSaving}
+            disabled={isSaving}
+            title={t("attendanceSave")}
+          />
+        )}
       </YStack>
     </View>
   );

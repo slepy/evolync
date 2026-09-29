@@ -5,6 +5,7 @@ import {
   SubmitComponent,
 } from "@/modules/core/components";
 import { LoadingScreen } from "@/modules/core/components/LoadingScreen";
+import { useDirtyFlag } from "@/modules/core/hooks";
 import {
   PaymentCycleRepository,
   PaymentCycleStats,
@@ -41,6 +42,7 @@ export default function PaymentCycleDetailScreen() {
   const insets = useSafeAreaInsets();
 
   const [cycle, setCycle] = useState<PaymentCycle | null>(null);
+  const { isDirty, markDirty, reset: resetDirty } = useDirtyFlag();
 
   const {
     paymentList,
@@ -71,6 +73,7 @@ export default function PaymentCycleDetailScreen() {
   const handleSave = async () => {
     try {
       await saveAll();
+      resetDirty();
       router.back();
     } catch (err) {
       console.error("[PaymentCycleDetailScreen] Save error:", err);
@@ -130,7 +133,10 @@ export default function PaymentCycleDetailScreen() {
               currency={item.currency}
               status={item.status}
               method={item.method}
-              onChange={(data) => updateLocal(item.member.id, data)}
+              onChange={(data) => {
+                markDirty();
+                updateLocal(item.member.id, data);
+              }}
               disabled={isSaving}
             />
           )}
@@ -147,13 +153,15 @@ export default function PaymentCycleDetailScreen() {
           }
         />
 
-        {/* Save Button - always visible */}
-        <SubmitComponent
-          onPress={handleSave}
-          isLoading={isSaving}
-          disabled={isSaving}
-          title={t("paymentsSave")}
-        />
+        {/* Save Button - only visible when payments have changed */}
+        {isDirty && (
+          <SubmitComponent
+            onPress={handleSave}
+            isLoading={isSaving}
+            disabled={isSaving}
+            title={t("paymentsSave")}
+          />
+        )}
       </YStack>
     </View>
   );

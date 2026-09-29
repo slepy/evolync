@@ -7,7 +7,7 @@ import { NoteRowRepository } from "@/modules/techniques/notes/repositories";
 import { useStore } from "@/store";
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
-import { View } from "react-native";
+import { KeyboardAvoidingView, Platform, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function NoteCreateScreen() {
@@ -72,11 +72,16 @@ export default function NoteCreateScreen() {
         centerContent={<HeaderTitle text={t("notesNewDocument")} />}
       />
 
-      <NoteDocumentForm
-        onSave={handleSave}
-        isSaving={isSaving}
-        saveLabel={t("notesCreateDocument")}
-      />
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        style={{ flex: 1 }}
+      >
+        <NoteDocumentForm
+          onSave={handleSave}
+          isSaving={isSaving}
+          saveLabel={t("notesCreateDocument")}
+        />
+      </KeyboardAvoidingView>
     </View>
   );
 }

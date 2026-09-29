@@ -8,6 +8,7 @@ import {
   useEvent,
   useEventParticipants,
 } from "@/modules/events";
+import { useDirtyFlag } from "@/modules/core/hooks";
 import type { EventParticipantStatus } from "@/database/models/EventParticipant";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { Users } from "lucide-react-native";
@@ -39,17 +40,20 @@ export default function EventParticipantsScreen() {
   const { event } = useEvent(eventId);
   const { participantList, counts, isSaving, error, toggleStatus, saveAll } =
     useEventParticipants(eventId);
+  const { isDirty, markDirty, reset: resetDirty } = useDirtyFlag();
 
   const handleToggleStatus = (
     participantId: string,
     newStatus: EventParticipantStatus,
   ) => {
+    markDirty();
     toggleStatus(participantId, newStatus);
   };
 
   const handleSave = async () => {
     try {
       await saveAll();
+      resetDirty();
       router.back();
     } catch (err) {
       console.error("[EventParticipantsScreen] Save error:", err);
@@ -163,12 +167,14 @@ export default function EventParticipantsScreen() {
           }
         />
 
-        {/* Save Button - always visible */}
-        <SubmitComponent
-          onPress={handleSave}
-          isLoading={isSaving}
-          disabled={isSaving}
-        />
+        {/* Save Button - only visible when participant statuses have changed */}
+        {isDirty && (
+          <SubmitComponent
+            onPress={handleSave}
+            isLoading={isSaving}
+            disabled={isSaving}
+          />
+        )}
       </YStack>
     </View>
   );

@@ -11,6 +11,7 @@ import {
 } from "@/modules/core/components";
 import type { PickerSheetOption, OptionItem } from "@/modules/core/components";
 import { LoadingScreen } from "@/modules/core/components/LoadingScreen";
+import { useDirtyFlag } from "@/modules/core/hooks";
 import {
   StudentInfoCard,
   StudentPaymentRow,
@@ -286,12 +287,20 @@ export default function StudentDetailsScreen() {
     }
   };
 
-  // Combined state for save button
-  const hasAnyChanges =
+  // Combined state for save button.
+  // The underlying hasChanges flags are two-way (compare current vs. original,
+  // so they flip back to false if the user reverts an edit). The save button
+  // must follow the one-way dirty-flag pattern instead, so we latch it here.
+  const hasAnyChangesRaw =
     hasPaymentChanges ||
     hasAttendanceChanges ||
     hasRankChanges ||
     hasEventChanges;
+  const { isDirty: hasAnyChanges, markDirty, reset: resetDirty } =
+    useDirtyFlag();
+  useEffect(() => {
+    if (hasAnyChangesRaw) markDirty();
+  }, [hasAnyChangesRaw, markDirty]);
   const isSaving = isPaymentSaving || isAttendanceSaving || isEventSaving;
 
   // Handle save all changes
@@ -315,6 +324,7 @@ export default function StudentDetailsScreen() {
         );
       }
       await Promise.all(promises);
+      resetDirty();
       sync().catch((err) => {
         console.error("[StudentDetails] Sync error:", err);
       });
