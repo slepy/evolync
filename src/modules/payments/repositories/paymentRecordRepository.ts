@@ -169,4 +169,17 @@ export const PaymentRecordRepository = {
       )
       .fetch();
   },
+
+  observeBySchoolId(schoolId: string) {
+    const recordsCollection = database.get<PaymentRecord>("payment_records");
+    return recordsCollection
+      .query(
+        Q.on("payment_cycles", [
+          Q.where("school_id", schoolId),
+          Q.where("deleted_at", null),
+        ]),
+        Q.where("deleted_at", null)
+      )
+      .observe();
+  },
 };

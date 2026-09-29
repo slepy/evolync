@@ -8,7 +8,7 @@ import { Header, HeaderTitle } from "@/modules/core/components";
 import { LoadingScreen } from "@/modules/core/components/LoadingScreen";
 import { OptionsSheet } from "@/modules/core/components/OptionsSheet";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { FlatList, Platform, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Text, YStack } from "tamagui";
@@ -30,71 +30,45 @@ export default function AttendanceSessionsScreen() {
   const { sessions, isLoading, error } = useTrainingSessions(schoolId);
   const insets = useSafeAreaInsets();
 
-  // Track attendance counts per session (present + total participants)
-  const [attendanceCounts, setAttendanceCounts] = useState<
-    Record<string, number>
-  >({});
-  const [totalParticipants, setTotalParticipants] = useState<
-    Record<string, number>
-  >({});
+  // All attendance records for the school, observed independently of the
+  // sessions list so it doesn't wait on `sessions` to resolve first (that
+  // chain was the source of the visible "0/0 then 1/1" flash).
+  const [attendanceRecords, setAttendanceRecords] = useState<
+    AttendanceRecord[]
+  >([]);
 
-  // Subscribe to attendance records for statistics
   useEffect(() => {
-    if (!schoolId || sessions.length === 0) {
-      setAttendanceCounts({});
-      setTotalParticipants({});
+    if (!schoolId) {
+      setAttendanceRecords([]);
       return;
     }
 
-    const sessionIds = sessions.map((s) => s.id);
-
-    // Subscribe to present count per session
-    const presentSub = AttendanceRecordRepository.observePresentBySessionIds(
-      sessionIds,
+    const subscription = AttendanceRecordRepository.observeBySchoolId(
+      schoolId,
     ).subscribe({
-      next: (records: AttendanceRecord[]) => {
-        // Group by session ID and count present
-        const counts: Record<string, number> = {};
-        for (const record of records) {
-          const sessionId = record.trainingSessionId;
-          counts[sessionId] = (counts[sessionId] || 0) + 1;
-        }
-        setAttendanceCounts(counts);
-      },
+      next: (records: AttendanceRecord[]) => setAttendanceRecords(records),
       error: (err: Error) => {
-        console.error(
-          "[AttendanceSessionsScreen] Present count error:",
-          err,
-        );
+        console.error("[AttendanceSessionsScreen] Attendance records error:", err);
       },
     });
 
-    // Subscribe to total participants count per session (all attendance records)
-    const totalSub = AttendanceRecordRepository.observeBySessionIds(
-      sessionIds,
-    ).subscribe({
-      next: (records: AttendanceRecord[]) => {
-        // Group by session ID and count all participants
-        const totals: Record<string, number> = {};
-        for (const record of records) {
-          const sessionId = record.trainingSessionId;
-          totals[sessionId] = (totals[sessionId] || 0) + 1;
-        }
-        setTotalParticipants(totals);
-      },
-      error: (err: Error) => {
-        console.error(
-          "[AttendanceSessionsScreen] Total participants error:",
-          err,
-        );
-      },
-    });
+    return () => subscription.unsubscribe();
+  }, [schoolId]);
 
-    return () => {
-      presentSub.unsubscribe();
-      totalSub.unsubscribe();
-    };
-  }, [sessions, schoolId]);
+  // Derived in the same render as the data that feeds it - counts and list
+  // are always in sync, never a stale default before a second query resolves.
+  const { attendanceCounts, totalParticipants } = useMemo(() => {
+    const counts: Record<string, number> = {};
+    const totals: Record<string, number> = {};
+    for (const record of attendanceRecords) {
+      const sessionId = record.trainingSessionId;
+      totals[sessionId] = (totals[sessionId] || 0) + 1;
+      if (record.status === "present") {
+        counts[sessionId] = (counts[sessionId] || 0) + 1;
+      }
+    }
+    return { attendanceCounts: counts, totalParticipants: totals };
+  }, [attendanceRecords]);
 
   // Check if today's session already exists
   const hasTodaySession = sessions.some((session) => {

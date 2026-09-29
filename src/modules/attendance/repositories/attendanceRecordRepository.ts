@@ -145,4 +145,17 @@ export const AttendanceRecordRepository = {
       )
       .observe();
   },
+
+  observeBySchoolId(schoolId: string) {
+    const collection = database.get<AttendanceRecord>("attendance_records");
+    return collection
+      .query(
+        Q.on("training_sessions", [
+          Q.where("school_id", schoolId),
+          Q.where("deleted_at", null),
+        ]),
+        Q.where("deleted_at", null)
+      )
+      .observe();
+  },
 };
