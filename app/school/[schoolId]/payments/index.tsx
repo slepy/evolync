@@ -47,19 +47,28 @@ export default function PaymentsScreen() {
   // cycles list so it doesn't wait on `cycles` to resolve first (that
   // chain was the source of the visible "0/0 then 1/1" flash).
   const [paymentRecords, setPaymentRecords] = useState<PaymentRecord[]>([]);
+  // Gates the first paint so the list never shows the "0/0" default before
+  // this subscription's first emission arrives (mirrors the detail screen,
+  // which stays on isLoading until its stats-backing data is ready).
+  const [isStatsLoading, setIsStatsLoading] = useState(true);
 
   useEffect(() => {
     if (!schoolId) {
       setPaymentRecords([]);
+      setIsStatsLoading(false);
       return;
     }
 
     const subscription = PaymentRecordRepository.observeBySchoolId(
       schoolId,
     ).subscribe({
-      next: (records: PaymentRecord[]) => setPaymentRecords(records),
+      next: (records: PaymentRecord[]) => {
+        setPaymentRecords(records);
+        setIsStatsLoading(false);
+      },
       error: (err: Error) => {
         console.error("[PaymentsScreen] Payment records error:", err);
+        setIsStatsLoading(false);
       },
     });
 
@@ -108,7 +117,7 @@ export default function PaymentsScreen() {
     router.push(`/school/${schoolId}/payments/create`);
   };
 
-  if (isLoading) {
+  if (isLoading || isStatsLoading) {
     return <LoadingScreen showLogo={false} spinnerColor="$green10" />;
   }
 

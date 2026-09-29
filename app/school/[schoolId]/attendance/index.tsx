@@ -36,19 +36,28 @@ export default function AttendanceSessionsScreen() {
   const [attendanceRecords, setAttendanceRecords] = useState<
     AttendanceRecord[]
   >([]);
+  // Gates the first paint so the list never shows the "0/0" default before
+  // this subscription's first emission arrives (mirrors the detail screen,
+  // which stays on isLoading until its stats-backing data is ready).
+  const [isStatsLoading, setIsStatsLoading] = useState(true);
 
   useEffect(() => {
     if (!schoolId) {
       setAttendanceRecords([]);
+      setIsStatsLoading(false);
       return;
     }
 
     const subscription = AttendanceRecordRepository.observeBySchoolId(
       schoolId,
     ).subscribe({
-      next: (records: AttendanceRecord[]) => setAttendanceRecords(records),
+      next: (records: AttendanceRecord[]) => {
+        setAttendanceRecords(records);
+        setIsStatsLoading(false);
+      },
       error: (err: Error) => {
         console.error("[AttendanceSessionsScreen] Attendance records error:", err);
+        setIsStatsLoading(false);
       },
     });
 
@@ -89,7 +98,7 @@ export default function AttendanceSessionsScreen() {
     router.push(`/school/${schoolId}/attendance/create`);
   };
 
-  if (isLoading) {
+  if (isLoading || isStatsLoading) {
     return <LoadingScreen showLogo={false} spinnerColor="$blue11" />;
   }
 
