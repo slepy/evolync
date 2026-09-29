@@ -89,7 +89,7 @@ export default function PaymentCycleDetailScreen() {
   };
 
   if (isLoading || !cycle) {
-    return <LoadingScreen showLogo={false} spinnerColor="$green10" />;
+    return <LoadingScreen />;
   }
 
   return (

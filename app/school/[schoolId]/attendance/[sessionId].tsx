@@ -101,7 +101,7 @@ export default function AttendanceDetailScreen() {
   };
 
   if (isLoading || !session) {
-    return <LoadingScreen showLogo={false} spinnerColor="$blue11" />;
+    return <LoadingScreen />;
   }
 
   return (

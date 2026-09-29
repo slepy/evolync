@@ -1,4 +1,3 @@
-import PaymentCycle from "@/database/models/PaymentCycle";
 import PaymentRecord from "@/database/models/PaymentRecord";
 import { PaymentStatus as PaymentStatusEnum } from "@/database/models/PaymentRecord";
 import { Header, HeaderTitle } from "@/modules/core/components";
@@ -10,8 +9,8 @@ import {
   usePaymentCycles,
 } from "@/modules/payments";
 import { SchoolSettingsRepository } from "@/modules/school/repositories";
-import { useFocusEffect, useLocalSearchParams, useRouter } from "expo-router";
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import { useLocalSearchParams, useRouter } from "expo-router";
+import React, { useEffect, useMemo, useState } from "react";
 import { FlatList, Platform, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Text, YStack } from "tamagui";
@@ -33,23 +32,6 @@ export default function PaymentsScreen() {
   const { cycles, isLoading, error } = usePaymentCycles(schoolId);
   const insets = useSafeAreaInsets();
 
-  // Track payment stats per cycle
-  const [cycleStats, setCycleStats] = useState<
-    Record<
-      string,
-      {
-        paidCount: number;
-        totalCount: number;
-        paidAmount: number;
-        totalAmount: number;
-        currency: string;
-      }
-    >
-  >({});
-
-  // Ref to store cycle IDs for focus effect
-  const cycleIdsRef = useRef<string[]>([]);
-
   // School's configured default currency (fallback for a cycle with zero records)
   const [defaultCurrency, setDefaultCurrency] = useState("PLN");
   useEffect(() => {
@@ -61,83 +43,71 @@ export default function PaymentsScreen() {
       .catch(console.error);
   }, [schoolId]);
 
-  // Update ref when cycles change
+  // All payment records for the school, observed independently of the
+  // cycles list so it doesn't wait on `cycles` to resolve first (that
+  // chain was the source of the visible "0/0 then 1/1" flash).
+  const [paymentRecords, setPaymentRecords] = useState<PaymentRecord[]>([]);
+  // Gates the first paint so the list never shows the "0/0" default before
+  // this subscription's first emission arrives (mirrors the detail screen,
+  // which stays on isLoading until its stats-backing data is ready).
+  const [isStatsLoading, setIsStatsLoading] = useState(true);
+
   useEffect(() => {
-    cycleIdsRef.current = cycles.map((c: PaymentCycle) => c.id);
-  }, [cycles]);
-
-  // Helper function to compute stats from records
-  const computeStats = useCallback(
-    (records: PaymentRecord[], cycleIds: string[]) => {
-      const stats: typeof cycleStats = {};
-
-      for (const cycleId of cycleIds) {
-        const cycleRecords = records.filter(
-          (r) => r.paymentCycleId === cycleId,
-        );
-        const paidCount = cycleRecords.filter(
-          (r) => r.status === PaymentStatusEnum.PAID,
-        ).length;
-        stats[cycleId] = {
-          paidCount,
-          totalCount: cycleRecords.length,
-          paidAmount: cycleRecords
-            .filter((r) => r.status === PaymentStatusEnum.PAID)
-            .reduce((sum, r) => sum + r.amount, 0),
-          totalAmount: cycleRecords.reduce((sum, r) => sum + r.amount, 0),
-          currency: cycleRecords[0]?.currency || defaultCurrency,
-        };
-      }
-      return stats;
-    },
-    [defaultCurrency],
-  );
-
-  // Function to fetch and calculate stats via repository
-  const fetchStats = useCallback(
-    async (cycleIds: string[]) => {
-      if (cycleIds.length === 0) {
-        setCycleStats({});
-        return;
-      }
-
-      const records = await PaymentRecordRepository.findByCycleIds(cycleIds);
-      setCycleStats(computeStats(records, cycleIds));
-    },
-    [computeStats],
-  );
-
-  // Refresh stats when screen gains focus
-  useFocusEffect(
-    useCallback(() => {
-      if (cycleIdsRef.current.length > 0) {
-        fetchStats(cycleIdsRef.current);
-      }
-    }, [fetchStats]),
-  );
-
-  // Subscribe to payment records for stats via repository
-  useEffect(() => {
-    if (!schoolId || cycles.length === 0) {
-      setCycleStats({});
+    if (!schoolId) {
+      setPaymentRecords([]);
+      setIsStatsLoading(false);
       return;
     }
 
-    const cycleIds = cycles.map((c: PaymentCycle) => c.id);
-
-    const subscription = PaymentRecordRepository.observeByCycleIds(
-      cycleIds,
+    const subscription = PaymentRecordRepository.observeBySchoolId(
+      schoolId,
     ).subscribe({
       next: (records: PaymentRecord[]) => {
-        setCycleStats(computeStats(records, cycleIds));
+        setPaymentRecords(records);
+        setIsStatsLoading(false);
       },
       error: (err: Error) => {
-        console.error("[PaymentsScreen] Payment stats error:", err);
+        console.error("[PaymentsScreen] Payment records error:", err);
+        setIsStatsLoading(false);
       },
     });
 
     return () => subscription.unsubscribe();
-  }, [cycles, schoolId, computeStats]);
+  }, [schoolId]);
+
+  // Derived in the same render as the data that feeds it - stats and list
+  // are always in sync, never a stale default before a second query resolves.
+  const cycleStats = useMemo(() => {
+    const stats: Record<
+      string,
+      {
+        paidCount: number;
+        totalCount: number;
+        paidAmount: number;
+        totalAmount: number;
+        currency: string;
+      }
+    > = {};
+
+    for (const cycle of cycles) {
+      const cycleRecords = paymentRecords.filter(
+        (r) => r.paymentCycleId === cycle.id,
+      );
+      const paidCount = cycleRecords.filter(
+        (r) => r.status === PaymentStatusEnum.PAID,
+      ).length;
+      stats[cycle.id] = {
+        paidCount,
+        totalCount: cycleRecords.length,
+        paidAmount: cycleRecords
+          .filter((r) => r.status === PaymentStatusEnum.PAID)
+          .reduce((sum, r) => sum + r.amount, 0),
+        totalAmount: cycleRecords.reduce((sum, r) => sum + r.amount, 0),
+        currency: cycleRecords[0]?.currency || defaultCurrency,
+      };
+    }
+    return stats;
+  }, [cycles, paymentRecords, defaultCurrency]);
 
   const handleCyclePress = (cycleId: string) => {
     router.push(`/school/${schoolId}/payments/${cycleId}`);
@@ -147,8 +117,8 @@ export default function PaymentsScreen() {
     router.push(`/school/${schoolId}/payments/create`);
   };
 
-  if (isLoading) {
-    return <LoadingScreen showLogo={false} spinnerColor="$green10" />;
+  if (isLoading || isStatsLoading) {
+    return <LoadingScreen />;
   }
 
   return (
