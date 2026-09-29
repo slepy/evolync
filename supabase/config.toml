@@ -6,15 +6,21 @@
 verify_jwt = false
 
 [auth]
-# Deep link the app already listens on for OAuth (evolync://auth/callback)
-# plus the new password-recovery screen (evolync://auth/reset-password).
+# HISTORICAL NOTE (2026-09-29): password reset originally used a deep-linked
+# magic link (redirectTo: 'evolync://auth/reset-password'). That surfaced a
+# gotcha — an unregistered redirectTo makes Supabase silently fall back to
+# `site_url` (observed as a "http://localhost:3000" link in the email). The
+# flow was redesigned to use an emailed 6-digit OTP code instead (see
+# app/auth/reset-password.tsx + [auth.email.template.recovery] below), which
+# needs no redirect URL and no site_url at all for this feature. The OAuth
+# deep link below is unrelated and still required for Google sign-in.
 # NOTE: `supabase config push` replaces the *entire* hosted [auth] config with
 # what's declared here, so any other auth setting (site_url, SMTP, MFA, etc.)
 # not also declared in this file would fall back to CLI defaults. Do not run
 # `supabase config push` blindly — either mirror the full hosted config here
 # first, or add this redirect URL manually via Dashboard → Authentication →
 # URL Configuration instead.
-additional_redirect_urls = ["evolync://auth/callback", "evolync://auth/reset-password"]
+additional_redirect_urls = ["evolync://auth/callback"]
 
 [auth.email.template.recovery]
 subject = "Resetowanie hasła — Evolync"
