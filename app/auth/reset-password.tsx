@@ -3,88 +3,56 @@ import { ResetPasswordForm } from '@/modules/auth/components/ResetPasswordForm';
 import { useAuth } from '@/modules/auth/hooks/useAuth';
 import { AppLogo } from '@/modules/core/components/AppLogo';
 import { ErrorBanner } from '@/modules/core/components/ErrorBanner';
-import { LoadingScreen } from '@/modules/core/components/LoadingScreen';
-import { CheckCircle, XCircle } from 'lucide-react-native';
+import { CheckCircle } from 'lucide-react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { KeyboardAvoidingView, Platform } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Button, ScrollView, Text, YStack } from 'tamagui';
 
 // ============================================================================
 // ResetPasswordScreen Component
+//
+// No deep link involved: the user copies a 6-digit OTP code from the email
+// Supabase sends and types it in here, alongside the new password. This
+// avoids relying on the app's custom URL scheme being registered in
+// Supabase's Redirect URLs allow-list (see auth-module spec for the
+// localhost:3000 fallback bug that motivated this design).
 // ============================================================================
 
 export default function ResetPasswordScreen() {
   const router = useRouter();
-  const params = useLocalSearchParams();
-  const { isLoading, error, updatePassword, clearError } = useAuth();
+  const { email: emailParam } = useLocalSearchParams<{ email?: string }>();
+  const email = emailParam ?? '';
+  const { isLoading, error, verifyRecoveryOtp, updatePassword, clearError } = useAuth();
 
-  const [isValidatingLink, setIsValidatingLink] = useState(true);
-  const [linkValid, setLinkValid] = useState(false);
   const [passwordUpdated, setPasswordUpdated] = useState(false);
-
-  // ==========================================================================
-  // Establish the temporary recovery session from the deep-link tokens
-  // ==========================================================================
-
-  useEffect(() => {
-    const establishRecoverySession = async () => {
-      try {
-        const { access_token, refresh_token, type } = params;
-
-        if (!access_token || !refresh_token || type !== 'recovery') {
-          setLinkValid(false);
-          setIsValidatingLink(false);
-          return;
-        }
-
-        const { error: sessionError } = await supabase.auth.setSession({
-          access_token: access_token as string,
-          refresh_token: refresh_token as string,
-        });
-
-        setLinkValid(!sessionError);
-      } catch (err) {
-        console.error('Reset password link validation error:', err);
-        setLinkValid(false);
-      } finally {
-        setIsValidatingLink(false);
-      }
-    };
-
-    establishRecoverySession();
-  }, [params]);
 
   // ==========================================================================
   // Event Handlers
   // ==========================================================================
 
-  const handleSubmit = async (password: string) => {
+  const handleSubmit = async (code: string, password: string) => {
     clearError();
-    const success = await updatePassword(password);
-    if (success) {
-      // Invalidate the temporary recovery session so the user signs in fresh.
-      await supabase.auth.signOut();
-      setPasswordUpdated(true);
-    }
+
+    const codeValid = await verifyRecoveryOtp(email, code);
+    if (!codeValid) return;
+
+    const passwordSet = await updatePassword(password);
+    if (!passwordSet) return;
+
+    // Invalidate the temporary recovery session so the user signs in fresh.
+    await supabase.auth.signOut();
+    setPasswordUpdated(true);
   };
 
   const handleGoToLogin = () => {
     router.replace('/auth/login' as any);
   };
 
-  const handleRequestNewLink = () => {
+  const handleRequestNewCode = () => {
     router.replace('/auth/forgot-password' as any);
   };
-
-  // ==========================================================================
-  // Loading State
-  // ==========================================================================
-
-  if (isValidatingLink) {
-    return <LoadingScreen />;
-  }
 
   // ==========================================================================
   // Main Render
@@ -107,25 +75,7 @@ export default function ResetPasswordScreen() {
           <YStack flex={1} justifyContent="center" maxWidth={420} width="100%" alignSelf="center" gap="$4">
             <AppLogo />
 
-            {!linkValid ? (
-              <YStack alignItems="center" gap="$4" marginTop="$4">
-                <XCircle size={56} color="#DC2626" />
-                <Text fontSize="$6" fontWeight="700" color="$inkBlack" textAlign="center">
-                  {t('invalidResetLink')}
-                </Text>
-                <Text fontSize="$4" color="$softGrayDark" textAlign="center">
-                  {t('invalidResetLinkMessage')}
-                </Text>
-                <Button
-                  backgroundColor="$jadeGreen"
-                  color="$pearlWhite"
-                  fontWeight="700"
-                  onPress={handleRequestNewLink}
-                >
-                  {t('requestNewLink')}
-                </Button>
-              </YStack>
-            ) : passwordUpdated ? (
+            {passwordUpdated ? (
               <YStack alignItems="center" gap="$4" marginTop="$4">
                 <CheckCircle size={56} color="#16A34A" />
                 <Text fontSize="$6" fontWeight="700" color="$inkBlack" textAlign="center">
@@ -147,7 +97,9 @@ export default function ResetPasswordScreen() {
                     {t('resetPasswordTitle')}
                   </Text>
                   <Text fontSize="$4" color="$softGrayDark" textAlign="center">
-                    {t('resetPasswordDescription')}
+                    {email
+                      ? t('resetPasswordCodeSentTo', { email })
+                      : t('resetPasswordDescription')}
                   </Text>
                 </YStack>
 
@@ -156,6 +108,17 @@ export default function ResetPasswordScreen() {
                 )}
 
                 <ResetPasswordForm onSubmit={handleSubmit} isLoading={isLoading} />
+
+                <Button
+                  chromeless
+                  alignSelf="center"
+                  color="$chineseGold"
+                  fontWeight="600"
+                  marginTop="$3"
+                  onPress={handleRequestNewCode}
+                >
+                  {t('requestNewCode')}
+                </Button>
               </>
             )}
           </YStack>

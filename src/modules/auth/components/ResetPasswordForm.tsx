@@ -1,8 +1,8 @@
 import { PasswordInput, SubmitButton } from "@/modules/core/components";
 import { zodResolver } from "@hookform/resolvers/zod";
 import React from "react";
-import { useForm } from "react-hook-form";
-import { YStack } from "tamagui";
+import { Controller, useForm } from "react-hook-form";
+import { Input, Text, YStack } from "tamagui";
 import {
   resetPasswordSchema,
   type ResetPasswordFormValues,
@@ -13,7 +13,7 @@ import {
 // ============================================================================
 
 interface ResetPasswordFormProps {
-  onSubmit: (password: string) => Promise<void>;
+  onSubmit: (code: string, password: string) => Promise<void>;
   isLoading: boolean;
 }
 
@@ -32,15 +32,54 @@ export const ResetPasswordForm: React.FC<ResetPasswordFormProps> = ({
   } = useForm<ResetPasswordFormValues>({
     resolver: zodResolver(resetPasswordSchema),
     mode: "onChange",
-    defaultValues: { password: "", confirmPassword: "" },
+    defaultValues: { code: "", password: "", confirmPassword: "" },
   });
 
   const handleFormSubmit = handleSubmit(async (data) => {
-    await onSubmit(data.password);
+    await onSubmit(data.code, data.password);
   });
 
   return (
     <YStack gap="$3">
+      <YStack gap="$2">
+        <Text fontSize="$3" color="$softGrayDark" fontWeight="500">
+          {t("otpCode")}
+        </Text>
+        <Controller
+          control={control}
+          name="code"
+          render={({ field: { onChange, onBlur, value } }) => (
+            <Input
+              id="code"
+              placeholder="000000"
+              value={value}
+              onChangeText={(text) => onChange(text.replace(/[^0-9]/g, "").slice(0, 6))}
+              onBlur={onBlur}
+              disabled={isLoading}
+              keyboardType="number-pad"
+              maxLength={6}
+              textAlign="center"
+              fontSize="$7"
+              letterSpacing={8}
+              borderColor={errors.code ? "$imperialRed" : "$softGrayLight"}
+              borderWidth={2}
+              focusStyle={{
+                borderColor: errors.code ? "$imperialRed" : "$chineseGold",
+                backgroundColor: "$pearlWhiteLight",
+              }}
+              backgroundColor="$pearlWhite"
+              color="$inkBlack"
+              placeholderTextColor="$softGray"
+            />
+          )}
+        />
+        {errors.code && (
+          <Text color="$imperialRed" fontSize="$3" fontWeight="500">
+            {errors.code.message}
+          </Text>
+        )}
+      </YStack>
+
       <PasswordInput
         control={control}
         name="password"

@@ -69,6 +69,14 @@ const mapSupabaseError = (error: SupabaseAuthError | Error): AuthError => {
     };
   }
 
+  if (message.includes('token') && (message.includes('expired') || message.includes('invalid'))) {
+    return {
+      code: 'unknown',
+      message: t('errorInvalidOtpCode'),
+      recoverable: true,
+    };
+  }
+
   return {
     code: 'unknown',
     message: t('errorUnknownMessage'),
@@ -284,9 +292,11 @@ export const useAuth = () => {
         return false;
       }
 
-      const { error: resetError } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: 'evolync://auth/reset-password',
-      });
+      // No redirectTo: we don't use the magic-link in the email at all, only
+      // the {{ .Token }} OTP code it also contains — sidesteps needing the
+      // app's custom scheme registered in Supabase's Redirect URLs allow-list
+      // (and the silent localhost:3000 site_url fallback when it isn't).
+      const { error: resetError } = await supabase.auth.resetPasswordForEmail(email);
 
       if (resetError) {
         setError(mapSupabaseError(resetError));
@@ -304,7 +314,47 @@ export const useAuth = () => {
   }, [setLoading, setError, clearError]);
 
   // ==========================================================================
-  // Set New Password (from recovery link)
+  // Verify Password Recovery OTP Code
+  // ==========================================================================
+
+  const verifyRecoveryOtp = useCallback(async (email: string, code: string): Promise<boolean> => {
+    try {
+      setLoading(true);
+      clearError();
+
+      const isConnected = await checkNetworkConnection();
+      if (!isConnected) {
+        setError({
+          code: 'network_error',
+          message: t('errorNoInternetMessage'),
+          recoverable: true,
+        });
+        return false;
+      }
+
+      const { data, error: verifyError } = await supabase.auth.verifyOtp({
+        email,
+        token: code,
+        type: 'recovery',
+      });
+
+      if (verifyError || !data.session) {
+        setError(mapSupabaseError(verifyError ?? new Error('invalid recovery code')));
+        return false;
+      }
+
+      return true;
+    } catch (error) {
+      console.error('verifyRecoveryOtp error:', error);
+      setError(mapSupabaseError(error as Error));
+      return false;
+    } finally {
+      setLoading(false);
+    }
+  }, [setLoading, setError, clearError]);
+
+  // ==========================================================================
+  // Set New Password (after a verified recovery OTP session)
   // ==========================================================================
 
   const updatePassword = useCallback(async (newPassword: string): Promise<boolean> => {
@@ -586,6 +636,7 @@ export const useAuth = () => {
     checkSession,
     clearError,
     sendPasswordResetEmail,
+    verifyRecoveryOtp,
     updatePassword,
   };
 };
