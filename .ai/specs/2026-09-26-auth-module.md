@@ -6,6 +6,8 @@ This document specifies the `auth` module as it exists today (email/password + G
 > **Update (2026-09-29):** Fix #4 — password reset via Supabase Auth — has been implemented and shipped (see Phasing and Implementation Plan below). It was built directly rather than through a dedicated spec; this document has been retrofitted to describe it as-built.
 >
 > **Revision (2026-09-29, same day):** the first version of Fix #4 used a deep-linked magic-link email (`resetPasswordForEmail({ redirectTo: 'evolync://auth/reset-password' })`), following the existing OAuth `callback.tsx` pattern. On first real-world test the email linked to `http://localhost:3000` instead of the app, because the hosted Supabase project's Redirect URLs allow-list didn't contain our custom scheme, so Supabase silently fell back to its default `site_url`. Rather than depend on that Dashboard configuration being correct forever, the flow was **redesigned to use an emailed 6-digit OTP code** the user types into the app instead of tapping a link — this needs no redirect URL, no `site_url`, and no deep-link handling at all for this feature. All content below describes the **current, OTP-based** design; the magic-link version is superseded and no longer in the codebase.
+>
+> **Shipped (2026-09-29):** the OTP redesign merged to `main` via [PR #2](https://github.com/slepy/evolync/pull/2) (branch `feature/password-reset-otp`, commit `5fb4995`, merge commit `24212ea`). Fix #4 as described in this document is now the state of `main`, not a proposal. The live-environment verification and Dashboard email-template paste noted under Risks/Implementation Plan are still outstanding — merging the code doesn't satisfy those.
 
 ## 📝 Problem Statement
 No specification exists for `auth` today. Reading the code surfaced concrete defects:
@@ -103,7 +105,7 @@ Each fix below is independently shippable — no fix requires another to functio
 - **Fix #1** — Storage helper dedup. Pure refactor, no behavior change. *Status: not yet implemented.*
 - **Fix #2** — OAuth callback sync parity. Bug fix, no user-visible change beyond consistency. *Status: not yet implemented.*
 - **Fix #3** — Join flow compliance + visibility: route `joinSchoolService.ts` through WatermelonDB; surface pending join requests on the student dashboard. *Status: not yet implemented.*
-- **Fix #4** — Password reset via Supabase Auth. *Status: ✅ implemented 2026-09-29* (see Implementation Plan below).
+- **Fix #4** — Password reset via Supabase Auth (OTP-code design). *Status: ✅ merged to `main` 2026-09-29 via [PR #2](https://github.com/slepy/evolync/pull/2)* (see Implementation Plan below). Live-environment verification (real email send, Dashboard template paste) still outstanding — see Risks.
 - **(Separate future spec, not designed here)** — Email verification.
 
 ## 📋 Implementation Plan
