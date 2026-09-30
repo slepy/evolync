@@ -13,6 +13,8 @@ interface BaseTextInputProps {
   disabled?: boolean;
   autoCapitalize?: "none" | "sentences" | "words" | "characters";
   autoFocus?: boolean;
+  keyboardType?: "default" | "number-pad" | "email-address" | "phone-pad";
+  maxLength?: number;
   flex?: number;
 }
 
@@ -70,6 +72,8 @@ export const TextInput = <TFieldValues extends FieldValues>({
   disabled = false,
   autoCapitalize = "sentences",
   autoFocus,
+  keyboardType,
+  maxLength,
   flex = 1,
   value: standaloneValue,
   onChangeText: standaloneOnChangeText,
@@ -91,6 +95,8 @@ export const TextInput = <TFieldValues extends FieldValues>({
       disabled={disabled}
       autoCapitalize={autoCapitalize}
       autoFocus={autoFocus}
+      keyboardType={keyboardType}
+      maxLength={maxLength}
       borderColor={error ? "$imperialRed" : "$softGrayLight"}
       borderWidth={2}
       focusStyle={{

@@ -13,7 +13,7 @@ export const resetPasswordSchema = z
       .regex(/^\d{6}$/, t('otpCodeInvalid')),
     password: z
       .string()
-      .min(8, t('passwordMinLength'))
+      .min(8, t('passwordMinLength', { count: 8 }))
       .regex(passwordRegex, t('passwordComplexity')),
     confirmPassword: z
       .string()
