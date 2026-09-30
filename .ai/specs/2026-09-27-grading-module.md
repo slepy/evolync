@@ -1,5 +1,7 @@
 # Grading Module — Specification (as-built + remediation)
 
+> **Status (2026-09-30):** All six fixes are implemented and live on `main`. Verified by direct code inspection: `reorderRanks`/`saveGradingConfig` and `RankEditorRow` no longer exist anywhere in `src/modules/grading`; `create.tsx` and `GradingRankEditScreen.tsx` both call `createRankSchema`/`updateRankSchema` and the four new i18n keys (`gradingValidationNameRequired`, `gradingValidationNameTooLong`, `gradingValidationColorInvalid`, `gradingErrorDuplicateName`) are present in `en.json`/`pl.json`; `deleteRank` clears `currentRankId` for `StudentRepository.findByCurrentRankId(rankId)` in the same `database.batch()` as the soft-delete; `addRank`/`updateRank` both call a case-insensitive `assertUniqueName` guard; `assignRankToStudent` lives in `students/services/studentService.ts` (re-exported from `students`' service barrel) with its one call site importing from there; `create.tsx` renders a `ColorPickerSheet`. `organization/validation/index.ts` is now an empty barrel (`export {}`), confirming the unrelated broken-import fix. No implementation PR was needed — the remediation had already shipped.
+
 ## 📝 TLDR
 Documents current behavior of `src/modules/grading/` — one flat, ordered rank/belt list **per organization** (not per school; all schools under one org share the same ranks — confirmed intentional for now), shown as a cosmetic name+color badge on a student's profile with no functional gating of any other module's content (no relation to `threed`). No schema/migration bug was found (clean, unlike `payments`/`orders`/`inventory`). All six fixes decided for this module have already been implemented during this pass — see below.
 
@@ -57,6 +59,12 @@ No schema changes. Fix #3 uses a new repository query (`StudentRepository.findBy
 
 ## 📋 Phasing
 All fixes have already landed in this pass; no further phasing is needed for this module.
+1. **Fix #1** — Remove dead reorder plumbing. *Status: ✅ implemented, on `main`.*
+2. **Fix #2** — Wire `createRankSchema`/`updateRankSchema` in. *Status: ✅ implemented, on `main`.*
+3. **Fix #3** — Clear dangling `current_rank_id` FK on delete. *Status: ✅ implemented, on `main`.*
+4. **Fix #4** — Duplicate-name guard. *Status: ✅ implemented, on `main`.*
+5. **Fix #5** — Move `assignRankToStudent` to `students`. *Status: ✅ implemented, on `main`.*
+6. **Fix #6** — Color field on create screen. *Status: ✅ implemented, on `main`.*
 
 ## 📋 Implementation Plan (already executed)
 1. Deleted `reorderRanks`, `saveGradingConfig` from `gradingService.ts`; deleted `RankEditorRow.tsx` and its barrel export.
