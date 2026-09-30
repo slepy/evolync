@@ -1,5 +1,7 @@
 # Payments Module — Specification (as-built + remediation)
 
+> **Status (2026-09-30):** All three fixes are implemented and live on `main`. Verified by direct code inspection: `paymentService.ts` exports only the reachable surface (`getPaymentCycleById`, `getPaymentCyclesForSchool`, `updatePaymentCycle`, `deletePaymentCycle`, `markPaymentAsPaid`, `bulkCreatePaymentRecords` are gone, along with `usePaymentCycles`'s `deleteCycle` wrapper — confirmed via repo-wide grep, zero matches); `bulkSavePaymentList`/`bulkUpdatePaymentRecords` build a single `database.batch()` inside one `database.write()`; `validation/paymentSchema.ts`'s `createPaymentCycleSchema`/`paymentRecordEditSchema` are wired into `createPaymentCycle`/`upsertPaymentRecord`/both bulk functions, and `PaymentRecordRepository.bulkCreate` requires `amount`/`currency` with no default parameters (both call sites — `createPaymentCycle`, students' join-approval flow — already pass explicit values). The cycle-list "PLN" stats fallback this spec called out no longer exists: `PaymentCycleStats` was refactored to group by actual currency per record instead of showing one fallback currency. No PR was needed — the remediation had already shipped. A follow-up issue (#7) was filed for two unrelated pre-existing typecheck errors found in `PaymentRecordRow.tsx`/`usePaymentRecords.ts` during verification.
+
 ## 📝 TLDR
 Documents current behavior of `src/modules/payments/` — manually created billing "cycles" (arbitrary date ranges) with a `payment_records` row per active member, marked paid/pending/cancelled by the instructor. No online payment processing exists (manual only, per CLAUDE.md). **Correction from an earlier pass of this spec:** `payment_cycles`/`payment_records` were initially believed to be missing from the WatermelonDB bootstrap schema entirely. Closer investigation (triggered while writing the `orders` module spec, which shares the same module-boundary drift) showed the tables were **not actually missing** — they were already registered in the bootstrap schema, but defined in the wrong place (`organization/database/schema.ts`, the same structural drift already flagged in the `organization`/`school` spec). A properly-located `src/modules/payments/database/schema.ts` has now been created and registered, and the stale duplicate definitions have been removed from `organization/database/schema.ts` — this was a structural cleanup (fixing a real duplicate-table defect the first pass introduced), not a fresh-install-breaking bug as originally reported. Three further fixes are proposed: remove unused dead code instead of building UI for it, make bulk saves atomic (mirroring the `attendance` module's fix), and add validation with school-sourced currency defaults everywhere.
 
@@ -48,9 +50,9 @@ No visible UI changes from any of the three fixes — all are internal correctne
 
 ## 📋 Phasing
 Each fix ships independently:
-- **Fix #1** — Remove unreachable dead code.
-- **Fix #2** — Batch bulk-save functions.
-- **Fix #3** — Validation + school-sourced currency defaults everywhere.
+- **Fix #1** — Remove unreachable dead code. *Status: ✅ implemented, on `main`.*
+- **Fix #2** — Batch bulk-save functions. *Status: ✅ implemented, on `main`.*
+- **Fix #3** — Validation + school-sourced currency defaults everywhere. *Status: ✅ implemented, on `main`.*
 
 ## 📋 Implementation Plan
 
