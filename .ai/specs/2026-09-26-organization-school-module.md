@@ -1,5 +1,7 @@
 # Organization & School Modules — Specification (as-built + remediation)
 
+> **Status (2026-09-30):** All three fixes (four implementation-plan steps) are implemented and live on `main` (commit `2c81b92`, landed the same day this spec was authored — the remediation shipped directly alongside the as-built documentation rather than through a separate PR). Verified by direct code inspection: `useRequireOrganizationOwner()` (`src/modules/organization/hooks/useRequireOrganizationOwner.ts`) is wired into every owner-only screen under `app/organization/*` and `app/school/*`; `inviteService.ts`'s `generateInviteCode`/`generateUniqueInviteCode` use `expo-crypto`'s `getRandomBytes` with a pre-insert collision check against `SchoolInviteRepository.findByCode`; `school_join_requests` has a `status` column (schema + migration `toVersion: 18`) with `SchoolJoinRequestRepository.markRejected` wired into `studentService.ts`'s `rejectJoinRequest`; and `app/user/dashboard.tsx` renders a dismissible "Rejected" card (`joinRequestRejectedCardStatus`, en/pl) alongside the "Pending approval" card, both driven by `usePendingJoinRequests`. The blocking dependency on the `auth` spec's Fix #3 ("Pending approval" card) is also satisfied — that card exists in the same dashboard file, so Fix #3's UI half was not actually blocked in practice.
+
 ## 📝 TLDR
 Documents current behavior of `src/modules/organization/` (org-level dashboard only — org creation/read is entirely owned by the `auth` module's `setup_instructor_organization` RPC, no repository/service of its own here) and `src/modules/school/` (schools, invite codes, join requests, school settings). Approve/reject of join requests and the `SchoolMember` model live in the `students` module — out of scope here, referenced but not redesigned. Three independently shippable fixes are proposed: an owner-only route guard, cryptographically-sound invite codes, and a "Rejected" status on the student's pending-join card (extends the card the `auth` spec's Fix #3 already adds). One architectural question is deliberately **not resolved** in this pass and is carried forward as an open decision (see below) rather than defaulted, because it changes a stated project-wide principle.
 
@@ -65,10 +67,10 @@ No public/API contract changes. Internal repository surface addition: `SchoolJoi
 - Fixes #1–#3 are low blast radius: #1 and #2 touch no schema; #3's additive column is backward compatible and reversible (drop column / ignore it).
 
 ## 📋 Phasing
-- **Fix #1** — Owner-only route guard. Independent, ship anytime.
-- **Fix #2** — Cryptographically-sound invite codes. Independent, ship anytime.
-- **Fix #3, data half** — `status` column + `markRejected`. Independent, ship anytime.
-- **Fix #3, UI half** — "Rejected" card. **Blocked** until the `auth` spec's Fix #3 (the "Pending approval" card) has shipped — this is a hard prerequisite, not a scheduling preference.
+- **Fix #1** — Owner-only route guard. Independent, ship anytime. *Status: ✅ implemented, on `main`.*
+- **Fix #2** — Cryptographically-sound invite codes. Independent, ship anytime. *Status: ✅ implemented, on `main`.*
+- **Fix #3, data half** — `status` column + `markRejected`. Independent, ship anytime. *Status: ✅ implemented, on `main`.*
+- **Fix #3, UI half** — "Rejected" card. **Blocked** until the `auth` spec's Fix #3 (the "Pending approval" card) has shipped — this is a hard prerequisite, not a scheduling preference. *Status: ✅ implemented, on `main` (the `auth` spec's Fix #3 shipped in the same commit).*
 - **(Future, not designed here)** — School deletion / organization-ownership transfer.
 
 ## 📋 Implementation Plan
