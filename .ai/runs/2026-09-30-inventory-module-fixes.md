@@ -49,4 +49,4 @@ spec document itself (`2c81b92`):
 
 ### Phase 1: Remove dead code
 
-- [ ] 1.1 Delete unused `deleteImage` function from uploadImage.ts
+- [x] 1.1 Delete unused `deleteImage` function from uploadImage.ts — 32c3efc
