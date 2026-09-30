@@ -45,6 +45,8 @@ spec document itself (`2c81b92`):
 
 ## Progress
 
+PR: #8
+
 > Convention: `- [ ]` pending, `- [x]` done. Append ` — <commit sha>` when a step lands. Do not rename step titles.
 
 ### Phase 1: Remove dead code
