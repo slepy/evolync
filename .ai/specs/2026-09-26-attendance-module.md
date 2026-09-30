@@ -1,5 +1,9 @@
 # Attendance Module — Specification (as-built + remediation)
 
+> **Status (2026-09-30):** All five fixes plus the two folded-in mechanical items below are implemented and live on `main` (commit `2c81b92`, landed the same day this spec was authored — the remediation shipped directly alongside the as-built documentation rather than through a separate PR). Verified by direct code inspection: batched `database.batch()` writes in `attendanceService.ts`, atomic `database.write()` guards in `upsertAttendanceRecord`/`getOrCreateSessionForDate`, `attendanceStatusSchema`/`createTrainingSessionSchema` wired into every write path, `disabled` treatment for archived members in `useAttendance`/`AttendanceListItem`, `Q.where('deleted_at', null)` in `TrainingSessionRepository.findByIds`, UTC-day boundaries in `getOrCreateSessionForDate` and `observeTodayBySchoolId`, and the complete barrel exports in `attendance/index.ts`.
+>
+> The one item intentionally left out of this spec's client-code scope — aligning the Supabase `attendance_records.status` column default from `'absent'` to `'present'` (a schema migration, see Data Model) — is tracked separately as [issue #4](https://github.com/slepy/evolync/issues/4).
+
 ## 📝 TLDR
 Documents current behavior of `src/modules/attendance/` — training sessions (one per school per day) with a roster of `attendance_records` (present/absent/excused) per session, marked by the instructor for the whole class at once. Five independently shippable fixes are proposed for the data-integrity and consistency gaps found: non-transactional bulk saves, no client-side duplicate guard, unused validation, archived/soft-deleted data leakage, and timezone-sensitive day-boundary logic.
 
@@ -50,12 +54,12 @@ No public contract changes. Fix #1 changes the internal return behavior of the t
 
 ## 📋 Phasing
 Each fix ships independently, in any order:
-- **Fix #1** — Batch bulk writes + partial-failure reporting.
-- **Fix #2** — Client-side duplicate guard (atomic check-then-create).
-- **Fix #3** — Wire existing Zod validation into the write path.
-- **Fix #4** — Fix archived/soft-deleted data leakage (read-only archived rows + session `deleted_at` filter).
-- **Fix #5** — Normalize session-day computation to UTC.
-- (Folded in, no separate phase): barrel export fix, DB default alignment.
+- **Fix #1** — Batch bulk writes + partial-failure reporting. *Status: ✅ implemented, on `main`.*
+- **Fix #2** — Client-side duplicate guard (atomic check-then-create). *Status: ✅ implemented, on `main`.*
+- **Fix #3** — Wire existing Zod validation into the write path. *Status: ✅ implemented, on `main`.*
+- **Fix #4** — Fix archived/soft-deleted data leakage (read-only archived rows + session `deleted_at` filter). *Status: ✅ implemented, on `main`.*
+- **Fix #5** — Normalize session-day computation to UTC. *Status: ✅ implemented, on `main`.*
+- (Folded in, no separate phase): barrel export fix — *Status: ✅ implemented, on `main`.* DB default alignment — *Status: not yet implemented; tracked as [issue #4](https://github.com/slepy/evolync/issues/4) (schema migration, out of this spec's client-code scope).*
 
 ## 📋 Implementation Plan
 
