@@ -1,5 +1,7 @@
 # Settings — Specification (as-built + remediation)
 
+> **Status (2026-09-30):** All three fixes are implemented. Verified by direct code inspection: `src/modules/settings/` is gone and `settingsSchema` no longer appears in `src/database/schema.ts` (fix #1); `app/_layout.tsx` no longer keys the `<Stack>` on the language, while the `languageChanged` listener still drives the re-render (fix #2); `app/school/[schoolId]/settings.tsx` and `SchoolDashboard.tsx`'s settings tile use `settingsSchool`, and `app/user/settings.tsx`/`Header.tsx` keep `settingsTitle` (fix #3). The two feature gaps (dark mode, account management) and the paused "Create Organization" card remain future work, unchanged.
+
 ## 📝 TLDR
 `src/modules/settings/` contained only two empty placeholder files (no components, hooks, repositories, or tables) — it has been deleted. The real "Settings" feature is, and remains, split across three places: `src/core/i18n/` (language, persisted per-device via AsyncStorage/localStorage), `src/modules/core/components/Header.tsx` (sign-out, menu entry point), and `src/modules/auth/` (profile editing). A separate, unrelated `/school/[schoolId]/settings` screen (school name/address/currency/payment defaults) is owned by the `school` module and reached only from a school's own dashboard — this spec documents it exists but doesn't re-describe it (already covered in the `organization`/`school` spec). Three fixes have already landed; two feature gaps (dark mode, account management) are recorded as future-spec candidates, and one paused/reserved UI element is documented as intentional, not dead.
 
@@ -49,6 +51,9 @@ No public contract changes. `RootLayoutNav`'s internal state variable was rename
 
 ## 📋 Phasing
 All three fixes have already landed; no further phasing needed for this pass.
+- **Fix #1** — Delete dead `src/modules/settings/` scaffolding. *Status: ✅ implemented.*
+- **Fix #2** — Language change re-renders instead of remounting the navigation stack. *Status: ✅ implemented.*
+- **Fix #3** — Split the colliding `settingsTitle` key. *Status: ✅ implemented.*
 - **(Future spec, not designed here)** — Dark mode.
 - **(Future spec, not designed here)** — Account management (password change, account deletion, data export).
 - **(Future work, not designed here)** — "Create Organization" flow for users without one, from the settings screen (the commented-out card is a placeholder for this).
@@ -58,4 +63,4 @@ All three fixes have already landed; no further phasing needed for this pass.
 2. Removed `key={languageKey}` from `app/_layout.tsx`'s `<Stack>` while keeping the `languageChanged`-driven re-render, so language changes propagate via re-render instead of remount.
 3. Changed `app/school/[schoolId]/settings.tsx` and `SchoolDashboard.tsx`'s settings tile to use `settingsSchool` instead of `settingsTitle`.
 
-Verification: `npm run typecheck` shows no errors in `src/database/schema.ts`, `app/_layout.tsx`, `app/school/[schoolId]/settings.tsx`, or `src/modules/dashboard/components/SchoolDashboard.tsx` — remaining typecheck output is pre-existing, unrelated errors in other modules already noted in prior specs' verification passes.
+Verification: `npm run typecheck` shows no errors in `src/database/schema.ts`, `app/_layout.tsx`, `app/school/[schoolId]/settings.tsx`, or `src/modules/dashboard/components/SchoolDashboard.tsx` — remaining typecheck output is pre-existing, unrelated errors in other modules already noted in prior specs' verification passes. Direct code inspection on 2026-09-30 confirms all three fixes are present on `main` (see Status banner above).
