@@ -1,5 +1,7 @@
 # Dashboard Module — Specification (as-built + remediation)
 
+> **Status (2026-09-30):** All four applicable fixes are implemented and live on `main` (commit `2c81b92`, landed the same day this spec was authored — the remediation shipped directly alongside the as-built documentation rather than through a separate PR). Verified by direct code inspection: `src/modules/home/` and its `homeSchema` spread in `src/database/schema.ts` no longer exist; `DashboardFAB`/`SchoolDashboard.tsx` carry no `onNewAnnouncement` prop or announcement stubs, and the three orphaned i18n keys (`dashboardAnnouncements`, `dashboardAnnouncementsSubtitle`, `dashboardNewAnnouncement`) are gone from `en.json`/`pl.json`; `useSchoolDashboard.ts` computes `overduePayments` reactively via `PaymentCycleRepository.observeBySchoolId` + `PaymentRecordRepository.observeByCycleIds`, and the badge is wired at `SchoolDashboard.tsx:178`; the hook now goes exclusively through `OrderRepository`/`SchoolJoinRequestRepository`/`PaymentCycleRepository`/`PaymentRecordRepository`, no raw `database.get(...)` calls remain. The fifth item (student payment-status widget) was a decision against building, not an implementation — nothing to verify there. No implementation PR was needed — the remediation had already shipped.
+
 ## 📝 TLDR
 "Dashboard" in this codebase refers to `src/modules/dashboard/` — a pure UI/aggregation layer with no data ownership of its own, rendering the **school-level** dashboard (`SchoolDashboard`, route `/school/[schoolId]/dashboard`) for an instructor managing one specific school. It owns zero database tables. The **organization-level** dashboard is a separate, already-documented thing owned by `organization`. The **student's** home screen (`/user/dashboard`) is a third, distinct screen that lives directly in the route file, not in this module — it is currently pure navigation tiles with no live stats, payment-status widget, or announcements, despite an earlier UX plan calling for those.
 
@@ -58,7 +60,14 @@ No schema changes. Removing `home`'s empty schema array is a no-op at the data l
 - **Announcements remains an unbuilt feature** (backend tables exist, no frontend model/repository/screen) — flagged as a future-spec candidate, not designed here, consistent with how password reset (`auth`) and school-deletion (`organization`/`school`) were carried forward in earlier specs.
 
 ## 📋 Phasing
-All five changes for this pass have already landed; no further phasing needed for this module today. Two items are explicitly deferred, not phased:
+All five changes for this pass have already landed; no further phasing needed for this module today.
+- **Fix #1** — Deleted dead `src/modules/home/` scaffolding and its `homeSchema` spread. *Status: ✅ implemented, on `main`.*
+- **Fix #2** — Removed dead announcement stubs (tile, FAB handler, orphaned i18n keys). *Status: ✅ implemented, on `main`.*
+- **Fix #3** — Wired the overdue-payments badge to real data. *Status: ✅ implemented, on `main`.*
+- **Fix #4** — Fixed the repository-pattern deviation in `useSchoolDashboard`. *Status: ✅ implemented, on `main`.*
+- **Fix #5** — Student payment-status widget: confirmed as an intentional non-build, not a fix. *Status: ⚪ decided against, not applicable.*
+
+Two items are explicitly deferred, not phased:
 - Announcements (future-spec candidate, unscheduled).
 - Instructor-employee vs. student role distinction (paused product design question).
 
