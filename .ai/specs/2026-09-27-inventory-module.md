@@ -1,5 +1,7 @@
 # Inventory Module — Specification (as-built + remediation)
 
+> **Status (2026-09-30):** All three fixes are implemented. Verified by direct code inspection: fixes #2 (currency-aware `ProductCard.getSummaryByCurrency`) and #3 (`OrderItemRepository.countByVariantIds` wired into `app/organization/inventory/[productId]/edit.tsx`'s `handleDelete`, with the `inventoryDeleteProductConfirmWithOrders`/`inventoryDeleteProductConfirm` i18n keys in both `en.json` and `pl.json`) were already live on `main` before this pass began. Fix #1's `updateStockQuantity` removal was also already on `main`; its `deleteImage` half (`src/modules/core/utils/uploadImage.ts`) shipped via PR #8, confirmed zero call sites in `src/` and `app/` both before and after removal. The already-landed `product_variants` migration fix predates this pass.
+
 ## 📝 TLDR
 Documents current behavior of `src/modules/inventory/` — the instructor-owned product catalog (products with one or more variants, each carrying its own price/currency/stock). Student-facing browsing/ordering UI lives entirely in the `orders` module, reusing inventory's repositories directly. A latent migration gap for `product_variants` was confirmed and fixed during this pass (see below). Three further fixes are proposed: remove dead code instead of finishing half-built features, make aggregate price/stock displays currency-aware instead of assuming a single currency, and add a delete confirmation warning when a product/variant has order history.
 
@@ -48,12 +50,14 @@ No schema changes beyond the already-landed migration fix (structural only, no c
 
 ## 📋 Phasing
 Each fix ships independently:
-- **Fix #1** — Remove unused dead code (`updateStockQuantity`, `deleteImage`).
-- **Fix #2** — Currency-aware aggregate price/stock display.
-- **Fix #3** — Delete confirmation warning when order history exists.
+- **Fix #1** — Remove unused dead code (`updateStockQuantity`, `deleteImage`). *Status: ✅ implemented (`updateStockQuantity` predates this pass, `deleteImage` via PR #8).*
+- **Fix #2** — Currency-aware aggregate price/stock display. *Status: ✅ implemented, on `main`.*
+- **Fix #3** — Delete confirmation warning when order history exists. *Status: ✅ implemented, on `main`.*
 
-## 📋 Implementation Plan
+## 📋 Implementation Plan (already executed)
 
-1. Delete `updateStockQuantity` from `productService.ts` and `deleteImage` from `uploadImage.ts`, and their barrel exports. Test: typecheck passes with no remaining references to either symbol.
-2. Rewrite `ProductCard.getLowestPrice`/`getTotalStock` to group `product.variants` by `currency` first, then compute lowest-price and total-stock per currency group; render one line per currency in the card. Test: a product with variants in `PLN` and `USD` shows two separate price/stock lines instead of one blended figure; a single-currency product's display is unchanged.
-3. Add an `OrderItemRepository` query to count non-deleted order items referencing a given `product_variant_id` (or product, aggregating across its variants); call it from the product/variant delete flow in `app/organization/inventory/[productId]/edit.tsx` (and the variant-level delete path, if a separate one exists) before showing the existing `confirmDelete` dialog, appending the order count to the confirmation message when greater than zero. Test: deleting a product with existing orders shows the order count in the confirmation; deleting one with none shows the existing dialog unchanged.
+1. Deleted `updateStockQuantity` from `productService.ts` (predates this pass) and `deleteImage` from `uploadImage.ts` (PR #8), and their barrel exports. Test: typecheck passes with no remaining references to either symbol.
+2. Rewrote `ProductCard.getLowestPrice`/`getTotalStock` (now `getSummaryByCurrency`) to group `product.variants` by `currency` first, then compute lowest-price and total-stock per currency group; renders one line per currency in the card. Test: a product with variants in `PLN` and `USD` shows two separate price/stock lines instead of one blended figure; a single-currency product's display is unchanged.
+3. Added `OrderItemRepository.countByVariantIds` to count non-deleted order items referencing a given `product_variant_id`; called from the product delete flow in `app/organization/inventory/[productId]/edit.tsx`'s `handleDelete` before showing the existing `confirmDelete` dialog, appending the order count to the confirmation message when greater than zero. No separate variant-level delete UI exists, so no second call site was needed. Test: deleting a product with existing orders shows the order count in the confirmation; deleting one with none shows the existing dialog unchanged.
+
+Verification: `npm run typecheck` shows no errors in any touched file (`inventory/*`, `core/utils/uploadImage.ts`) — remaining typecheck output is pre-existing, unrelated errors in other modules (63 errors, identical count before and after the PR #8 diff).
