@@ -1,5 +1,7 @@
 # Events Module — Specification (as-built + remediation)
 
+> **Status (2026-09-30):** All four fixes are implemented and live on `main` (commit `2c81b92`, landed the same day this spec was authored — the remediation shipped directly alongside the as-built documentation rather than through a separate PR). Verified by direct code inspection: `EventRepository.findByIds` includes `Q.where("deleted_at", null)`; `bulkSaveParticipantStatuses` (service) and `useStudentEventStatuses.saveAll` (hook) each build one `database.batch()` of `prepareUpdate` operations inside a single `database.write()`; `updateEventSchema` carries the same `schoolId`-required-for-`school` and `whitelistedMemberIds`-non-empty-for-`whitelist` refinements as `createEventSchema`; `useStudentEvents` subscribes via `EventParticipantRepository.observeByMemberId(...)` rather than a one-time fetch. No implementation PR was needed — the remediation had already shipped.
+
 ## 📝 TLDR
 Documents current behavior of `src/modules/events/` — one-off scheduled happenings (distinct from `attendance`'s recurring training sessions), with 3-level visibility (`organization`/`school`/`whitelist` — the whitelist is just `event_participants` rows themselves, no separate table), a 3-way participant status (`absent → attending → paid`) gated so only instructors can set `paid`, and cash-only bookkeeping fully independent of the `payments` module. No schema/migration bug was found here (unlike `payments`/`orders`/`inventory`) — schema registration and Postgres migration timing both check out cleanly. Four independently shippable fixes are proposed for gaps found in soft-delete filtering, write atomicity, edit-time validation, and student-list reactivity. Event pricing is confirmed fixed-per-event by design — no per-participant price snapshot is needed or proposed.
 
@@ -47,13 +49,13 @@ No public contract changes. Fix #3 makes `updateEventSchema` throw in cases it p
 - Fix #3 is stricter validation — confirm no existing production event data already violates these rules before enabling strict edit-time enforcement (a pre-existing `school`-visibility event with a null `schoolId`, if any exist, would become un-editable without first fixing its visibility or school assignment).
 
 ## 📋 Phasing
-Each fix ships independently:
-- **Fix #1** — Filter soft-deleted events from `findByIds`.
-- **Fix #2** — Batch participant-status bulk saves.
-- **Fix #3** — Re-validate cross-field rules on edit.
-- **Fix #4** — Make the student's event list reactive.
+All four fixes for this pass have already landed; no further phasing needed.
+- **Fix #1** — Filter soft-deleted events from `findByIds`. *Status: ✅ implemented, on `main`.*
+- **Fix #2** — Batch participant-status bulk saves. *Status: ✅ implemented, on `main`.*
+- **Fix #3** — Re-validate cross-field rules on edit. *Status: ✅ implemented, on `main`.*
+- **Fix #4** — Make the student's event list reactive. *Status: ✅ implemented, on `main`.*
 
-## 📋 Implementation Plan
+## 📋 Implementation Plan (already executed)
 
 1. Add `Q.where('deleted_at', null)` to `EventRepository.findByIds`. Test: a soft-deleted event's id passed to `findByIds` returns no result; a student's event list no longer includes it.
 2. Rewrite `bulkSaveParticipantStatuses` (service) and `useStudentEventStatuses.saveAll` (hook) to build a `database.batch()` of `prepareUpdate` calls inside one `database.write()`. Test: inject a failure partway through a multi-participant save — assert zero participants changed, not a partial subset.
