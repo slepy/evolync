@@ -92,7 +92,7 @@ export const SchoolSettingsForm = forwardRef<
             name="name"
             label={t("schoolNameLabel")}
             placeholder={t("schoolNamePlaceholder")}
-            error={errors.name?.message ? t(errors.name.message) : undefined}
+            error={errors.name?.message}
             disabled={isLoading}
             autoCapitalize="words"
           />
@@ -102,9 +102,7 @@ export const SchoolSettingsForm = forwardRef<
             name="address"
             label={t("fieldAddress")}
             placeholder={t("fieldAddressPlaceholder")}
-            error={
-              errors.address?.message ? t(errors.address.message) : undefined
-            }
+            error={errors.address?.message}
             disabled={isLoading}
             autoCapitalize="sentences"
           />

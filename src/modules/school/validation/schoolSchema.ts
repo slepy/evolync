@@ -13,8 +13,8 @@ import {
 export const createSchoolSchema = z.object({
   name: z
     .string()
-    .min(2, 'school.validation.nameTooShort')
-    .max(100, 'school.validation.nameTooLong')
+    .min(2, t('nameTooShort'))
+    .max(100, t('nameTooLong', { count: 100 }))
     .trim(),
 });
 
@@ -30,12 +30,12 @@ export type CreateSchoolFormValues = z.infer<typeof createSchoolSchema>;
 export const updateSchoolSchema = z.object({
   name: z
     .string()
-    .min(2, 'school.validation.nameTooShort')
-    .max(100, 'school.validation.nameTooLong')
+    .min(2, t('nameTooShort'))
+    .max(100, t('nameTooLong', { count: 100 }))
     .trim(),
   address: z
     .string()
-    .max(500, 'school.validation.addressTooLong')
+    .max(500, t('addressTooLong'))
     .trim()
     .optional()
     .nullable()

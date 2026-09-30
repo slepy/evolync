@@ -22,6 +22,9 @@ verify_jwt = false
 # URL Configuration instead.
 additional_redirect_urls = ["evolync://auth/callback"]
 
+# This section only affects the local stack. The hosted project keeps its own
+# template (default = magic link!) — push it with:
+#   SUPABASE_ACCESS_TOKEN=... node scripts/push-recovery-email-template.js
 [auth.email.template.recovery]
 subject = "Resetowanie hasła — Evolync"
 content_path = "./supabase/email-templates/reset-password.html"

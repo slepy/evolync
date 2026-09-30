@@ -19,7 +19,7 @@ export const registerInstructorSchema = z
       .email(t('invalidEmail')),
     password: z
       .string()
-      .min(8, t('passwordMinLength'))
+      .min(8, t('passwordMinLength', { count: 8 }))
       .regex(passwordRegex, t('passwordComplexity')),
     confirmPassword: z
       .string()
@@ -59,7 +59,7 @@ export const registerSchema = z
       .email(t('invalidEmail')),
     password: z
       .string()
-      .min(8, t('passwordMinLength'))
+      .min(8, t('passwordMinLength', { count: 8 }))
       .regex(passwordRegex, t('passwordComplexity')), // Same regex as Instructor
     confirmPassword: z
       .string()

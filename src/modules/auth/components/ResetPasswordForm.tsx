@@ -1,8 +1,8 @@
-import { PasswordInput, SubmitButton } from "@/modules/core/components";
+import { PasswordInput, SubmitButton, TextInput } from "@/modules/core/components";
 import { zodResolver } from "@hookform/resolvers/zod";
 import React from "react";
-import { Controller, useForm } from "react-hook-form";
-import { Input, Text, YStack } from "tamagui";
+import { useForm } from "react-hook-form";
+import { YStack } from "tamagui";
 import {
   resetPasswordSchema,
   type ResetPasswordFormValues,
@@ -41,44 +41,18 @@ export const ResetPasswordForm: React.FC<ResetPasswordFormProps> = ({
 
   return (
     <YStack gap="$3">
-      <YStack gap="$2">
-        <Text fontSize="$3" color="$softGrayDark" fontWeight="500">
-          {t("otpCode")}
-        </Text>
-        <Controller
-          control={control}
-          name="code"
-          render={({ field: { onChange, onBlur, value } }) => (
-            <Input
-              id="code"
-              placeholder="000000"
-              value={value}
-              onChangeText={(text) => onChange(text.replace(/[^0-9]/g, "").slice(0, 6))}
-              onBlur={onBlur}
-              disabled={isLoading}
-              keyboardType="number-pad"
-              maxLength={6}
-              textAlign="center"
-              fontSize="$7"
-              letterSpacing={8}
-              borderColor={errors.code ? "$imperialRed" : "$softGrayLight"}
-              borderWidth={2}
-              focusStyle={{
-                borderColor: errors.code ? "$imperialRed" : "$chineseGold",
-                backgroundColor: "$pearlWhiteLight",
-              }}
-              backgroundColor="$pearlWhite"
-              color="$inkBlack"
-              placeholderTextColor="$softGray"
-            />
-          )}
-        />
-        {errors.code && (
-          <Text color="$imperialRed" fontSize="$3" fontWeight="500">
-            {errors.code.message}
-          </Text>
-        )}
-      </YStack>
+      <TextInput
+        control={control}
+        name="code"
+        label={t("otpCode")}
+        placeholder="000000"
+        error={errors.code?.message}
+        disabled={isLoading}
+        keyboardType="number-pad"
+        maxLength={6}
+        autoCapitalize="none"
+        flex={0}
+      />
 
       <PasswordInput
         control={control}
