@@ -58,35 +58,3 @@ export async function uploadImage(
 
   return urlData.publicUrl;
 }
-
-/**
- * Deletes an image from Supabase Storage
- *
- * @param imageUrl - Public URL of the image to delete
- * @param bucket - Storage bucket name (default: 'product-images')
- */
-export async function deleteImage(imageUrl: string, bucket: string = 'product-images'): Promise<void> {
-  // Only delete if it's a Supabase storage URL
-  if (!imageUrl.includes('supabase') || !imageUrl.includes('/storage/')) {
-    return;
-  }
-
-  // Extract file path from URL
-  // URL format: https://<project>.supabase.co/storage/v1/object/public/<bucket>/<path>
-  const bucketPath = `/storage/v1/object/public/${bucket}/`;
-  const pathIndex = imageUrl.indexOf(bucketPath);
-
-  if (pathIndex === -1) {
-    console.warn('Could not extract file path from image URL:', imageUrl);
-    return;
-  }
-
-  const filePath = imageUrl.substring(pathIndex + bucketPath.length);
-
-  const { error } = await supabase.storage.from(bucket).remove([filePath]);
-
-  if (error) {
-    console.error('Error deleting image:', error);
-    // Don't throw - deletion failure shouldn't break the flow
-  }
-}
