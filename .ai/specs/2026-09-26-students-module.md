@@ -1,5 +1,7 @@
 # Students Module — Specification (as-built + remediation)
 
+> **Status (2026-09-30):** All five fixes are implemented and live on `main` (commit `2c81b92`, landed the same day this spec was authored — the remediation shipped directly alongside the as-built documentation rather than through a separate PR). Verified by direct code inspection: `approveJoinRequest` (`src/modules/students/services/studentService.ts`) reads `SchoolSettingsRepository.findBySchoolId` for `defaultCurrency`/`defaultPaymentAmount` (falling back to `0`/`"PLN"` only when no settings row exists) and throws `existingMemberNotEligible` when `existingMemberId` doesn't belong to the school or isn't `OFFLINE`; `StudentRepository.findOfflineBySchoolId` exists and is what `ApproveJoinRequestSheet.tsx` uses for its candidate picker; the same component's auto-match normalizes email (trim + lowercase) and phone (via `formatPhoneNumber`/`parsePhoneNumber`) before comparing; the instructor's student-detail screen (`app/school/[schoolId]/students/[studentId]/index.tsx`) passes `{ isInstructor: true }` to `useStudentEventStatuses` (the student self-service screen at `app/user/events.tsx` correctly passes `{ isInstructor: false }`); and `useStudentPayments`/`useStudentAttendance` both subscribe via `.observe()` (`observeByMemberId`) while preserving pending local edits across live updates.
+
 ## 📝 TLDR
 Documents current behavior of `src/modules/students/` — the `SchoolMember` model/repository, shadow-student CRUD, and the approve/reject-join-request flow (the business-logic half of the `school`-owned join request). Five independently shippable fixes are proposed for concrete data-integrity and wiring bugs found in `approveJoinRequest`, the join-request picker, and the instructor's event-status view. A student self-service view of their own rank/status is flagged as a future-spec candidate, not designed here.
 
@@ -58,11 +60,11 @@ No public contract changes. Internal signature change: `approveJoinRequest` now 
 
 ## 📋 Phasing
 Each fix ships independently, in any order:
-- **Fix #1** — Correct payment-cycle enrollment currency/amount.
-- **Fix #2** — Validate + scope existing-member matching (service-side check + picker filter).
-- **Fix #3** — Normalize email/phone matching.
-- **Fix #4** — Pass `isInstructor: true` on the instructor's event-status hook call.
-- **Fix #5** — Reactive payments/attendance detail data.
+- **Fix #1** — Correct payment-cycle enrollment currency/amount. *Status: ✅ implemented, on `main`.*
+- **Fix #2** — Validate + scope existing-member matching (service-side check + picker filter). *Status: ✅ implemented, on `main`.*
+- **Fix #3** — Normalize email/phone matching. *Status: ✅ implemented, on `main`.*
+- **Fix #4** — Pass `isInstructor: true` on the instructor's event-status hook call. *Status: ✅ implemented, on `main`.*
+- **Fix #5** — Reactive payments/attendance detail data. *Status: ✅ implemented, on `main`.*
 - **(Future, not designed here)** — Student self-service rank/join-date/status view.
 
 ## 📋 Implementation Plan
