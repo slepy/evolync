@@ -1,5 +1,7 @@
 # Orders Module — Specification (as-built + remediation)
 
+> **Status (2026-09-30):** All three proposed fixes are implemented and live on `main` (commit `2c81b92`, landed the same day this spec was authored — the remediation shipped directly alongside the as-built documentation rather than through a separate PR). Verified by direct code inspection: `addOrderItems`/`removeOrderItems`/`updateOrderItemQuantities`/`updateOrderItems`/`deleteOrder` in `orderService.ts` each build one `database.batch()` inside a single `database.write()`, `useOrderDetails.handleUpdateItems` calls the combined `updateOrderItems` (remove+update+add in one batch) instead of three sequential service calls, `createOrderWithItems` calls `createOrderSchema.parse(...)` (which nests `createOrderItemSchema` per item) before any write, and `OrderRepository.observeCountBySchoolIds(schoolIds, status)` exists and is wired directly into `useOrganizationDashboard`, which subscribes to it as its own reactive observable instead of a raw `database.get("orders")` snapshot nested in the schools observer.
+
 ## 📝 TLDR
 Documents current behavior of `src/modules/orders/` — equipment orders placed by a student (self-service) or an instructor (on behalf of a student), with line items snapshotting price/currency at order time, and a 5-status lifecycle (`placed → paid → processing → ready_for_pickup → completed`) managed manually by the instructor with no enforced transition order — confirmed as intentional (instructor discretion). Stock quantity is shown but never enforced or decremented — also confirmed intentional.
 
@@ -56,9 +58,9 @@ No visible UI changes from any of the three fixes — all are internal correctne
 
 ## 📋 Phasing
 Each fix ships independently:
-- **Fix #1** — Batch the multi-item operations.
-- **Fix #2** — Wire existing Zod validation into the write path.
-- **Fix #3** — Fix the dashboard's pending-orders reactivity gap.
+- **Fix #1** — Batch the multi-item operations. *Status: ✅ implemented, on `main`.*
+- **Fix #2** — Wire existing Zod validation into the write path. *Status: ✅ implemented, on `main`.*
+- **Fix #3** — Fix the dashboard's pending-orders reactivity gap. *Status: ✅ implemented, on `main`.*
 
 ## 📋 Implementation Plan
 
