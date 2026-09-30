@@ -1,5 +1,7 @@
 # Core — Specification (as-built + remediation)
 
+> **Status (2026-09-30):** All six fixes are implemented and live on `main` (commit `2c81b92`, landed the same day this spec was authored — the remediation shipped directly alongside the as-built documentation rather than through a separate PR). Verified by direct code inspection: `Header.tsx` imports `signOut` from `src/modules/core/utils/signOutBridge.ts` (not `@/modules/auth`), with `registerSignOutHandler(signOut)` wired in `app/_layout.tsx`; `src/modules/core/utils/supabase.ts` no longer exists; the dead Expo-template cluster (`Themed.tsx`, `EditScreenInfo.tsx`, `ExternalLink.tsx`, `StyledText.tsx`, `constants/Colors.ts`, both `useColorScheme`/`useClientOnlyValue` variants, and their test) is gone, with `app/+not-found.tsx` now rendering Tamagui directly; `Divider` and `src/modules/core/index.ts` no longer exist; and `AccordionSection.tsx` renders `BaseCard` instead of a raw `Card`. No implementation PR was needed — the remediation had already shipped. `deleteImage` remains correctly out of this spec's scope, tracked as an open proposal in `.ai/specs/2026-09-27-inventory-module.md`.
+
 ## 📝 TLDR
 "Core" spans two locations: `src/core/` (i18n infrastructure only — language switching, the global `t()`, already covered in the `settings` spec) and `src/modules/core/` (generic, domain-agnostic shared UI components/hooks/utils — `BaseCard`, `Header`, `OptionsSheet`, `PickerSheet`, `SubmitComponent`/`useDirtyFlag`, `confirmDelete`, `uploadImage`, formatters, and more). Neither owns any WatermelonDB table — clean on the schema-registration check that found bugs in 6 of the other 12 modules. One real violation of CLAUDE.md's "core never imports from other modules" rule was found and fixed (`Header` importing `useAuth` directly); five dead-code clusters were removed; one component was brought into compliance with the `BaseCard` convention it was itself supposed to model. `deleteImage` remains a documented, not-yet-executed proposal (same finding already recorded in the `inventory` spec).
 
@@ -56,7 +58,13 @@ No schema changes — `core` owns no tables, confirmed clean on the same schema-
 - **`deleteImage` stays an open proposal**, tracked in the `inventory` spec, not duplicated or re-decided here.
 
 ## 📋 Phasing
-All six fixes for this pass have already landed; no further phasing needed for `core` itself. One item remains an open, tracked proposal elsewhere:
+All six fixes for this pass have already landed; no further phasing needed for `core` itself.
+- **Fix #1** — `core → auth` import violation fixed via sign-out bridge. *Status: ✅ implemented, on `main`.*
+- **Fix #2** — Dead duplicate Supabase client removed. *Status: ✅ implemented, on `main`.*
+- **Fix #3** — Dead Expo-template cluster removed; `+not-found.tsx` rewritten in Tamagui. *Status: ✅ implemented, on `main`.*
+- **Fix #4** — `Divider` removed. *Status: ✅ implemented, on `main`.*
+- **Fix #5** — `src/modules/core/index.ts` removed. *Status: ✅ implemented, on `main`.*
+- **Fix #6** — `AccordionSection` renders `BaseCard`. *Status: ✅ implemented, on `main`.*
 - **(Tracked in `.ai/specs/2026-09-27-inventory-module.md`, not executed)** — wiring up or removing `deleteImage`.
 
 ## 📋 Implementation Plan (already executed)
