@@ -719,5 +719,14 @@
   "notificationPaymentCreatedTitle": "Nowa płatność",
   "notificationPaymentCreatedBody": "Nowa płatność: {{amount}} za {{period}}",
   "notificationEventAssignedTitle": "Dodano Cię do wydarzenia",
-  "notificationEventAssignedBody": "Dodano Cię do: {{eventName}} ({{startDate}})"
+  "notificationEventAssignedBody": "Dodano Cię do: {{eventName}} ({{startDate}})",
+  "notificationsPushSetting": "Powiadomienia push",
+  "notificationsPushSettingHint": "Otrzymuj alerty na tym urządzeniu, nawet gdy aplikacja jest zamknięta.",
+  "notificationsPushBlocked": "Powiadomienia są zablokowane w ustawieniach urządzenia.",
+  "notificationsPushOpenSettings": "Otwórz ustawienia urządzenia",
+  "notificationsPushUnsupported": "Powiadomienia push nie są dostępne na tym urządzeniu.",
+  "notificationsPushRationaleTitle": "Bądź na bieżąco",
+  "notificationsPushRationaleBody": "Włącz powiadomienia, aby od razu dowiadywać się o nowych zamówieniach, prośbach o dołączenie, płatnościach i wydarzeniach — nawet gdy aplikacja jest zamknięta.",
+  "notificationsPushRationaleEnable": "Włącz powiadomienia",
+  "notificationsPushRationaleLater": "Nie teraz"
 }

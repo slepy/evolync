@@ -106,18 +106,36 @@ export const syncPushRegistration = async (): Promise<PushRegistrationResult> =>
   return registerForPushNotifications();
 };
 
-/** Disable this device's token server-side. Safe to call when none is stored. */
-export const disablePushToken = async (): Promise<void> => {
+/**
+ * Disable this device's token server-side. Safe to call when none is stored.
+ * Bounded by `timeoutMs` so a slow network never holds up sign-out.
+ */
+export const disablePushToken = async ({ timeoutMs = 4000 }: { timeoutMs?: number } = {}): Promise<void> => {
   const token = await AsyncStorage.getItem(PUSH_TOKEN_KEY);
   if (!token) return;
-  try {
+
+  const disable = async () => {
     const { error } = await supabase.rpc("disable_push_token", { p_token: token });
     if (error) throw error;
     await AsyncStorage.removeItem(PUSH_TOKEN_KEY);
+  };
+
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  const timeout = new Promise<never>((_, reject) => {
+    timer = setTimeout(() => reject(new Error("timed out")), timeoutMs);
+  });
+
+  try {
+    await Promise.race([disable(), timeout]);
   } catch (error) {
     console.error("[push] Disabling token failed:", error);
+  } finally {
+    clearTimeout(timer);
   }
 };
+
+/** Whether this device can receive push at all (physical iOS/Android device). */
+export const isPushSupported = (): boolean => isPushCapable();
 
 /** Settings switch. Turning on asks for OS permission the first time. */
 export const setPushNotificationsEnabled = async (

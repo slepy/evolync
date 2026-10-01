@@ -718,5 +718,14 @@
   "notificationPaymentCreatedTitle": "New payment",
   "notificationPaymentCreatedBody": "New payment: {{amount}} for {{period}}",
   "notificationEventAssignedTitle": "Added to an event",
-  "notificationEventAssignedBody": "You've been added to {{eventName}} on {{startDate}}"
+  "notificationEventAssignedBody": "You've been added to {{eventName}} on {{startDate}}",
+  "notificationsPushSetting": "Push notifications",
+  "notificationsPushSettingHint": "Get alerts on this device even when the app is closed.",
+  "notificationsPushBlocked": "Notifications are blocked in your device settings.",
+  "notificationsPushOpenSettings": "Open device settings",
+  "notificationsPushUnsupported": "Push notifications are not available on this device.",
+  "notificationsPushRationaleTitle": "Stay in the loop",
+  "notificationsPushRationaleBody": "Turn on notifications to hear about new orders, join requests, payments and events right away — even when the app is closed.",
+  "notificationsPushRationaleEnable": "Turn on notifications",
+  "notificationsPushRationaleLater": "Not now"
 }

@@ -6,6 +6,7 @@ import { View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { ScrollView, Text, YStack } from "tamagui";
 import { AccountTypeCard } from "@/modules/auth/components/AccountTypeCard";
+import { PushNotificationsSetting } from "@/modules/notifications";
 
 export default function SettingsScreen() {
   const router = useRouter();
@@ -29,6 +30,7 @@ export default function SettingsScreen() {
         <YStack maxWidth={500} width="100%" alignSelf="center" gap="$6">
           <YStack gap="$3">
             <LanguageSwitcher variant="list" />
+            <PushNotificationsSetting />
             {/*  <AccountTypeCard
               title={t("createOrganization")}
               description={t("createOrganizationDescription")}

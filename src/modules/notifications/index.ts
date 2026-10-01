@@ -1,4 +1,10 @@
-export { NotificationBell, NotificationCard, NotificationsScreen } from "./components";
+export {
+  NotificationBell,
+  NotificationCard,
+  NotificationsScreen,
+  PushNotificationsSetting,
+  PushPermissionPrompt,
+} from "./components";
 export { useNotifications, useUnreadNotificationCount } from "./hooks";
 export { NotificationRepository } from "./repositories";
 export {
@@ -9,6 +15,7 @@ export {
   dismissPushRationale,
   getPushPermission,
   getPushPreference,
+  isPushSupported,
   registerForPushNotifications,
   setPushNotificationsEnabled,
   shouldOfferPushRationale,

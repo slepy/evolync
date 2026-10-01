@@ -1,4 +1,5 @@
 import { supabase } from '@/config/supabase';
+import { disablePushToken } from '@/modules/notifications';
 import { useStore, type AuthError, type LoginCredentials } from '@/store';
 import type { AuthError as SupabaseAuthError } from '@supabase/supabase-js';
 import { useRouter } from 'expo-router';
@@ -580,6 +581,9 @@ export const useAuth = () => {
   const signOut = useCallback(async () => {
     try {
       setLoading(true);
+
+      // Stop pushes to this device while the session can still call the RPC
+      await disablePushToken();
 
       // Sign out from Supabase
       await supabase.auth.signOut();

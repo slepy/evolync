@@ -7,6 +7,7 @@ export {
   dismissPushRationale,
   getPushPermission,
   getPushPreference,
+  isPushSupported,
   registerForPushNotifications,
   setPushNotificationsEnabled,
   shouldOfferPushRationale,
