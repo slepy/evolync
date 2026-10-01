@@ -96,6 +96,15 @@ const mapSupabaseError = (error: SupabaseAuthError | Error): AuthError => {
   };
 };
 
+// Dev-only, non-secret description of a password + email, to compare what the
+// reset form stored with what the login form sends (never logs the password).
+const describeCredentials = (email: string | undefined, password: string) => ({
+  email,
+  length: password.length,
+  outsideAllowedCharset: /[^A-Za-z\d@$!%*?&]/.test(password),
+  edgeWhitespace: password !== password.trim(),
+});
+
 // ============================================================================
 // useAuth Hook
 // ============================================================================
@@ -237,6 +246,10 @@ export const useAuth = () => {
           recoverable: true,
         });
         return;
+      }
+
+      if (__DEV__) {
+        console.log('[signInWithEmail]', describeCredentials(credentials.email, credentials.password));
       }
 
       // Call Supabase Auth
@@ -398,6 +411,9 @@ export const useAuth = () => {
       // reset succeeded and then hit invalid_credentials on login. Prove the
       // new password works before reporting success.
       const email = updateData?.user?.email;
+      if (__DEV__) {
+        console.log('[updatePassword]', describeCredentials(email, newPassword));
+      }
       if (email) {
         const { error: checkError } = await supabase.auth.signInWithPassword({
           email,
