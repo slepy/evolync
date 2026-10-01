@@ -30,7 +30,9 @@ Ship the notifications module from the spec: server-generated notifications for 
 
 ## Risks
 
-- **New server contract:** ship the client (schema v19) before deploying the sync change. Older clients would get an unknown `notifications` table key. WatermelonDB ignores unknown tables in pull changes only with `unsafeTurbo` off — to be verified, else gate on client schema version (see Step 3).
+- **New server contract:** verified that WatermelonDB 0.28 skips unknown tables in pull changes ("for forward-compatibility"), so older builds tolerate the new `notifications` key with no gating. Clients upgrading to v19 send WatermelonDB's `migration` info (`migrationsEnabledAtVersion: 18`), and the server answers with a first-pull window for the new table, so rows created before the upgrade are not lost.
+- **Actor detection:** sync writes use the service role, so `auth.uid()` is null in triggers. The sync function forwards the verified user id as `x-evolync-actor` (PostgREST `request.headers`); a direct authenticated call uses `auth.uid()` first.
+- **Validation baseline:** `npm run typecheck` already fails on `main` (32 pre-existing app errors, plus Deno files the root tsconfig wrongly included). This run excludes `supabase/functions` from tsc (Deno is checked by `deno test`) and requires zero new errors versus the `main` baseline.
 - **Native dependency:** `expo-notifications` needs a new dev/EAS build. Push cannot be verified in this environment (no device, no credentials).
 - **Triggers on four hot tables:** each is wrapped in `exception when others` so a notification failure never rolls back the source write.
 
@@ -64,10 +66,10 @@ Ship the notifications module from the spec: server-generated notifications for 
 
 ### Phase 1: Server generation + sync + local storage
 
-- [ ] 1.1 notifications table, indexes, idempotency index and RLS migration
-- [ ] 1.2 notify() helper and N1–N5 triggers with SQL tests
-- [ ] 1.3 Sync pull/push of notifications in both sync modes
-- [ ] 1.4 WatermelonDB schema v19, Notification model and NotificationRepository
+- [x] 1.1 notifications table, indexes, idempotency index and RLS migration — 6ab13bf
+- [x] 1.2 notify() helper and N1–N5 triggers with SQL tests — c2cb960
+- [x] 1.3 Sync pull/push of notifications in both sync modes — 00f9e52, a24eff4
+- [x] 1.4 WatermelonDB schema v19, Notification model and NotificationRepository — 8933576
 
 ### Phase 2: In-app inbox
 
