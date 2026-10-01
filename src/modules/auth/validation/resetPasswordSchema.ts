@@ -1,6 +1,11 @@
 import { z } from 'zod';
 import { passwordRegex } from './registerSchema';
 
+// Supabase's "Email OTP Length" is configurable (6–10 digits) in the
+// Dashboard, so accept the whole range instead of pinning one length.
+export const OTP_MIN_LENGTH = 6;
+export const OTP_MAX_LENGTH = 10;
+
 /**
  * Validation schema for verifying the emailed recovery code and setting a new
  * password in a single step. Reuses the same complexity rules as registration.
@@ -9,8 +14,9 @@ export const resetPasswordSchema = z
   .object({
     code: z
       .string()
-      .length(6, t('otpCodeLength'))
-      .regex(/^\d{6}$/, t('otpCodeInvalid')),
+      .regex(/^\d*$/, t('otpCodeInvalid'))
+      .min(OTP_MIN_LENGTH, t('otpCodeLength', { min: OTP_MIN_LENGTH, max: OTP_MAX_LENGTH }))
+      .max(OTP_MAX_LENGTH, t('otpCodeLength', { min: OTP_MIN_LENGTH, max: OTP_MAX_LENGTH })),
     password: z
       .string()
       .min(8, t('passwordMinLength', { count: 8 }))

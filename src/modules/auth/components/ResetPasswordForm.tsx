@@ -4,6 +4,7 @@ import React from "react";
 import { useForm } from "react-hook-form";
 import { YStack } from "tamagui";
 import {
+  OTP_MAX_LENGTH,
   resetPasswordSchema,
   type ResetPasswordFormValues,
 } from "../validation/resetPasswordSchema";
@@ -45,11 +46,11 @@ export const ResetPasswordForm: React.FC<ResetPasswordFormProps> = ({
         control={control}
         name="code"
         label={t("otpCode")}
-        placeholder="000000"
+        placeholder="00000000"
         error={errors.code?.message}
         disabled={isLoading}
         keyboardType="number-pad"
-        maxLength={6}
+        maxLength={OTP_MAX_LENGTH}
         autoCapitalize="none"
         flex={0}
       />
