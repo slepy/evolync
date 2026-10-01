@@ -1,4 +1,4 @@
-import { Check, Clock, X } from "lucide-react-native";
+import { Check, Clock, X, type LucideIcon } from "lucide-react-native";
 import type { ColorTokens } from "tamagui";
 import {
   type PaymentStatus,
@@ -8,7 +8,7 @@ import {
 export const STATUS_CONFIG: Record<
   PaymentStatus,
   {
-    icon: React.ElementType;
+    icon: LucideIcon;
     color: ColorTokens;
     bgColor: ColorTokens;
     label: string;

@@ -135,7 +135,7 @@ export const useOrderDetails = (orderId: string | undefined) => {
 
         setOrderDetails({
           order,
-          member,
+          member: member ?? undefined,
           items: itemDetails,
           totalsByCurrency,
         });

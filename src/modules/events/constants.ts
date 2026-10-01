@@ -1,4 +1,4 @@
-import { Check, Clock, X } from "lucide-react-native";
+import { Check, Clock, X, type LucideIcon } from "lucide-react-native";
 import type { ColorTokens } from "tamagui";
 import {
   type EventParticipantStatus,
@@ -22,7 +22,7 @@ export const PARTICIPANT_STATUS_CYCLE: EventParticipantStatus[] = [
 export const PARTICIPANT_STATUS_CONFIG: Record<
   EventParticipantStatus,
   {
-    icon: React.ElementType;
+    icon: LucideIcon;
     color: ColorTokens;
     bgColor: ColorTokens;
     label: string;
