@@ -13,7 +13,7 @@ import { Button, ScrollView, Text, YStack } from 'tamagui';
 // ============================================================================
 // ResetPasswordScreen Component
 //
-// No deep link involved: the user copies a 6-digit OTP code from the email
+// No deep link involved: the user copies the OTP code (6–10 digits, per Supabase config) from the email
 // Supabase sends and types it in here, alongside the new password. This
 // avoids relying on the app's custom URL scheme being registered in
 // Supabase's Redirect URLs allow-list (see auth-module spec for the
