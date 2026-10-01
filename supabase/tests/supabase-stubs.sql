@@ -37,3 +37,9 @@ create or replace function storage.foldername(name text) returns text[] language
 $$;
 
 grant usage on schema public, auth to anon, authenticated, service_role;
+
+-- Supabase grants API roles access to new public objects by default; RLS and
+-- explicit revokes in migrations then narrow it.
+alter default privileges in schema public grant all on tables to anon, authenticated, service_role;
+alter default privileges in schema public grant all on sequences to anon, authenticated, service_role;
+alter default privileges in schema public grant execute on functions to anon, authenticated, service_role;

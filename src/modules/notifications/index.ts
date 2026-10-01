@@ -1,8 +1,20 @@
 export { NotificationBell, NotificationCard, NotificationsScreen } from "./components";
 export { useNotifications, useUnreadNotificationCount } from "./hooks";
 export { NotificationRepository } from "./repositories";
-export { markNotificationRead, markAllNotificationsRead, resolveNotificationOpen } from "./services";
-export type { NotificationOpenResult } from "./services";
+export {
+  markNotificationRead,
+  markAllNotificationsRead,
+  resolveNotificationOpen,
+  disablePushToken,
+  dismissPushRationale,
+  getPushPermission,
+  getPushPreference,
+  registerForPushNotifications,
+  setPushNotificationsEnabled,
+  shouldOfferPushRationale,
+  syncPushRegistration,
+} from "./services";
+export type { NotificationOpenResult, PushRegistrationResult } from "./services";
 export {
   getNotificationRoute,
   getNotificationContent,

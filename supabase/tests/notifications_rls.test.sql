@@ -52,6 +52,15 @@ exception when insufficient_privilege then
   null;
 end $$;
 
+-- notify() is trigger-only: clients cannot forge notifications for others.
+do $$
+begin
+  perform public.notify('00000000-0000-0000-0000-00000000000b', 'payment_created', '{}'::jsonb, 'payment_record', gen_random_uuid());
+  raise exception 'calling notify() should have been denied';
+exception when insufficient_privilege then
+  null;
+end $$;
+
 -- Marking own row read works; another user's row is untouched.
 update public.notifications set read_at = now();
 

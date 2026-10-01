@@ -35,7 +35,14 @@
       "expo-router",
       "expo-secure-store",
       "expo-sqlite",
-      "expo-screen-orientation"
+      "expo-screen-orientation",
+      [
+        "expo-notifications",
+        {
+          "color": "#ffffff",
+          "defaultChannel": "default"
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true

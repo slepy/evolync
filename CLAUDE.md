@@ -74,7 +74,7 @@ import { BaseCard } from "@/modules/core/components";
 1. All reads/writes go through local **WatermelonDB** - never directly from Supabase
 2. UI subscribes to `.observe()` for reactive updates
 3. Services call `sync().catch(console.error)` after mutations (fire-and-forget)
-4. Only allowed direct Supabase calls: `auth.*`, `storage.*`, `rpc('setup_instructor_organization')`, sync edge function
+4. Only allowed direct Supabase calls: `auth.*`, `storage.*`, `rpc('setup_instructor_organization')`, `rpc('register_push_token')` / `rpc('disable_push_token')` (device push tokens are device state, not offline data), sync edge function
 
 ### Repository Pattern
 
@@ -101,7 +101,7 @@ src/modules/{module}/
 └── index.ts        # Public API barrel export
 ```
 
-**Modules:** attendance, auth, core, dashboard, events, grading, inventory, orders, organization, payments, school, settings, students, threed
+**Modules:** attendance, auth, core, dashboard, events, grading, inventory, notifications, orders, organization, payments, school, settings, students, threed
 
 **Infrastructure:** `src/database/` - central WatermelonDB config, models, schema, migrations
 
