@@ -12,6 +12,7 @@ import { convertToSupabaseRecord, convertToWatermelonRecord } from "./utils.ts";
 import { pushThreeDChanges, pullThreeDChanges } from "./sync-threed.ts";
 import { pushNotesChanges, pullNotesChanges } from "./sync-notes.ts";
 import { pushTagsChanges, pullTagsChanges } from "./sync-tags.ts";
+import { pushNotificationsChanges, pullNotificationsChanges } from "./sync-notifications.ts";
 
 export async function syncOrganization(ctx: SyncContext): Promise<SyncPullChanges> {
   const { supabaseClient, userId, changes, lastPulledAt } = ctx;
@@ -240,6 +241,11 @@ export async function syncOrganization(ctx: SyncContext): Promise<SyncPullChange
   // PUSH: Tags Tables (user-private)
   // ===========================================================================
   await pushTagsChanges({ supabaseClient, userId, changes, lastPulledAt });
+
+  // ===========================================================================
+  // PUSH: Notifications (recipient-private, read_at only)
+  // ===========================================================================
+  await pushNotificationsChanges(ctx);
 
   // ===========================================================================
   // PULL: Fetch changes from Supabase since lastPulledAt
@@ -480,6 +486,11 @@ export async function syncOrganization(ctx: SyncContext): Promise<SyncPullChange
     fetchTableChanges,
   );
   Object.assign(pullChanges, tagsChanges);
+
+  // ===========================================================================
+  // PULL: Notifications (recipient-private)
+  // ===========================================================================
+  Object.assign(pullChanges, await pullNotificationsChanges(ctx));
 
   return {
     changes: pullChanges,

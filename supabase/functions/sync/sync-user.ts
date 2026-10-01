@@ -18,6 +18,7 @@ import { convertToSupabaseRecord, convertToWatermelonRecord } from "./utils.ts";
 import { pushThreeDChanges, pullThreeDChanges } from "./sync-threed.ts";
 import { pushNotesChanges, pullNotesChanges } from "./sync-notes.ts";
 import { pushTagsChanges, pullTagsChanges } from "./sync-tags.ts";
+import { pushNotificationsChanges, pullNotificationsChanges } from "./sync-notifications.ts";
 
 export async function syncUser(ctx: SyncContext): Promise<SyncPullChanges> {
   const { supabaseClient, userId, changes, lastPulledAt } = ctx;
@@ -153,6 +154,11 @@ export async function syncUser(ctx: SyncContext): Promise<SyncPullChanges> {
   await pushTagsChanges({ supabaseClient, userId, changes, lastPulledAt });
 
   // ===========================================================================
+  // PUSH: Notifications (recipient-private, read_at only)
+  // ===========================================================================
+  await pushNotificationsChanges(ctx);
+
+  // ===========================================================================
   // REFRESH MEMBERSHIP: After PUSH, re-fetch user's schools to include newly joined schools
   // ===========================================================================
 
@@ -179,9 +185,9 @@ export async function syncUser(ctx: SyncContext): Promise<SyncPullChanges> {
 
   // If user has no schools, return empty changes
   if (schoolIds.length === 0) {
-    console.log(`[SYNC:USER] User ${userId} has no schools, returning empty changes`);
+    console.log(`[SYNC:USER] User ${userId} has no schools, returning notifications only`);
     return {
-      changes: {},
+      changes: await pullNotificationsChanges(ctx),
       timestamp: Date.now(),
     };
   }
@@ -445,6 +451,11 @@ export async function syncUser(ctx: SyncContext): Promise<SyncPullChanges> {
     fetchTableChanges,
   );
   Object.assign(pullChanges, tagsChanges);
+
+  // ===========================================================================
+  // PULL: Notifications (recipient-private)
+  // ===========================================================================
+  Object.assign(pullChanges, await pullNotificationsChanges(ctx));
 
   // Log summary of pulled data
   console.log(`[SYNC:USER] ========================================`);
