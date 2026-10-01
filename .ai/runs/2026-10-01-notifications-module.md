@@ -89,3 +89,4 @@ Ship the notifications module from the spec: server-generated notifications for 
 - [x] 3.3 Database webhook trigger on notifications insert — 1f44f68
 - [x] 3.4 Settings push toggle, permission rationale sheet, disable token on logout — c3d78e7
 - [x] 3.5 Notification-tap handler routing and mark-read — 79043ea
+- [x] Post-review fix: throttle push re-registration, authenticated N2 trigger test — 2f3e31e
