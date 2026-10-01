@@ -18,6 +18,8 @@ import { useTheme, YStack } from "tamagui";
 export interface HeaderProps {
   /** 1. Back button - shown when navigation back is possible */
   onBack?: () => void;
+  /** 1b. Custom left content - shown in the back button slot when there is no back button */
+  leftContent?: React.ReactNode;
   /** 2. Center content - injectable React element (can be text, selector, custom component) */
   centerContent: React.ReactNode;
   /** 3. Show app logo with menu (default: true) */
@@ -40,7 +42,7 @@ export interface HeaderProps {
  * │ [Sync Status Bar]                       │  <- Bottom bar (4th element)
  * └─────────────────────────────────────────┘
  *
- * 1. Back Button: Optional, shown when onBack is provided
+ * 1. Back Button: Optional, shown when onBack is provided (otherwise leftContent, e.g. a bell)
  * 2. Center Content: Fully customizable React element
  * 3. App Logo: Opens user menu (profile, settings, logout)
  * 4. Sync Status Bar: Always shown, automatically detects network status
@@ -49,6 +51,7 @@ export interface HeaderProps {
  */
 export const Header: React.FC<HeaderProps> = ({
   onBack,
+  leftContent,
   centerContent,
   showLogoMenu = true,
   rightContent,
@@ -116,7 +119,7 @@ export const Header: React.FC<HeaderProps> = ({
           justifyContent="space-between"
           alignItems="center"
         >
-          {/* 1. Left: Back Button or Spacer */}
+          {/* 1. Left: Back Button, Custom Content, or Spacer */}
           {onBack ? (
             <TouchableOpacity
               onPress={onBack}
@@ -133,6 +136,15 @@ export const Header: React.FC<HeaderProps> = ({
                 <ArrowLeft size={24} color={theme.inkBlack?.val} />
               </YStack>
             </TouchableOpacity>
+          ) : leftContent ? (
+            <YStack
+              width={44}
+              height={44}
+              alignItems="center"
+              justifyContent="center"
+            >
+              {leftContent}
+            </YStack>
           ) : (
             <YStack width={44} height={44} />
           )}

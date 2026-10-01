@@ -18,6 +18,7 @@ import {
 } from "@/modules/school/repositories";
 import { usePendingJoinRequests } from "@/modules/school/hooks";
 import { DashboardStatCard } from "@/modules/dashboard/components/DashboardStatCard";
+import { NotificationBell } from "@/modules/notifications";
 import { useStore } from "@/store";
 import { withObservables } from "@nozbe/watermelondb/react";
 import {
@@ -191,7 +192,10 @@ function UserDashboardInner({ schools }: UserDashboardInnerProps) {
   if (!activeMembershipLoaded) {
     return (
       <View style={{ flex: 1, paddingTop: insets.top }}>
-        <Header centerContent={<HeaderTitle text={t("userDashboard")} />} />
+        <Header
+          centerContent={<HeaderTitle text={t("userDashboard")} />}
+          leftContent={<NotificationBell />}
+        />
         <YStack flex={1} alignItems="center" justifyContent="center">
           <Spinner size="large" />
         </YStack>
@@ -217,7 +221,7 @@ function UserDashboardInner({ schools }: UserDashboardInnerProps) {
 
   return (
     <View style={{ flex: 1, paddingTop: insets.top }}>
-      <Header centerContent={headerCenter} />
+      <Header centerContent={headerCenter} leftContent={<NotificationBell />} />
 
       <ScrollView>
         <YStack padding="$4" gap="$4">
@@ -303,7 +307,10 @@ export default function UserDashboard() {
   if (schoolMemberships === undefined) {
     return (
       <View style={{ flex: 1, paddingTop: insets.top }}>
-        <Header centerContent={<HeaderTitle text={t("userDashboard")} />} />
+        <Header
+          centerContent={<HeaderTitle text={t("userDashboard")} />}
+          leftContent={<NotificationBell />}
+        />
         <YStack flex={1} alignItems="center" justifyContent="center">
           <Spinner size="large" />
         </YStack>
