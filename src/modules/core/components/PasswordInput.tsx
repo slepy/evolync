@@ -60,14 +60,16 @@ export const PasswordInput = <TFieldValues extends FieldValues>({
               id={name}
               placeholder={defaultLabel}
               value={value as string}
-              onChange={onChange}
               onChangeText={onChange}
               onBlur={onBlur}
               disabled={disabled}
               secureTextEntry={!showPassword}
               autoCapitalize="none"
-              textContentType="password"
-              autoComplete="password"
+              // Only used for setting a password (register, reset). "newPassword"
+              // lets iOS Keychain / Google Password Manager save the new value
+              // instead of autofilling the old one on the next login.
+              textContentType="newPassword"
+              autoComplete="new-password"
               borderColor={error ? "$imperialRed" : "$softGrayLight"}
               borderWidth={2}
               focusStyle={{
