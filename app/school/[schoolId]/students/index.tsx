@@ -18,12 +18,15 @@ type Tab = "students" | "requests";
 
 export default function StudentsListScreen() {
   useRequireOrganizationOwner();
-  const { schoolId } = useLocalSearchParams<{ schoolId: string }>();
+  const { schoolId, tab } = useLocalSearchParams<{ schoolId: string; tab?: string }>();
   const [students, setStudents] = useState<SchoolMember[]>([]);
   const [requestsCount, setRequestsCount] = useState(0);
   const [loading, setLoading] = useState(true);
   const [isOpen, setIsOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState<Tab>("students");
+  // `?tab=requests` deep-links straight to join requests (e.g. from a notification).
+  const [activeTab, setActiveTab] = useState<Tab>(
+    tab === "requests" ? "requests" : "students",
+  );
   const [refreshKey, setRefreshKey] = useState(0);
   const router = useRouter();
   const insets = useSafeAreaInsets();

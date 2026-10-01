@@ -16,6 +16,8 @@ export interface SyncPushChanges {
     { created: any[]; updated: any[]; deleted: string[] }
   >;
   lastPulledAt: number;
+  /** Sent by WatermelonDB when the client schema migrated since the last pull. */
+  migration?: { from: number; tables: string[]; columns: { table: string; columns: string[] }[] } | null;
 }
 
 export interface SyncContext {
@@ -23,4 +25,6 @@ export interface SyncContext {
   userId: string;
   changes: Record<string, { created: any[]; updated: any[]; deleted: string[] }>;
   lastPulledAt: number;
+  /** Tables the client just gained through a schema migration; pulled as a first sync. */
+  migratedTables?: string[];
 }

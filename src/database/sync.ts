@@ -120,7 +120,10 @@ async function performSync(options: SyncOptions = {}): Promise<SyncResult> {
 
     await synchronize({
       database,
-      pullChanges: async ({ lastPulledAt }) => {
+      // Lets a device that gains a table through a schema migration (e.g.
+      // notifications at v19) receive that table's existing rows on its next pull.
+      migrationsEnabledAtVersion: 18,
+      pullChanges: async ({ lastPulledAt, migration }) => {
         const url = `${SUPABASE_URL}/functions/v1/sync`;
         console.log(
           "[SYNC] pullChanges called with lastPulledAt:",
@@ -133,6 +136,7 @@ async function performSync(options: SyncOptions = {}): Promise<SyncResult> {
         const body = {
           changes: {},
           lastPulledAt: lastPulledAt || 0,
+          migration: migration ?? null,
         };
 
         const response = await fetch(url, {

@@ -8,8 +8,6 @@ export const adapter = new LokiJSAdapter({
   migrations,
   useWebWorker: false,
   useIncrementalIndexedDB: true,
-  // Destructive reset on schema mismatch (dev only)
-  onVersionChange: () => {},
   onSetUpError: (error: Error) => {
     console.error("Database failed to load", error);
   },

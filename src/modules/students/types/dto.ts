@@ -2,7 +2,7 @@
  * DTO types for Students module
  */
 
-import type { MemberStatus } from './db';
+import type { MemberStatus } from './enums';
 
 /**
  * Student response DTO - used for displaying student information

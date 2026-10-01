@@ -1,4 +1,4 @@
-import { Loader2, Wifi, WifiOff } from "lucide-react-native";
+import { Loader2, Wifi, WifiOff, type LucideIcon } from "lucide-react-native";
 import type { ColorTokens } from "tamagui";
 
 export enum SyncStatus {
@@ -10,7 +10,7 @@ export enum SyncStatus {
 export const SYNC_STATUS_CONFIG: Record<
   SyncStatus,
   {
-    icon: React.ElementType;
+    icon: LucideIcon;
     color: ColorTokens;
     label: string;
   }
