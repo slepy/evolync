@@ -54,7 +54,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({
   const [showPassword, setShowPassword] = useState(false);
 
   const handleFormSubmit = async () => {
-    await onSubmit({ email, password });
+    await onSubmit({ email: email.trim(), password });
   };
 
   const togglePasswordVisibility = () => {
@@ -74,6 +74,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({
           onChangeText={setEmail}
           editable={!isLoading}
           autoCapitalize="none"
+          autoCorrect={false}
           keyboardType="email-address"
           textContentType="emailAddress"
           autoComplete="email"
@@ -105,6 +106,8 @@ export const LoginForm: React.FC<LoginFormProps> = ({
             editable={!isLoading}
             secureTextEntry={!showPassword}
             autoCapitalize="none"
+            autoCorrect={false}
+            spellCheck={false}
             textContentType="password"
             autoComplete="password"
             placeholderTextColor="#94A3B8"

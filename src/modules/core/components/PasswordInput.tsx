@@ -65,6 +65,11 @@ export const PasswordInput = <TFieldValues extends FieldValues>({
               disabled={disabled}
               secureTextEntry={!showPassword}
               autoCapitalize="none"
+              // With the eye toggle on, the field is plain text and the
+              // keyboard would autocorrect it / apply smart punctuation,
+              // silently saving a different password than the user typed.
+              autoCorrect={false}
+              spellCheck={false}
               // Only used for setting a password (register, reset). "newPassword"
               // lets iOS Keychain / Google Password Manager save the new value
               // instead of autofilling the old one on the next login.

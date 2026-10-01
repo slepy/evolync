@@ -61,6 +61,7 @@ export const EmailInput = <TFieldValues extends FieldValues>({
             onBlur={onBlur}
             disabled={disabled}
             autoCapitalize="none"
+            autoCorrect={false}
             keyboardType="email-address"
             textContentType="emailAddress"
             autoComplete="email"
