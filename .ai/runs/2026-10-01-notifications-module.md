@@ -26,6 +26,7 @@ Ship the notifications module from the spec: server-generated notifications for 
 - Translation keys are **flat camelCase with a `notification` prefix** (e.g. `notificationOrderCreatedTitle`), not `notifications.*`, because every key in `en.json`/`pl.json` is flat.
 - The bell is placed through a new optional `leftContent` prop on the core `Header`, which keeps `core` free of imports from `notifications`. The dashboards inject it.
 - The repo has **no JS test runner**. Pure logic (deep-link map, payload/text formatting, push coalescing/templates) lives in dependency-free modules tested with Node's built-in `node --test` (TypeScript type stripping, Node ≥ 22). SQL behaviour is tested by a script against a disposable Postgres container (with a stub `auth` schema). `send-push` is tested with `deno test` in Docker.
+- "No longer available": the app has no global toast, so the inbox shows an inline auto-hiding notice and stays put instead of opening the list screen with a toast.
 - The Database Webhook ships as a migration trigger. It calls `net.http_post` with the function URL and a shared secret read from Supabase **Vault** (`send_push_url`, `send_push_secret`). It is a no-op when `pg_net` or the secrets are missing, and the setup is documented.
 
 ## Risks
@@ -73,10 +74,10 @@ Ship the notifications module from the spec: server-generated notifications for 
 
 ### Phase 2: In-app inbox
 
-- [ ] 2.1 Notifications module scaffold, types, deep-link map and notificationService
-- [ ] 2.2 NotificationBell unread badge in both dashboard headers
-- [ ] 2.3 Inbox screen with mark-read, mark-all-read and deep links
-- [ ] 2.4 Notification translations in en.json and pl.json
+- [x] 2.1 Notifications module scaffold, types, deep-link map and notificationService — dcb601a
+- [x] 2.2 NotificationBell unread badge in both dashboard headers — d50dd2a
+- [x] 2.3 Inbox screen with mark-read, mark-all-read and deep links — e2d889b
+- [x] 2.4 Notification translations in en.json and pl.json — 9b2097c
 
 ### Phase 3: Push delivery
 
