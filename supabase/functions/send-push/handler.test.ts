@@ -21,6 +21,7 @@ const notification = (overrides: Record<string, unknown> = {}) => ({
 /** Fake Supabase client: serves tokens and a burst count, records updates. */
 function fakeSupabase({ tokens = [] as any[], recentCount = 1 } = {}) {
   const updates: { table: string; values: any; ids: string[] }[] = [];
+  const countFilters: unknown[][] = [];
   const from = (table: string) => {
     const state: any = { table, filters: [] as unknown[] };
     const builder: any = {
@@ -30,19 +31,23 @@ function fakeSupabase({ tokens = [] as any[], recentCount = 1 } = {}) {
       is: (...args: unknown[]) => (state.filters.push(["is", ...args]), builder),
       gte: (...args: unknown[]) => (state.filters.push(["gte", ...args]), builder),
       lte: (...args: unknown[]) => (state.filters.push(["lte", ...args]), builder),
+      or: (...args: unknown[]) => (state.filters.push(["or", ...args]), builder),
       in: (_col: string, ids: string[]) => {
         updates.push({ table, values: state.update, ids });
         return Promise.resolve({ error: null });
       },
       then: (resolve: (v: unknown) => void) => {
         if (table === "push_tokens") resolve({ data: tokens, error: null });
-        else if (table === "notifications" && state.head) resolve({ count: recentCount, error: null });
+        else if (table === "notifications" && state.head) {
+          countFilters.push(...state.filters);
+          resolve({ count: recentCount, error: null });
+        }
         else resolve({ data: [], error: null });
       },
     };
     return builder;
   };
-  return { client: { from }, updates };
+  return { client: { from }, updates, countFilters };
 }
 
 function mockFetch(tickets: (batch: any[]) => any[] = (b) => b.map(() => ({ status: "ok", id: "t" }))) {
@@ -114,6 +119,24 @@ Deno.test("burst: the 4th notification in 60s becomes one summary, later ones ar
   });
   assertEquals(r5, { status: "skipped", reason: "burst already summarized" });
   assertEquals(fifth.requests.length, 0);
+});
+
+Deno.test("burst: rows from one transaction are ranked by id, keeping microsecond created_at", async () => {
+  // Rows inserted by one sync upsert share created_at (the transaction time).
+  const createdAt = "2026-10-01T10:00:00.123456+00:00";
+  const id = "6f1c2a9e-0000-4000-8000-000000000004";
+  const fake = fakeSupabase({ tokens: [{ id: "t1", token: "ExponentPushToken[a]", locale: "en" }] });
+
+  await handleSendPush({ record: notification({ id, created_at: createdAt }) }, {
+    supabase: fake.client,
+    fetch: mockFetch().fn,
+  });
+
+  assertEquals(fake.countFilters, [
+    ["eq", "recipient_id", RECIPIENT],
+    ["gte", "created_at", "2026-10-01T09:59:00.123Z"],
+    ["or", `created_at.lt."${createdAt}",and(created_at.eq."${createdAt}",id.lte.${id})`],
+  ]);
 });
 
 Deno.test("DeviceNotRegistered tokens are soft-deleted; others kept", async () => {

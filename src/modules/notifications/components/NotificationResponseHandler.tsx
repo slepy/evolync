@@ -50,6 +50,9 @@ export function NotificationResponseHandler() {
       const id = response.notification.request.identifier;
       if (handled.current.has(id)) return;
       handled.current.add(id);
+      // The OS keeps the last response across launches; clear it so a later
+      // cold start does not route to the same notification again.
+      Notifications.clearLastNotificationResponse();
       setPending(parsePushData(response.notification.request.content.data));
     };
 

@@ -50,18 +50,33 @@ export function parseWebhookRecord(body: any): NotificationRecord | null {
   return record as NotificationRecord;
 }
 
-/** How many notifications the recipient got in the burst window, up to and including this one. */
-async function countRecent(deps: SendPushDeps, record: NotificationRecord): Promise<number> {
-  const createdAt = record.created_at ? Date.parse(record.created_at) : (deps.now ?? Date.now)();
-  const since = new Date(createdAt - BURST_WINDOW_MS).toISOString();
-  const until = new Date(createdAt).toISOString();
+/** Values safe to embed in a quoted PostgREST `or` filter. */
+const FILTER_TIMESTAMP = /^[0-9T:.+\- Z]+$/;
+const FILTER_ID = /^[0-9A-Za-z-]+$/;
 
-  const { count, error } = await deps.supabase
+/**
+ * This notification's position among the recipient's notifications in the
+ * burst window, counting itself. Rows inserted by one statement share
+ * `created_at` (it is the transaction time), so ties are ordered by id: every
+ * row in a batch gets a distinct position and exactly one becomes the summary.
+ * The raw `created_at` string is compared as-is to keep its microseconds.
+ */
+async function countRecent(deps: SendPushDeps, record: NotificationRecord): Promise<number> {
+  const createdAtMs = record.created_at ? Date.parse(record.created_at) : (deps.now ?? Date.now)();
+  const since = new Date(createdAtMs - BURST_WINDOW_MS).toISOString();
+  const createdAt = record.created_at ?? new Date(createdAtMs).toISOString();
+
+  let query = deps.supabase
     .from("notifications")
     .select("id", { count: "exact", head: true })
     .eq("recipient_id", record.recipient_id)
-    .gte("created_at", since)
-    .lte("created_at", until);
+    .gte("created_at", since);
+
+  query = FILTER_TIMESTAMP.test(createdAt) && FILTER_ID.test(record.id)
+    ? query.or(`created_at.lt."${createdAt}",and(created_at.eq."${createdAt}",id.lte.${record.id})`)
+    : query.lte("created_at", createdAt);
+
+  const { count, error } = await query;
 
   if (error) {
     console.error("[send-push] Burst count failed, sending individually:", error);
