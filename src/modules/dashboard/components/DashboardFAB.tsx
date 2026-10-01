@@ -89,7 +89,6 @@ export const DashboardFAB: React.FC<DashboardFABProps> = ({
       <OptionsSheet
         fab={{ bottom: Platform.OS === "ios" ? 90 : 80, right: 20 }}
         snapPoint={40}
-        title={t("dashboardQuickActions")}
         options={quickActions}
       />
     </>

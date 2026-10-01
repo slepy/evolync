@@ -3,7 +3,6 @@ import { Pressable } from "react-native";
 import { Text, XStack, YStack, Button } from "tamagui";
 import { BoneControlPanel } from "./BoneControlPanel";
 import {
-  FK_BONE_DISPLAY_KEYS,
   FINGER_TYPE,
   FINGER_LABEL_KEYS,
   getFingerBone,
@@ -63,8 +62,6 @@ export const HandEditorTab: React.FC<HandEditorTabProps> = ({
   };
 
   const currentBone = getFingerBone(selectedFinger, selectedSegment, side);
-  const boneLabel =
-    t(FK_BONE_DISPLAY_KEYS[currentBone] ?? "") || currentBone;
 
   return (
     <YStack flex={1} backgroundColor="$background">
@@ -158,7 +155,6 @@ export const HandEditorTab: React.FC<HandEditorTabProps> = ({
       <YStack flex={1}>
         <BoneControlPanel
           selectedBone={currentBone}
-          boneLabel={boneLabel}
           currentTransform={boneTransforms[currentBone]}
           onRotationChange={onRotationChange}
           onPositionChange={onPositionChange}

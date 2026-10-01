@@ -73,7 +73,7 @@ export const useAttendance = (
 
           // Build attendance list with member data
           const list: AttendanceWithMember[] = records
-            .map((record) => {
+            .map((record): AttendanceWithMember | null => {
               const member = memberById.get(record.schoolMemberId);
               if (!member) return null;
 

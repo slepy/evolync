@@ -9,8 +9,8 @@ import { BoneMarker } from "./BoneMarker";
 // Finger bones are edited via HandEditorTab — exclude them from the 3D marker layer
 // so the scene stays readable. DEF-handL / DEF-handR remain as entry points.
 const FINGER_BONES = new Set<string>([
-  ...FK_BODY_GROUPS.leftHand.filter((b) => b !== "DEF-handL"),
-  ...FK_BODY_GROUPS.rightHand.filter((b) => b !== "DEF-handR"),
+  ...FK_BODY_GROUPS.leftHand,
+  ...FK_BODY_GROUPS.rightHand,
 ]);
 
 const MARKER_BONES = FK_BONES.filter((b) => !FINGER_BONES.has(b));

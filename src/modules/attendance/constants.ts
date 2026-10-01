@@ -1,4 +1,4 @@
-import { Check, FilePenLine, X } from "lucide-react-native";
+import { Check, FilePenLine, X, type LucideIcon } from "lucide-react-native";
 import type { ColorTokens } from "tamagui";
 import {
   type AttendanceStatus,
@@ -8,7 +8,7 @@ import {
 export const STATUS_CONFIG: Record<
   AttendanceStatus,
   {
-    icon: React.ElementType;
+    icon: LucideIcon;
     color: ColorTokens;
     bgColor: ColorTokens;
     label: string;
