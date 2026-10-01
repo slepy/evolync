@@ -2,6 +2,7 @@ export {
   NotificationBell,
   NotificationCard,
   NotificationsScreen,
+  NotificationResponseHandler,
   PushNotificationsSetting,
   PushPermissionPrompt,
 } from "./components";
@@ -27,6 +28,7 @@ export {
   getNotificationContent,
   getNotificationEntityRef,
   formatUnreadBadge,
+  parsePushData,
 } from "./utils";
 export { NOTIFICATION_TYPE } from "./types";
 export type {

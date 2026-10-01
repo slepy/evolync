@@ -8,6 +8,7 @@ import "@/core/i18n/config"; // Initialize i18n immediately
 import { useAuth } from "@/modules/auth/hooks/useAuth";
 import { registerSignOutHandler } from "@/modules/core/utils/signOutBridge";
 import { useSyncStore } from "@/database/hooks/useSyncStore";
+import { NotificationResponseHandler } from "@/modules/notifications";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { DefaultTheme, ThemeProvider } from "@react-navigation/native";
 import { useFonts } from "expo-font";
@@ -92,6 +93,7 @@ function RootLayoutNav() {
                 contentStyle: { backgroundColor: "#F8FAFC" },
               }}
             ></Stack>
+            <NotificationResponseHandler />
           </View>
         </ThemeProvider>
       </TamaguiProvider>

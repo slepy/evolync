@@ -4,3 +4,5 @@ export { formatUnreadBadge } from "./badge";
 export { getNotificationEntityRef } from "./target";
 export { toPushLocale, shouldRegisterForPush, shouldShowPushRationale } from "./push";
 export type { PushLocale, PushPermission } from "./push";
+export { parsePushData } from "./pushData";
+export type { PushTapTarget } from "./pushData";
