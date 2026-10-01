@@ -26,6 +26,9 @@ Ship the notifications module from the spec: server-generated notifications for 
 - Translation keys are **flat camelCase with a `notification` prefix** (e.g. `notificationOrderCreatedTitle`), not `notifications.*`, because every key in `en.json`/`pl.json` is flat.
 - The bell is placed through a new optional `leftContent` prop on the core `Header`, which keeps `core` free of imports from `notifications`. The dashboards inject it.
 - The repo has **no JS test runner**. Pure logic (deep-link map, payload/text formatting, push coalescing/templates) lives in dependency-free modules tested with Node's built-in `node --test` (TypeScript type stripping, Node ≥ 22). SQL behaviour is tested by a script against a disposable Postgres container (with a stub `auth` schema). `send-push` is tested with `deno test` in Docker.
+- Push locale comes from the app's current language (`getCurrentLanguage()`, which starts from the device locale and follows the in-app switcher) rather than raw `expo-localization`. Registration re-runs on every dashboard visit, so a language change is picked up.
+- Burst coalescing cannot know the final burst size when each insert has its own webhook. The first 3 notifications in 60 s push individually, the 4th sends "You have 4+ new notifications", and the rest of the window is skipped. An N3 re-RSVP resurfaces the row (an UPDATE), so it never pushes again.
+- Push `data` adds `eventId` to the spec's contract so an N3 tap can open the event (its source entity is a participant row).
 - "No longer available": the app has no global toast, so the inbox shows an inline auto-hiding notice and stays put instead of opening the list screen with a toast.
 - The Database Webhook ships as a migration trigger. It calls `net.http_post` with the function URL and a shared secret read from Supabase **Vault** (`send_push_url`, `send_push_secret`). It is a no-op when `pg_net` or the secrets are missing, and the setup is documented.
 
@@ -81,8 +84,8 @@ Ship the notifications module from the spec: server-generated notifications for 
 
 ### Phase 3: Push delivery
 
-- [ ] 3.1 expo-notifications, push_tokens + RPCs, pushRegistrationService, CLAUDE.md rule update
-- [ ] 3.2 send-push Edge Function with tests
-- [ ] 3.3 Database webhook trigger on notifications insert
-- [ ] 3.4 Settings push toggle, permission rationale sheet, disable token on logout
-- [ ] 3.5 Notification-tap handler routing and mark-read
+- [x] 3.1 expo-notifications, push_tokens + RPCs, pushRegistrationService, CLAUDE.md rule update — 1d3ed2f
+- [x] 3.2 send-push Edge Function with tests — 6dea31c
+- [x] 3.3 Database webhook trigger on notifications insert — 1f44f68
+- [x] 3.4 Settings push toggle, permission rationale sheet, disable token on logout — c3d78e7
+- [x] 3.5 Notification-tap handler routing and mark-read — 79043ea
