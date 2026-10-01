@@ -30,3 +30,6 @@ export { default as TechniqueNoteRow } from './TechniqueNoteRow'
 export { default as Tag } from './Tag'
 export { default as Taggable } from './Taggable'
 
+
+// Notifications Module
+export { default as Notification } from './Notification'

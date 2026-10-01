@@ -8,6 +8,26 @@ import {
 export default schemaMigrations({
   migrations: [
     {
+      toVersion: 19,
+      steps: [
+        createTable({
+          name: "notifications",
+          columns: [
+            { name: "recipient_id", type: "string", isIndexed: true },
+            { name: "school_id", type: "string", isOptional: true },
+            { name: "type", type: "string" },
+            { name: "entity_type", type: "string" },
+            { name: "entity_id", type: "string" },
+            { name: "payload", type: "string" },
+            { name: "read_at", type: "number", isOptional: true, isIndexed: true },
+            { name: "created_at", type: "number" },
+            { name: "updated_at", type: "number" },
+            { name: "deleted_at", type: "number", isOptional: true },
+          ],
+        }),
+      ],
+    },
+    {
       toVersion: 18,
       steps: [
         addColumns({
