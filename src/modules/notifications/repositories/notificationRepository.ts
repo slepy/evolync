@@ -35,6 +35,16 @@ export const NotificationRepository = {
       .observeCount();
   },
 
+  /** Whether a source row still exists locally (and is not soft-deleted). */
+  async entityExists(table: string, id: string): Promise<boolean> {
+    try {
+      const record: any = await database.get(table).find(id);
+      return !record._raw.deleted_at;
+    } catch {
+      return false;
+    }
+  },
+
   async markRead(id: string): Promise<void> {
     const record = await collection().find(id);
     if (record.readAt) return;
