@@ -28,6 +28,9 @@ const checkNetworkConnection = async (): Promise<boolean> => {
 
 const mapSupabaseError = (error: SupabaseAuthError | Error): AuthError => {
   const message = error.message.toLowerCase();
+  // Supabase AuthApiError carries a stable machine-readable code; prefer it
+  // over message matching (e.g. same_password's message says "different").
+  const errorCode = (error as SupabaseAuthError).code;
 
   if (message.includes('invalid login credentials') || message.includes('invalid email or password')) {
     return {
@@ -53,7 +56,10 @@ const mapSupabaseError = (error: SupabaseAuthError | Error): AuthError => {
     };
   }
 
-  if (message.includes('password') && (message.includes('weak') || message.includes('should be at least'))) {
+  if (
+    errorCode === 'weak_password' ||
+    (message.includes('password') && (message.includes('weak') || message.includes('should be at least')))
+  ) {
     return {
       code: 'unknown',
       message: t('errorWeakPassword'),
@@ -61,7 +67,10 @@ const mapSupabaseError = (error: SupabaseAuthError | Error): AuthError => {
     };
   }
 
-  if (message.includes('same') && message.includes('password')) {
+  if (
+    errorCode === 'same_password' ||
+    (message.includes('password') && (message.includes('same') || message.includes('different from the old')))
+  ) {
     return {
       code: 'unknown',
       message: t('errorSamePassword'),
@@ -69,7 +78,10 @@ const mapSupabaseError = (error: SupabaseAuthError | Error): AuthError => {
     };
   }
 
-  if (message.includes('token') && (message.includes('expired') || message.includes('invalid'))) {
+  if (
+    errorCode === 'otp_expired' ||
+    (message.includes('token') && (message.includes('expired') || message.includes('invalid')))
+  ) {
     return {
       code: 'unknown',
       message: t('errorInvalidOtpCode'),

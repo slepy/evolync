@@ -27,6 +27,10 @@ export default function ResetPasswordScreen() {
   const { isLoading, error, verifyRecoveryOtp, updatePassword, clearError } = useAuth();
 
   const [passwordUpdated, setPasswordUpdated] = useState(false);
+  // verifyOtp consumes the code (single use) and opens a recovery session.
+  // If updatePassword then fails (weak/same password, network), a retry
+  // must not re-verify — Supabase would reject the already-used code.
+  const [codeVerified, setCodeVerified] = useState(false);
 
   // ==========================================================================
   // Event Handlers
@@ -35,8 +39,11 @@ export default function ResetPasswordScreen() {
   const handleSubmit = async (code: string, password: string) => {
     clearError();
 
-    const codeValid = await verifyRecoveryOtp(email, code);
-    if (!codeValid) return;
+    if (!codeVerified) {
+      const codeValid = await verifyRecoveryOtp(email, code);
+      if (!codeValid) return;
+      setCodeVerified(true);
+    }
 
     const passwordSet = await updatePassword(password);
     if (!passwordSet) return;
@@ -50,7 +57,9 @@ export default function ResetPasswordScreen() {
     router.replace('/auth/login' as any);
   };
 
-  const handleRequestNewCode = () => {
+  const handleRequestNewCode = async () => {
+    // Drop the half-finished recovery session before starting over.
+    if (codeVerified) await supabase.auth.signOut();
     router.replace('/auth/forgot-password' as any);
   };
 
