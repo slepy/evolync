@@ -66,6 +66,8 @@ Ship the notifications module from the spec: server-generated notifications for 
 
 ## Progress
 
+PR: #10
+
 > Convention: `- [ ]` pending, `- [x]` done. Append ` — <commit sha>` when a step lands. Do not rename step titles.
 
 ### Phase 1: Server generation + sync + local storage
