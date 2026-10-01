@@ -31,3 +31,19 @@ describe("shouldShowPushRationale", () => {
     assert.equal(shouldShowPushRationale(null, "denied", false), false, "already decided");
   });
 });
+
+import { isPushRegistrationStale, PUSH_REREGISTER_INTERVAL_MS } from "../utils/push";
+
+describe("isPushRegistrationStale", () => {
+  const now = 1_000_000_000;
+  it("re-registers when never registered, stale, or the language changed", () => {
+    assert.equal(isPushRegistrationStale(null, "en", now), true);
+    assert.equal(isPushRegistrationStale({ at: now - 60_000, locale: "en" }, "en", now), false, "fresh");
+    assert.equal(isPushRegistrationStale({ at: now - 60_000, locale: "en" }, "pl", now), true, "language changed");
+    assert.equal(
+      isPushRegistrationStale({ at: now - PUSH_REREGISTER_INTERVAL_MS, locale: "en" }, "en", now),
+      true,
+      "stale",
+    );
+  });
+});

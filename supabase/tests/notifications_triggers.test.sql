@@ -86,6 +86,21 @@ do $$ begin
   assert (select payload ->> 'schoolName' from owner_inbox where type = 'join_request_created') = 'Dojo Kraków', 'N2: payload carries school name';
 end $$;
 
+-- A join request inserted directly by the student (authenticated, under RLS)
+-- still notifies the owner: the trigger chain runs as security definer.
+insert into auth.users (id, email) values ('00000000-0000-0000-0000-0000000000d1', 'direct@test.local');
+set local role authenticated;
+set local request.jwt.claim.sub = '00000000-0000-0000-0000-0000000000d1';
+set local request.headers = '{}';
+insert into public.school_join_requests (id, school_id, user_id, display_name, email) values
+  ('90000000-0000-0000-0000-000000000002', '30000000-0000-0000-0000-000000000001', '00000000-0000-0000-0000-0000000000d1', 'Direct Applicant', 'direct@test.local');
+reset role;
+
+do $$ begin
+  assert (select count(*) from owner_inbox where entity_id = '90000000-0000-0000-0000-000000000002') = 1,
+    'N2: direct authenticated insert notifies the owner';
+end $$;
+
 -- ---------------------------------------------------------------------------
 -- N5: instructor adds the student to a whitelist event → student notified.
 -- ---------------------------------------------------------------------------

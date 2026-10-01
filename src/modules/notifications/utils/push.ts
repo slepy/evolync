@@ -26,3 +26,16 @@ export const shouldShowPushRationale = (
   permission: PushPermission,
   rationaleDismissed: boolean,
 ): boolean => preference !== false && permission === "undetermined" && !rationaleDismissed;
+
+/** Re-register at most this often unless something changed. */
+export const PUSH_REREGISTER_INTERVAL_MS = 12 * 60 * 60 * 1000;
+
+/**
+ * Whether a routine (dashboard) sync should re-register the token: never
+ * registered, the push language changed, or the last registration is stale.
+ */
+export const isPushRegistrationStale = (
+  last: { at: number; locale: PushLocale } | null,
+  locale: PushLocale,
+  now: number,
+): boolean => !last || last.locale !== locale || now - last.at >= PUSH_REREGISTER_INTERVAL_MS;

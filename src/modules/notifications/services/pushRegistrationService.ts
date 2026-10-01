@@ -6,9 +6,11 @@ import * as Device from "expo-device";
 import * as Notifications from "expo-notifications";
 import { Platform } from "react-native";
 import {
+  isPushRegistrationStale,
   shouldRegisterForPush,
   shouldShowPushRationale,
   toPushLocale,
+  type PushLocale,
   type PushPermission,
 } from "../utils";
 
@@ -23,6 +25,7 @@ import {
 const PUSH_PREFERENCE_KEY = "@evolync:pushEnabled";
 const PUSH_TOKEN_KEY = "@evolync:pushToken";
 const PUSH_RATIONALE_DISMISSED_KEY = "@evolync:pushRationaleDismissed";
+const PUSH_LAST_REGISTRATION_KEY = "@evolync:pushLastRegistration";
 export const ANDROID_CHANNEL_ID = "default";
 
 export type PushRegistrationResult =
@@ -82,14 +85,18 @@ export const registerForPushNotifications = async (
       projectId ? { projectId } : undefined,
     );
 
+    const locale = toPushLocale(getCurrentLanguage());
     const { error } = await supabase.rpc("register_push_token", {
       p_token: token,
       p_platform: Platform.OS,
-      p_locale: toPushLocale(getCurrentLanguage()),
+      p_locale: locale,
     });
     if (error) throw error;
 
-    await AsyncStorage.setItem(PUSH_TOKEN_KEY, token);
+    await AsyncStorage.multiSet([
+      [PUSH_TOKEN_KEY, token],
+      [PUSH_LAST_REGISTRATION_KEY, JSON.stringify({ at: Date.now(), locale })],
+    ]);
     return { status: "registered", token };
   } catch (error) {
     console.error("[push] Registration failed:", error);
@@ -97,11 +104,28 @@ export const registerForPushNotifications = async (
   }
 };
 
-/** Re-register on app use when the user wants push and the OS allows it. */
-export const syncPushRegistration = async (): Promise<PushRegistrationResult> => {
+const getLastRegistration = async (): Promise<{ at: number; locale: PushLocale } | null> => {
+  try {
+    const raw = await AsyncStorage.getItem(PUSH_LAST_REGISTRATION_KEY);
+    return raw ? JSON.parse(raw) : null;
+  } catch {
+    return null;
+  }
+};
+
+/**
+ * Keep the registration current on app use (dashboard visits): only when the
+ * user wants push, the OS allows it, and the last registration is stale or
+ * was for another language.
+ */
+export const syncPushRegistration = async (): Promise<PushRegistrationResult | { status: "fresh" }> => {
   const [preference, permission] = await Promise.all([getPushPreference(), getPushPermission()]);
   if (!shouldRegisterForPush(preference, permission)) {
     return preference === false ? { status: "disabled" } : { status: "permission-denied" };
+  }
+  const locale = toPushLocale(getCurrentLanguage());
+  if (!isPushRegistrationStale(await getLastRegistration(), locale, Date.now())) {
+    return { status: "fresh" };
   }
   return registerForPushNotifications();
 };
@@ -117,7 +141,7 @@ export const disablePushToken = async ({ timeoutMs = 4000 }: { timeoutMs?: numbe
   const disable = async () => {
     const { error } = await supabase.rpc("disable_push_token", { p_token: token });
     if (error) throw error;
-    await AsyncStorage.removeItem(PUSH_TOKEN_KEY);
+    await AsyncStorage.multiRemove([PUSH_TOKEN_KEY, PUSH_LAST_REGISTRATION_KEY]);
   };
 
   let timer: ReturnType<typeof setTimeout> | undefined;
