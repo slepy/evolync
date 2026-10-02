@@ -120,6 +120,12 @@ const darkSemantic: typeof lightSemantic = {
   roseSurface: "#4C0519",
 };
 
+/** Raw values for non-Tamagui consumers (navigation theme, root views). */
+export const themeColors = {
+  light: { background: "#F8FAFC", ...lightSemantic },
+  dark: { background: "#0F172A", ...darkSemantic },
+};
+
 type BaseThemes = typeof config.themes;
 type SemanticThemes = {
   [K in keyof BaseThemes]: BaseThemes[K] & typeof lightSemantic;
