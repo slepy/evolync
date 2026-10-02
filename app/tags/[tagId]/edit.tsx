@@ -58,7 +58,7 @@ export default function EditTagScreen() {
         centerContent={<HeaderTitle text={t("tagsEditName")} />}
         rightContent={
           <Button size="$3" chromeless onPress={handleDelete} disabled={isLoading}>
-            <Trash2 size={20} color={theme.imperialRedDark?.val} pointerEvents="none" />
+            <Trash2 size={20} color={theme.dangerText?.val} pointerEvents="none" />
           </Button>
         }
       />

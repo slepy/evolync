@@ -51,7 +51,7 @@ export default function NotesListScreen() {
             paddingVertical="$8"
             paddingHorizontal="$6"
           >
-            <Text fontSize="$4" color="$softGrayDark" textAlign="center">
+            <Text fontSize="$4" color="$textSecondary" textAlign="center">
               {t("notesNoDocuments")}
             </Text>
           </YStack>

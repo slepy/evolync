@@ -282,7 +282,7 @@ export const HandEditorPanel: React.FC<HandEditorPanelProps> = ({
             <YStack width="100%" maxWidth={400} gap="$4">
               {/* Header with close button */}
               <XStack justifyContent="space-between" alignItems="center">
-                <Text fontSize="$5" fontWeight="700" color="$inkBlack">
+                <Text fontSize="$5" fontWeight="700" color="$textPrimary">
                   {t("threedSaveHandPreset")}
                 </Text>
                 <Button

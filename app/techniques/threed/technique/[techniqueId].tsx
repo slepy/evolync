@@ -87,7 +87,7 @@ export default function TechniqueViewerScreen() {
           <Text
             fontSize="$4"
             fontWeight="600"
-            color="$inkBlack"
+            color="$textPrimary"
             flex={1}
             textAlign="center"
           >

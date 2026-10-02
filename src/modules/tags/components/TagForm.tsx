@@ -31,7 +31,7 @@ export const TagForm = forwardRef<TagFormHandle, Props>(
 
     return (
       <YStack flex={1} justifyContent="center" padding="$6" gap="$3">
-        <Text fontSize="$3" color="$softGrayDark">
+        <Text fontSize="$3" color="$textSecondary">
           {t("tagsNewTagName")}
         </Text>
         <Input

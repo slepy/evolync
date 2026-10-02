@@ -78,7 +78,7 @@ export const TagPickerSheet: React.FC<TagPickerSheetProps> = ({
       >
         <Sheet.Handle />
         <YStack gap="$3" paddingTop="$2">
-          <Text fontSize="$6" fontWeight="700" color="$inkBlack">
+          <Text fontSize="$6" fontWeight="700" color="$textPrimary">
             {t("tagsPicker")}
           </Text>
 

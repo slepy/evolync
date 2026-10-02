@@ -51,7 +51,7 @@ export default function SequenceDetailScreen() {
               <Button size="$3" chromeless onPress={handleDelete}>
                 <Trash2
                   size={20}
-                  color={theme.imperialRedDark?.val}
+                  color={theme.dangerText?.val}
                   pointerEvents="none"
                 />
               </Button>
@@ -78,7 +78,7 @@ export default function SequenceDetailScreen() {
               onPress={() =>
                 router.push(`/techniques/threed/${sequenceId}/viewer` as any)
               }
-              icon={<Play size={18} color={theme.inkBlack?.val} />}
+              icon={<Play size={18} color={theme.textPrimary?.val} />}
             >
               {t("view")}
             </Button>
@@ -89,7 +89,7 @@ export default function SequenceDetailScreen() {
           <Text
             fontSize="$4"
             fontWeight="600"
-            color="$inkBlack"
+            color="$textPrimary"
             paddingVertical="$2"
           >
             {t("threedSteps")} ({steps.length})
@@ -110,7 +110,7 @@ export default function SequenceDetailScreen() {
                 alignItems="center"
                 justifyContent="space-between"
               >
-                <Text fontSize="$3" fontWeight="500" color="$inkBlack">
+                <Text fontSize="$3" fontWeight="500" color="$textPrimary">
                   {t("threedStep")} {index + 1}
                 </Text>
                 <Button
@@ -126,7 +126,7 @@ export default function SequenceDetailScreen() {
                 >
                   <Trash2
                     size={16}
-                    color={theme.imperialRedDark?.val}
+                    color={theme.dangerText?.val}
                     pointerEvents="none"
                   />
                 </Button>
@@ -135,7 +135,7 @@ export default function SequenceDetailScreen() {
             ListEmptyComponent={
               <Text
                 textAlign="center"
-                color="$softGrayDark"
+                color="$textSecondary"
                 paddingVertical="$6"
               >
                 {t("threedNoSteps")}

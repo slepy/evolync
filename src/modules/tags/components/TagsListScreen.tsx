@@ -39,7 +39,7 @@ export const TagsListScreen: React.FC = () => {
               <Thumbnail
                 icon={<Tag />}
                 borderColor="$chineseCoral"
-                backgroundColor="$chineseCoralLighter"
+                backgroundColor="$roseSurface"
               />
               <CardInfo displayName={item.name} />
             </XStack>
@@ -51,7 +51,7 @@ export const TagsListScreen: React.FC = () => {
             paddingVertical="$8"
             paddingHorizontal="$6"
           >
-            <Text fontSize="$4" color="$softGrayDark" textAlign="center">
+            <Text fontSize="$4" color="$textSecondary" textAlign="center">
               {t("tagsEmpty")}
             </Text>
           </YStack>

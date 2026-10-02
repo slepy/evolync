@@ -92,7 +92,7 @@ export default function ViewerScreen() {
         <Text
           fontSize="$4"
           fontWeight="600"
-          color="$inkBlack"
+          color="$textPrimary"
           minWidth={60}
           textAlign="center"
         >

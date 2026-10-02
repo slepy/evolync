@@ -129,12 +129,12 @@ export default function NoteDocumentScreen() {
             width="$4"
             height="$4"
             chromeless
-            pressStyle={{ scale: 0.95, backgroundColor: "$imperialRedLighter" }}
+            pressStyle={{ scale: 0.95, backgroundColor: "$dangerSurface" }}
             onPress={handleDeleteDocument}
             icon={
               <Trash2
                 size={20}
-                color={theme.imperialRedDark?.val}
+                color={theme.dangerText?.val}
                 pointerEvents="none"
               />
             }

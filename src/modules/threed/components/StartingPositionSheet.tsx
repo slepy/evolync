@@ -43,7 +43,7 @@ export const StartingPositionSheet: React.FC<StartingPositionSheetProps> = ({
         borderBottomWidth={1}
         borderBottomColor="$borderColor"
       >
-        <Text fontSize="$5" fontWeight="700" color="$inkBlack">
+        <Text fontSize="$5" fontWeight="700" color="$textPrimary">
           {t("threedStartingPositions")}
         </Text>
         <Button
