@@ -91,7 +91,7 @@ export const ProductPickerCard: React.FC<ProductPickerCardProps> = ({
         <Button
           width="$3"
           height="$3"
-          backgroundColor="$purple11"
+          backgroundColor="$purpleFill"
           pressStyle={{ scale: 0.95 }}
           pointerEvents="none"
         >

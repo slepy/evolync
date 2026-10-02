@@ -398,7 +398,7 @@ export const OrdersListScreen: React.FC<OrdersListScreenProps> = ({
             fab={{
               bottom: Platform.OS === "ios" ? 90 : 80,
               right: 20,
-              backgroundColor: "$purple11",
+              backgroundColor: "$purpleFill",
               icon: <Copy size={24} />,
             }}
             action={handleCopyProductsList}

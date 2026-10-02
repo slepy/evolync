@@ -243,14 +243,14 @@ export const OptionsSheet: React.FC<OptionsSheetProps> = ({
         <Button
           height="$6"
           width="$6"
-          backgroundColor={fab.backgroundColor ?? "$blue11"}
+          backgroundColor={fab.backgroundColor ?? "$blueFill"}
           position="absolute"
           bottom={fab.bottom ?? (Platform.OS === "ios" ? 90 : 80)}
           right={fab.right ?? 20}
           onPress={handleFABPress}
           pressStyle={{
             scale: 0.95,
-            backgroundColor: fab.backgroundColor ?? "$blue11",
+            backgroundColor: fab.backgroundColor ?? "$blueFill",
           }}
           shadowColor="$shadowColor"
           shadowOffset={{ width: 0, height: 4 }}

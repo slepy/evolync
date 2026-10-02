@@ -316,7 +316,7 @@ export const VariantPickerSheet: React.FC<VariantPickerSheetProps> = ({
           {/* Add/Update Button */}
           <Button
             size="$5"
-            backgroundColor={totalItemsCount > 0 ? "$purple11" : "$fillMuted"}
+            backgroundColor={totalItemsCount > 0 ? "$purpleFill" : "$fillMuted"}
             paddingBottom={
               Platform.OS === "android"
                 ? Math.max(insets.bottom, 16)
@@ -327,7 +327,7 @@ export const VariantPickerSheet: React.FC<VariantPickerSheetProps> = ({
             disabled={totalItemsCount === 0}
             pressStyle={
               totalItemsCount > 0
-                ? { scale: 0.98, backgroundColor: "$purple11" }
+                ? { scale: 0.98, backgroundColor: "$purpleFill" }
                 : {}
             }
             onPress={handleAddToOrder}

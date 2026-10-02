@@ -577,7 +577,7 @@ const ModeButton: React.FC<ModeButtonProps> = ({
   <Button
     flex={1}
     size="$3"
-    backgroundColor={selected ? "$blue11" : "$fillMuted"}
+    backgroundColor={selected ? "$blueFill" : "$fillMuted"}
     color={selected ? "$pearlWhite" : "$textPrimary"}
     fontWeight={selected ? "700" : "400"}
     onPress={onPress}

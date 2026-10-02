@@ -96,6 +96,10 @@ const lightSemantic = {
   primarySurface: "#dbeafe",
   primaryText: "#1E40AF",
   roseSurface: "#ffe4e6",
+  // Solid accent fills behind white content (radix step 11 in light, step 9 in dark,
+  // where step 11 turns pastel).
+  blueFill: "#006ADC",
+  purpleFill: "#793AAF",
 };
 
 const darkSemantic: typeof lightSemantic = {
@@ -122,6 +126,8 @@ const darkSemantic: typeof lightSemantic = {
   primarySurface: "#172554",
   primaryText: "#93C5FD",
   roseSurface: "#4C0519",
+  blueFill: "#0090FF",
+  purpleFill: "#8E4EC6",
 };
 
 /** Raw values for non-Tamagui consumers (navigation theme, root views). */

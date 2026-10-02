@@ -24,7 +24,7 @@ export interface ThumbnailProps extends Omit<XStackProps, "children"> {
 export const Thumbnail: React.FC<ThumbnailProps> = ({
   size = 40,
   iconSize = 20,
-  borderColor = "$fillMuted",
+  borderColor = "$textMuted",
   backgroundColor = "$fillSubtle",
   icon,
   imageUrl,
