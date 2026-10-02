@@ -1,5 +1,6 @@
 import { Header, HeaderTitle } from "@/modules/core/components";
 import { LanguageSwitcher } from "@/core/components/LanguageSwitcher";
+import { ThemeSwitcher } from "@/core/components/ThemeSwitcher";
 import { useRouter } from "expo-router";
 import React from "react";
 import { View } from "react-native";
@@ -30,6 +31,7 @@ export default function SettingsScreen() {
         <YStack maxWidth={500} width="100%" alignSelf="center" gap="$6">
           <YStack gap="$3">
             <LanguageSwitcher variant="list" />
+            <ThemeSwitcher variant="list" />
             <PushNotificationsSetting />
             {/*  <AccountTypeCard
               title={t("createOrganization")}

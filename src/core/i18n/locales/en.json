@@ -258,6 +258,10 @@
   "settingsDefaultCurrency": "Default Currency",
   "settingsDefaultAmount": "Default Payment Amount",
   "settingsLanguage": "Language",
+  "settingsAppearance": "Appearance",
+  "themeSystem": "System",
+  "themeLight": "Light",
+  "themeDark": "Dark",
   "settingsProfile": "Profile",
 
   "schoolsTitle": "Schools",
