@@ -7,11 +7,11 @@ interface ThemeSwitcherProps {
   variant?: "buttons" | "list";
 }
 
-const THEME_OPTIONS: { value: ThemePreference; labelKey: string }[] = [
+const THEME_OPTIONS = [
   { value: "system", labelKey: "themeSystem" },
   { value: "light", labelKey: "themeLight" },
   { value: "dark", labelKey: "themeDark" },
-];
+] as const satisfies readonly { value: ThemePreference; labelKey: string }[];
 
 /**
  * Appearance switcher (System / Light / Dark), styled like LanguageSwitcher.
