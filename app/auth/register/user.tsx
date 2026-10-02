@@ -39,7 +39,7 @@ export default function RegisterScreen() {
               <Text
                 fontSize="$8"
                 fontWeight="700"
-                color="$blackInk"
+                color="$textPrimary"
                 textAlign="center"
               >
                 {t("joinAsPractitioner")}
@@ -47,7 +47,7 @@ export default function RegisterScreen() {
               <Text
                 fontSize="$5"
                 fontWeight="500"
-                color="$softGray"
+                color="$textMuted"
                 textAlign="center"
               >
                 {t("joinAsPractitionerDescription")}

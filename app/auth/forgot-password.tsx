@@ -49,10 +49,10 @@ export default function ForgotPasswordScreen() {
             <AppLogo />
 
             <YStack gap="$2" marginBottom="$2">
-              <Text fontSize="$7" fontWeight="700" color="$inkBlack" textAlign="center">
+              <Text fontSize="$7" fontWeight="700" color="$textPrimary" textAlign="center">
                 {t('forgotPasswordTitle')}
               </Text>
-              <Text fontSize="$4" color="$softGrayDark" textAlign="center">
+              <Text fontSize="$4" color="$textSecondary" textAlign="center">
                 {t('forgotPasswordDescription')}
               </Text>
             </YStack>

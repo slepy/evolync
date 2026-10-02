@@ -18,7 +18,7 @@ export const RegisterPrompt: React.FC<RegisterPromptProps> = ({
 }) => {
   return (
     <XStack justifyContent="center" alignItems="center" gap="$2" marginTop="$7">
-      <Text color="$softGrayDark" fontSize="$4" fontWeight="500">
+      <Text color="$textSecondary" fontSize="$4" fontWeight="500">
         {t("dontHaveAccount")}
       </Text>
       <Button

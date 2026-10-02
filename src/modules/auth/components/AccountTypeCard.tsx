@@ -37,7 +37,7 @@ export const AccountTypeCard: React.FC<AccountTypeCardProps> = ({
         <Thumbnail
           size={50}
           backgroundColor={bgColor}
-          borderColor={theme.pearlWhite?.val}
+          borderColor={theme.background?.val}
           borderRadius={10}
           icon={<IconComponent size={25} />}
         />

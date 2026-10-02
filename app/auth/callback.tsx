@@ -81,7 +81,7 @@ export default function AuthCallbackScreen() {
       >
         <AppLogo />
         <Spinner size="large" color="$blue11" />
-        <Text color="$inkBlackLight" fontSize="$4">
+        <Text color="$textBody" fontSize="$4">
           {t("finalizingLogin")}
         </Text>
       </YStack>
