@@ -33,7 +33,7 @@ export const ErrorBanner: React.FC<ErrorBannerProps> = ({
 }) => {
   return (
     <YStack
-      backgroundColor="#FEF2F2"
+      backgroundColor="$dangerSurfaceSubtle"
       borderColor="$imperialRed"
       borderWidth={2}
       borderRadius="$4"
@@ -44,13 +44,13 @@ export const ErrorBanner: React.FC<ErrorBannerProps> = ({
         <AlertCircle size={22} color="#DC2626" style={{ marginTop: 2 }} />
 
         <YStack flex={1}>
-          <Text color="$imperialRedDark" fontSize="$4" fontWeight="700">
+          <Text color="$dangerText" fontSize="$4" fontWeight="700">
             {title}
           </Text>
 
           {message && (
             <Text
-              color="$imperialRed"
+              color="$dangerText"
               fontSize="$3"
               marginTop="$2"
               fontWeight="500"

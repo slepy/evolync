@@ -150,12 +150,12 @@ export const SyncStatusBar: React.FC = () => {
           {t(statusConfig.label)}
         </Text>
         {lastSyncTime && status === SyncStatus.ONLINE && (
-          <Text fontSize="$1" color="$softGrayDark">
+          <Text fontSize="$1" color="$textSecondary">
             • {formatLastSyncTime()}
           </Text>
         )}
         {status !== SyncStatus.SYNCING && (
-          <RefreshCw size={14} color={theme.softGrayDark?.val} />
+          <RefreshCw size={14} color={theme.textSecondary?.val} />
         )}
       </XStack>
     </Pressable>

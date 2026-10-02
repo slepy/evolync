@@ -22,7 +22,7 @@ export const TechniqueCard: React.FC<TechniqueCardProps> = ({
           iconSize={15}
           icon={<PersonStanding />}
           borderColor="$chineseCyan"
-          backgroundColor="$chineseCyanLighter"
+          backgroundColor="$infoSurface"
         />
 
         <CardInfo

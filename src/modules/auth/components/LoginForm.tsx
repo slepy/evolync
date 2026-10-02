@@ -3,7 +3,7 @@ import { useRouter } from "expo-router";
 import { Eye, EyeOff } from "lucide-react-native";
 import React, { useState } from "react";
 import { Pressable, StyleSheet, TextInput } from "react-native";
-import { Button, Label, Text, YStack } from "tamagui";
+import { Button, Label, Text, YStack, useTheme } from "tamagui";
 import type { FormErrors, LoginFormData } from "../validation/loginSchema";
 
 // ============================================================================
@@ -17,9 +17,6 @@ const inputStyles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 14,
     fontSize: 16,
-    backgroundColor: "#FAFAFA",
-    color: "#1A1A2E",
-    borderColor: "#E2E8F0",
   },
   error: {
     borderColor: "#DC2626",
@@ -49,6 +46,12 @@ export const LoginForm: React.FC<LoginFormProps> = ({
   errors,
 }) => {
   const router = useRouter();
+  const theme = useTheme();
+  const themedInputStyle = {
+    backgroundColor: theme.background?.val,
+    color: theme.textPrimary?.val,
+    borderColor: theme.borderSubtle?.val,
+  };
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -65,7 +68,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({
     <YStack gap="$3">
       {/* Email Input */}
       <YStack gap="$0.5">
-        <Label htmlFor="email" fontSize="$4" fontWeight="600" color="$softGray">
+        <Label htmlFor="email" fontSize="$4" fontWeight="600" color="$textMuted">
           {t("email")}
         </Label>
         <TextInput
@@ -78,8 +81,8 @@ export const LoginForm: React.FC<LoginFormProps> = ({
           keyboardType="email-address"
           textContentType="emailAddress"
           autoComplete="email"
-          placeholderTextColor="#94A3B8"
-          style={[inputStyles.base, errors?.email && inputStyles.error]}
+          placeholderTextColor={theme.textMuted?.val}
+          style={[inputStyles.base, themedInputStyle, errors?.email && inputStyles.error]}
         />
         {errors?.email && (
           <Text color="$imperialRed" fontSize="$3" fontWeight="500">
@@ -94,7 +97,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({
           htmlFor="password"
           fontSize="$4"
           fontWeight="600"
-          color="$softGray"
+          color="$textMuted"
         >
           {t("password")}
         </Label>
@@ -110,9 +113,10 @@ export const LoginForm: React.FC<LoginFormProps> = ({
             spellCheck={false}
             textContentType="password"
             autoComplete="password"
-            placeholderTextColor="#94A3B8"
+            placeholderTextColor={theme.textMuted?.val}
             style={[
               inputStyles.base,
+              themedInputStyle,
               inputStyles.passwordInput,
               errors?.password && inputStyles.error,
             ]}
@@ -127,9 +131,9 @@ export const LoginForm: React.FC<LoginFormProps> = ({
             disabled={isLoading}
           >
             {showPassword ? (
-              <EyeOff size={22} color={isLoading ? "#94A3B8" : "#64748B"} />
+              <EyeOff size={22} color={isLoading ? theme.textMuted?.val : theme.textSecondary?.val} />
             ) : (
-              <Eye size={22} color={isLoading ? "#94A3B8" : "#64748B"} />
+              <Eye size={22} color={isLoading ? theme.textMuted?.val : theme.textSecondary?.val} />
             )}
           </Pressable>
         </YStack>

@@ -25,7 +25,7 @@ export const NoteDocumentCard: React.FC<NoteDocumentCardProps> = ({
       <XStack gap="$3" alignItems="center">
         <Thumbnail
           borderColor="$chineseCyan"
-          backgroundColor="$chineseCyanLighter"
+          backgroundColor="$infoSurface"
           icon={<BookOpen />}
         />
         <YStack flex={1} gap="$1" pointerEvents="none">

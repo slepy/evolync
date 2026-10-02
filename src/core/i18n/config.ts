@@ -1,38 +1,12 @@
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import * as Localization from 'expo-localization';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { Platform } from 'react-native';
+import { storage } from '../storage';
 
 import en from './locales/en.json';
 import pl from './locales/pl.json';
 
 const LANGUAGE_STORAGE_KEY = '@evolync:language';
-
-// Platform-safe storage wrapper
-const storage = {
-  getItem: async (key: string): Promise<string | null> => {
-    if (Platform.OS === 'web') {
-      try {
-        return localStorage.getItem(key);
-      } catch {
-        return null;
-      }
-    }
-    return AsyncStorage.getItem(key);
-  },
-  setItem: async (key: string, value: string): Promise<void> => {
-    if (Platform.OS === 'web') {
-      try {
-        localStorage.setItem(key, value);
-      } catch {
-        // Ignore localStorage errors on web
-      }
-      return;
-    }
-    return AsyncStorage.setItem(key, value);
-  },
-};
 
 // Get device locale or default to 'en'
 const getDeviceLanguage = (): string => {

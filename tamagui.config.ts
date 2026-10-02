@@ -66,13 +66,101 @@ const customTokens = createTokens({
   },
 });
 
+// ============================================================================
+// Semantic theme keys — screens use these instead of static palette tokens so
+// colors flip with the theme. Light values equal the palette token each key
+// replaces (light mode stays pixel-identical); see .ai/specs/2026-10-02-dark-mode.md.
+// ============================================================================
+
+const lightSemantic = {
+  surface: "#FFFFFF",
+  surfaceTranslucent: "rgba(255, 255, 255, 0.7)",
+  textPrimary: "#0F172A",
+  textBody: "#1E293B",
+  textSecondary: "#64748B",
+  textMuted: "#94A3B8",
+  fillMuted: "#94A3B8",
+  borderStrong: "#CBD5E1",
+  fillStrong: "#CBD5E1",
+  borderSubtle: "#E2E8F0",
+  fillSubtle: "#E2E8F0",
+  successSurface: "#d6f1e8",
+  successText: "#047857",
+  dangerSurface: "#fed1d1",
+  dangerSurfaceSubtle: "#FEF2F2",
+  dangerText: "#B91C1C",
+  warningSurface: "#fbefd2",
+  warningText: "#D97706",
+  infoSurface: "#cffafe",
+  infoText: "#0E7490",
+  primarySurface: "#dbeafe",
+  primaryText: "#1E40AF",
+  roseSurface: "#ffe4e6",
+  // Solid accent fills behind white content (radix step 11 in light, step 9 in dark,
+  // where step 11 turns pastel).
+  blueFill: "#006ADC",
+  purpleFill: "#793AAF",
+};
+
+const darkSemantic: typeof lightSemantic = {
+  surface: "#1E293B",
+  surfaceTranslucent: "rgba(30, 41, 59, 0.7)",
+  textPrimary: "#F8FAFC",
+  textBody: "#E2E8F0",
+  textSecondary: "#CBD5E1",
+  textMuted: "#94A3B8",
+  fillMuted: "#475569",
+  borderStrong: "#475569",
+  fillStrong: "#334155",
+  borderSubtle: "#334155",
+  fillSubtle: "#1E293B",
+  successSurface: "#022C22",
+  successText: "#6EE7B7",
+  dangerSurface: "#450A0A",
+  dangerSurfaceSubtle: "#2A0A0A",
+  dangerText: "#FCA5A5",
+  warningSurface: "#451A03",
+  warningText: "#FCD34D",
+  infoSurface: "#083344",
+  infoText: "#67E8F9",
+  primarySurface: "#172554",
+  primaryText: "#93C5FD",
+  roseSurface: "#4C0519",
+  blueFill: "#0090FF",
+  purpleFill: "#8E4EC6",
+};
+
+/** Raw values for non-Tamagui consumers (navigation theme, root views). */
+export const themeColors = {
+  light: { background: "#F8FAFC", ...lightSemantic },
+  dark: { background: "#0F172A", ...darkSemantic },
+};
+
+type BaseThemes = typeof config.themes;
+type SemanticThemes = {
+  [K in keyof BaseThemes]: BaseThemes[K] & typeof lightSemantic;
+};
+
+// Every light*/dark* theme (including component sub-themes such as
+// light_Button) gets the keys, so lookups resolve inside nested themes too.
+function withSemanticKeys(themes: BaseThemes): SemanticThemes {
+  const result = {} as Record<string, unknown>;
+  for (const [name, theme] of Object.entries(themes)) {
+    const semantic = name.startsWith("dark") ? darkSemantic : lightSemantic;
+    result[name] = { ...semantic, ...theme };
+  }
+  return result as SemanticThemes;
+}
+
+const themes = withSemanticKeys(config.themes);
+
 const tamaguiConfig = createTamagui({
   ...config,
   tokens: customTokens,
   themes: {
-    ...config.themes,
+    ...themes,
     light: {
-      ...config.themes.light,
+      ...themes.light,
       background: "#F8FAFC",
       backgroundHover: "#F1F5F9",
       backgroundPress: "#E2E8F0",
@@ -87,7 +175,7 @@ const tamaguiConfig = createTamagui({
       borderColorFocus: "#94A3B8",
     },
     dark: {
-      ...config.themes.dark,
+      ...themes.dark,
       background: "#0F172A",
       backgroundHover: "#1E293B",
       backgroundPress: "#334155",

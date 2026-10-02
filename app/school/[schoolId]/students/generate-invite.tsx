@@ -69,7 +69,7 @@ export default function GenerateInviteScreen() {
               <Text fontSize="$5" fontWeight="bold">
                 {t("inviteExpirationTime")}
               </Text>
-              <Text color="$inkBlackLight">
+              <Text color="$textBody">
                 {t("inviteExpirationDescription")}
               </Text>
 

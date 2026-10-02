@@ -105,17 +105,17 @@ export default function EventParticipantsScreen() {
           <Text
             fontSize="$4"
             fontWeight="600"
-            color="$inkBlack"
+            color="$textPrimary"
             marginBottom="$2"
           >
             {event.name}
           </Text>
           <YStack flexDirection="row" justifyContent="space-around">
             <YStack alignItems="center">
-              <Text fontSize="$5" fontWeight="700" color="$softGray">
+              <Text fontSize="$5" fontWeight="700" color="$textMuted">
                 {counts.absent}
               </Text>
-              <Text fontSize="$1" color="$softGrayDark">
+              <Text fontSize="$1" color="$textSecondary">
                 {t("statusAbsent")}
               </Text>
             </YStack>
@@ -123,7 +123,7 @@ export default function EventParticipantsScreen() {
               <Text fontSize="$5" fontWeight="700" color="$chineseGold">
                 {counts.attending}
               </Text>
-              <Text fontSize="$1" color="$softGrayDark">
+              <Text fontSize="$1" color="$textSecondary">
                 {t("statusAttending")}
               </Text>
             </YStack>
@@ -131,7 +131,7 @@ export default function EventParticipantsScreen() {
               <Text fontSize="$5" fontWeight="700" color="$jadeGreen">
                 {counts.paid}
               </Text>
-              <Text fontSize="$1" color="$softGrayDark">
+              <Text fontSize="$1" color="$textSecondary">
                 {t("statusPaid")}
               </Text>
             </YStack>
@@ -156,11 +156,11 @@ export default function EventParticipantsScreen() {
           )}
           ListEmptyComponent={
             <YStack gap="$2" alignItems="center" marginTop="$10">
-              <Users size={48} color={theme.softGrayDark?.val} />
-              <Text color="$inkBlackLight" textAlign="center">
+              <Users size={48} color={theme.textSecondary?.val} />
+              <Text color="$textBody" textAlign="center">
                 {t("emptyNoParticipants")}
               </Text>
-              <Text color="$softGrayDark" textAlign="center" fontSize="$3">
+              <Text color="$textSecondary" textAlign="center" fontSize="$3">
                 {t("emptyNoParticipantsHint")}
               </Text>
             </YStack>

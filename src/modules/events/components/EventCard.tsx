@@ -35,7 +35,7 @@ export const EventCard: React.FC<EventCardProps> = ({
     <BaseCard onPress={onPress} opacity={isCancelled ? 0.7 : 1}>
       <XStack gap="$3" alignItems="center">
         <Thumbnail
-          backgroundColor="$chineseGoldLighter"
+          backgroundColor="$warningSurface"
           borderColor="$chineseGold"
           icon={<CalendarDays />}
         />
@@ -68,10 +68,10 @@ export const EventCard: React.FC<EventCardProps> = ({
             <XStack alignItems="center" gap="$1.5" flex={1}>
               <Calendar
                 size={14}
-                color={theme.softGrayDark?.val}
+                color={theme.textSecondary?.val}
                 strokeWidth={2}
               />
-              <Text fontSize="$2" color="$softGrayDark">
+              <Text fontSize="$2" color="$textSecondary">
                 {formatDateRange(event.startDate, event.endDate)}
               </Text>
             </XStack>
@@ -81,12 +81,12 @@ export const EventCard: React.FC<EventCardProps> = ({
               <XStack alignItems="center" gap="$1.5" flex={1}>
                 <MapPin
                   size={14}
-                  color={theme.softGrayDark?.val}
+                  color={theme.textSecondary?.val}
                   strokeWidth={2}
                 />
                 <Text
                   fontSize="$2"
-                  color="$softGrayDark"
+                  color="$textSecondary"
                   numberOfLines={1}
                   flex={1}
                 >

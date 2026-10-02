@@ -89,22 +89,22 @@ export const NumberInput = <TFieldValues extends FieldValues>({
       onBlur={onBlur ? () => onBlur() : undefined}
       disabled={disabled}
       keyboardType="numeric"
-      borderColor={error ? "$imperialRed" : "$softGrayLight"}
+      borderColor={error ? "$imperialRed" : "$borderStrong"}
       borderWidth={2}
       focusStyle={{
         borderColor: error ? "$imperialRed" : "$chineseGold",
-        backgroundColor: "$pearlWhiteLight",
+        backgroundColor: "$surface",
       }}
-      backgroundColor={disabled ? "$softGrayLight" : "$pearlWhite"}
-      color="$inkBlack"
-      placeholderTextColor="$softGray"
+      backgroundColor={disabled ? "$fillStrong" : "$background"}
+      color="$textPrimary"
+      placeholderTextColor="$textMuted"
     />
   );
 
   return (
     <YStack gap="$2" {...(flex !== 1 && { flex, flexBasis: 0 })}>
       {label && (
-        <Text fontSize="$3" color="$softGrayDark" fontWeight="500">
+        <Text fontSize="$3" color="$textSecondary" fontWeight="500">
           {label}
         </Text>
       )}

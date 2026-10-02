@@ -258,6 +258,10 @@
   "settingsDefaultCurrency": "Domyślna waluta",
   "settingsDefaultAmount": "Domyślna kwota płatności",
   "settingsLanguage": "Język",
+  "settingsAppearance": "Wygląd",
+  "themeSystem": "Systemowy",
+  "themeLight": "Jasny",
+  "themeDark": "Ciemny",
   "settingsProfile": "Profil",
 
   "schoolsTitle": "Szkoły",

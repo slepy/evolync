@@ -60,21 +60,21 @@ export const TrainingSessionCard: React.FC<TrainingSessionCardProps> = ({
   totalMembers = 0,
   onPress,
 }) => {
-  const iconColor: ColorTokens = "$darkBlue";
+  const iconColor: ColorTokens = "$primaryText";
   const isTodaySession = isToday(session.sessionDate);
 
   return (
     <BaseCard
       onPress={onPress}
       backgroundColor={
-        isTodaySession ? "$darkBlueLighter" : "rgba(255, 255, 255, 0.7)"
+        isTodaySession ? "$primarySurface" : "$surfaceTranslucent"
       }
-      borderColor={isTodaySession ? "$darkBlueLighter" : "$borderColor"}
+      borderColor={isTodaySession ? "$primarySurface" : "$borderColor"}
     >
       <XStack gap="$3" alignItems="center">
         <XStack flex={1} gap="$3" alignItems="center">
           <Thumbnail
-            backgroundColor={"$darkBlueLighter"}
+            backgroundColor={"$primarySurface"}
             borderColor={iconColor}
             icon={<Calendar />}
           />

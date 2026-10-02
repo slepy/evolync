@@ -24,7 +24,7 @@ export default function TechniquesScreen() {
           description={t("techniquesModeThreeDDesc")}
           icon={<Box size={25} />}
           borderColor="$chineseCyan"
-          iconBackground="$chineseCyanLighter"
+          iconBackground="$infoSurface"
           onPress={() => router.push("/techniques/threed" as any)}
           disabled
         />
@@ -33,7 +33,7 @@ export default function TechniquesScreen() {
           description={t("techniquesModeVideoDesc")}
           icon={<Video size={25} />}
           borderColor="$chineseCyan"
-          iconBackground="$chineseCyanLighter"
+          iconBackground="$infoSurface"
           onPress={() => router.push("/techniques/notes" as any)}
           disabled
         />
@@ -42,7 +42,7 @@ export default function TechniquesScreen() {
           description={t("techniquesModeNotesDesc")}
           icon={<BookOpen size={25} />}
           borderColor="$chineseCyan"
-          iconBackground="$chineseCyanLighter"
+          iconBackground="$infoSurface"
           onPress={() => router.push("/techniques/notes" as any)}
         />
       </YStack>

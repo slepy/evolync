@@ -25,7 +25,7 @@ export const FilterChip: React.FC<FilterChipProps> = ({
   const resolvedColor =
     color ??
     (active === false
-      ? (theme.softGrayLighter?.val ?? "#E2E8F0")
+      ? (theme.fillSubtle?.val ?? "#E2E8F0")
       : (theme.darkBlueLight?.val ?? "#3B82F6"));
 
   const textColor = getContrastColor(resolvedColor);

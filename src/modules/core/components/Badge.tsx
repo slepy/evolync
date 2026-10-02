@@ -9,8 +9,8 @@ export interface BadgeProps {
 
 export function Badge({
   title = "",
-  backgroundColor = "$softGray",
-  textColor = "$inkBlack",
+  backgroundColor = "$fillMuted",
+  textColor = "$textPrimary",
 }: BadgeProps) {
   return (
     <XStack

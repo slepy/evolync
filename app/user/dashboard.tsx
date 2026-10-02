@@ -130,15 +130,15 @@ function UserDashboardInner({ schools }: UserDashboardInnerProps) {
       title: t("dashboardPayments"),
       Icon: CreditCard,
       iconColor: "$jadeGreen",
-      iconBackground: "$jadeGreenLighter",
+      iconBackground: "$successSurface",
       onPress: () => router.push("/user/payments"),
     },
     {
       id: "attendance",
       title: t("dashboardAttendance"),
       Icon: Calendar,
-      iconColor: "$darkBlue",
-      iconBackground: "$darkBlueLighter",
+      iconColor: "$primaryText",
+      iconBackground: "$primarySurface",
       onPress: () => router.push("/user/attendance"),
     },
     {
@@ -146,7 +146,7 @@ function UserDashboardInner({ schools }: UserDashboardInnerProps) {
       title: t("eventsTitle"),
       Icon: CalendarDays,
       iconColor: "$chineseGold",
-      iconBackground: "$chineseGoldLighter",
+      iconBackground: "$warningSurface",
       onPress: () => router.push("/user/events"),
     },
     {
@@ -165,7 +165,7 @@ function UserDashboardInner({ schools }: UserDashboardInnerProps) {
       title: t("techniquesNotebook"),
       Icon: PersonStanding,
       iconColor: "$chineseCyan",
-      iconBackground: "$chineseCyanLighter",
+      iconBackground: "$infoSurface",
       onPress: () => router.push("/techniques" as any),
     },
     {
@@ -173,7 +173,7 @@ function UserDashboardInner({ schools }: UserDashboardInnerProps) {
       title: t("tagsPicker"),
       Icon: Tags,
       iconColor: "$chineseCoral",
-      iconBackground: "$chineseCoralLighter",
+      iconBackground: "$roseSurface",
       onPress: () => router.push("/tags" as any),
     },
   ];

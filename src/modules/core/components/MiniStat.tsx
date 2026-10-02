@@ -37,7 +37,7 @@ export const MiniStat = forwardRef<TamaguiElement, MiniStatProps>(
             {value}
           </Text>
         </XStack>
-        <Text fontSize={10} color="$softGrayDark">
+        <Text fontSize={10} color="$textSecondary">
           {label}
         </Text>
       </YStack>

@@ -8,13 +8,13 @@ export function NoteTableHeader() {
       paddingVertical="$2"
       borderBottomWidth={1}
       borderBottomColor="$borderColor"
-      backgroundColor="$backgroundStrong"
+      backgroundColor="$fillSubtle"
     >
       <Text
         flex={1}
         fontSize="$2"
         fontWeight="600"
-        color="$softGrayDark"
+        color="$textSecondary"
         textAlign="center"
       >
         {t("notesPerson1")}
@@ -23,7 +23,7 @@ export function NoteTableHeader() {
         flex={1}
         fontSize="$2"
         fontWeight="600"
-        color="$softGrayDark"
+        color="$textSecondary"
         textAlign="center"
       >
         {t("notesDirection")}
@@ -32,7 +32,7 @@ export function NoteTableHeader() {
         flex={1}
         fontSize="$2"
         fontWeight="600"
-        color="$softGrayDark"
+        color="$textSecondary"
         textAlign="center"
       >
         {t("notesPerson2")}

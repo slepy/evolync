@@ -59,7 +59,7 @@ export function NotificationCard({ notification, onPress }: NotificationCardProp
         </YStack>
 
         <YStack flex={1} gap="$1">
-          <Text fontSize="$4" fontWeight={unread ? "700" : "500"} color="$inkBlack">
+          <Text fontSize="$4" fontWeight={unread ? "700" : "500"} color="$textPrimary">
             {title}
           </Text>
           <Text fontSize="$3" color="$gray11" numberOfLines={2}>

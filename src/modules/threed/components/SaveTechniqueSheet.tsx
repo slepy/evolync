@@ -52,7 +52,7 @@ export const SaveTechniqueSheet: React.FC<SaveTechniqueSheetProps> = ({
         >
           {/* Header with close button */}
           <XStack justifyContent="space-between" alignItems="center">
-            <Text fontSize="$5" fontWeight="700" color="$inkBlack">
+            <Text fontSize="$5" fontWeight="700" color="$textPrimary">
               {t("threedSaveTechnique")}
             </Text>
             <Button
@@ -64,7 +64,7 @@ export const SaveTechniqueSheet: React.FC<SaveTechniqueSheetProps> = ({
           </XStack>
 
           {bodyPart && (
-            <Text fontSize="$3" color="$softGrayDark">
+            <Text fontSize="$3" color="$textSecondary">
               {bodyPart}
             </Text>
           )}

@@ -76,14 +76,14 @@ export default function EventsListScreen() {
             backgroundColor={
               filter === EVENT_FILTER.UPCOMING
                 ? "$chineseGold"
-                : "$softGrayLighter"
+                : "$fillSubtle"
             }
             pressStyle={{
               scale: 0.95,
               backgroundColor:
                 filter === EVENT_FILTER.UPCOMING
                   ? "$chineseGold"
-                  : "$softGrayLighter",
+                  : "$fillSubtle",
             }}
             onPress={() => setFilter(EVENT_FILTER.UPCOMING)}
             icon={
@@ -92,7 +92,7 @@ export default function EventsListScreen() {
                 color={
                   filter === EVENT_FILTER.UPCOMING
                     ? theme.pearlWhite?.val
-                    : theme.softGray?.val
+                    : theme.textMuted?.val
                 }
                 pointerEvents="none"
               />
@@ -100,7 +100,7 @@ export default function EventsListScreen() {
           >
             <Text
               color={
-                filter === EVENT_FILTER.UPCOMING ? "$pearlWhite" : "$softGray"
+                filter === EVENT_FILTER.UPCOMING ? "$pearlWhite" : "$textMuted"
               }
               fontWeight="600"
             >
@@ -114,14 +114,14 @@ export default function EventsListScreen() {
             backgroundColor={
               filter === EVENT_FILTER.HISTORICAL
                 ? "$chineseGold"
-                : "$softGrayLighter"
+                : "$fillSubtle"
             }
             pressStyle={{
               scale: 0.95,
               backgroundColor:
                 filter === EVENT_FILTER.HISTORICAL
                   ? "$chineseGold"
-                  : "$softGrayLighter",
+                  : "$fillSubtle",
             }}
             onPress={() => setFilter(EVENT_FILTER.HISTORICAL)}
             icon={
@@ -130,7 +130,7 @@ export default function EventsListScreen() {
                 color={
                   filter === EVENT_FILTER.HISTORICAL
                     ? theme.pearlWhite?.val
-                    : theme.softGray?.val
+                    : theme.textMuted?.val
                 }
                 pointerEvents="none"
               />
@@ -138,7 +138,7 @@ export default function EventsListScreen() {
           >
             <Text
               color={
-                filter === EVENT_FILTER.HISTORICAL ? "$pearlWhite" : "$softGray"
+                filter === EVENT_FILTER.HISTORICAL ? "$pearlWhite" : "$textMuted"
               }
               fontWeight="600"
             >
@@ -174,14 +174,14 @@ export default function EventsListScreen() {
             padding="$4"
             gap="$2"
           >
-            <Calendar size={48} color={theme.softGray?.val} />
-            <Text color="$softGray" fontSize="$5" textAlign="center">
+            <Calendar size={48} color={theme.textMuted?.val} />
+            <Text color="$textMuted" fontSize="$5" textAlign="center">
               {filter === EVENT_FILTER.UPCOMING
                 ? t("emptyNoUpcomingEvents")
                 : t("emptyNoHistoricalEvents")}
             </Text>
             {filter === EVENT_FILTER.UPCOMING && (
-              <Text color="$softGrayDark" fontSize="$3" textAlign="center">
+              <Text color="$textSecondary" fontSize="$3" textAlign="center">
                 {t("emptyNoUpcomingEventsHint")}
               </Text>
             )}

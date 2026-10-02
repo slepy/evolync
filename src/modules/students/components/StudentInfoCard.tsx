@@ -72,8 +72,8 @@ export const StudentInfoCard: React.FC<StudentInfoCardProps> = ({
           id: "copy",
           label: t("copyPhoneNumber"),
           icon: Copy,
-          iconColor: "$inkBlackLight",
-          iconBackground: "$softGrayLight",
+          iconColor: "$textBody",
+          iconBackground: "$fillStrong",
           onPress: () => Clipboard.setString(phone),
         },
         {
@@ -103,21 +103,21 @@ export const StudentInfoCard: React.FC<StudentInfoCardProps> = ({
           iconSize={50}
           imageUrl={avatarUrl}
           rankColor={rankColor}
-          borderColor="white"
-          backgroundColor="$softGrayLighter"
+          borderColor="$surface"
+          backgroundColor="$fillSubtle"
         />
 
         {/* Info section */}
         <YStack gap="$2">
           {/* status */}
           <XStack alignItems="center" gap="$2.5">
-            <BadgeCheck size={16} color={theme.softGrayDark?.val} />
+            <BadgeCheck size={16} color={theme.textSecondary?.val} />
             <StatusBadge status={status} />
           </XStack>
           {/* Email */}
           <XStack alignItems="center" gap="$2.5">
-            <Mail size={16} color={theme.softGrayDark?.val} />
-            <Text color="$softGrayDark" fontSize="$3" fontWeight="500" flex={1}>
+            <Mail size={16} color={theme.textSecondary?.val} />
+            <Text color="$textSecondary" fontSize="$3" fontWeight="500" flex={1}>
               {email}
             </Text>
           </XStack>
@@ -129,10 +129,10 @@ export const StudentInfoCard: React.FC<StudentInfoCardProps> = ({
             <XStack alignItems="center" gap="$2.5">
               <Phone
                 size={16}
-                color={phone ? theme.purple10?.val : theme.softGrayDark?.val}
+                color={phone ? theme.purple10?.val : theme.textSecondary?.val}
               />
               <Text
-                color={phone ? "$purple10" : "$softGrayDark"}
+                color={phone ? "$purple10" : "$textSecondary"}
                 fontSize="$3"
                 fontWeight="500"
                 flex={1}
@@ -146,15 +146,15 @@ export const StudentInfoCard: React.FC<StudentInfoCardProps> = ({
           {/* Joined Date */}
           {joinedAt && (
             <XStack alignItems="center" gap="$2.5">
-              <CalendarDays size={16} color={theme.softGrayDark?.val} />
-              <Text color="$softGrayDark" fontSize="$3">
+              <CalendarDays size={16} color={theme.textSecondary?.val} />
+              <Text color="$textSecondary" fontSize="$3">
                 {t("fieldJoinedAt")} · {format(joinedAt, "d MMMM yyyy")}
               </Text>
             </XStack>
           )}
           {/* rank */}
           <XStack alignItems="center" gap="$2.5">
-            <Award size={16} color={theme.softGrayDark?.val} />
+            <Award size={16} color={theme.textSecondary?.val} />
             <Pressable onPress={onRankPress} disabled={!onRankPress}>
               <RankBadge name={rankName} color={rankColor} />
             </Pressable>

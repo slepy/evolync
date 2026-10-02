@@ -21,7 +21,7 @@ export const RankListItem: React.FC<RankListItemProps> = ({
         <Thumbnail
           icon={<Award />}
           borderColor={"white"}
-          backgroundColor={color || "$softGray"}
+          backgroundColor={color || "$fillMuted"}
         />
         <CardInfo displayName={name} />
       </XStack>

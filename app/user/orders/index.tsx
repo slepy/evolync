@@ -54,8 +54,8 @@ export default function UserOrdersScreen() {
           alignItems="center"
           justifyContent="center"
         >
-          <ShoppingCart size={48} color={theme.softGray?.val} />
-          <Text fontSize="$5" color="$softGray" textAlign="center">
+          <ShoppingCart size={48} color={theme.textMuted?.val} />
+          <Text fontSize="$5" color="$textMuted" textAlign="center">
             {t("emptyNoOrders")}
           </Text>
         </YStack>

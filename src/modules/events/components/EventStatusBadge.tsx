@@ -35,24 +35,24 @@ const getParticipantStatusConfig = (status: EventParticipantStatus) => {
     case EVENT_PARTICIPANT_STATUS.PAID:
       return {
         label: t("statusPaid"),
-        backgroundColor: "$jadeGreenLighter",
-        textColor: "$jadeGreenDark",
+        backgroundColor: "$successSurface",
+        textColor: "$successText",
         borderColor: "$jadeGreen",
       };
     case EVENT_PARTICIPANT_STATUS.ATTENDING:
       return {
         label: t("statusAttending"),
-        backgroundColor: "$chineseGoldLighter",
-        textColor: "$chineseGoldDark",
+        backgroundColor: "$warningSurface",
+        textColor: "$warningText",
         borderColor: "$chineseGold",
       };
     case EVENT_PARTICIPANT_STATUS.ABSENT:
     default:
       return {
         label: t("statusAbsent"),
-        backgroundColor: "$softGrayLighter",
-        textColor: "$softGrayDark",
-        borderColor: "$softGray",
+        backgroundColor: "$fillSubtle",
+        textColor: "$textSecondary",
+        borderColor: "$fillMuted",
       };
   }
 };
@@ -62,16 +62,16 @@ const getEventStatusConfig = (status: EventStatus) => {
     case EVENT_STATUS.CANCELLED:
       return {
         label: t("statusCancelled"),
-        backgroundColor: "$imperialRedLighter",
-        textColor: "$imperialRedDark",
+        backgroundColor: "$dangerSurface",
+        textColor: "$dangerText",
         borderColor: "$imperialRed",
       };
     case EVENT_STATUS.ACTIVE:
     default:
       return {
         label: t("statusActive"),
-        backgroundColor: "$jadeGreenLighter",
-        textColor: "$jadeGreenDark",
+        backgroundColor: "$successSurface",
+        textColor: "$successText",
         borderColor: "$jadeGreen",
       };
   }

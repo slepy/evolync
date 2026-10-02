@@ -204,7 +204,7 @@ export function NoteDocumentForm({
             paddingVertical="$8"
             paddingHorizontal="$6"
           >
-            <Text fontSize="$3" color="$softGrayDark" textAlign="center">
+            <Text fontSize="$3" color="$textSecondary" textAlign="center">
               {t("notesNoRows")}
             </Text>
           </YStack>

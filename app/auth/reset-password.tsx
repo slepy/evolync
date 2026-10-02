@@ -87,7 +87,7 @@ export default function ResetPasswordScreen() {
             {passwordUpdated ? (
               <YStack alignItems="center" gap="$4" marginTop="$4">
                 <CheckCircle size={56} color="#16A34A" />
-                <Text fontSize="$6" fontWeight="700" color="$inkBlack" textAlign="center">
+                <Text fontSize="$6" fontWeight="700" color="$textPrimary" textAlign="center">
                   {t('passwordResetSuccess')}
                 </Text>
                 <Button
@@ -102,10 +102,10 @@ export default function ResetPasswordScreen() {
             ) : (
               <>
                 <YStack gap="$2" marginBottom="$2">
-                  <Text fontSize="$7" fontWeight="700" color="$inkBlack" textAlign="center">
+                  <Text fontSize="$7" fontWeight="700" color="$textPrimary" textAlign="center">
                     {t('resetPasswordTitle')}
                   </Text>
-                  <Text fontSize="$4" color="$softGrayDark" textAlign="center">
+                  <Text fontSize="$4" color="$textSecondary" textAlign="center">
                     {email
                       ? t('resetPasswordCodeSentTo', { email })
                       : t('resetPasswordDescription')}

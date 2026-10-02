@@ -33,7 +33,7 @@ export const StartingPositionsTab: React.FC<StartingPositionsTabProps> = ({
         />
       )}
       ListEmptyComponent={
-        <Text textAlign="center" color="$softGrayDark" paddingVertical="$6">
+        <Text textAlign="center" color="$textSecondary" paddingVertical="$6">
           {t("threedNoTechniques")}
         </Text>
       }

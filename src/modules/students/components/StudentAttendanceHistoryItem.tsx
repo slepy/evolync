@@ -50,8 +50,8 @@ export const StudentAttendanceHistoryItem: React.FC<
       <XStack gap="$3" alignItems="center">
         <Thumbnail
           icon={<Calendar />}
-          backgroundColor="$darkBlueLighter"
-          borderColor="$darkBlue"
+          backgroundColor="$primarySurface"
+          borderColor="$primaryText"
         />
 
         <CardInfo

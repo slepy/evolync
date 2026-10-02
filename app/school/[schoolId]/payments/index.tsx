@@ -170,10 +170,10 @@ export default function PaymentsScreen() {
           }}
           ListEmptyComponent={
             <YStack gap="$2" alignItems="center" marginTop="$10">
-              <Text color="$inkBlackLight" textAlign="center">
+              <Text color="$textBody" textAlign="center">
                 {t("emptyNoPaymentCycles")}
               </Text>
-              <Text color="$softGrayDark" textAlign="center" fontSize="$3">
+              <Text color="$textSecondary" textAlign="center" fontSize="$3">
                 {t("emptyNoPaymentCyclesHint")}
               </Text>
             </YStack>

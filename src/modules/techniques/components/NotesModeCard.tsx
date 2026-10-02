@@ -1,7 +1,7 @@
 import React from "react";
 import { Text, View, StyleSheet } from "react-native";
 import type { ColorTokens } from "tamagui";
-import { XStack } from "tamagui";
+import { XStack, useTheme } from "tamagui";
 
 import { BaseCard, CardInfo, Thumbnail } from "@/modules/core/components";
 
@@ -26,6 +26,8 @@ export const NotesModeCard: React.FC<NotesModeCardProps> = ({
   disabled = false,
   comingSoonText = t("comingSoon"),
 }) => {
+  const theme = useTheme();
+
   return (
     <BaseCard
       onPress={() => {
@@ -37,9 +39,7 @@ export const NotesModeCard: React.FC<NotesModeCardProps> = ({
       marginHorizontal="$0"
       opacity={disabled ? 0.7 : 1}
       borderColor={disabled ? "$gray7" : borderColor}
-      backgroundColor={
-        disabled ? "rgba(255,255,255,0.45)" : "rgba(255,255,255,0.7)"
-      }
+      backgroundColor="$surfaceTranslucent"
     >
       <XStack gap="$3" alignItems="center">
         <Thumbnail
@@ -54,7 +54,7 @@ export const NotesModeCard: React.FC<NotesModeCardProps> = ({
 
       {disabled && (
         <View pointerEvents="none" style={styles.watermark}>
-          <Text style={styles.watermarkText}>{comingSoonText}</Text>
+          <Text style={[styles.watermarkText, { color: theme.textSecondary?.val }]}>{comingSoonText}</Text>
         </View>
       )}
     </BaseCard>
@@ -73,7 +73,6 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: "700",
     letterSpacing: 1,
-    color: "#4B5563",
     textTransform: "lowercase",
   },
 });

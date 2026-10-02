@@ -26,21 +26,21 @@ export const CardInfo: React.FC<CardInfoProps> = ({
       {reverseTitles && (
         <>
           {subtitle && (
-            <Text fontSize="$2" color="$softGray">
+            <Text fontSize="$2" color="$textMuted">
               {subtitle}
             </Text>
           )}
         </>
       )}
 
-      <Text fontSize="$4" fontWeight="600" color="$inkBlack">
+      <Text fontSize="$4" fontWeight="600" color="$textPrimary">
         {displayName}
       </Text>
 
       {!reverseTitles && (
         <>
           {subtitle && (
-            <Text fontSize="$2" color="$softGray">
+            <Text fontSize="$2" color="$textMuted">
               {subtitle}
             </Text>
           )}

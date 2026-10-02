@@ -30,20 +30,20 @@ export const PARTICIPANT_STATUS_CONFIG: Record<
 > = {
   [EVENT_PARTICIPANT_STATUS.ABSENT]: {
     icon: X,
-    color: "$softGrayDark",
-    bgColor: "$softGrayLighter",
+    color: "$textSecondary",
+    bgColor: "$fillSubtle",
     label: "statusAbsent",
   },
   [EVENT_PARTICIPANT_STATUS.ATTENDING]: {
     icon: Clock,
     color: "$chineseGold",
-    bgColor: "$chineseGoldLighter",
+    bgColor: "$warningSurface",
     label: "statusAttending",
   },
   [EVENT_PARTICIPANT_STATUS.PAID]: {
     icon: Check,
     color: "$jadeGreen",
-    bgColor: "$jadeGreenLighter",
+    bgColor: "$successSurface",
     label: "statusPaid",
   },
 };

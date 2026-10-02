@@ -1,11 +1,14 @@
 import { Stack } from "expo-router";
+import { useTheme } from "tamagui";
 
 export default function ThreeDLayout() {
+  const theme = useTheme();
+
   return (
     <Stack
       screenOptions={{
         headerShown: false,
-        contentStyle: { backgroundColor: "#F8FAFC" },
+        contentStyle: { backgroundColor: theme.background.val },
       }}
     />
   );

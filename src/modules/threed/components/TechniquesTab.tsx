@@ -31,7 +31,7 @@ export const TechniquesTab: React.FC<TechniquesTabProps> = ({ techniques }) => {
         />
       )}
       ListEmptyComponent={
-        <Text textAlign="center" color="$softGrayDark" paddingVertical="$6">
+        <Text textAlign="center" color="$textSecondary" paddingVertical="$6">
           {t("threedNoTechniques")}
         </Text>
       }

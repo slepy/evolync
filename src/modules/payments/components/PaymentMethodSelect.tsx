@@ -84,9 +84,9 @@ export const PaymentMethodSelect = <TFieldValues extends FieldValues>({
       disablePreventBodyScroll
     >
       <Select.Trigger
-        borderColor={error ? "$imperialRed" : "$softGrayLight"}
+        borderColor={error ? "$imperialRed" : "$borderStrong"}
         borderWidth={2}
-        backgroundColor={disabled ? "$softGrayLight" : "$pearlWhite"}
+        backgroundColor={disabled ? "$fillStrong" : "$background"}
         disabled={disabled}
         iconAfter={ChevronDown}
         opacity={1}
@@ -126,7 +126,7 @@ export const PaymentMethodSelect = <TFieldValues extends FieldValues>({
   return (
     <YStack gap="$2" {...(flex !== 1 && { flex, flexBasis: 0 })}>
       {label && (
-        <Text fontSize="$3" color="$softGrayDark" fontWeight="500">
+        <Text fontSize="$3" color="$textSecondary" fontWeight="500">
           {label}
         </Text>
       )}

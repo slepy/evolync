@@ -95,7 +95,7 @@ export default function StudentsListScreen() {
       label: t("dashboardGenerateCode"),
       icon: QrCode,
       iconColor: "$jadeGreen",
-      iconBackground: "$jadeGreenLighter",
+      iconBackground: "$successSurface",
       onPress: handleGenerateInvite,
     },
   ];
@@ -104,7 +104,7 @@ export default function StudentsListScreen() {
     return (
       <View style={{ flex: 1 }}>
         <YStack flex={1} justifyContent="center" alignItems="center">
-          <Text color="$inkBlack">{t("errorNoSchool")}</Text>
+          <Text color="$textPrimary">{t("errorNoSchool")}</Text>
         </YStack>
       </View>
     );
@@ -131,17 +131,17 @@ export default function StudentsListScreen() {
           flex={1}
           size="$2"
           backgroundColor={
-            activeTab === "students" ? "$blue3" : "$softGrayLighter"
+            activeTab === "students" ? "$blue3" : "$fillSubtle"
           }
           pressStyle={{
             scale: 0.95,
             backgroundColor:
-              activeTab === "students" ? "$blue3" : "$softGrayLighter",
+              activeTab === "students" ? "$blue3" : "$fillSubtle",
           }}
           onPress={() => setActiveTab("students")}
         >
           <Text
-            color={activeTab === "students" ? "$blue11" : "$softGray"}
+            color={activeTab === "students" ? "$blue11" : "$textMuted"}
             fontWeight="600"
           >
             {t("studentsTitle")}
@@ -152,18 +152,18 @@ export default function StudentsListScreen() {
           flex={1}
           size="$2"
           backgroundColor={
-            activeTab === "requests" ? "$blue3" : "$softGrayLighter"
+            activeTab === "requests" ? "$blue3" : "$fillSubtle"
           }
           pressStyle={{
             scale: 0.95,
             backgroundColor:
-              activeTab === "requests" ? "$blue3" : "$softGrayLighter",
+              activeTab === "requests" ? "$blue3" : "$fillSubtle",
           }}
           onPress={() => setActiveTab("requests")}
         >
           <XStack gap="$2" alignItems="center">
             <Text
-              color={activeTab === "requests" ? "$blue11" : "$softGray"}
+              color={activeTab === "requests" ? "$blue11" : "$textMuted"}
               fontWeight="600"
             >
               {t("joinRequests")}
@@ -203,7 +203,7 @@ export default function StudentsListScreen() {
             >
               {students.length === 0 ? (
                 <YStack gap="$2" alignItems="center" marginTop="$10">
-                  <Text color="$inkBlackLight" textAlign="center">
+                  <Text color="$textBody" textAlign="center">
                     {t("emptyNoStudents")}
                   </Text>
                 </YStack>

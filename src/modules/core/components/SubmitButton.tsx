@@ -43,7 +43,7 @@ export const SubmitButton: React.FC<SubmitButtonProps> = ({
         scale: 0.98,
       }}
       disabledStyle={{
-        backgroundColor: "$softGrayLight",
+        backgroundColor: "$fillStrong",
         opacity: 0.6,
       }}
       icon={isLoading ? <Spinner color="$pearlWhite" /> : undefined}

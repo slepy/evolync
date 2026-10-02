@@ -27,7 +27,7 @@ export const SYNC_STATUS_CONFIG: Record<
   },
   [SyncStatus.OFFLINE]: {
     icon: WifiOff,
-    color: "$softGrayDark",
+    color: "$textSecondary",
     label: "syncOffline",
   },
 };

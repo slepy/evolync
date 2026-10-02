@@ -49,7 +49,7 @@ export const TechniqueLibrarySheet: React.FC<TechniqueLibrarySheetProps> = ({
       >
         <Sheet.Handle />
         <YStack gap="$3" flex={1}>
-          <Text fontSize="$5" fontWeight="700" color="$inkBlack">
+          <Text fontSize="$5" fontWeight="700" color="$textPrimary">
             {t("threedTechniques")}
           </Text>
 
@@ -58,7 +58,7 @@ export const TechniqueLibrarySheet: React.FC<TechniqueLibrarySheetProps> = ({
               {filtered.length === 0 ? (
                 <Text
                   fontSize="$3"
-                  color="$softGrayDark"
+                  color="$textSecondary"
                   textAlign="center"
                   paddingVertical="$4"
                 >

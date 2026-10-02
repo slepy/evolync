@@ -339,8 +339,8 @@ export const OrdersListScreen: React.FC<OrdersListScreenProps> = ({
               )}
               ListEmptyComponent={
                 <YStack gap="$2" alignItems="center" marginTop="$10">
-                  <ShoppingCart size={48} color={theme.softGray?.val} />
-                  <Text color="$inkBlackLight" textAlign="center">
+                  <ShoppingCart size={48} color={theme.textMuted?.val} />
+                  <Text color="$textBody" textAlign="center">
                     {statusFilter === ORDER_STATUS_FILTER.ALL
                       ? t("emptyNoOrders")
                       : t("emptyNoOrdersFiltered")}
@@ -348,7 +348,7 @@ export const OrdersListScreen: React.FC<OrdersListScreenProps> = ({
                   {statusFilter === ORDER_STATUS_FILTER.ALL &&
                     showCreateFab && (
                       <Text
-                        color="$softGrayDark"
+                        color="$textSecondary"
                         textAlign="center"
                         fontSize="$3"
                       >
@@ -374,8 +374,8 @@ export const OrdersListScreen: React.FC<OrdersListScreenProps> = ({
               )}
               ListEmptyComponent={
                 <YStack gap="$2" alignItems="center" marginTop="$10">
-                  <Package size={48} color={theme.softGray?.val} />
-                  <Text color="$inkBlackLight" textAlign="center">
+                  <Package size={48} color={theme.textMuted?.val} />
+                  <Text color="$textBody" textAlign="center">
                     {t("emptyNoProductsFiltered")}
                   </Text>
                 </YStack>
@@ -398,7 +398,7 @@ export const OrdersListScreen: React.FC<OrdersListScreenProps> = ({
             fab={{
               bottom: Platform.OS === "ios" ? 90 : 80,
               right: 20,
-              backgroundColor: "$purple11",
+              backgroundColor: "$purpleFill",
               icon: <Copy size={24} />,
             }}
             action={handleCopyProductsList}

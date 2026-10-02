@@ -83,7 +83,7 @@ export function AccordionSection({
   statusColor,
   renderHeader,
   children,
-  backgroundColor = "rgba(255, 255, 255, 0.7)",
+  backgroundColor = "$surfaceTranslucent",
   borderColor = "$borderColor",
   headerPressToExpand = true,
   marginVertical = "$1",
@@ -126,7 +126,7 @@ export function AccordionSection({
   return (
     <BaseCard
       onPress={() => {}}
-      backgroundColor="rgba(255, 255, 255, 0.7)"
+      backgroundColor="$surfaceTranslucent"
       borderColor="$borderColor"
       borderWidth={1}
       padding="$2"
@@ -179,7 +179,7 @@ export function AccordionSection({
               rotate={isExpanded ? "180deg" : "0deg"}
               pointerEvents="none"
             >
-              <ChevronDown size={20} color={theme.softGray?.val} />
+              <ChevronDown size={20} color={theme.textMuted?.val} />
             </XStack>
           </XStack>
         </XStack>

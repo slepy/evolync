@@ -70,7 +70,7 @@ export const DashboardFAB: React.FC = () => {
         label: t("eventsTitle"),
         icon: CalendarDays,
         iconColor: "$chineseGold",
-        iconBackground: "$chineseGoldLighter",
+        iconBackground: "$warningSurface",
         onPress: handleAddEventItem,
       },
     ],

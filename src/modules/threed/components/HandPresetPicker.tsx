@@ -45,7 +45,7 @@ export const HandPresetPicker: React.FC<HandPresetPickerProps> = ({
       >
         <Sheet.Handle />
         <YStack gap="$3" flex={1}>
-          <Text fontSize="$5" fontWeight="700" color="$inkBlack">
+          <Text fontSize="$5" fontWeight="700" color="$textPrimary">
             {t("threedSelectHandPreset")}
           </Text>
           <ScrollView
@@ -59,7 +59,7 @@ export const HandPresetPicker: React.FC<HandPresetPickerProps> = ({
                   onPress={() => handleSelect(preset.id)}
                   marginHorizontal={0}
                 >
-                  <Text fontSize="$4" fontWeight="500" color="$inkBlack">
+                  <Text fontSize="$4" fontWeight="500" color="$textPrimary">
                     {preset.name}
                   </Text>
                 </BaseCard>

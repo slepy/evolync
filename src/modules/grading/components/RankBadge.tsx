@@ -15,13 +15,13 @@ export const RankBadge: React.FC<RankBadgeProps> = ({
 }) => {
   if (!name) {
     return (
-      <Text color="$softGrayDark" fontSize={size === "small" ? "$2" : "$3"}>
+      <Text color="$textSecondary" fontSize={size === "small" ? "$2" : "$3"}>
         {t("gradingNoRank")}
       </Text>
     );
   }
 
-  const textColor = color ? getContrastColor(color) : "$inkBlack";
+  const textColor = color ? getContrastColor(color) : "$textPrimary";
 
   return (
     <XStack
@@ -30,7 +30,7 @@ export const RankBadge: React.FC<RankBadgeProps> = ({
       paddingHorizontal="$2"
       paddingVertical="$1"
       borderRadius="$2"
-      backgroundColor={color ?? "$softGrayLight"}
+      backgroundColor={color ?? "$fillStrong"}
     >
       <Text
         color={textColor}

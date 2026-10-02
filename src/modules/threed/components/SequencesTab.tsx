@@ -31,7 +31,7 @@ export const SequencesTab: React.FC<SequencesTabProps> = ({ sequences }) => {
         />
       )}
       ListEmptyComponent={
-        <Text textAlign="center" color="$softGrayDark" paddingVertical="$6">
+        <Text textAlign="center" color="$textSecondary" paddingVertical="$6">
           {t("threedNoSequences")}
         </Text>
       }

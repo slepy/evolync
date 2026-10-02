@@ -25,50 +25,50 @@ export const GoogleAuthButton: React.FC<GoogleAuthButtonProps> = ({
       onPress={onPress}
       disabled={disabled || isLoading}
       size="$5"
-      backgroundColor="$pearlWhite"
-      borderColor="$softGrayLight"
+      backgroundColor="$background"
+      borderColor="$borderStrong"
       borderWidth={2}
       borderRadius="$4"
       hoverStyle={{
-        backgroundColor: "white",
-        borderColor: "$softGray",
+        backgroundColor: "$surface",
+        borderColor: "$fillMuted",
       }}
       pressStyle={{
-        backgroundColor: "$pearlWhite",
-        borderColor: "$softGray",
+        backgroundColor: "$background",
+        borderColor: "$fillMuted",
         scale: 0.98,
       }}
       disabledStyle={{
-        backgroundColor: "$pearlWhite",
+        backgroundColor: "$background",
         opacity: 0.5,
       }}
       icon={
         isLoading ? (
-          <Spinner color="$softGray" />
+          <Spinner color="$textMuted" />
         ) : (
           <XStack
             width={24}
             height={24}
-            backgroundColor="$pearlWhite"
+            backgroundColor="$background"
             borderRadius="$12"
             alignItems="center"
             justifyContent="center"
             borderWidth={1}
-            borderColor="$softGrayLight"
+            borderColor="$borderStrong"
           >
-            <Text fontSize="$6" fontWeight="700" color="$softGrayDark">
+            <Text fontSize="$6" fontWeight="700" color="$textSecondary">
               G
             </Text>
           </XStack>
         )
       }
-      shadowColor="$softGray"
+      shadowColor="$fillMuted"
       shadowOffset={{ width: 0, height: 2 }}
       shadowOpacity={0.1}
       shadowRadius={4}
       elevation={2}
     >
-      <Text color="$softGrayDark" fontWeight="600" fontSize="$4">
+      <Text color="$textSecondary" fontWeight="600" fontSize="$4">
         {isLoading ? t("loading") : t("continueWithGoogle")}
       </Text>
     </Button>

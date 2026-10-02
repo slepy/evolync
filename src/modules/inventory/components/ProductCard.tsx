@@ -70,7 +70,7 @@ const getStockStatus = (
   return {
     label: t("statusInStock"),
     color: "$jadeGreen",
-    bgColor: "$jadeGreenLighter",
+    bgColor: "$successSurface",
   };
 };
 
@@ -132,7 +132,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
 
           {/* Variants Count */}
           {variants.length > 1 && (
-            <Text fontSize="$1" color="$softGrayDark">
+            <Text fontSize="$1" color="$textSecondary">
               {variants.length} {t("inventoryVariants").toLowerCase()}
             </Text>
           )}

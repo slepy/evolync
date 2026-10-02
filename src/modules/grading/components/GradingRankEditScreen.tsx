@@ -109,7 +109,7 @@ export const GradingRankEditScreen: React.FC = () => {
           >
             <Trash2
               size={20}
-              color={theme.imperialRedDark?.val}
+              color={theme.dangerText?.val}
               pointerEvents="none"
             />
           </Button>
@@ -122,7 +122,7 @@ export const GradingRankEditScreen: React.FC = () => {
       >
         <YStack flex={1} padding="$6" gap="$4">
           <YStack gap="$2">
-            <Text fontSize="$3" color="$softGrayDark">
+            <Text fontSize="$3" color="$textSecondary">
               {t("gradingRankNamePlaceholder")}
             </Text>
             <Input
@@ -134,22 +134,22 @@ export const GradingRankEditScreen: React.FC = () => {
           </YStack>
 
           <YStack gap="$2">
-            <Text fontSize="$3" color="$softGrayDark">
+            <Text fontSize="$3" color="$textSecondary">
               {t("gradingPickColor")}
             </Text>
             <Button
               height={44}
               borderRadius="$4"
               borderWidth={1}
-              borderColor="$softGrayLight"
-              backgroundColor={color || "$softGrayLight"}
+              borderColor="$borderStrong"
+              backgroundColor={color || "$fillStrong"}
               pressStyle={{ scale: 0.98 }}
               onPress={() => setColorPickerOpen(true)}
             />
           </YStack>
 
           {errorText && (
-            <Text fontSize="$3" color="$imperialRedDark">
+            <Text fontSize="$3" color="$dangerText">
               {errorText}
             </Text>
           )}

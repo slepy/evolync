@@ -17,19 +17,19 @@ export const STATUS_CONFIG: Record<
   [PaymentStatusEnum.PAID]: {
     icon: Check,
     color: "$jadeGreen",
-    bgColor: "$jadeGreenLighter",
+    bgColor: "$successSurface",
     label: "statusPaid",
   },
   [PaymentStatusEnum.PENDING]: {
     icon: Clock,
     color: "$chineseGold",
-    bgColor: "$chineseGoldLighter",
+    bgColor: "$warningSurface",
     label: "statusPending",
   },
   [PaymentStatusEnum.CANCELLED]: {
     icon: X,
-    color: "$softGrayDark",
-    bgColor: "$softGrayLighter",
+    color: "$textSecondary",
+    bgColor: "$fillSubtle",
     label: "statusCancelled",
   },
 };

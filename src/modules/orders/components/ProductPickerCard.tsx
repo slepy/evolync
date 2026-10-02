@@ -44,9 +44,9 @@ export const ProductPickerCard: React.FC<ProductPickerCardProps> = ({
             height={40}
             borderRadius="$4"
             borderWidth={1}
-            borderColor="$softGray"
+            borderColor="$fillMuted"
             objectFit="cover"
-            backgroundColor="$softGrayLight"
+            backgroundColor="$fillStrong"
           />
         ) : (
           <XStack
@@ -69,18 +69,18 @@ export const ProductPickerCard: React.FC<ProductPickerCardProps> = ({
           <Text
             fontSize="$4"
             fontWeight="600"
-            color="$inkBlack"
+            color="$textPrimary"
             numberOfLines={1}
           >
             {name}
           </Text>
 
           <XStack gap="$2" alignItems="center">
-            <Text fontSize="$3" color="$softGrayDark" fontWeight="600">
+            <Text fontSize="$3" color="$textSecondary" fontWeight="600">
               {variantsCount > 1 ? `${t("from")} ${lowestPrice}` : lowestPrice}
             </Text>
             {variantsCount > 1 && (
-              <Text fontSize="$2" color="$softGray">
+              <Text fontSize="$2" color="$textMuted">
                 {variantsCount} {t("inventoryVariants")}
               </Text>
             )}
@@ -91,7 +91,7 @@ export const ProductPickerCard: React.FC<ProductPickerCardProps> = ({
         <Button
           width="$3"
           height="$3"
-          backgroundColor="$purple11"
+          backgroundColor="$purpleFill"
           pressStyle={{ scale: 0.95 }}
           pointerEvents="none"
         >

@@ -46,7 +46,7 @@ export const GradingConfigScreen: React.FC = () => {
             paddingVertical="$8"
             paddingHorizontal="$6"
           >
-            <Text fontSize="$4" color="$softGrayDark" textAlign="center">
+            <Text fontSize="$4" color="$textSecondary" textAlign="center">
               {t("gradingEmptyState")}
             </Text>
           </YStack>

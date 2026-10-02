@@ -71,11 +71,11 @@ export function NoteRowItem({
         size="$2"
         chromeless
         onPress={() => onDeleteRow(row.id)}
-        pressStyle={{ scale: 0.95, backgroundColor: "$imperialRedLighter" }}
+        pressStyle={{ scale: 0.95, backgroundColor: "$dangerSurface" }}
       >
         <Trash2
           size={16}
-          color={theme.imperialRedDark?.val}
+          color={theme.dangerText?.val}
           pointerEvents="none"
         />
       </Button>

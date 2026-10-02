@@ -10,17 +10,19 @@ import { registerSignOutHandler } from "@/modules/core/utils/signOutBridge";
 import { useSyncStore } from "@/database/hooks/useSyncStore";
 import { NotificationResponseHandler } from "@/modules/notifications";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
-import { DefaultTheme, ThemeProvider } from "@react-navigation/native";
+import { DarkTheme, DefaultTheme, ThemeProvider } from "@react-navigation/native";
 import { useFonts } from "expo-font";
 import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
-import { useEffect, useState } from "react";
+import { StatusBar } from "expo-status-bar";
+import { useEffect, useMemo, useState } from "react";
 import { View } from "react-native";
 import { PortalProvider } from "@tamagui/portal";
 import { TamaguiProvider } from "tamagui";
 import i18n from "@/core/i18n/config";
+import { loadThemePreference, useResolvedTheme } from "@/core/theme";
 
-import config from "../tamagui.config";
+import config, { themeColors as appThemeColors } from "../tamagui.config";
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -45,13 +47,20 @@ export default function RootLayout() {
     if (error) throw error;
   }, [error]);
 
+  // Load the stored appearance before the splash hides so a saved Dark choice
+  // never flashes a light frame. Never rejects (falls back to "system").
+  const [themeLoaded, setThemeLoaded] = useState(false);
   useEffect(() => {
-    if (loaded) {
+    loadThemePreference().finally(() => setThemeLoaded(true));
+  }, []);
+
+  useEffect(() => {
+    if (loaded && themeLoaded) {
       SplashScreen.hideAsync();
     }
-  }, [loaded]);
+  }, [loaded, themeLoaded]);
 
-  if (!loaded) {
+  if (!loaded || !themeLoaded) {
     return null;
   }
 
@@ -77,20 +86,37 @@ function RootLayoutNav() {
     return () => i18n.off("languageChanged", handler);
   }, []);
 
+  const resolvedTheme = useResolvedTheme();
+  const themeColors = appThemeColors[resolvedTheme];
+  const navigationTheme = useMemo(() => {
+    const base = resolvedTheme === "dark" ? DarkTheme : DefaultTheme;
+    return {
+      ...base,
+      colors: {
+        ...base.colors,
+        background: themeColors.background,
+        card: themeColors.surface,
+        text: themeColors.textPrimary,
+        border: themeColors.borderSubtle,
+      },
+    };
+  }, [resolvedTheme, themeColors]);
+
   return (
     <PortalProvider shouldAddRootHost>
-      <TamaguiProvider config={config} defaultTheme="light">
-        <ThemeProvider value={DefaultTheme}>
+      <TamaguiProvider config={config} defaultTheme={resolvedTheme}>
+        <ThemeProvider value={navigationTheme}>
+          <StatusBar style={resolvedTheme === "dark" ? "light" : "dark"} />
           <View
             style={{
               flex: 1,
-              backgroundColor: "#F8FAFC",
+              backgroundColor: themeColors.background,
             }}
           >
             <Stack
               screenOptions={{
                 headerShown: false,
-                contentStyle: { backgroundColor: "#F8FAFC" },
+                contentStyle: { backgroundColor: themeColors.background },
               }}
             ></Stack>
             <NotificationResponseHandler />

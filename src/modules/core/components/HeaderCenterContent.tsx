@@ -55,7 +55,7 @@ export const HeaderTitle: React.FC<HeaderTitleProps> = ({ text, onPress }) => {
             <Text
               fontSize="$6"
               fontWeight="700"
-              color="$inkBlack"
+              color="$textPrimary"
               numberOfLines={1}
             >
               {text}
@@ -70,7 +70,7 @@ export const HeaderTitle: React.FC<HeaderTitleProps> = ({ text, onPress }) => {
     <Text
       fontSize="$6"
       fontWeight="700"
-      color="$inkBlack"
+      color="$textPrimary"
       numberOfLines={1}
       textAlign="center"
     >
@@ -128,13 +128,13 @@ export const HeaderSelector: React.FC<HeaderSelectorProps> = ({
             <Text
               fontSize="$6"
               fontWeight="700"
-              color="$inkBlack"
+              color="$textPrimary"
               numberOfLines={1}
             >
               {selectedOption.label}
             </Text>
             {options.length > 1 && (
-              <ChevronsUpDown size={18} color={theme.inkBlack?.val} />
+              <ChevronsUpDown size={18} color={theme.textPrimary?.val} />
             )}
           </XStack>
         )}

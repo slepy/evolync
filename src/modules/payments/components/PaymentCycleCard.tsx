@@ -51,14 +51,14 @@ export const PaymentCycleCard: React.FC<PaymentCycleCardProps> = ({
     <BaseCard onPress={onPress}>
       <XStack gap="$3" alignItems="center">
         <Thumbnail
-          backgroundColor="$jadeGreenLighter"
+          backgroundColor="$successSurface"
           borderColor="$jadeGreen"
           icon={<Calendar />}
         />
 
         {/* Content */}
         <YStack flex={1} gap="$1">
-          <Text fontSize="$4" fontWeight="600" color="$inkBlack">
+          <Text fontSize="$4" fontWeight="600" color="$textPrimary">
             {dateRange}
           </Text>
           <Text fontSize="$2" color={progressColor} fontWeight="600">

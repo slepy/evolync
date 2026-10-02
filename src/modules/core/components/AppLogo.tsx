@@ -44,7 +44,7 @@ export const AppLogo: React.FC<AppLogoProps> = ({
           marginTop="$4"
           fontSize="$8"
           fontWeight="700"
-          color="$inkBlack"
+          color="$textPrimary"
           letterSpacing={1}
         >
           Evolync

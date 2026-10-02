@@ -54,22 +54,22 @@ export const ThreeDTabSelector: React.FC<ThreeDTabSelectorProps> = ({
             key={tab.value}
             flex={1}
             size="$3"
-            backgroundColor={isActive ? "$chineseCyan" : "$softGrayLighter"}
+            backgroundColor={isActive ? "$chineseCyan" : "$fillSubtle"}
             pressStyle={{
               scale: 0.95,
-              backgroundColor: isActive ? "$chineseCyan" : "$softGrayLighter",
+              backgroundColor: isActive ? "$chineseCyan" : "$fillSubtle",
             }}
             onPress={() => onTabChange(tab.value)}
             icon={
               <tab.icon
                 size={16}
-                color={isActive ? theme.pearlWhite?.val : theme.softGray?.val}
+                color={isActive ? theme.pearlWhite?.val : theme.textMuted?.val}
                 pointerEvents="none"
               />
             }
           >
             <Text
-              color={isActive ? "$pearlWhite" : "$softGray"}
+              color={isActive ? "$pearlWhite" : "$textMuted"}
               fontWeight="500"
             >
               {tab.label}

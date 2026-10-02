@@ -85,7 +85,7 @@ const HSlider: React.FC<HSliderProps> = ({ label, onDelta, width = 80 }) => {
 
   return (
     <YStack alignItems="center" gap="$1">
-      <Text fontSize="$1" color="$colorSubtle" textTransform="uppercase">
+      <Text fontSize="$1" color="$textSecondary" textTransform="uppercase">
         {label}
       </Text>
       <View
@@ -138,7 +138,7 @@ const VSlider: React.FC<VSliderProps> = ({ label, onDelta, height = 80 }) => {
 
   return (
     <YStack alignItems="center" gap="$1">
-      <Text fontSize="$1" color="$colorSubtle" textTransform="uppercase">
+      <Text fontSize="$1" color="$textSecondary" textTransform="uppercase">
         {label}
       </Text>
       <View
@@ -191,7 +191,7 @@ const Slider: React.FC<SliderProps> = ({ label, onDelta, width = 80 }) => {
 
   return (
     <YStack alignItems="center" gap="$1">
-      <Text fontSize="$1" color="$colorSubtle" textTransform="uppercase">
+      <Text fontSize="$1" color="$textSecondary" textTransform="uppercase">
         {label}
       </Text>
       <View
@@ -331,7 +331,7 @@ export const BoneControlPanel: React.FC<BoneControlPanelProps> = ({
         <YStack alignItems="center" gap="$1">
           <Text
             fontSize="$1"
-            color="$colorSubtle"
+            color="$textSecondary"
             fontWeight="600"
             textTransform="uppercase"
           >
@@ -359,7 +359,7 @@ export const BoneControlPanel: React.FC<BoneControlPanelProps> = ({
             <YStack alignItems="center" gap="$1">
               <Text
                 fontSize="$1"
-                color="$colorSubtle"
+                color="$textSecondary"
                 fontWeight="600"
                 textTransform="uppercase"
               >

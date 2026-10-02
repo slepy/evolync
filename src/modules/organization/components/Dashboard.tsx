@@ -166,10 +166,10 @@ function DashboardInner({ organization, schools }: OrganizationDashboardProps) {
           >
             {/* Welcome Section */}
             <YStack gap="$2" marginBottom="$2">
-              <Text fontSize="$7" fontWeight="700" color="$inkBlack">
+              <Text fontSize="$7" fontWeight="700" color="$textPrimary">
                 {t("dashboardWelcomeBack")}
               </Text>
-              <Text fontSize="$4" color="$inkBlackLight">
+              <Text fontSize="$4" color="$textBody">
                 {t("dashboardOverview")}
               </Text>
             </YStack>
@@ -191,7 +191,7 @@ function DashboardInner({ organization, schools }: OrganizationDashboardProps) {
                   title={t("eventsTitle")}
                   Icon={CalendarDays}
                   iconColor="$chineseGold"
-                  iconBackground="$chineseGoldLighter"
+                  iconBackground="$warningSurface"
                   onPress={handleNavigateToEvents}
                 />
               </YStack>
@@ -223,8 +223,8 @@ function DashboardInner({ organization, schools }: OrganizationDashboardProps) {
                 <DashboardStatCard
                   title={t("gradingTitle")}
                   Icon={Award}
-                  iconColor="$softGray"
-                  iconBackground="$softGrayLighter"
+                  iconColor="$textMuted"
+                  iconBackground="$fillSubtle"
                   onPress={handleNavigateToGrading}
                 />
               </YStack>
@@ -234,7 +234,7 @@ function DashboardInner({ organization, schools }: OrganizationDashboardProps) {
                   title={t("techniquesNotebook")}
                   Icon={PersonStanding}
                   iconColor="$chineseCyan"
-                  iconBackground="$chineseCyanLighter"
+                  iconBackground="$infoSurface"
                   onPress={handleNavigateToThreed}
                 />
               </YStack>
@@ -244,7 +244,7 @@ function DashboardInner({ organization, schools }: OrganizationDashboardProps) {
                   title={t("tagsPicker")}
                   Icon={Tags}
                   iconColor="$chineseCoral"
-                  iconBackground="$chineseCoralLighter"
+                  iconBackground="$roseSurface"
                   onPress={handleNavigateToTags}
                 />
               </YStack>

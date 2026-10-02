@@ -2,7 +2,7 @@ import { Eye, EyeOff } from "lucide-react-native";
 import React, { useState } from "react";
 import { Control, Controller, FieldValues, Path } from "react-hook-form";
 import { Pressable } from "react-native";
-import { Input, Text, XStack, YStack } from "tamagui";
+import { Input, Text, XStack, YStack, useTheme } from "tamagui";
 
 // ============================================================================
 // Types
@@ -38,6 +38,7 @@ export const PasswordInput = <TFieldValues extends FieldValues>({
   error,
   disabled = false,
 }: PasswordInputProps<TFieldValues>) => {
+  const theme = useTheme();
   const [showPassword, setShowPassword] = useState(false);
   const defaultLabel = label || t("password");
 
@@ -47,7 +48,7 @@ export const PasswordInput = <TFieldValues extends FieldValues>({
 
   return (
     <YStack gap="$2">
-      <Text fontSize="$3" color="$softGrayDark" fontWeight="500">
+      <Text fontSize="$3" color="$textSecondary" fontWeight="500">
         {defaultLabel}
       </Text>
 
@@ -75,14 +76,14 @@ export const PasswordInput = <TFieldValues extends FieldValues>({
               // instead of autofilling the old one on the next login.
               textContentType="newPassword"
               autoComplete="new-password"
-              borderColor={error ? "$imperialRed" : "$softGrayLight"}
+              borderColor={error ? "$imperialRed" : "$borderStrong"}
               borderWidth={2}
               focusStyle={{
                 borderColor: error ? "$imperialRed" : "$chineseGold",
-                backgroundColor: "$pearlWhiteLight",
+                backgroundColor: "$surface",
               }}
-              backgroundColor="$pearlWhite"
-              color="$inkBlack"
+              backgroundColor="$background"
+              color="$textPrimary"
               flex={1}
               paddingRight="$10"
             />
@@ -101,13 +102,13 @@ export const PasswordInput = <TFieldValues extends FieldValues>({
           {showPassword ? (
             <EyeOff
               size={22}
-              color={disabled ? "#94A3B8" : "#64748B"}
+              color={disabled ? theme.textMuted?.val : theme.textSecondary?.val}
               pointerEvents="none"
             />
           ) : (
             <Eye
               size={22}
-              color={disabled ? "#94A3B8" : "#64748B"}
+              color={disabled ? theme.textMuted?.val : theme.textSecondary?.val}
               pointerEvents="none"
             />
           )}
