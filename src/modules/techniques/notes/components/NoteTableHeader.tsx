@@ -8,7 +8,7 @@ export function NoteTableHeader() {
       paddingVertical="$2"
       borderBottomWidth={1}
       borderBottomColor="$borderColor"
-      backgroundColor="$backgroundStrong"
+      backgroundColor="$fillSubtle"
     >
       <Text
         flex={1}

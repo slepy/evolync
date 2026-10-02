@@ -311,7 +311,7 @@ export default function EditorScreen() {
           height={52}
           borderTopWidth={1}
           borderTopColor="$borderColor"
-          backgroundColor="$backgroundStrong"
+          backgroundColor="$fillSubtle"
           alignItems="center"
           paddingHorizontal="$2"
           gap="$2"
@@ -407,7 +407,7 @@ export default function EditorScreen() {
             borderTopWidth={1}
             borderTopColor="$borderColor"
           >
-            <Text fontSize="$3" color="$colorSubtle">
+            <Text fontSize="$3" color="$textSecondary">
               {t("threedNoBoneSelected")}
             </Text>
           </XStack>

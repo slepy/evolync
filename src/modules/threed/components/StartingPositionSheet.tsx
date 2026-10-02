@@ -64,7 +64,7 @@ export const StartingPositionSheet: React.FC<StartingPositionSheetProps> = ({
               justifyContent="center"
               paddingVertical="$8"
             >
-              <Text fontSize="$3" color="$colorSubtle">
+              <Text fontSize="$3" color="$textSecondary">
                 {t("threedNoTechniques")}
               </Text>
             </YStack>
@@ -79,7 +79,7 @@ export const StartingPositionSheet: React.FC<StartingPositionSheetProps> = ({
                     {position.title}
                   </Text>
                   {position.createdAt && (
-                    <Text fontSize="$2" color="$colorSubtle">
+                    <Text fontSize="$2" color="$textSecondary">
                       {new Date(position.createdAt).toLocaleDateString()}
                     </Text>
                   )}
