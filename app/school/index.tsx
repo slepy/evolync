@@ -72,7 +72,7 @@ export default function SchoolsListScreen() {
     return (
       <View style={{ flex: 1 }}>
         <YStack flex={1} justifyContent="center" alignItems="center">
-          <Text color="$inkBlack">{t("errorNoOrganization")}</Text>
+          <Text color="$textPrimary">{t("errorNoOrganization")}</Text>
         </YStack>
       </View>
     );
@@ -105,7 +105,7 @@ export default function SchoolsListScreen() {
           )}
           ListEmptyComponent={
             <YStack gap="$2" alignItems="center" marginTop="$10">
-              <Text color="$inkBlackLight" textAlign="center">
+              <Text color="$textBody" textAlign="center">
                 {t("emptyNoSchools")}
               </Text>
             </YStack>

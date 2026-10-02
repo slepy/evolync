@@ -336,7 +336,7 @@ export const ApproveJoinRequestSheet: React.FC<
             >
               {/* Header */}
               <YStack marginBottom="$4">
-                <Text fontSize="$6" fontWeight="700" color="$inkBlack">
+                <Text fontSize="$6" fontWeight="700" color="$textPrimary">
                   {t("approveJoinRequestTitle")}
                 </Text>
                 <BaseCard onPress={() => {}} marginHorizontal="unset">
@@ -358,7 +358,7 @@ export const ApproveJoinRequestSheet: React.FC<
               <Text
                 fontSize="$4"
                 fontWeight="600"
-                color="$inkBlack"
+                color="$textPrimary"
                 marginBottom="$2"
               >
                 {t("approveJoinRequestStudentType")}
@@ -379,11 +379,11 @@ export const ApproveJoinRequestSheet: React.FC<
               {/* Existing member picker */}
               {mode === "existing" && (
                 <YStack marginBottom="$4">
-                  <Text fontSize="$3" color="$inkBlackLight" marginBottom="$2">
+                  <Text fontSize="$3" color="$textBody" marginBottom="$2">
                     {t("approveJoinRequestSelectExisting")}
                   </Text>
                   {existingMembers.length === 0 ? (
-                    <Text fontSize="$3" color="$inkBlackLight">
+                    <Text fontSize="$3" color="$textBody">
                       {t("approveJoinRequestNoOfflineStudents")}
                     </Text>
                   ) : (
@@ -430,7 +430,7 @@ export const ApproveJoinRequestSheet: React.FC<
                   <Text
                     fontSize="$4"
                     fontWeight="600"
-                    color="$inkBlack"
+                    color="$textPrimary"
                     marginBottom="$2"
                   >
                     {t("approveJoinRequestPaymentCycles")}
@@ -461,7 +461,7 @@ export const ApproveJoinRequestSheet: React.FC<
                             justifyContent="space-between"
                           >
                             <Thumbnail
-                              backgroundColor="$jadeGreenLighter"
+                              backgroundColor="$successSurface"
                               borderColor="$jadeGreen"
                               icon={<Calendar />}
                             />
@@ -469,7 +469,7 @@ export const ApproveJoinRequestSheet: React.FC<
                               <Text
                                 fontSize="$4"
                                 fontWeight="600"
-                                color="$inkBlack"
+                                color="$textPrimary"
                               >
                                 {start} – {end}
                               </Text>
@@ -497,7 +497,7 @@ export const ApproveJoinRequestSheet: React.FC<
                   <Text
                     fontSize="$4"
                     fontWeight="600"
-                    color="$inkBlack"
+                    color="$textPrimary"
                     marginBottom="$2"
                   >
                     {t("approveJoinRequestUpcomingEvents")}
@@ -523,7 +523,7 @@ export const ApproveJoinRequestSheet: React.FC<
                             justifyContent="space-between"
                           >
                             <Thumbnail
-                              backgroundColor="$chineseGoldLighter"
+                              backgroundColor="$warningSurface"
                               borderColor="$chineseGold"
                               icon={<CalendarDays />}
                             />
@@ -577,8 +577,8 @@ const ModeButton: React.FC<ModeButtonProps> = ({
   <Button
     flex={1}
     size="$3"
-    backgroundColor={selected ? "$blue11" : "$softGray"}
-    color={selected ? "$pearlWhite" : "$inkBlack"}
+    backgroundColor={selected ? "$blue11" : "$fillMuted"}
+    color={selected ? "$pearlWhite" : "$textPrimary"}
     fontWeight={selected ? "700" : "400"}
     onPress={onPress}
   >

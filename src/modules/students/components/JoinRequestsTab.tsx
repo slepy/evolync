@@ -67,7 +67,7 @@ export const JoinRequestsTab: React.FC<JoinRequestsTabProps> = ({ schoolId }) =>
   if (requests.length === 0) {
     return (
       <YStack flex={1} alignItems="center" marginTop="$10">
-        <Text color="$inkBlackLight" textAlign="center">
+        <Text color="$textBody" textAlign="center">
           {t("joinRequestsEmpty")}
         </Text>
       </YStack>

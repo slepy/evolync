@@ -96,7 +96,7 @@ export const StudentPaymentRow: React.FC<StudentPaymentRowProps> = ({
     <AccordionSection
       title={format(periodStart, "d MMM yyyy")}
       subtitle={format(periodEnd, "d MMM yyyy")}
-      backgroundColor="$jadeGreenLighter"
+      backgroundColor="$successSurface"
       borderColor="$jadeGreen"
       icon={<Calendar />}
       statusIcon={<StatusIcon />}

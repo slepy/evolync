@@ -11,7 +11,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Building2, CreditCard } from "lucide-react-native";
 import React, { forwardRef, useEffect, useImperativeHandle, useState } from "react";
 import { useForm } from "react-hook-form";
-import { YStack } from "tamagui";
+import { YStack, useTheme } from "tamagui";
 import type { CombinedSchoolSettingsFormValues } from "../validation";
 import { schoolSettingsFormSchema } from "../validation";
 
@@ -45,6 +45,7 @@ export const SchoolSettingsForm = forwardRef<
   SchoolSettingsFormHandle,
   SchoolSettingsFormProps
 >(({ initialData, onSubmit, isLoading, error, onResetError, onDirtyChange }, ref) => {
+  const theme = useTheme();
   const [activeSection, setActiveSection] = useState<string>("basicInfo");
 
   const {
@@ -84,7 +85,7 @@ export const SchoolSettingsForm = forwardRef<
         <AccordionSection
           value="basicInfo"
           title={t("settingsBasicInfo")}
-          icon={<Building2 size={20} color="#1E293B" />}
+          icon={<Building2 size={20} color={theme.textBody?.val} />}
           marginHorizontal="$0"
         >
           <TextInput
@@ -112,7 +113,7 @@ export const SchoolSettingsForm = forwardRef<
         <AccordionSection
           value="paymentDefaults"
           title={t("settingsPaymentDefaults")}
-          icon={<CreditCard size={20} color="#1E293B" />}
+          icon={<CreditCard size={20} color={theme.textBody?.val} />}
           marginHorizontal="$0"
         >
           <CurrencySelect

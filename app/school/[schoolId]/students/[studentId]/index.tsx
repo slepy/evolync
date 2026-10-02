@@ -109,10 +109,10 @@ function TabTrigger({ value, label, icon, isActive }: TabTriggerProps) {
         justifyContent="center"
         gap="$1"
         paddingVertical="$2"
-        backgroundColor={isActive ? "$softGrayLight" : "$transparent"}
+        backgroundColor={isActive ? "$fillStrong" : "$transparent"}
       >
         {icon}
-        <Text fontSize="$1" color="$inkBlackLight">
+        <Text fontSize="$1" color="$textBody">
           {label}
         </Text>
       </YStack>
@@ -158,7 +158,7 @@ function AttendanceStats({ present, absent, excused }: AttendanceStatsProps) {
             {present}
           </Text>
         </XStack>
-        <Text fontSize={10} color="$softGrayDark">
+        <Text fontSize={10} color="$textSecondary">
           {t(presentConfig.label)}
         </Text>
       </YStack>
@@ -170,7 +170,7 @@ function AttendanceStats({ present, absent, excused }: AttendanceStatsProps) {
             {absent}
           </Text>
         </XStack>
-        <Text fontSize={10} color="$softGrayDark">
+        <Text fontSize={10} color="$textSecondary">
           {t(absentConfig.label)}
         </Text>
       </YStack>
@@ -182,7 +182,7 @@ function AttendanceStats({ present, absent, excused }: AttendanceStatsProps) {
             {excused}
           </Text>
         </XStack>
-        <Text fontSize={10} color="$softGrayDark">
+        <Text fontSize={10} color="$textSecondary">
           {t(excusedConfig.label)}
         </Text>
       </YStack>
@@ -393,8 +393,8 @@ export default function StudentDetailsScreen() {
       id: "archive",
       label: t("studentArchiveAction"),
       icon: Archive,
-      iconColor: "$imperialRedDark",
-      iconBackground: "$imperialRedLighter",
+      iconColor: "$dangerText",
+      iconBackground: "$dangerSurface",
       onPress: handleArchive,
     },
   ];
@@ -412,7 +412,7 @@ export default function StudentDetailsScreen() {
           >
             <MoreVertical
               size={22}
-              color={theme.inkBlackLight?.val}
+              color={theme.textBody?.val}
               pointerEvents="none"
             />
           </Button>
@@ -459,7 +459,7 @@ export default function StudentDetailsScreen() {
           >
             {/* Tab List */}
             <Tabs.List
-              backgroundColor="rgba(255, 255, 255, 0.7)"
+              backgroundColor="$surfaceTranslucent"
               borderBottomWidth={1}
               borderBottomColor="$borderColor"
             >
@@ -495,7 +495,7 @@ export default function StudentDetailsScreen() {
 
               {payments.length === 0 ? (
                 <Text
-                  color="$softGrayDark"
+                  color="$textSecondary"
                   fontSize="$3"
                   textAlign="center"
                   paddingVertical="$6"
@@ -542,7 +542,7 @@ export default function StudentDetailsScreen() {
 
               {attendance.length === 0 ? (
                 <Text
-                  color="$softGrayDark"
+                  color="$textSecondary"
                   fontSize="$3"
                   textAlign="center"
                   paddingVertical="$6"
@@ -582,13 +582,13 @@ export default function StudentDetailsScreen() {
             >
               {isOrdersLoading ? (
                 <YStack paddingVertical="$6" alignItems="center">
-                  <Text color="$softGrayDark" fontSize="$3">
+                  <Text color="$textSecondary" fontSize="$3">
                     {t("loading")}
                   </Text>
                 </YStack>
               ) : orders.length === 0 ? (
                 <Text
-                  color="$softGrayDark"
+                  color="$textSecondary"
                   fontSize="$3"
                   textAlign="center"
                   paddingVertical="$6"
@@ -637,13 +637,13 @@ export default function StudentDetailsScreen() {
             >
               {isEventsLoading ? (
                 <YStack paddingVertical="$6" alignItems="center">
-                  <Text color="$softGrayDark" fontSize="$3">
+                  <Text color="$textSecondary" fontSize="$3">
                     {t("loading")}
                   </Text>
                 </YStack>
               ) : localEvents.length === 0 ? (
                 <Text
-                  color="$softGrayDark"
+                  color="$textSecondary"
                   fontSize="$3"
                   textAlign="center"
                   paddingVertical="$6"

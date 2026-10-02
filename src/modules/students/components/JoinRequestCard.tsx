@@ -42,7 +42,7 @@ export const JoinRequestCard: React.FC<JoinRequestCardProps> = ({
             />
             <StatusIndicator
               icon={<X />}
-              color="$imperialRedDark"
+              color="$dangerText"
               onPress={() => onReject(request.id)}
             />
           </XStack>

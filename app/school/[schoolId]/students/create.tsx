@@ -39,7 +39,7 @@ export default function CreateStudentScreen() {
     return (
       <View style={{ flex: 1, paddingTop: insets.top }}>
         <YStack flex={1} justifyContent="center" alignItems="center">
-          <Text color="$inkBlack">{t("studentsNoSchool")}</Text>
+          <Text color="$textPrimary">{t("studentsNoSchool")}</Text>
         </YStack>
       </View>
     );

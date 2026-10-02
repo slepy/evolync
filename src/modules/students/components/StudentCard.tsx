@@ -38,7 +38,7 @@ export const StatusBadge: React.FC<{ status: MemberStatus }> = ({ status }) => {
   const statusConfigMap: Record<MemberStatus, StatusConfig> = {
     [MemberStatusEnum.ACTIVE]: {
       color: "$jadeGreen",
-      bg: "$jadeGreenLighter",
+      bg: "$successSurface",
       label: t("statusActive"),
     },
     [MemberStatusEnum.PENDING]: {
@@ -47,8 +47,8 @@ export const StatusBadge: React.FC<{ status: MemberStatus }> = ({ status }) => {
       label: t("statusPending"),
     },
     [MemberStatusEnum.ARCHIVED]: {
-      color: "$softGrayDark",
-      bg: "$softGrayLight",
+      color: "$textSecondary",
+      bg: "$fillStrong",
       label: t("statusArchived"),
     },
     [MemberStatusEnum.REJECTED]: {
@@ -64,8 +64,8 @@ export const StatusBadge: React.FC<{ status: MemberStatus }> = ({ status }) => {
   };
 
   const config = statusConfigMap[status] ?? {
-    color: "$softGrayDark",
-    bg: "$softGrayLight",
+    color: "$textSecondary",
+    bg: "$fillStrong",
     label: status,
   };
 
