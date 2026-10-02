@@ -1,4 +1,5 @@
 import { Header, HeaderSelector, HeaderTitle } from "@/modules/core/components";
+import { NotificationBell, PushPermissionPrompt } from "@/modules/notifications";
 import { useStore, type Organization } from "@/store";
 import { useRouter } from "expo-router";
 import { useCallback, useEffect } from "react";
@@ -146,7 +147,8 @@ function DashboardInner({ organization, schools }: OrganizationDashboardProps) {
     <SafeAreaView style={{ flex: 1 }} edges={["top"]}>
       <YStack flex={1}>
         {/* Header with Organization Info and Sync Status */}
-        <Header centerContent={headerCenter} />
+        <Header centerContent={headerCenter} leftContent={<NotificationBell />} />
+        <PushPermissionPrompt />
 
         {/* Scrollable Content */}
         <ScrollView

@@ -1,5 +1,6 @@
 import { supabase } from '@/config/supabase';
-import { useStore, type AuthError, type LoginCredentials } from '@/store';
+import { disablePushToken } from '@/modules/notifications';
+import { useStore, type AuthError, type LoginCredentials, type SchoolMembership } from '@/store';
 import type { AuthError as SupabaseAuthError } from '@supabase/supabase-js';
 import { useRouter } from 'expo-router';
 import * as WebBrowser from 'expo-web-browser';
@@ -193,7 +194,7 @@ export const useAuth = () => {
           .is('deleted_at', null);
 
         if (data && data.length > 0) {
-          const memberships = data.map((row: any) => ({
+          const memberships: SchoolMembership[] = data.map((row: any) => ({
             memberId: row.id,
             schoolId: row.school_id,
             organizationId: row.schools.organization_id,
@@ -601,6 +602,9 @@ export const useAuth = () => {
   const signOut = useCallback(async () => {
     try {
       setLoading(true);
+
+      // Stop pushes to this device while the session can still call the RPC
+      await disablePushToken();
 
       // Sign out from Supabase
       await supabase.auth.signOut();

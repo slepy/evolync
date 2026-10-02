@@ -2,7 +2,7 @@ import { sync } from "@/database/sync";
 import { useStore } from "@/store";
 import type Technique from "@/database/models/Technique";
 import { TechniqueRepository } from "../repositories";
-import type { CreateTechniqueDto, UpdateTechniqueDto } from "../types";
+import type { BodyPart, CreateTechniqueDto, UpdateTechniqueDto } from "../types";
 import { createTechniqueSchema, updateTechniqueSchema } from "../validation";
 
 export const saveTechnique = async (
@@ -17,7 +17,8 @@ export const saveTechnique = async (
     userId: user.id,
     title: parsed.title,
     description: parsed.description,
-    bodyPart: parsed.bodyPart,
+    // createTechniqueSchema only accepts BODY_PART values
+    bodyPart: parsed.bodyPart as BodyPart,
     data: JSON.stringify(parsed.techniqueData),
   });
 

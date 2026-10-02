@@ -9,7 +9,7 @@ export interface BaseCardProps extends Omit<CardProps, "onPress"> {
   /**
    * Handler called when card is pressed
    */
-  onPress: () => void;
+  onPress?: () => void;
   /**
    * Card content
    */

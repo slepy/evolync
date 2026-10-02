@@ -61,7 +61,7 @@ Deno.serve(async (req) => {
 
     // Parse request body
     const body: SyncPushChanges = await req.json();
-    const { changes, lastPulledAt } = body;
+    const { changes, lastPulledAt, migration } = body;
 
     console.log(`[SYNC] Starting sync for user: ${user.id}`);
 
@@ -88,12 +88,21 @@ Deno.serve(async (req) => {
       );
     }
 
+    // Writes go through a client that names the verified user, so database
+    // triggers (e.g. notifications) can tell who acted even with the service role.
+    const supabaseActor = createClient(
+      Deno.env.get("SUPABASE_URL") ?? "",
+      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "",
+      { global: { headers: { "x-evolync-actor": user.id } } },
+    );
+
     // Prepare context for sync functions
     const syncContext: SyncContext = {
-      supabaseClient: supabaseAdmin,
+      supabaseClient: supabaseActor,
       userId: user.id,
       changes,
       lastPulledAt,
+      migratedTables: migration?.tables ?? [],
     };
 
     let result;

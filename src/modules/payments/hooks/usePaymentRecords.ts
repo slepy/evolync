@@ -71,7 +71,7 @@ export const usePaymentRecords = (
 
           // Build payment list with member data
           const list: PaymentWithMember[] = records
-            .map((record) => {
+            .map((record): PaymentWithMember | null => {
               const member = memberById.get(record.schoolMemberId);
               if (!member) return null;
 

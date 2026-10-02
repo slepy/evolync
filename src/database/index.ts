@@ -27,6 +27,7 @@ import TechniqueNoteDocument from "./models/TechniqueNoteDocument";
 import TechniqueNoteRow from "./models/TechniqueNoteRow";
 import Tag from "./models/Tag";
 import Taggable from "./models/Taggable";
+import Notification from "./models/Notification";
 
 export const database = new Database({
   adapter,
@@ -57,6 +58,7 @@ export const database = new Database({
     TechniqueNoteRow,
     Tag,
     Taggable,
+    Notification,
   ],
 });
 

@@ -5,6 +5,11 @@
 # Disable built-in JWT verification - we handle auth manually in the function
 verify_jwt = false
 
+[functions.send-push]
+# Called by the notifications webhook trigger; authenticated with the
+# x-send-push-secret header (SEND_PUSH_SECRET) instead of a user JWT.
+verify_jwt = false
+
 [auth]
 # HISTORICAL NOTE (2026-09-29): password reset originally used a deep-linked
 # magic link (redirectTo: 'evolync://auth/reset-password'). That surfaced a
