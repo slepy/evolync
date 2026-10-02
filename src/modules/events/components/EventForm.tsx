@@ -261,7 +261,7 @@ export const EventForm = forwardRef<EventFormHandle, EventFormProps>(
         {/* Visibility */}
         <YStack gap="$3">
           <YStack gap="$2">
-            <Text fontSize="$3" color="$softGrayDark" fontWeight="500">
+            <Text fontSize="$3" color="$textSecondary" fontWeight="500">
               {t("eventsVisibilityLabel")}
             </Text>
             <Controller
@@ -275,11 +275,11 @@ export const EventForm = forwardRef<EventFormHandle, EventFormProps>(
                 >
                   <Select.Trigger
                     borderColor={
-                      errors.visibility ? "$imperialRed" : "$softGrayLight"
+                      errors.visibility ? "$imperialRed" : "$borderStrong"
                     }
                     borderWidth={2}
                     backgroundColor={
-                      isLoading ? "$softGrayLight" : "$pearlWhite"
+                      isLoading ? "$fillStrong" : "$background"
                     }
                     disabled={isLoading}
                     iconAfter={ChevronDown}
@@ -328,7 +328,7 @@ export const EventForm = forwardRef<EventFormHandle, EventFormProps>(
           {/* School Selector (shown when visibility = school) */}
           {visibility === EVENT_VISIBILITY.SCHOOL && schools.length > 0 && (
             <YStack gap="$2">
-              <Text fontSize="$3" color="$softGrayDark" fontWeight="500">
+              <Text fontSize="$3" color="$textSecondary" fontWeight="500">
                 {t("eventsSchoolLabel")}
               </Text>
               <Controller
@@ -342,11 +342,11 @@ export const EventForm = forwardRef<EventFormHandle, EventFormProps>(
                   >
                     <Select.Trigger
                       borderColor={
-                        errors.schoolId ? "$imperialRed" : "$softGrayLight"
+                        errors.schoolId ? "$imperialRed" : "$borderStrong"
                       }
                       borderWidth={2}
                       backgroundColor={
-                        isLoading ? "$softGrayLight" : "$pearlWhite"
+                        isLoading ? "$fillStrong" : "$background"
                       }
                       disabled={isLoading}
                       iconAfter={ChevronDown}
@@ -396,7 +396,7 @@ export const EventForm = forwardRef<EventFormHandle, EventFormProps>(
           {/* Member Whitelist Selector (shown when visibility = whitelist) */}
           {visibility === EVENT_VISIBILITY.WHITELIST && (
             <YStack gap="$2">
-              <Text fontSize="$3" color="$softGrayDark" fontWeight="500">
+              <Text fontSize="$3" color="$textSecondary" fontWeight="500">
                 {t("eventsWhitelistLabel")}
               </Text>
               <Controller

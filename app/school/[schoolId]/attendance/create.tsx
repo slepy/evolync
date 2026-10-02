@@ -202,11 +202,11 @@ export default function CreateAttendanceScreen() {
           )}
           ListEmptyComponent={
             <YStack gap="$2" alignItems="center" marginTop="$10">
-              <Users size={48} color={theme.softGrayDark?.val} />
-              <Text color="$inkBlackLight" textAlign="center">
+              <Users size={48} color={theme.textSecondary?.val} />
+              <Text color="$textBody" textAlign="center">
                 {t("emptyNoMembers")}
               </Text>
-              <Text color="$softGray" textAlign="center" fontSize="$3">
+              <Text color="$textMuted" textAlign="center" fontSize="$3">
                 {t("emptyNoMembersHint")}
               </Text>
             </YStack>

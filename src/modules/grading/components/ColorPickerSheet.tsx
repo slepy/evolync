@@ -72,7 +72,7 @@ export const ColorPickerSheet: React.FC<ColorPickerSheetProps> = ({
           <Text
             fontSize="$6"
             fontWeight="700"
-            color="$inkBlack"
+            color="$textPrimary"
           >
             {t("gradingPickColor")}
           </Text>
@@ -103,10 +103,10 @@ export const ColorPickerSheet: React.FC<ColorPickerSheetProps> = ({
             height={44}
             borderRadius={12}
             borderWidth={1}
-            borderColor="$softGrayLight"
-            backgroundColor={HEX_COLOR_REGEX.test(localHex) ? localHex : "$softGrayLight"}
-            color={HEX_COLOR_REGEX.test(localHex) ? getContrastColor(localHex) : "$inkBlack"}
-            placeholderTextColor={HEX_COLOR_REGEX.test(localHex) ? getContrastColor(localHex) : "$softGray"}
+            borderColor="$borderStrong"
+            backgroundColor={HEX_COLOR_REGEX.test(localHex) ? localHex : "$fillStrong"}
+            color={HEX_COLOR_REGEX.test(localHex) ? getContrastColor(localHex) : "$textPrimary"}
+            placeholderTextColor={HEX_COLOR_REGEX.test(localHex) ? getContrastColor(localHex) : "$textMuted"}
             focusStyle={{
               borderColor: "$chineseGold",
             }}

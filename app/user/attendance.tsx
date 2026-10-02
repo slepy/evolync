@@ -47,7 +47,7 @@ function AttendanceStats({ present, absent, excused }: AttendanceStatsProps) {
             {present}
           </Text>
         </XStack>
-        <Text fontSize={10} color="$softGrayDark">
+        <Text fontSize={10} color="$textSecondary">
           {t(presentConfig.label)}
         </Text>
       </YStack>
@@ -59,7 +59,7 @@ function AttendanceStats({ present, absent, excused }: AttendanceStatsProps) {
             {absent}
           </Text>
         </XStack>
-        <Text fontSize={10} color="$softGrayDark">
+        <Text fontSize={10} color="$textSecondary">
           {t(absentConfig.label)}
         </Text>
       </YStack>
@@ -71,7 +71,7 @@ function AttendanceStats({ present, absent, excused }: AttendanceStatsProps) {
             {excused}
           </Text>
         </XStack>
-        <Text fontSize={10} color="$softGrayDark">
+        <Text fontSize={10} color="$textSecondary">
           {t(excusedConfig.label)}
         </Text>
       </YStack>

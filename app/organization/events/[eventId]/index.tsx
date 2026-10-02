@@ -89,7 +89,7 @@ export default function EventDetailsScreen() {
     {
       label: t("statusAbsent"),
       value: counts.absent,
-      color: "$softGray" as ColorTokens,
+      color: "$textMuted" as ColorTokens,
       icon: X,
     },
     {
@@ -187,14 +187,14 @@ export default function EventDetailsScreen() {
             chromeless
             pressStyle={{
               scale: 0.95,
-              backgroundColor: "$imperialRedLighter",
+              backgroundColor: "$dangerSurface",
             }}
             borderWidth={1}
             onPress={handleDelete}
             icon={
               <Trash2
                 size={20}
-                color={theme.imperialRedDark?.val}
+                color={theme.dangerText?.val}
                 pointerEvents="none"
               />
             }
@@ -220,7 +220,7 @@ export default function EventDetailsScreen() {
               <Text
                 fontSize="$7"
                 fontWeight="700"
-                color={isCancelled ? "$softGray" : "$inkBlack"}
+                color={isCancelled ? "$textMuted" : "$textPrimary"}
                 flex={1}
               >
                 {event.name}
@@ -234,7 +234,7 @@ export default function EventDetailsScreen() {
             </XStack>
 
             {event.shortNote && (
-              <Text fontSize="$4" color="$softGray">
+              <Text fontSize="$4" color="$textMuted">
                 {event.shortNote}
               </Text>
             )}
@@ -246,7 +246,7 @@ export default function EventDetailsScreen() {
             <BaseCard onPress={() => {}}>
               <XStack gap="$3" alignItems="center">
                 <Thumbnail
-                  borderColor="$inkBlack"
+                  borderColor="$textPrimary"
                   icon={<Calendar size={20} />}
                 />
                 <CardInfo
@@ -262,7 +262,7 @@ export default function EventDetailsScreen() {
               <BaseCard onPress={() => {}}>
                 <XStack gap="$3" alignItems="center">
                   <Thumbnail
-                    borderColor="$inkBlack"
+                    borderColor="$textPrimary"
                     icon={<MapPin size={20} />}
                   />
                   <CardInfo
@@ -277,7 +277,7 @@ export default function EventDetailsScreen() {
             {/* Price */}
             <BaseCard
               onPress={() => {}}
-              backgroundColor="$jadeGreenLighter"
+              backgroundColor="$successSurface"
               borderColor="$jadeGreen"
               marginTop="$2"
             >
@@ -286,7 +286,7 @@ export default function EventDetailsScreen() {
                 alignItems="center"
                 justifyContent="space-between"
               >
-                <Text fontSize="$4" color="$jadeGreenDark">
+                <Text fontSize="$4" color="$successText">
                   {t("fieldPrice")}
                 </Text>
                 <Text fontSize="$5" fontWeight="700" color="$jadeGreen">
@@ -301,7 +301,7 @@ export default function EventDetailsScreen() {
             <Text
               fontSize="$5"
               fontWeight="700"
-              color="$inkBlack"
+              color="$textPrimary"
               padding="$3"
               paddingBottom="$0"
             >
@@ -337,25 +337,25 @@ export default function EventDetailsScreen() {
           {/* Actions */}
           {!isCancelled && (
             <YStack gap="$2" padding="$3">
-              <Text fontSize="$5" fontWeight="700" color="$inkBlack">
+              <Text fontSize="$5" fontWeight="700" color="$textPrimary">
                 {t("eventsActions")}
               </Text>
               <Button
                 size="$4"
-                backgroundColor="$chineseGoldLighter"
+                backgroundColor="$warningSurface"
                 borderColor="$chineseGoldDark"
                 onPress={handleEdit}
                 disabled={isUpdating}
-                icon={<Edit size={18} color={theme.chineseGoldDark?.val} />}
+                icon={<Edit size={18} color={theme.warningText?.val} />}
               >
-                <Text color="$chineseGoldDark" fontWeight="600">
+                <Text color="$warningText" fontWeight="600">
                   {t("eventsEditTitle")}
                 </Text>
               </Button>
 
               <Button
                 size="$4"
-                backgroundColor="$imperialRedLighter"
+                backgroundColor="$dangerSurface"
                 borderColor="$imperialRedLight"
                 onPress={handleCancel}
                 disabled={isUpdating}

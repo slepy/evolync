@@ -17,19 +17,19 @@ export const STATUS_CONFIG: Record<
   [AttendanceStatusEnum.PRESENT]: {
     icon: Check,
     color: "$jadeGreen",
-    bgColor: "$jadeGreenLighter",
+    bgColor: "$successSurface",
     label: "statusPresent",
   },
   [AttendanceStatusEnum.ABSENT]: {
     icon: X,
-    color: "$softGrayDark",
-    bgColor: "$softGrayLighter",
+    color: "$textSecondary",
+    bgColor: "$fillSubtle",
     label: "statusAbsent",
   },
   [AttendanceStatusEnum.EXCUSED]: {
     icon: FilePenLine,
     color: "$chineseGold",
-    bgColor: "$chineseGoldLighter",
+    bgColor: "$warningSurface",
     label: "statusExcused",
   },
 };

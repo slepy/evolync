@@ -106,14 +106,14 @@ export default function UserEventsScreen() {
           backgroundColor={
             filter === EVENT_FILTER.UPCOMING
               ? "$chineseGold"
-              : "$softGrayLighter"
+              : "$fillSubtle"
           }
           pressStyle={{
             scale: 0.95,
             backgroundColor:
               filter === EVENT_FILTER.UPCOMING
                 ? "$chineseGold"
-                : "$softGrayLighter",
+                : "$fillSubtle",
           }}
           onPress={() => setFilter(EVENT_FILTER.UPCOMING)}
           icon={
@@ -122,7 +122,7 @@ export default function UserEventsScreen() {
               color={
                 filter === EVENT_FILTER.UPCOMING
                   ? theme.pearlWhite?.val
-                  : theme.softGray?.val
+                  : theme.textMuted?.val
               }
               pointerEvents="none"
             />
@@ -130,7 +130,7 @@ export default function UserEventsScreen() {
         >
           <Text
             color={
-              filter === EVENT_FILTER.UPCOMING ? "$pearlWhite" : "$softGray"
+              filter === EVENT_FILTER.UPCOMING ? "$pearlWhite" : "$textMuted"
             }
             fontWeight="600"
           >
@@ -144,14 +144,14 @@ export default function UserEventsScreen() {
           backgroundColor={
             filter === EVENT_FILTER.HISTORICAL
               ? "$chineseGold"
-              : "$softGrayLighter"
+              : "$fillSubtle"
           }
           pressStyle={{
             scale: 0.95,
             backgroundColor:
               filter === EVENT_FILTER.HISTORICAL
                 ? "$chineseGold"
-                : "$softGrayLighter",
+                : "$fillSubtle",
           }}
           onPress={() => setFilter(EVENT_FILTER.HISTORICAL)}
           icon={
@@ -160,7 +160,7 @@ export default function UserEventsScreen() {
               color={
                 filter === EVENT_FILTER.HISTORICAL
                   ? theme.pearlWhite?.val
-                  : theme.softGray?.val
+                  : theme.textMuted?.val
               }
               pointerEvents="none"
             />
@@ -168,7 +168,7 @@ export default function UserEventsScreen() {
         >
           <Text
             color={
-              filter === EVENT_FILTER.HISTORICAL ? "$pearlWhite" : "$softGray"
+              filter === EVENT_FILTER.HISTORICAL ? "$pearlWhite" : "$textMuted"
             }
             fontWeight="600"
           >
@@ -187,8 +187,8 @@ export default function UserEventsScreen() {
               alignItems="center"
               justifyContent="center"
             >
-              <Calendar size={48} color={theme.softGray?.val} />
-              <Text fontSize="$5" color="$softGray" textAlign="center">
+              <Calendar size={48} color={theme.textMuted?.val} />
+              <Text fontSize="$5" color="$textMuted" textAlign="center">
                 {filter === EVENT_FILTER.UPCOMING
                   ? t("emptyNoUpcomingEvents")
                   : t("emptyNoHistoricalEvents")}
