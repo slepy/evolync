@@ -22,8 +22,8 @@ export const OrderStatusBadge: React.FC<{ status: OrderStatus }> = ({
 }) => {
   const statusConfigMap: Record<OrderStatus, StatusConfig> = {
     placed: {
-      color: "$inkBlack",
-      bg: "$softGrayLight",
+      color: "$textPrimary",
+      bg: "$fillStrong",
       label: t("statusPlaced"),
     },
     paid: {
@@ -32,8 +32,8 @@ export const OrderStatusBadge: React.FC<{ status: OrderStatus }> = ({
       label: t("statusPaid"),
     },
     processing: {
-      color: "$chineseGoldDark",
-      bg: "$chineseGoldLighter",
+      color: "$warningText",
+      bg: "$warningSurface",
       label: t("statusProcessing"),
     },
     ready_for_pickup: {
@@ -43,14 +43,14 @@ export const OrderStatusBadge: React.FC<{ status: OrderStatus }> = ({
     },
     completed: {
       color: "$jadeGreen",
-      bg: "$jadeGreenLighter",
+      bg: "$successSurface",
       label: t("statusCompleted"),
     },
   };
 
   const config = statusConfigMap[status] ?? {
-    color: "$inkBlack",
-    bg: "$softGrayLight",
+    color: "$textPrimary",
+    bg: "$fillStrong",
     label: status,
   };
 

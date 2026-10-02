@@ -24,11 +24,11 @@ interface StatusStyleConfig {
 }
 
 const statusStyleMap: Record<OrderStatus, StatusStyleConfig> = {
-  placed: { color: "$inkBlack", bg: "$softGrayLight" },
+  placed: { color: "$textPrimary", bg: "$fillStrong" },
   paid: { color: "$blue11", bg: "$blue3" },
-  processing: { color: "$chineseGoldDark", bg: "$chineseGoldLighter" },
+  processing: { color: "$warningText", bg: "$warningSurface" },
   ready_for_pickup: { color: "$purple10", bg: "$purple3" },
-  completed: { color: "$jadeGreen", bg: "$jadeGreenLighter" },
+  completed: { color: "$jadeGreen", bg: "$successSurface" },
 };
 
 // ============================================================================
@@ -70,9 +70,9 @@ export const StatusPickerSheet: React.FC<StatusPickerSheetProps> = ({
                 <Button
                   key={status}
                   size="$4"
-                  backgroundColor={isSelected ? styleConfig.bg : "$pearlWhite"}
+                  backgroundColor={isSelected ? styleConfig.bg : "$background"}
                   borderColor={
-                    isSelected ? styleConfig.color : "$softGrayLight"
+                    isSelected ? styleConfig.color : "$borderStrong"
                   }
                   borderWidth={1}
                   onPress={() => {

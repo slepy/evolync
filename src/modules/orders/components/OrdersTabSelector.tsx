@@ -38,14 +38,14 @@ export const OrdersTabSelector: React.FC<OrdersTabSelectorProps> = ({
         flex={1}
         size="$2"
         backgroundColor={
-          activeTab === ORDER_TAB.ORDERS ? "$chineseGold" : "$softGrayLighter"
+          activeTab === ORDER_TAB.ORDERS ? "$chineseGold" : "$fillSubtle"
         }
         pressStyle={{
           scale: 0.95,
           backgroundColor:
             activeTab === ORDER_TAB.ORDERS
               ? "$chineseGold"
-              : "$softGrayLighter",
+              : "$fillSubtle",
         }}
         onPress={() => onTabChange(ORDER_TAB.ORDERS)}
         icon={
@@ -54,14 +54,14 @@ export const OrdersTabSelector: React.FC<OrdersTabSelectorProps> = ({
             color={
               activeTab === ORDER_TAB.ORDERS
                 ? theme.pearlWhite?.val
-                : theme.softGray?.val
+                : theme.textMuted?.val
             }
             pointerEvents="none"
           />
         }
       >
         <Text
-          color={activeTab === ORDER_TAB.ORDERS ? "$pearlWhite" : "$softGray"}
+          color={activeTab === ORDER_TAB.ORDERS ? "$pearlWhite" : "$textMuted"}
           fontWeight="600"
         >
           {t("ordersTabOrders")}
@@ -72,14 +72,14 @@ export const OrdersTabSelector: React.FC<OrdersTabSelectorProps> = ({
         flex={1}
         size="$2"
         backgroundColor={
-          activeTab === ORDER_TAB.PRODUCTS ? "$chineseGold" : "$softGrayLighter"
+          activeTab === ORDER_TAB.PRODUCTS ? "$chineseGold" : "$fillSubtle"
         }
         pressStyle={{
           scale: 0.95,
           backgroundColor:
             activeTab === ORDER_TAB.PRODUCTS
               ? "$chineseGold"
-              : "$softGrayLighter",
+              : "$fillSubtle",
         }}
         onPress={() => onTabChange(ORDER_TAB.PRODUCTS)}
         icon={
@@ -88,14 +88,14 @@ export const OrdersTabSelector: React.FC<OrdersTabSelectorProps> = ({
             color={
               activeTab === ORDER_TAB.PRODUCTS
                 ? theme.pearlWhite?.val
-                : theme.softGray?.val
+                : theme.textMuted?.val
             }
             pointerEvents="none"
           />
         }
       >
         <Text
-          color={activeTab === ORDER_TAB.PRODUCTS ? "$pearlWhite" : "$softGray"}
+          color={activeTab === ORDER_TAB.PRODUCTS ? "$pearlWhite" : "$textMuted"}
           fontWeight="600"
         >
           {t("ordersTabProducts")}

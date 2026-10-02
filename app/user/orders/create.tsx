@@ -122,7 +122,7 @@ export default function UserCreateOrderScreen() {
     return (
       <View style={{ flex: 1 }}>
         <YStack flex={1} justifyContent="center" alignItems="center">
-          <Text color="$inkBlack">{t("errorNoSchool")}</Text>
+          <Text color="$textPrimary">{t("errorNoSchool")}</Text>
         </YStack>
       </View>
     );

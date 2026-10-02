@@ -47,7 +47,7 @@ function AmountPopover({
         <YStack gap="$1">
           {entries.map(([currency, amount]) => (
             <XStack key={currency} justifyContent="space-between" gap="$3">
-              <Text fontSize="$2" color="$inkBlack">
+              <Text fontSize="$2" color="$textPrimary">
                 {currency}: {amount.toFixed(2)}
               </Text>
             </XStack>

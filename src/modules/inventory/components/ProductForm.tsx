@@ -236,12 +236,12 @@ export const ProductForm = forwardRef<ProductFormHandle, ProductFormProps>(
         <YStack gap="$2" marginTop="$4">
           {/* Label and Switch in one row */}
           <XStack justifyContent="space-between" alignItems="center">
-            <Text fontSize="$5" fontWeight="700" color="$softGrayDark">
+            <Text fontSize="$5" fontWeight="700" color="$textSecondary">
               {t("inventoryVariants")}
             </Text>
 
             <XStack alignItems="center" gap="$2">
-              <Text fontSize="$2" color="$softGrayDark">
+              <Text fontSize="$2" color="$textSecondary">
                 {t("inventoryVariantSingle")}
               </Text>
               <Controller
@@ -259,7 +259,7 @@ export const ProductForm = forwardRef<ProductFormHandle, ProductFormProps>(
                   </Switch>
                 )}
               />
-              <Text fontSize="$2" color="$softGrayDark">
+              <Text fontSize="$2" color="$textSecondary">
                 {t("inventoryVariantMultiple")}
               </Text>
             </XStack>
@@ -292,7 +292,7 @@ export const ProductForm = forwardRef<ProductFormHandle, ProductFormProps>(
                   padding="$3"
                   borderRadius="$3"
                   borderWidth={1}
-                  borderColor="$softGrayLight"
+                  borderColor="$borderStrong"
                   position="relative"
                 >
                   <VariantFields
@@ -310,7 +310,7 @@ export const ProductForm = forwardRef<ProductFormHandle, ProductFormProps>(
                         chromeless
                         pressStyle={{
                           scale: 0.95,
-                          backgroundColor: "$imperialRedLighter",
+                          backgroundColor: "$dangerSurface",
                         }}
                         onPress={() =>
                           confirmDelete(
@@ -323,7 +323,7 @@ export const ProductForm = forwardRef<ProductFormHandle, ProductFormProps>(
                         icon={
                           <Trash2
                             size={16}
-                            color={theme.imperialRedDark?.val}
+                            color={theme.dangerText?.val}
                             pointerEvents="none"
                           />
                         }

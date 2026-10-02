@@ -27,7 +27,7 @@ export const OrderCartPreview: React.FC<OrderCartPreviewProps> = ({
   const theme = useTheme();
   const resolvedIconColor = theme.purple11?.val;
   const resolvedIconBgColor = theme.purple3?.val;
-  const resolvedDeleteColor = theme.imperialRedDark?.val;
+  const resolvedDeleteColor = theme.dangerText?.val;
 
   if (items.length === 0) {
     return null;
@@ -50,10 +50,10 @@ export const OrderCartPreview: React.FC<OrderCartPreviewProps> = ({
         alignItems="center"
         backgroundColor="$transparent"
       >
-        <Text fontSize="$3" color="$softGrayDark">
+        <Text fontSize="$3" color="$textSecondary">
           {t("ordersCartTitle")}
         </Text>
-        <Text fontSize="$3" color="$softGrayDark">
+        <Text fontSize="$3" color="$textSecondary">
           {items.length} {t("items")}
         </Text>
       </XStack>
@@ -69,7 +69,7 @@ export const OrderCartPreview: React.FC<OrderCartPreviewProps> = ({
             borderRadius="$3"
             padding="$2"
             borderWidth={1}
-            borderColor="$softGrayLight"
+            borderColor="$borderStrong"
           >
             {/* Icon/Image */}
             <Thumbnail
@@ -88,7 +88,7 @@ export const OrderCartPreview: React.FC<OrderCartPreviewProps> = ({
             />
 
             {/* Price */}
-            <Text fontSize="$3" fontWeight="600" color="$softGrayDark">
+            <Text fontSize="$3" fontWeight="600" color="$textSecondary">
               {formatPrice(item.unitPrice * item.quantity, item.currency)}
             </Text>
 
@@ -98,7 +98,7 @@ export const OrderCartPreview: React.FC<OrderCartPreviewProps> = ({
               chromeless
               pressStyle={{
                 scale: 0.95,
-                backgroundColor: "$imperialRedLighter",
+                backgroundColor: "$dangerSurface",
               }}
               onPress={() => confirmDelete(t("delete"), t("ordersRemoveItemConfirm"), () => onRemoveItem(item.id))}
             >
@@ -115,12 +115,12 @@ export const OrderCartPreview: React.FC<OrderCartPreviewProps> = ({
       {/* Total */}
       <BaseCard
         onPress={() => {}}
-        backgroundColor="$jadeGreenLighter"
+        backgroundColor="$successSurface"
         borderColor="$jadeGreen"
         marginHorizontal="$0"
       >
         <XStack gap="$3" alignItems="center" justifyContent="space-between">
-          <Text fontSize="$4" color="$jadeGreenDark">
+          <Text fontSize="$4" color="$successText">
             {t("total")}
           </Text>
 

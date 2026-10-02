@@ -232,7 +232,7 @@ export default function UserOrderDetailsScreen() {
           alignItems="center"
           padding="$4"
         >
-          <Text color="$inkBlackLight">{t("errorNotFound")}</Text>
+          <Text color="$textBody">{t("errorNotFound")}</Text>
         </YStack>
       </View>
     );
@@ -253,14 +253,14 @@ export default function UserOrderDetailsScreen() {
               chromeless
               pressStyle={{
                 scale: 0.95,
-                backgroundColor: "$imperialRedLighter",
+                backgroundColor: "$dangerSurface",
               }}
               onPress={handleDeleteOrder}
               disabled={isUpdating}
               icon={
                 <Trash2
                   size={20}
-                  color={theme.imperialRedDark?.val}
+                  color={theme.dangerText?.val}
                   pointerEvents="none"
                 />
               }
@@ -294,39 +294,39 @@ export default function UserOrderDetailsScreen() {
             padding="$4"
             borderRadius="$4"
             borderWidth={1}
-            borderColor="$softGrayLight"
+            borderColor="$borderStrong"
             gap="$3"
           >
             {/* Status */}
             <XStack justifyContent="space-between" alignItems="center">
-              <Text fontSize="$3" color="$softGray" fontWeight="600">
+              <Text fontSize="$3" color="$textMuted" fontWeight="600">
                 {t("status")}
               </Text>
               <OrderStatusBadge status={order.status} />
             </XStack>
 
-            <Separator backgroundColor="$softGrayLight" />
+            <Separator backgroundColor="$fillStrong" />
 
             {/* Date Info */}
             <XStack gap="$4">
               <XStack alignItems="center" gap="$2" flex={1}>
-                <Calendar size={16} color={theme.softGray?.val} />
+                <Calendar size={16} color={theme.textMuted?.val} />
                 <YStack>
-                  <Text fontSize="$2" color="$softGray">
+                  <Text fontSize="$2" color="$textMuted">
                     {t("fieldCreatedAt")}
                   </Text>
-                  <Text fontSize="$3" color="$softGrayBark">
+                  <Text fontSize="$3" color="$textSecondary">
                     {format(order.createdAt, "dd.MM.yyyy HH:mm")}
                   </Text>
                 </YStack>
               </XStack>
               <XStack alignItems="center" gap="$2" flex={1}>
-                <Clock size={16} color={theme.softGray?.val} />
+                <Clock size={16} color={theme.textMuted?.val} />
                 <YStack>
-                  <Text fontSize="$2" color="$softGray">
+                  <Text fontSize="$2" color="$textMuted">
                     {t("fieldUpdatedAt")}
                   </Text>
-                  <Text fontSize="$3" color="$softGrayBark">
+                  <Text fontSize="$3" color="$textSecondary">
                     {format(order.updatedAt, "dd.MM.yyyy HH:mm")}
                   </Text>
                 </YStack>
@@ -337,7 +337,7 @@ export default function UserOrderDetailsScreen() {
           {/* Read-only Order Items (when not editable) */}
           {!isEditable && items.length > 0 && (
             <YStack gap="$3">
-              <Text fontSize="$3" color="$softGrayDark" paddingHorizontal="$1">
+              <Text fontSize="$3" color="$textSecondary" paddingHorizontal="$1">
                 {t("ordersCartTitle")}
               </Text>
               <YStack gap="$2">
@@ -349,7 +349,7 @@ export default function UserOrderDetailsScreen() {
                     borderRadius="$3"
                     padding="$2"
                     borderWidth={1}
-                    borderColor="$softGrayLight"
+                    borderColor="$borderStrong"
                   >
                     <Thumbnail
                       imageUrl={item.productImageUrl}
@@ -363,7 +363,7 @@ export default function UserOrderDetailsScreen() {
                       displayName={item.productName}
                       subtitle={`${item.variantName} × ${item.quantity}`}
                     />
-                    <Text fontSize="$3" fontWeight="600" color="$softGrayDark">
+                    <Text fontSize="$3" fontWeight="600" color="$textSecondary">
                       {formatPrice(
                         item.unitPrice * item.quantity,
                         item.currency,
@@ -379,7 +379,7 @@ export default function UserOrderDetailsScreen() {
           {!isEditable && Object.keys(totalsByCurrency).length > 0 && (
             <BaseCard
               onPress={() => {}}
-              backgroundColor="$jadeGreenLighter"
+              backgroundColor="$successSurface"
               borderColor="$jadeGreen"
               marginHorizontal="$0"
             >
@@ -388,7 +388,7 @@ export default function UserOrderDetailsScreen() {
                 alignItems="center"
                 justifyContent="space-between"
               >
-                <Text fontSize="$4" color="$jadeGreenDark">
+                <Text fontSize="$4" color="$successText">
                   {t("total")}
                 </Text>
                 <YStack alignItems="flex-end" gap="$2">

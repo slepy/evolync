@@ -163,7 +163,7 @@ export default function CreateOrderScreen() {
     return (
       <View style={{ flex: 1 }}>
         <YStack flex={1} justifyContent="center" alignItems="center">
-          <Text color="$inkBlack">{t("errorNoSchool")}</Text>
+          <Text color="$textPrimary">{t("errorNoSchool")}</Text>
         </YStack>
       </View>
     );
@@ -198,7 +198,7 @@ export default function CreateOrderScreen() {
 
           {/* Member Selection */}
           <YStack gap="$2">
-            <Text fontSize="$3" color="$softGrayDark" fontWeight="500">
+            <Text fontSize="$3" color="$textSecondary" fontWeight="500">
               {t("ordersSelectMember")}
             </Text>
             {members.length === 0 && !isLoadingData ? (
@@ -221,9 +221,9 @@ export default function CreateOrderScreen() {
                 native
               >
                 <Select.Trigger
-                  borderColor="$softGrayLight"
+                  borderColor="$borderStrong"
                   borderWidth={2}
-                  backgroundColor="$pearlWhite"
+                  backgroundColor="$background"
                   iconAfter={ChevronDown}
                 >
                   <Select.Value

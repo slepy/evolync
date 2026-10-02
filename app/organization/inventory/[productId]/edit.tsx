@@ -133,7 +133,7 @@ export default function EditProductScreen() {
           centerContent={<HeaderTitle text={t("inventoryEditTitle")} />}
         />
         <YStack flex={1} justifyContent="center" alignItems="center">
-          <Text color="$inkBlack">{t("errorNotFound")}</Text>
+          <Text color="$textPrimary">{t("errorNotFound")}</Text>
         </YStack>
       </View>
     );
@@ -146,7 +146,7 @@ export default function EditProductScreen() {
         centerContent={<HeaderTitle text={t("inventoryEditTitle")} />}
         rightContent={
           <Button size="$3" chromeless onPress={handleDelete} disabled={isLoading}>
-            <Trash2 size={20} color={theme.imperialRedDark?.val} pointerEvents="none" />
+            <Trash2 size={20} color={theme.dangerText?.val} pointerEvents="none" />
           </Button>
         }
       />

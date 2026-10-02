@@ -264,7 +264,7 @@ export default function OrderDetailsScreen() {
           alignItems="center"
           padding="$4"
         >
-          <Text color="$inkBlackLight">{t("errorNotFound")}</Text>
+          <Text color="$textBody">{t("errorNotFound")}</Text>
         </YStack>
       </View>
     );
@@ -284,14 +284,14 @@ export default function OrderDetailsScreen() {
             chromeless
             pressStyle={{
               scale: 0.95,
-              backgroundColor: "$imperialRedLighter",
+              backgroundColor: "$dangerSurface",
             }}
             onPress={handleDeleteOrder}
             disabled={isUpdating}
             icon={
               <Trash2
                 size={20}
-                color={theme.imperialRedDark?.val}
+                color={theme.dangerText?.val}
                 pointerEvents="none"
               />
             }
@@ -322,7 +322,7 @@ export default function OrderDetailsScreen() {
             padding="$4"
             borderRadius="$4"
             borderWidth={1}
-            borderColor="$softGrayLight"
+            borderColor="$borderStrong"
             gap="$3"
           >
             {/* Member Info */}
@@ -351,28 +351,28 @@ export default function OrderDetailsScreen() {
               </XStack>
             </XStack>
 
-            <Separator backgroundColor="$softGrayLight" />
+            <Separator backgroundColor="$fillStrong" />
 
             {/* Date Info */}
             <XStack gap="$4">
               <XStack alignItems="center" gap="$2" flex={1}>
-                <Calendar size={16} color={theme.softGray?.val} />
+                <Calendar size={16} color={theme.textMuted?.val} />
                 <YStack>
-                  <Text fontSize="$2" color="$softGray">
+                  <Text fontSize="$2" color="$textMuted">
                     {t("fieldCreatedAt")}
                   </Text>
-                  <Text fontSize="$3" color="$softGrayBark">
+                  <Text fontSize="$3" color="$textSecondary">
                     {format(order.createdAt, "dd.MM.yyyy HH:mm")}
                   </Text>
                 </YStack>
               </XStack>
               <XStack alignItems="center" gap="$2" flex={1}>
-                <Clock size={16} color={theme.softGray?.val} />
+                <Clock size={16} color={theme.textMuted?.val} />
                 <YStack>
-                  <Text fontSize="$2" color="$softGray">
+                  <Text fontSize="$2" color="$textMuted">
                     {t("fieldUpdatedAt")}
                   </Text>
-                  <Text fontSize="$3" color="$softGrayBark">
+                  <Text fontSize="$3" color="$textSecondary">
                     {format(order.updatedAt, "dd.MM.yyyy HH:mm")}
                   </Text>
                 </YStack>

@@ -73,21 +73,21 @@ export const ProductPickerList: React.FC<ProductPickerListProps> = ({
         )}
 
         <YStack paddingHorizontal="$4" paddingBottom="$2" paddingTop="$3">
-          <Text fontSize="$3" color="$softGrayDark" fontWeight="500">
+          <Text fontSize="$3" color="$textSecondary" fontWeight="500">
             {t("ordersSelectProducts")}
           </Text>
         </YStack>
         {/* Products List */}
         {isLoading ? (
           <YStack padding="$4" alignItems="center">
-            <Text color="$softGray">{t("loading")}</Text>
+            <Text color="$textMuted">{t("loading")}</Text>
           </YStack>
         ) : products.length === 0 ? (
           <YStack gap="$2" alignItems="center" marginTop="$10">
-            <Text color="$inkBlackLight" textAlign="center">
+            <Text color="$textBody" textAlign="center">
               {t("emptyNoProductsAvailable")}
             </Text>
-            <Text color="$softGray" textAlign="center" fontSize="$3">
+            <Text color="$textMuted" textAlign="center" fontSize="$3">
               {t("emptyNoProductsHint")}
             </Text>
           </YStack>

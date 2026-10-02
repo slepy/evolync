@@ -164,15 +164,15 @@ export default function CreatePaymentCycleScreen() {
               {/* Period summary for non-custom types */}
               {periodType !== PeriodType.Custom && (
                 <YStack
-                  backgroundColor="$softGrayLight"
+                  backgroundColor="$fillStrong"
                   padding="$3"
                   borderRadius="$3"
                   gap="$1"
                 >
-                  <Text fontSize="$3" color="$inkBlackLight">
+                  <Text fontSize="$3" color="$textBody">
                     {t("paymentsPeriodStart")}: {formatDate(periodStart)}
                   </Text>
-                  <Text fontSize="$3" color="$inkBlackLight">
+                  <Text fontSize="$3" color="$textBody">
                     {t("paymentsPeriodEnd")}: {formatDate(periodEnd)}
                   </Text>
                 </YStack>

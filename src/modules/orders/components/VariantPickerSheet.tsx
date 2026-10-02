@@ -160,9 +160,9 @@ export const VariantPickerSheet: React.FC<VariantPickerSheetProps> = ({
                 height={180}
                 borderRadius="$4"
                 borderWidth={1}
-                borderColor="$softGray"
+                borderColor="$fillMuted"
                 objectFit="cover"
-                backgroundColor="$softGrayLight"
+                backgroundColor="$fillStrong"
               />
             ) : (
               <XStack
@@ -183,11 +183,11 @@ export const VariantPickerSheet: React.FC<VariantPickerSheetProps> = ({
               </XStack>
             )}
             <YStack gap="$1">
-              <Text fontSize="$6" fontWeight="700" color="$inkBlack">
+              <Text fontSize="$6" fontWeight="700" color="$textPrimary">
                 {productName}
               </Text>
               {productDescription ? (
-                <Text fontSize="$3" color="$softGrayDark" numberOfLines={3}>
+                <Text fontSize="$3" color="$textSecondary" numberOfLines={3}>
                   {productDescription}
                 </Text>
               ) : null}
@@ -196,7 +196,7 @@ export const VariantPickerSheet: React.FC<VariantPickerSheetProps> = ({
 
           {/* Variants List with Quantity Controls */}
           <YStack gap="$2" flex={1}>
-            <Text fontSize="$3" color="$softGrayDark" fontWeight="500">
+            <Text fontSize="$3" color="$textSecondary" fontWeight="500">
               {t("inventoryVariants")}
             </Text>
             <ScrollView
@@ -213,11 +213,11 @@ export const VariantPickerSheet: React.FC<VariantPickerSheetProps> = ({
                     <XStack
                       key={variant.id}
                       backgroundColor={
-                        hasQuantity ? "$purple3" : "$softGrayLighter"
+                        hasQuantity ? "$purple3" : "$fillSubtle"
                       }
                       borderRadius="$4"
                       borderWidth={hasQuantity ? 2 : 1}
-                      borderColor={hasQuantity ? "$purple11" : "$softGray"}
+                      borderColor={hasQuantity ? "$purple11" : "$fillMuted"}
                       padding="$3"
                       alignItems="center"
                       gap="$3"
@@ -227,14 +227,14 @@ export const VariantPickerSheet: React.FC<VariantPickerSheetProps> = ({
                         <Text
                           fontSize="$4"
                           fontWeight="600"
-                          color={hasQuantity ? "$purple11" : "$inkBlack"}
+                          color={hasQuantity ? "$purple11" : "$textPrimary"}
                         >
                           {variant.name}
                         </Text>
                         <XStack gap="$2" alignItems="center">
                           <Text
                             fontSize="$3"
-                            color="$softGrayDark"
+                            color="$textSecondary"
                             fontWeight="500"
                           >
                             {formatPrice(variant.price, variant.currency)}
@@ -244,7 +244,7 @@ export const VariantPickerSheet: React.FC<VariantPickerSheetProps> = ({
                             color={
                               isOutOfStock
                                 ? "$imperialRedLight"
-                                : "$softGrayDark"
+                                : "$textSecondary"
                             }
                           >
                             {isOutOfStock
@@ -262,11 +262,11 @@ export const VariantPickerSheet: React.FC<VariantPickerSheetProps> = ({
                           width="$3"
                           height="$3"
                           backgroundColor={
-                            currentQty > 0 ? "$purple3" : "$softGrayLighter"
+                            currentQty > 0 ? "$purple3" : "$fillSubtle"
                           }
                           borderWidth={1}
                           borderColor={
-                            currentQty > 0 ? "$purple11" : "$softGray"
+                            currentQty > 0 ? "$purple11" : "$fillMuted"
                           }
                           pressStyle={{ scale: 0.95 }}
                           disabled={currentQty <= 0}
@@ -283,7 +283,7 @@ export const VariantPickerSheet: React.FC<VariantPickerSheetProps> = ({
                         <Text
                           fontSize="$5"
                           fontWeight="700"
-                          color={hasQuantity ? "$purple11" : "$softGrayDark"}
+                          color={hasQuantity ? "$purple11" : "$textSecondary"}
                           minWidth={32}
                           textAlign="center"
                         >
@@ -316,7 +316,7 @@ export const VariantPickerSheet: React.FC<VariantPickerSheetProps> = ({
           {/* Add/Update Button */}
           <Button
             size="$5"
-            backgroundColor={totalItemsCount > 0 ? "$purple11" : "$softGray"}
+            backgroundColor={totalItemsCount > 0 ? "$purple11" : "$fillMuted"}
             paddingBottom={
               Platform.OS === "android"
                 ? Math.max(insets.bottom, 16)
