@@ -103,7 +103,7 @@ export const DashboardStatCard: React.FC<DashboardStatCardProps> = ({
       <Text
         fontSize="$3"
         fontWeight="700"
-        color="$inkBlackLight"
+        color="$textBody"
         numberOfLines={1}
       >
         {title}

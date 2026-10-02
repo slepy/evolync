@@ -30,7 +30,7 @@ export function NotificationBell() {
       style={{ width: 44, height: 44, alignItems: "center", justifyContent: "center" }}
     >
       <YStack pointerEvents="none">
-        <Bell size={24} color={theme.inkBlack?.val} />
+        <Bell size={24} color={theme.textPrimary?.val} />
         {badge && (
           <YStack
             position="absolute"

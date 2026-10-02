@@ -148,10 +148,10 @@ const SchoolDashboardComponent: React.FC<SchoolDashboardProps> = ({
           >
             {/* Welcome Section */}
             <YStack gap="$2" marginBottom="$2">
-              <Text fontSize="$7" fontWeight="700" color="$inkBlack">
+              <Text fontSize="$7" fontWeight="700" color="$textPrimary">
                 {t("dashboardWelcomeBack")}
               </Text>
-              <Text fontSize="$4" color="$inkBlackLight">
+              <Text fontSize="$4" color="$textBody">
                 {t("dashboardOverview")}
               </Text>
             </YStack>
@@ -174,7 +174,7 @@ const SchoolDashboardComponent: React.FC<SchoolDashboardProps> = ({
                   title={t("dashboardPayments")}
                   Icon={CreditCard}
                   iconColor="$jadeGreen"
-                  iconBackground="$jadeGreenLighter"
+                  iconBackground="$successSurface"
                   badgeCount={dashboardData.overduePayments}
                   onPress={() => handleNavigateToPayments(schoolId)}
                 />
@@ -195,8 +195,8 @@ const SchoolDashboardComponent: React.FC<SchoolDashboardProps> = ({
                 <DashboardStatCard
                   title={t("dashboardAttendance")}
                   Icon={Calendar}
-                  iconColor="$darkBlue"
-                  iconBackground="$darkBlueLighter"
+                  iconColor="$primaryText"
+                  iconBackground="$primarySurface"
                   onPress={() => handleNavigateToAttendance(schoolId)}
                 />
               </YStack>
@@ -205,8 +205,8 @@ const SchoolDashboardComponent: React.FC<SchoolDashboardProps> = ({
                 <DashboardStatCard
                   title={t("settingsSchool")}
                   Icon={Settings}
-                  iconColor="$inkBlackLight"
-                  iconBackground="$softGrayLight"
+                  iconColor="$textBody"
+                  iconBackground="$fillStrong"
                   onPress={handleSettingsPress}
                 />
               </YStack>

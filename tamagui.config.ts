@@ -94,6 +94,7 @@ const lightSemantic = {
   infoSurface: "#cffafe",
   infoText: "#0E7490",
   primarySurface: "#dbeafe",
+  primaryText: "#1E40AF",
   roseSurface: "#ffe4e6",
 };
 
@@ -109,16 +110,17 @@ const darkSemantic: typeof lightSemantic = {
   fillStrong: "#334155",
   borderSubtle: "#334155",
   fillSubtle: "#1E293B",
-  successSurface: "#064E3B",
+  successSurface: "#022C22",
   successText: "#6EE7B7",
   dangerSurface: "#450A0A",
   dangerSurfaceSubtle: "#2A0A0A",
   dangerText: "#FCA5A5",
   warningSurface: "#451A03",
   warningText: "#FCD34D",
-  infoSurface: "#164E63",
+  infoSurface: "#083344",
   infoText: "#67E8F9",
-  primarySurface: "#1E3A8A",
+  primarySurface: "#172554",
+  primaryText: "#93C5FD",
   roseSurface: "#4C0519",
 };
 

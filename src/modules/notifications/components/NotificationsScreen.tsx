@@ -84,7 +84,7 @@ export function NotificationsScreen() {
               accessibilityLabel={t("notificationsMarkAllRead")}
               style={{ width: 44, height: 44, alignItems: "center", justifyContent: "center" }}
             >
-              <CheckCheck size={24} color={theme.inkBlack?.val} />
+              <CheckCheck size={24} color={theme.textPrimary?.val} />
             </TouchableOpacity>
           ) : undefined
         }
