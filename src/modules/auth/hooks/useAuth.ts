@@ -384,13 +384,34 @@ export const useAuth = () => {
         return false;
       }
 
-      const { error: updateError } = await supabase.auth.updateUser({
+      const { data: updateData, error: updateError } = await supabase.auth.updateUser({
         password: newPassword,
       });
 
       if (updateError) {
         setError(mapSupabaseError(updateError));
         return false;
+      }
+
+      // PUT /user answers 200 even when no password was stored (logs show only
+      // `user_modified`, no `user_updated_password`), so the user was told the
+      // reset succeeded and then hit invalid_credentials on login. Prove the
+      // new password works before reporting success.
+      const email = updateData?.user?.email;
+      if (email) {
+        const { error: checkError } = await supabase.auth.signInWithPassword({
+          email,
+          password: newPassword,
+        });
+        if (checkError) {
+          console.error('updatePassword: new password rejected on sign-in check:', checkError);
+          setError({
+            code: 'unknown',
+            message: t('errorPasswordUpdateFailed'),
+            recoverable: true,
+          });
+          return false;
+        }
       }
 
       return true;
