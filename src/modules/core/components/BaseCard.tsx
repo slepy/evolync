@@ -42,7 +42,7 @@ export interface BaseCardProps extends Omit<CardProps, "onPress"> {
 export const BaseCard: React.FC<BaseCardProps> = ({
   onPress,
   children,
-  backgroundColor = "rgba(255, 255, 255, 0.7)",
+  backgroundColor = "$surfaceTranslucent",
   borderColor = "$borderColor",
   borderWidth = 1,
   padding = "$2",

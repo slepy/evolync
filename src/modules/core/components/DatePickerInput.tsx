@@ -73,18 +73,18 @@ export const DatePickerInput: React.FC<DatePickerInputProps> = ({
   return (
     <YStack gap="$2" {...(flex !== 1 && { flex, flexBasis: 0 })}>
       {label && (
-        <Text fontSize="$3" color="$softGrayDark" fontWeight="500">
+        <Text fontSize="$3" color="$textSecondary" fontWeight="500">
           {label}
         </Text>
       )}
 
       <YStack
-        backgroundColor={disabled ? "$softGrayLight" : "$pearlWhite"}
+        backgroundColor={disabled ? "$fillStrong" : "$background"}
         paddingVertical="$2.5"
         paddingHorizontal="$3"
         borderRadius="$4"
         borderWidth={2}
-        borderColor={error ? "$imperialRed" : "$softGrayLight"}
+        borderColor={error ? "$imperialRed" : "$borderStrong"}
         pressStyle={
           disabled ? undefined : { scale: 0.95, borderColor: "$chineseGold" }
         }
@@ -92,7 +92,7 @@ export const DatePickerInput: React.FC<DatePickerInputProps> = ({
         minHeight={44}
         justifyContent="center"
       >
-        <Text fontSize="$4" color={disabled ? "$softGray" : "$inkBlack"}>
+        <Text fontSize="$4" color={disabled ? "$textMuted" : "$textPrimary"}>
           {formatDateDisplay(value)}
         </Text>
       </YStack>

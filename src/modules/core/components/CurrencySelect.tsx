@@ -108,21 +108,21 @@ export const CurrencySelect = <TFieldValues extends FieldValues>({
           activeOpacity={disabled ? 1 : 0.7}
         >
           <XStack
-            borderColor={error ? "$imperialRed" : "$softGrayLight"}
+            borderColor={error ? "$imperialRed" : "$borderStrong"}
             borderWidth={2}
             borderRadius="$3"
-            backgroundColor={disabled ? "$softGrayLight" : "$pearlWhite"}
+            backgroundColor={disabled ? "$fillStrong" : "$background"}
             paddingHorizontal="$3"
             paddingVertical="$2.5"
             alignItems="center"
             justifyContent="space-between"
           >
-            <Text fontSize="$4" color="$inkBlack">
+            <Text fontSize="$4" color="$textPrimary">
               {resolved}
             </Text>
             <ChevronDown
               size={16}
-              color={theme.softGrayDark?.val}
+              color={theme.textSecondary?.val}
               pointerEvents="none"
             />
           </XStack>
@@ -145,7 +145,7 @@ export const CurrencySelect = <TFieldValues extends FieldValues>({
   return (
     <YStack gap="$2" {...(flex !== 1 && { flex, flexBasis: 0 })}>
       {label && (
-        <Text fontSize="$3" color="$softGrayDark" fontWeight="500">
+        <Text fontSize="$3" color="$textSecondary" fontWeight="500">
           {label}
         </Text>
       )}

@@ -2,7 +2,7 @@ import React, { useState, useId } from "react";
 import { Control, Controller, FieldValues, Path } from "react-hook-form";
 import { ScrollView } from "react-native";
 import { ChevronDown, Check } from "lucide-react-native";
-import { Input, Sheet, Text, XStack, YStack } from "tamagui";
+import { Input, Sheet, Text, XStack, YStack, useTheme } from "tamagui";
 import { BaseCard } from "./BaseCard";
 
 // ============================================================================
@@ -105,6 +105,7 @@ interface PhoneInputInnerProps {
 }
 
 const PhoneInputInner = ({ inputId, value, onChange, error, disabled }: PhoneInputInnerProps) => {
+  const theme = useTheme();
   const [sheetOpen, setSheetOpen] = useState(false);
 
   const selectedPrefix =
@@ -126,9 +127,9 @@ const PhoneInputInner = ({ inputId, value, onChange, error, disabled }: PhoneInp
         {/* Prefix selector button */}
         <YStack
           borderWidth={2}
-          borderColor={error ? "$imperialRed" : "$softGrayLight"}
+          borderColor={error ? "$imperialRed" : "$borderStrong"}
           borderRadius="$3"
-          backgroundColor={disabled ? "$softGrayLight" : "$pearlWhite"}
+          backgroundColor={disabled ? "$fillStrong" : "$background"}
           paddingHorizontal="$3"
           minWidth={90}
           height="$true"
@@ -136,10 +137,10 @@ const PhoneInputInner = ({ inputId, value, onChange, error, disabled }: PhoneInp
           onPress={disabled ? undefined : () => setSheetOpen(true)}
         >
           <XStack alignItems="center" gap="$1">
-            <Text fontSize="$4" color="$inkBlack" fontWeight="500">
+            <Text fontSize="$4" color="$textPrimary" fontWeight="500">
               {selectedPrefix.code}
             </Text>
-            {!disabled && <ChevronDown size={14} color="#888" />}
+            {!disabled && <ChevronDown size={14} color={theme.textSecondary?.val} />}
           </XStack>
         </YStack>
 
@@ -153,15 +154,15 @@ const PhoneInputInner = ({ inputId, value, onChange, error, disabled }: PhoneInp
           keyboardType="number-pad"
           disabled={disabled}
           autoCapitalize="none"
-          borderColor={error ? "$imperialRed" : "$softGrayLight"}
+          borderColor={error ? "$imperialRed" : "$borderStrong"}
           borderWidth={2}
           focusStyle={{
             borderColor: error ? "$imperialRed" : "$chineseGold",
-            backgroundColor: "$pearlWhiteLight",
+            backgroundColor: "$surface",
           }}
-          backgroundColor={disabled ? "$softGrayLight" : "$pearlWhite"}
-          color="$inkBlack"
-          placeholderTextColor="$softGray"
+          backgroundColor={disabled ? "$fillStrong" : "$background"}
+          color="$textPrimary"
+          placeholderTextColor="$textMuted"
         />
       </XStack>
 
@@ -187,7 +188,7 @@ const PhoneInputInner = ({ inputId, value, onChange, error, disabled }: PhoneInp
           zIndex={200}
         >
           <Sheet.Handle />
-          <Text fontSize="$5" fontWeight="700" color="$inkBlack" marginBottom="$3">
+          <Text fontSize="$5" fontWeight="700" color="$textPrimary" marginBottom="$3">
             {t("phonePrefix")}
           </Text>
           <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false}>
@@ -198,7 +199,7 @@ const PhoneInputInner = ({ inputId, value, onChange, error, disabled }: PhoneInp
                   <BaseCard
                     key={prefix.code}
                     onPress={() => handlePrefixSelect(prefix.code)}
-                    backgroundColor={isSelected ? "$blue3" : "rgba(255, 255, 255, 0.7)"}
+                    backgroundColor={isSelected ? "$blue3" : "$surfaceTranslucent"}
                     borderColor={isSelected ? "$blue11" : "$borderColor"}
                     marginHorizontal={0}
                   >
@@ -206,7 +207,7 @@ const PhoneInputInner = ({ inputId, value, onChange, error, disabled }: PhoneInp
                       <Text
                         fontSize="$4"
                         fontWeight={isSelected ? "700" : "500"}
-                        color="$inkBlack"
+                        color="$textPrimary"
                       >
                         {prefix.label}
                       </Text>
@@ -242,7 +243,7 @@ export const PhoneInput = <TFieldValues extends FieldValues>({
   return (
     <YStack gap="$2">
       {label && (
-        <Text fontSize="$3" color="$softGrayDark" fontWeight="500">
+        <Text fontSize="$3" color="$textSecondary" fontWeight="500">
           {label}
         </Text>
       )}

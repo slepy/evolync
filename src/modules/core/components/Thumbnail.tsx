@@ -24,8 +24,8 @@ export interface ThumbnailProps extends Omit<XStackProps, "children"> {
 export const Thumbnail: React.FC<ThumbnailProps> = ({
   size = 40,
   iconSize = 20,
-  borderColor = "$softGray",
-  backgroundColor = "$softGrayLighter",
+  borderColor = "$fillMuted",
+  backgroundColor = "$fillSubtle",
   icon,
   imageUrl,
   rankColor,
@@ -36,7 +36,7 @@ export const Thumbnail: React.FC<ThumbnailProps> = ({
   const resolvedIconColor =
     (borderColor.startsWith("$")
       ? theme[borderColor.slice(1) as keyof typeof theme]?.val
-      : borderColor) ?? theme.softGray?.val;
+      : borderColor) ?? theme.textMuted?.val;
 
   const renderContent = () => {
     if (imageUrl) {

@@ -133,7 +133,7 @@ export const Header: React.FC<HeaderProps> = ({
               }}
             >
               <YStack pointerEvents="none">
-                <ArrowLeft size={24} color={theme.inkBlack?.val} />
+                <ArrowLeft size={24} color={theme.textPrimary?.val} />
               </YStack>
             </TouchableOpacity>
           ) : leftContent ? (

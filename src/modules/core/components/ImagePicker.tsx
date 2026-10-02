@@ -42,7 +42,7 @@ const ImageContainerStyle = styled(YStack, {
   aspectRatio: 2,
   borderRadius: "$4",
   borderWidth: 4,
-  borderColor: "$softGrayLight",
+  borderColor: "$borderStrong",
   borderStyle: "dashed",
   overflow: "hidden",
   alignItems: "center",
@@ -202,7 +202,7 @@ export const ImagePicker: React.FC<ImagePickerProps> = ({
     <PickerContainer>
       {/* Label */}
       {label && (
-        <Text fontSize="$3" color="$softGrayDark" fontWeight="500">
+        <Text fontSize="$3" color="$textSecondary" fontWeight="500">
           {label}
         </Text>
       )}
@@ -220,8 +220,8 @@ export const ImagePicker: React.FC<ImagePickerProps> = ({
             <PreviewImage source={{ uri: value }} resizeMode="cover" />
           ) : (
             <PlaceholderContent>
-              <ImagePlus size={40} color="#6B7280" pointerEvents="none" />
-              <Text fontSize="$3" color="$softGray" textAlign="center">
+              <ImagePlus size={40} color={theme.textSecondary?.val} pointerEvents="none" />
+              <Text fontSize="$3" color="$textMuted" textAlign="center">
                 {t("imagePickerPlaceholder")}
               </Text>
             </PlaceholderContent>
@@ -245,14 +245,14 @@ export const ImagePicker: React.FC<ImagePickerProps> = ({
             variant="outlined"
             pressStyle={{
               scale: 0.95,
-              backgroundColor: "$imperialRedLighter",
-              borderColor: "$imperialRedLighter",
+              backgroundColor: "$dangerSurface",
+              borderColor: "$dangerSurface",
             }}
             onPress={handleRemove}
             icon={
               <Trash2
                 size={16}
-                color={theme.imperialRedDark?.val}
+                color={theme.dangerText?.val}
                 pointerEvents="none"
               />
             }

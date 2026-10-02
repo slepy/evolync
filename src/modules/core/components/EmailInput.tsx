@@ -43,7 +43,7 @@ export const EmailInput = <TFieldValues extends FieldValues>({
   return (
     <YStack gap="$2" flex={flex} {...(flex !== 1 && { flexBasis: 0 })}>
       {defaultLabel && (
-        <Text fontSize="$3" color="$softGrayDark" fontWeight="500">
+        <Text fontSize="$3" color="$textSecondary" fontWeight="500">
           {defaultLabel}
         </Text>
       )}
@@ -65,15 +65,15 @@ export const EmailInput = <TFieldValues extends FieldValues>({
             keyboardType="email-address"
             textContentType="emailAddress"
             autoComplete="email"
-            borderColor={error ? "$imperialRed" : "$softGrayLight"}
+            borderColor={error ? "$imperialRed" : "$borderStrong"}
             borderWidth={2}
             focusStyle={{
               borderColor: error ? "$imperialRed" : "$chineseGold",
-              backgroundColor: "$pearlWhiteLight",
+              backgroundColor: "$surface",
             }}
-            backgroundColor="$pearlWhite"
-            color="$inkBlack"
-            placeholderTextColor="$softGray"
+            backgroundColor="$background"
+            color="$textPrimary"
+            placeholderTextColor="$textMuted"
           />
         )}
       />

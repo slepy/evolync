@@ -120,7 +120,7 @@ const PickerOption: React.FC<PickerOptionProps> = ({
       ? `${color}33`
       : isSelected
         ? "$blue3"
-        : "rgba(255, 255, 255, 0.7)";
+        : "$surfaceTranslucent";
 
   const checkColor = color || theme.blue10?.val;
 
@@ -138,13 +138,13 @@ const PickerOption: React.FC<PickerOptionProps> = ({
               size={20}
               backgroundColor={color}
               borderWidth={1}
-              borderColor="$softGrayDark"
+              borderColor="$textSecondary"
             />
           )}
           <Text
             fontSize="$4"
             fontWeight={isSelected ? "700" : "500"}
-            color="$inkBlack"
+            color="$textPrimary"
           >
             {label}
           </Text>

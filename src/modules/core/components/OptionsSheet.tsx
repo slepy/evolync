@@ -179,28 +179,28 @@ export const OptionsSheet: React.FC<OptionsSheetProps> = ({
     const isDisabled = option.disabled ?? false;
 
     const backgroundColor = isDisabled
-      ? "$white"
+      ? "$surface"
       : isSelectionMode && isSelected
         ? (option.selectedBackgroundColor ?? "$blue2")
-        : (option.iconBackground ?? "$white");
+        : (option.iconBackground ?? "$surface");
 
     const borderColor = isDisabled
-      ? "$softGray"
+      ? "$fillMuted"
       : isSelectionMode && isSelected
         ? (option.selectedBorderColor ?? "$blue8")
-        : "$softGray";
+        : "$fillMuted";
 
     // Get Icon component
     const IconComponent = option.icon;
 
     // Resolve Tamagui color tokens to actual color values for Lucide icons
     const resolvedIconColor = isDisabled
-      ? theme.softGray?.val || "#999"
+      ? theme.textMuted?.val || "#999"
       : option.iconColor
         ? option.iconColor.startsWith("$")
           ? theme[option.iconColor.slice(1)]?.val || option.iconColor
           : option.iconColor
-        : theme.inkBlackLight?.val || "#666";
+        : theme.textBody?.val || "#666";
 
     const handleOptionPress = () => {
       if (isDisabled) return;
