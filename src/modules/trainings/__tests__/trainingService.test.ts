@@ -1,4 +1,4 @@
-import "./stubSync";
+import "./stubs";
 import { beforeEach, describe, it } from "node:test";
 import assert from "node:assert/strict";
 import { database } from "@/database";
@@ -9,7 +9,7 @@ import type TrainingSeries from "@/database/models/TrainingSeries";
 import { timestampToDay } from "../types/helpers";
 import type { SeriesRule, Weekday } from "../types/dto";
 import { resetDatabase, seedTraining } from "./testUtils";
-import { syncCalls } from "./stubSync";
+import { syncCalls } from "./stubs";
 
 // Required after the sync stub is installed.
 const service = require("../services/trainingService") as typeof import("../services/trainingService");
