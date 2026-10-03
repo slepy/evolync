@@ -8,6 +8,59 @@ import {
 export default schemaMigrations({
   migrations: [
     {
+      toVersion: 20,
+      steps: [
+        createTable({
+          name: "trainings",
+          columns: [
+            { name: "organization_id", type: "string", isIndexed: true },
+            { name: "school_id", type: "string", isOptional: true, isIndexed: true },
+            { name: "series_id", type: "string", isOptional: true, isIndexed: true },
+            { name: "name", type: "string" },
+            { name: "date", type: "number", isIndexed: true },
+            { name: "start_time", type: "string" },
+            { name: "end_time", type: "string" },
+            { name: "location", type: "string", isOptional: true },
+            { name: "visibility", type: "string" },
+            { name: "status", type: "string" },
+            { name: "created_by", type: "string" },
+            { name: "created_at", type: "number" },
+            { name: "updated_at", type: "number" },
+            { name: "deleted_at", type: "number", isOptional: true },
+          ],
+        }),
+        createTable({
+          name: "training_series",
+          columns: [
+            { name: "organization_id", type: "string", isIndexed: true },
+            { name: "school_id", type: "string", isOptional: true, isIndexed: true },
+            { name: "name", type: "string" },
+            { name: "location", type: "string", isOptional: true },
+            { name: "visibility", type: "string" },
+            { name: "invitee_ids", type: "string" },
+            { name: "start_date", type: "number" },
+            { name: "end_date", type: "number" },
+            { name: "rules", type: "string" },
+            { name: "previous_series_id", type: "string", isOptional: true, isIndexed: true },
+            { name: "created_by", type: "string" },
+            { name: "created_at", type: "number" },
+            { name: "updated_at", type: "number" },
+            { name: "deleted_at", type: "number", isOptional: true },
+          ],
+        }),
+        createTable({
+          name: "training_invitees",
+          columns: [
+            { name: "training_id", type: "string", isIndexed: true },
+            { name: "school_member_id", type: "string", isIndexed: true },
+            { name: "created_at", type: "number" },
+            { name: "updated_at", type: "number" },
+            { name: "deleted_at", type: "number", isOptional: true },
+          ],
+        }),
+      ],
+    },
+    {
       toVersion: 19,
       steps: [
         createTable({

@@ -11,10 +11,11 @@ import { threedSchema } from "@/modules/threed/database/schema";
 import { notesSchema } from "@/modules/techniques/notes/database/schema";
 import { tagsSchema } from "@/modules/tags/database/schema";
 import { notificationsSchema } from "@/modules/notifications/database/schema";
+import { trainingsSchema } from "@/modules/trainings/database/schema";
 import { appSchema } from "@nozbe/watermelondb";
 
 export default appSchema({
-  version: 19,
+  version: 20,
   tables: [
     ...attendanceSchema,
     ...authSchema,
@@ -29,5 +30,6 @@ export default appSchema({
     ...notesSchema,
     ...tagsSchema,
     ...notificationsSchema,
+    ...trainingsSchema,
   ],
 });

@@ -13,6 +13,7 @@ import { pushThreeDChanges, pullThreeDChanges } from "./sync-threed.ts";
 import { pushNotesChanges, pullNotesChanges } from "./sync-notes.ts";
 import { pushTagsChanges, pullTagsChanges } from "./sync-tags.ts";
 import { pushNotificationsChanges, pullNotificationsChanges } from "./sync-notifications.ts";
+import { pushTrainingsChanges, pullTrainingsChanges } from "./sync-trainings.ts";
 
 export async function syncOrganization(ctx: SyncContext): Promise<SyncPullChanges> {
   const { supabaseClient, userId, changes, lastPulledAt } = ctx;
@@ -226,6 +227,11 @@ export async function syncOrganization(ctx: SyncContext): Promise<SyncPullChange
       }
     }
   }
+
+  // ===========================================================================
+  // PUSH: Planned trainings (organization-scoped)
+  // ===========================================================================
+  await pushTrainingsChanges(ctx, organizationId);
 
   // ===========================================================================
   // PUSH: 3D Tables (user-private)
@@ -459,6 +465,11 @@ export async function syncOrganization(ctx: SyncContext): Promise<SyncPullChange
   } else {
     pullChanges.event_participants = { created: [], updated: [], deleted: [] };
   }
+
+  // ===========================================================================
+  // PULL: Planned trainings (organization-scoped)
+  // ===========================================================================
+  Object.assign(pullChanges, await pullTrainingsChanges(ctx, organizationId));
 
   // ===========================================================================
   // PULL: 3D Tables (user-private, shared logic)

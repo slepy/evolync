@@ -28,6 +28,9 @@ import TechniqueNoteRow from "./models/TechniqueNoteRow";
 import Tag from "./models/Tag";
 import Taggable from "./models/Taggable";
 import Notification from "./models/Notification";
+import Training from "./models/Training";
+import TrainingSeries from "./models/TrainingSeries";
+import TrainingInvitee from "./models/TrainingInvitee";
 
 export const database = new Database({
   adapter,
@@ -59,6 +62,9 @@ export const database = new Database({
     Tag,
     Taggable,
     Notification,
+    Training,
+    TrainingSeries,
+    TrainingInvitee,
   ],
 });
 

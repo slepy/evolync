@@ -19,6 +19,7 @@ import { pushThreeDChanges, pullThreeDChanges } from "./sync-threed.ts";
 import { pushNotesChanges, pullNotesChanges } from "./sync-notes.ts";
 import { pushTagsChanges, pullTagsChanges } from "./sync-tags.ts";
 import { pushNotificationsChanges, pullNotificationsChanges } from "./sync-notifications.ts";
+import { pullTrainingsForMember } from "./sync-trainings.ts";
 
 export async function syncUser(ctx: SyncContext): Promise<SyncPullChanges> {
   const { supabaseClient, userId, changes, lastPulledAt } = ctx;
@@ -164,7 +165,7 @@ export async function syncUser(ctx: SyncContext): Promise<SyncPullChanges> {
 
   const { data: memberships, error: memberError } = await supabaseClient
     .from("school_members")
-    .select("school_id, id, status")
+    .select("school_id, id, status, created_at")
     .eq("user_id", userId)
     .is("deleted_at", null);
 
@@ -414,6 +415,19 @@ export async function syncUser(ctx: SyncContext): Promise<SyncPullChanges> {
     pullChanges.events = { created: [], updated: [], deleted: [] };
     pullChanges.event_participants = { created: [], updated: [], deleted: [] };
   }
+
+  // Planned trainings the member is in the audience of (read-only)
+  Object.assign(
+    pullChanges,
+    await pullTrainingsForMember(ctx, {
+      memberIds,
+      schoolIds,
+      organizationIds,
+      newMembership: (memberships || []).some(
+        (m: any) => m.created_at && new Date(m.created_at).getTime() > lastPulledAt,
+      ),
+    }),
+  );
 
   // Pull user's own join requests (so they can see if request is still pending or was deleted/approved)
   pullChanges.school_join_requests = await fetchTableChanges("school_join_requests", (q) =>
