@@ -8,7 +8,7 @@ import {
   maxSeriesEnd,
 } from "../types/helpers";
 
-const daySchema = z.string().refine(isValidDay, "trainingsValidationInvalidDate");
+const daySchema = z.string().refine(isValidDay, "invalidDate");
 const timeSchema = z.string().regex(TIME_RE, "trainingsValidationInvalidTime");
 
 export const trainingVisibilitySchema = z.enum(
@@ -17,7 +17,7 @@ export const trainingVisibilitySchema = z.enum(
     TRAINING_VISIBILITY.SCHOOL,
     TRAINING_VISIBILITY.WHITELIST,
   ],
-  { errorMap: () => ({ message: "eventValidationInvalidVisibility" }) },
+  { errorMap: () => ({ message: "trainingsValidationInvalidVisibility" }) },
 );
 
 export const seriesRuleSchema = z
