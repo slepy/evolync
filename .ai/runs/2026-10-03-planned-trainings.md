@@ -37,6 +37,8 @@ Attendance / `training_sessions` (untouched), prices or payments, open-ended rec
 
 ## Progress
 
+PR: #18
+
 > Convention: `- [ ]` pending, `- [x]` done. Append ` — <commit sha>` when a step lands. Do not rename step titles.
 
 ### Phase 1: Data layer
