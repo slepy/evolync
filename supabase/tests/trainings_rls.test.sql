@@ -62,6 +62,15 @@ begin
 exception when check_violation then null;
 end $$;
 
+-- A school and member of another organization (for scoping checks)
+insert into auth.users (id, email) values ('00000000-0000-0000-0000-0000000000d0', 'other-owner@test.local');
+insert into public.organizations (id, owner_id, name) values
+  ('20000000-0000-0000-0000-000000000002', '00000000-0000-0000-0000-0000000000d0', 'Other org');
+insert into public.schools (id, organization_id, name) values
+  ('30000000-0000-0000-0000-0000000000ff', '20000000-0000-0000-0000-000000000002', 'Foreign school');
+insert into public.school_members (id, school_id, display_name) values
+  ('40000000-0000-0000-0000-0000000000ff', '30000000-0000-0000-0000-0000000000ff', 'Foreign member');
+
 -- Owner: full CRUD
 set local role authenticated;
 set local request.jwt.claim.sub = '00000000-0000-0000-0000-0000000000a0';
@@ -80,6 +89,29 @@ values ('50000000-0000-0000-0000-000000000099', '20000000-0000-0000-0000-0000000
         'Weekly', '2099-01-05', '18:00', '19:00', '00000000-0000-0000-0000-0000000000a0');
 update public.trainings set status = 'cancelled' where id = '50000000-0000-0000-0000-000000000099';
 delete from public.trainings where id = '50000000-0000-0000-0000-000000000099';
+
+-- Owner cannot point a training at another organization's school ...
+do $$
+begin
+  insert into public.trainings (organization_id, school_id, name, date, start_time, end_time, visibility, created_by)
+  values ('20000000-0000-0000-0000-000000000001', '30000000-0000-0000-0000-0000000000ff', 'Foreign school', '2099-01-05', '18:00', '19:00', 'school', '00000000-0000-0000-0000-0000000000a0');
+  raise exception 'foreign school should be denied';
+exception when insufficient_privilege then null;
+end $$;
+
+-- ... nor invite another organization's member.
+do $$
+begin
+  insert into public.training_invitees (training_id, school_member_id)
+  values ('50000000-0000-0000-0000-0000000000f1', '40000000-0000-0000-0000-0000000000ff');
+  raise exception 'foreign member invite should be denied';
+exception when insufficient_privilege then null;
+end $$;
+
+insert into public.training_invitees (training_id, school_member_id)
+values ('50000000-0000-0000-0000-0000000000f1', '40000000-0000-0000-0000-00000000000a');
+delete from public.training_invitees
+where training_id = '50000000-0000-0000-0000-0000000000f1' and school_member_id = '40000000-0000-0000-0000-00000000000a';
 
 -- Student A (school A): org + school A, not school B nor B's private training
 set local request.jwt.claim.sub = '00000000-0000-0000-0000-0000000000a1';

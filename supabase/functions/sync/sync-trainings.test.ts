@@ -103,6 +103,10 @@ Deno.test("record conversion maps days to SQL dates and JSON columns to jsonb", 
 Deno.test("push keeps rows inside the caller's organization only", async () => {
   const { client, writes } = fakeClient({
     trainings: [{ id: "foreign", organization_id: OTHER_ORG }],
+    schools: [
+      { id: "school-own", organization_id: ORG },
+      { id: "school-foreign", organization_id: OTHER_ORG },
+    ],
   });
 
   await pushTrainingsChanges(
@@ -110,6 +114,9 @@ Deno.test("push keeps rows inside the caller's organization only", async () => {
       trainings: {
         created: [
           { id: "t1", organization_id: ORG, date: DAY },
+          { id: "t-school", organization_id: ORG, school_id: "school-own", date: DAY },
+          // school of another organization: rejected
+          { id: "t-foreign-school", organization_id: ORG, school_id: "school-foreign", date: DAY },
           { id: "t2", organization_id: OTHER_ORG, date: DAY },
           // id collision with another organization's row: never overwritten
           { id: "foreign", organization_id: ORG, date: DAY },
@@ -122,7 +129,7 @@ Deno.test("push keeps rows inside the caller's organization only", async () => {
   );
 
   const upsert = writes.find((w) => w.table === "trainings" && w.op === "upsert");
-  assertEquals(upsert?.payload.map((r: any) => r.id), ["t1"]);
+  assertEquals(upsert?.payload.map((r: any) => r.id), ["t1", "t-school"]);
 
   const del = writes.find((w) => w.table === "trainings" && w.op === "update");
   assert(del, "soft delete issued");
@@ -142,6 +149,14 @@ Deno.test("push accepts invitees only for the organization's trainings", async (
       { id: "i-own", training_id: "t1" },
       { id: "i-foreign", training_id: "tx" },
     ],
+    schools: [
+      { id: "school-own", organization_id: ORG },
+      { id: "school-foreign", organization_id: OTHER_ORG },
+    ],
+    school_members: [
+      { id: "m1", school_id: "school-own" },
+      { id: "m-foreign", school_id: "school-foreign" },
+    ],
   });
 
   await pushTrainingsChanges(
@@ -150,6 +165,8 @@ Deno.test("push accepts invitees only for the organization's trainings", async (
         created: [
           { id: "i1", training_id: "t1", school_member_id: "m1" },
           { id: "i2", training_id: "tx", school_member_id: "m1" },
+          // another organization's member cannot be invited
+          { id: "i3", training_id: "t1", school_member_id: "m-foreign" },
         ],
         updated: [],
         deleted: ["i-own", "i-foreign"],

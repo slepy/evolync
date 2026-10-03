@@ -110,11 +110,31 @@ async function ownTrainingIds(
   return own;
 }
 
+/** Every school id of the organization (soft-deleted ones included). */
+async function organizationSchoolIds(supabaseClient: any, organizationId: string): Promise<Set<string>> {
+  const { data, error } = await supabaseClient.from("schools").select("id").eq("organization_id", organizationId);
+  if (error) throw new Error(`Failed to verify schools: ${error.message}`);
+  return new Set((data || []).map((r: any) => r.id));
+}
+
+/** Member ids among `ids` that belong to one of the given schools. */
+async function membersOfSchools(supabaseClient: any, ids: string[], schoolIds: Set<string>): Promise<Set<string>> {
+  const own = new Set<string>();
+  for (const part of chunks([...new Set(ids)])) {
+    const { data, error } = await supabaseClient.from("school_members").select("id, school_id").in("id", part);
+    if (error) throw new Error(`Failed to verify school_members: ${error.message}`);
+    for (const row of data || []) if (schoolIds.has(row.school_id)) own.add(row.id);
+  }
+  return own;
+}
+
 export async function pushTrainingsChanges(
   ctx: SyncTrainingsContext,
   organizationId: string,
 ): Promise<void> {
   const { supabaseClient, changes } = ctx;
+  let schoolIds: Set<string> | null = null;
+  const orgSchools = async () => (schoolIds ??= await organizationSchoolIds(supabaseClient, organizationId));
 
   // Parents first so invitees can reference freshly pushed trainings.
   for (const table of ["training_series", "trainings"] as const) {
@@ -122,7 +142,11 @@ export async function pushTrainingsChanges(
     if (!tableChanges) continue;
     const { created = [], updated = [], deleted = [] } = tableChanges;
 
-    const incoming = [...created, ...updated].filter((r) => r.organization_id === organizationId);
+    const sameOrg = [...created, ...updated].filter((r) => r.organization_id === organizationId);
+    // A school audience must be one of the organization's own schools.
+    const needsSchools = sameOrg.some((r) => r.school_id);
+    const allowedSchools = needsSchools ? await orgSchools() : new Set<string>();
+    const incoming = sameOrg.filter((r) => !r.school_id || allowedSchools.has(r.school_id));
     if (incoming.length < created.length + updated.length) {
       console.warn(`[SYNC:TRAININGS] Dropped ${table} rows outside organization ${organizationId}`);
     }
@@ -151,8 +175,12 @@ export async function pushTrainingsChanges(
     const { created = [], updated = [], deleted = [] } = invitees;
     const incoming = [...created, ...updated];
     const own = await ownTrainingIds(supabaseClient, incoming.map((r) => r.training_id), organizationId);
+    // Only the organization's own members can be invited.
+    const members = incoming.length
+      ? await membersOfSchools(supabaseClient, incoming.map((r) => r.school_member_id), await orgSchools())
+      : new Set<string>();
     const rows = incoming
-      .filter((r) => own.has(r.training_id))
+      .filter((r) => own.has(r.training_id) && members.has(r.school_member_id))
       .map((r) => toSupabaseTrainingRecord(r, "training_invitees"));
 
     if (rows.length > 0) {

@@ -174,13 +174,25 @@ create policy "Org owner can manage training series"
   on public.training_series for all
   to authenticated
   using (public.is_org_owner(organization_id))
-  with check (public.is_org_owner(organization_id));
+  with check (
+    public.is_org_owner(organization_id)
+    and (school_id is null or exists (
+      select 1 from public.schools s
+      where s.id = school_id and s.organization_id = training_series.organization_id
+    ))
+  );
 
 create policy "Org owner can manage trainings"
   on public.trainings for all
   to authenticated
   using (public.is_org_owner(organization_id))
-  with check (public.is_org_owner(organization_id));
+  with check (
+    public.is_org_owner(organization_id)
+    and (school_id is null or exists (
+      select 1 from public.schools s
+      where s.id = school_id and s.organization_id = trainings.organization_id
+    ))
+  );
 
 create policy "Members can view accessible trainings"
   on public.trainings for select
@@ -191,7 +203,17 @@ create policy "Org owner can manage training invitees"
   on public.training_invitees for all
   to authenticated
   using (public.is_training_owner(training_id))
-  with check (public.is_training_owner(training_id));
+  with check (
+    public.is_training_owner(training_id)
+    -- only members of the training's own organization can be invited
+    and exists (
+      select 1
+      from public.school_members sm
+      join public.schools s on s.id = sm.school_id
+      join public.trainings t on t.id = training_id
+      where sm.id = school_member_id and s.organization_id = t.organization_id
+    )
+  );
 
 create policy "Members can view own training invitations"
   on public.training_invitees for select
