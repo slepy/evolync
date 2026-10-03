@@ -1,7 +1,9 @@
 // Run: supabase/functions/run-deno-tests.sh (or `deno test supabase/functions`)
 import { assert, assertEquals } from "https://deno.land/std@0.224.0/assert/mod.ts";
 import {
+  isTrainingVisibleToMember,
   pullTrainingsChanges,
+  pullTrainingsForMember,
   pushTrainingsChanges,
   toSupabaseTrainingRecord,
   toWatermelonTrainingRecord,
@@ -211,4 +213,94 @@ Deno.test("incremental pull splits created/updated/deleted; a migrated client ge
   );
   assertEquals(migrated.trainings.created.map((r) => r.id).sort(), ["edited", "new", "old"]);
   assertEquals(migrated.trainings.deleted, []);
+});
+
+// ---------------------------------------------------------------------------
+// Student / member pull
+// ---------------------------------------------------------------------------
+
+const SCOPE = { memberIds: ["me-a"], schoolIds: ["school-a"], organizationIds: [ORG] };
+const ts = (iso: string) => `2099-01-${iso}T00:00:00Z`;
+const tr = (id: string, extra: Record<string, unknown>) => ({
+  id,
+  organization_id: ORG,
+  school_id: null,
+  date: "2099-02-01",
+  created_at: ts("01"),
+  updated_at: ts("01"),
+  deleted_at: null,
+  ...extra,
+});
+
+const memberFixture = (): Record<string, any[]> => ({
+  trainings: [
+    tr("org", { visibility: "organization" }),
+    tr("school-a", { visibility: "school", school_id: "school-a" }),
+    tr("school-b", { visibility: "school", school_id: "school-b" }),
+    tr("private-me", { visibility: "whitelist" }),
+    tr("private-other", { visibility: "whitelist" }),
+    tr("other-org", { visibility: "organization", organization_id: OTHER_ORG }),
+    tr("deleted", { visibility: "organization", deleted_at: ts("02"), updated_at: ts("02") }),
+  ],
+  training_invitees: [
+    { training_id: "private-me", school_member_id: "me-a", updated_at: ts("01"), deleted_at: null },
+    { training_id: "private-other", school_member_id: "someone", updated_at: ts("01"), deleted_at: null },
+  ],
+});
+
+Deno.test("member first pull: organization, own school and invited trainings only", async () => {
+  const { client } = fakeClient(memberFixture());
+  const { trainings } = await pullTrainingsForMember(ctx(client), SCOPE);
+  assertEquals(trainings.created.map((r) => r.id).sort(), ["org", "private-me", "school-a"]);
+  assertEquals(trainings.updated, []);
+  assertEquals(trainings.deleted, []);
+});
+
+Deno.test("member pull never returns trainings outside the audience, per visibility", () => {
+  const invited = new Set(["private-me"]);
+  const visible = (row: any) => isTrainingVisibleToMember(row, SCOPE, invited);
+  assert(visible(tr("x", { visibility: "organization" })));
+  assert(!visible(tr("x", { visibility: "organization", organization_id: OTHER_ORG })));
+  assert(visible(tr("x", { visibility: "school", school_id: "school-a" })));
+  assert(!visible(tr("x", { visibility: "school", school_id: "school-b" })));
+  assert(!visible(tr("x", { visibility: "school", school_id: null })));
+  assert(visible(tr("private-me", { visibility: "whitelist" })));
+  assert(!visible(tr("private-other", { visibility: "whitelist" })));
+  assert(!visible(tr("org", { visibility: "organization", deleted_at: ts("02") })));
+});
+
+Deno.test("member incremental pull: audience changes and removed invitations become deletions", async () => {
+  const lastPulledAt = Date.parse(ts("10"));
+  const fixture = memberFixture();
+  fixture.trainings = [
+    // moved from organization to school B → no longer visible
+    tr("moved", { visibility: "school", school_id: "school-b", updated_at: ts("11") }),
+    // cancelled, still visible → update
+    tr("org", { visibility: "organization", status: "cancelled", updated_at: ts("11") }),
+    // new school-A training → created
+    tr("new", { visibility: "school", school_id: "school-a", created_at: ts("11"), updated_at: ts("11") }),
+    // untouched training whose invitation was revoked
+    tr("revoked", { visibility: "whitelist" }),
+    // untouched training I was just invited to
+    tr("invited", { visibility: "whitelist" }),
+    tr("untouched", { visibility: "organization" }),
+  ];
+  fixture.training_invitees = [
+    { training_id: "revoked", school_member_id: "me-a", updated_at: ts("11"), deleted_at: ts("11") },
+    { training_id: "invited", school_member_id: "me-a", updated_at: ts("11"), deleted_at: null },
+  ];
+  const { client } = fakeClient(fixture);
+  const { trainings } = await pullTrainingsForMember(ctx(client, {}, { lastPulledAt }), SCOPE);
+  assertEquals(trainings.created.map((r) => r.id).sort(), ["invited", "new"]);
+  assertEquals(trainings.updated.map((r) => r.id), ["org"]);
+  assertEquals(trainings.deleted.sort(), ["moved", "revoked"]);
+});
+
+Deno.test("a new membership triggers a full member pull", async () => {
+  const { client } = fakeClient(memberFixture());
+  const { trainings } = await pullTrainingsForMember(
+    ctx(client, {}, { lastPulledAt: Date.parse(ts("20")) }),
+    { ...SCOPE, newMembership: true },
+  );
+  assertEquals(trainings.created.map((r) => r.id).sort(), ["org", "private-me", "school-a"]);
 });

@@ -241,3 +241,112 @@ export async function pullTrainingsChanges(
     ),
   };
 }
+
+// =============================================================================
+// PULL (student / member, read-only)
+// =============================================================================
+
+export interface MemberScope {
+  memberIds: string[];
+  schoolIds: string[];
+  organizationIds: string[];
+  /** A membership created since the last pull: resend everything visible. */
+  newMembership?: boolean;
+}
+
+/** Same audience rule as can_view_training (organization / school / invited). */
+export const isTrainingVisibleToMember = (
+  row: any,
+  scope: MemberScope,
+  invitedTrainingIds: Set<string>,
+): boolean => {
+  if (row.deleted_at) return false;
+  switch (row.visibility) {
+    case "organization":
+      return scope.organizationIds.includes(row.organization_id);
+    case "school":
+      return !!row.school_id && scope.schoolIds.includes(row.school_id);
+    case "whitelist":
+      return invitedTrainingIds.has(row.id);
+    default:
+      return false;
+  }
+};
+
+/**
+ * Trainings a member may see. A first pull sends every visible live row; an
+ * incremental pull re-evaluates trainings changed in the member's
+ * organizations and trainings whose invitation for the member changed, and
+ * sends the ones no longer visible as deleted (audience edits, removed
+ * invitations, cancellations stay as updates).
+ */
+export async function pullTrainingsForMember(
+  ctx: SyncTrainingsContext,
+  scope: MemberScope,
+): Promise<{ trainings: TableChanges }> {
+  const { supabaseClient, lastPulledAt, migratedTables = [] } = ctx;
+  const changes = empty();
+  if (scope.organizationIds.length === 0 || scope.memberIds.length === 0) return { trainings: changes };
+
+  const isFirstPull = !lastPulledAt || migratedTables.includes("trainings") || !!scope.newMembership;
+
+  const { data: invitations, error: invitationsError } = await supabaseClient
+    .from("training_invitees")
+    .select("training_id, updated_at, deleted_at")
+    .in("school_member_id", scope.memberIds);
+  if (invitationsError) throw new Error(`Failed to fetch training_invitees: ${invitationsError.message}`);
+  const invited = new Set<string>(
+    (invitations || []).filter((i: any) => !i.deleted_at).map((i: any) => i.training_id),
+  );
+
+  if (isFirstPull) {
+    const { data, error } = await supabaseClient
+      .from("trainings")
+      .select("*")
+      .in("organization_id", scope.organizationIds)
+      .is("deleted_at", null);
+    if (error) throw new Error(`Failed to fetch trainings: ${error.message}`);
+    for (const row of data || []) {
+      if (isTrainingVisibleToMember(row, scope, invited)) {
+        changes.created.push(toWatermelonTrainingRecord(row, "trainings"));
+      }
+    }
+    return { trainings: changes };
+  }
+
+  const since = new Date(lastPulledAt).toISOString();
+  const { data: changed, error } = await supabaseClient
+    .from("trainings")
+    .select("*")
+    .in("organization_id", scope.organizationIds)
+    .gte("updated_at", since);
+  if (error) throw new Error(`Failed to fetch trainings: ${error.message}`);
+
+  const rows: any[] = [...(changed || [])];
+  const seen = new Set(rows.map((r) => r.id));
+  const invitationChanged = new Set<string>(
+    (invitations || [])
+      .filter((i: any) => new Date(i.updated_at).getTime() >= lastPulledAt)
+      .map((i: any) => i.training_id),
+  );
+  const missing = [...invitationChanged].filter((id) => !seen.has(id));
+  for (const part of chunks(missing)) {
+    const { data, error: extraError } = await supabaseClient.from("trainings").select("*").in("id", part);
+    if (extraError) throw new Error(`Failed to fetch trainings: ${extraError.message}`);
+    rows.push(...(data || []));
+  }
+
+  for (const row of rows) {
+    if (!isTrainingVisibleToMember(row, scope, invited)) {
+      changes.deleted.push(row.id);
+    } else if (
+      new Date(row.created_at).getTime() > lastPulledAt ||
+      (invitationChanged.has(row.id) && row.visibility === "whitelist")
+    ) {
+      changes.created.push(toWatermelonTrainingRecord(row, "trainings"));
+    } else {
+      changes.updated.push(toWatermelonTrainingRecord(row, "trainings"));
+    }
+  }
+  return { trainings: changes };
+}
