@@ -1,15 +1,23 @@
-import { ErrorBanner, TextInput } from "@/modules/core/components";
+import { DatePickerInput, ErrorBanner, TextInput } from "@/modules/core/components";
 import { TRAINING_VISIBILITY, type TrainingVisibility } from "@/database/models/Training";
 import { zodResolver } from "@hookform/resolvers/zod";
-import React, { forwardRef, useEffect, useImperativeHandle } from "react";
+import React, { forwardRef, useEffect, useImperativeHandle, useMemo } from "react";
 import { useForm, useWatch, type Resolver } from "react-hook-form";
 import { Text, XStack, YStack } from "tamagui";
 
 import type { SeriesRule } from "../types/dto";
 import { TRAINING_MODE, type TrainingMode } from "../types/enums";
-import { localToday } from "../types/helpers";
+import {
+  addMonths,
+  expandSeriesRules,
+  isTimeRangeValid,
+  isValidDay,
+  localToday,
+  maxSeriesEnd,
+} from "../types/helpers";
 import { trainingSchema, type TrainingFormValues } from "../validation";
 import { MultiDateCalendar } from "./MultiDateCalendar";
+import { SeriesRulesEditor, newRule, type RuleErrors } from "./SeriesRulesEditor";
 import { TimeField } from "./TimeField";
 import { TrainingAudienceFields, type AudienceMember } from "./TrainingAudienceFields";
 
@@ -68,12 +76,18 @@ const defaultState = (): TrainingFormState => {
     startTime: "18:00",
     endTime: "19:30",
     startDate: today,
-    endDate: today,
-    rules: [],
+    endDate: addMonths(today, 3),
+    rules: [newRule()],
   };
 };
 
 const translate = (message?: string) => (message ? t(message) : undefined);
+
+/** Day string ↔ the local-midnight Date the native date picker works with. */
+const dayToLocalDate = (day: string) => {
+  const [y, m, d] = day.split("-").map(Number);
+  return new Date(y, m - 1, d);
+};
 
 // ============================================================================
 // TrainingForm
@@ -112,6 +126,17 @@ export const TrainingForm = forwardRef<TrainingFormHandle, TrainingFormProps>(
     const dates = useWatch({ control, name: "dates" });
     const startTime = useWatch({ control, name: "startTime" });
     const endTime = useWatch({ control, name: "endTime" });
+    const startDate = useWatch({ control, name: "startDate" });
+    const endDate = useWatch({ control, name: "endDate" });
+    const rules = useWatch({ control, name: "rules" });
+
+    /** Live count of trainings the series would create (only for a valid draft). */
+    const occurrenceCount = useMemo(() => {
+      if (!isValidDay(startDate) || !isValidDay(endDate) || endDate < startDate) return null;
+      if (endDate > maxSeriesEnd(startDate)) return null;
+      if (rules.some((r) => !isTimeRangeValid(r.startTime, r.endTime))) return null;
+      return expandSeriesRules(rules, startDate, endDate).length;
+    }, [rules, startDate, endDate]);
 
     const set = <K extends keyof TrainingFormState>(key: K, value: TrainingFormState[K]) =>
       setValue(key, value as never, { shouldDirty: true, shouldValidate: false });
@@ -206,6 +231,57 @@ export const TrainingForm = forwardRef<TrainingFormHandle, TrainingFormProps>(
                 disabled={isLoading}
               />
             </XStack>
+          </YStack>
+        )}
+
+        {mode === TRAINING_MODE.RECURRING && (
+          <YStack gap="$3">
+            <SeriesRulesEditor
+              rules={rules}
+              onChange={(next) => set("rules", next)}
+              errors={(errors.rules as unknown as (RuleErrors | undefined)[] | undefined)?.map((e) =>
+                e
+                  ? {
+                      weekOfMonth: translate((e.weekOfMonth as { message?: string } | undefined)?.message),
+                      startTime: translate((e.startTime as { message?: string } | undefined)?.message),
+                      endTime: translate((e.endTime as { message?: string } | undefined)?.message),
+                    }
+                  : undefined,
+              )}
+              error={translate(errors.rules?.message ?? errors.rules?.root?.message)}
+              disabled={isLoading}
+            />
+            <XStack gap="$3">
+              <DatePickerInput
+                label={t("trainingsFrom")}
+                value={dayToLocalDate(startDate)}
+                minimumDate={dayToLocalDate(localToday())}
+                onChange={(date) => {
+                  const day = localToday(date);
+                  set("startDate", day);
+                  if (endDate < day) set("endDate", day);
+                }}
+                error={translate(errors.startDate?.message)}
+                disabled={isLoading}
+              />
+              <DatePickerInput
+                label={t("trainingsUntil")}
+                value={dayToLocalDate(endDate)}
+                minimumDate={dayToLocalDate(startDate)}
+                maximumDate={dayToLocalDate(maxSeriesEnd(startDate))}
+                onChange={(date) => set("endDate", localToday(date))}
+                error={translate(errors.endDate?.message)}
+                disabled={isLoading}
+              />
+            </XStack>
+            <Text fontSize="$2" color="$textMuted">
+              {t("trainingsUntilHint")}
+            </Text>
+            {occurrenceCount !== null && (
+              <Text fontSize="$3" color="$textSecondary" fontWeight="600">
+                {t("trainingsOccurrencesCount", { count: occurrenceCount })}
+              </Text>
+            )}
           </YStack>
         )}
 

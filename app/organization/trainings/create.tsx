@@ -62,7 +62,7 @@ export default function CreateTrainingScreen() {
             <YStack maxWidth={500} width="100%" alignSelf="center" gap="$4">
               <TrainingForm
                 ref={formRef}
-                modes={[TRAINING_MODE.SINGLE]}
+                modes={[TRAINING_MODE.SINGLE, TRAINING_MODE.RECURRING]}
                 schools={schools}
                 members={members}
                 onSubmit={handleSubmit}

@@ -42,6 +42,22 @@ describe("trainingService", () => {
     assert.equal(syncCalls.length, before + 1, "sync triggered once");
   });
 
+  it("'1st Saturday monthly' creates one training per month", async () => {
+    const { trainings } = await service.createTrainingSeries({
+      ...base, visibility: "organization", startDate: "2099-01-01", endDate: "2099-04-30",
+      rules: [{ weekday: 6, frequency: "monthly", weekOfMonth: 1, startTime: "10:00", endTime: "12:00" }],
+    });
+    // Saturdays: 2099-01-03, 02-07, 03-07, 04-04
+    assert.deepEqual(days(trainings), ["2099-01-03", "2099-02-07", "2099-03-07", "2099-04-04"]);
+    await assert.rejects(
+      service.createTrainingSeries({
+        ...base, visibility: "organization", startDate: "2099-01-01", endDate: "2099-01-02",
+        rules: [{ weekday: 6, frequency: "monthly", weekOfMonth: 1, startTime: "10:00", endTime: "12:00" }],
+      }),
+      /trainingsValidationNoOccurrences/,
+    );
+  });
+
   it("invalid input writes nothing", async () => {
     await assert.rejects(
       service.createTrainingSeries({ ...base, visibility: "whitelist", inviteeIds: [], startDate: "2099-01-05", endDate: "2099-02-01", rules: [weekly(1)] }),
