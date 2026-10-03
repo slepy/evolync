@@ -11,6 +11,7 @@ const SOURCES = [
   "app/organization/trainings",
   "app/school/[schoolId]/trainings",
   "app/user/trainings.tsx",
+  "app/user/dashboard.tsx",
   "src/modules/organization/components/Dashboard.tsx",
   "src/modules/dashboard/components/SchoolDashboard.tsx",
 ];
