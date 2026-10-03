@@ -11,12 +11,14 @@ import {
   Settings,
   ShoppingBag,
   Users,
+  CalendarClock,
 } from "lucide-react-native";
 import React from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { ScrollView, Text, XStack, YStack } from "tamagui";
 import { DashboardFAB } from "./DashboardFAB";
 import { DashboardStatCard } from "./DashboardStatCard";
+import { useSchoolUpcomingTrainings, useTrainingsBadge } from "@/modules/trainings";
 
 // ============================================================================
 // Types
@@ -53,6 +55,8 @@ const SchoolDashboardComponent: React.FC<SchoolDashboardProps> = ({
   const router = useRouter();
   const { todaySession, hasSessionToday } = useTodaySession(schoolId);
   const { dashboardData } = useSchoolDashboard(schoolId);
+  const { trainings } = useSchoolUpcomingTrainings(schoolId);
+  const trainingsBadge = useTrainingsBadge(trainings);
 
   // ==========================================================================
   // Mock Data (Replace with WatermelonDB queries)
@@ -108,6 +112,10 @@ const SchoolDashboardComponent: React.FC<SchoolDashboardProps> = ({
     if (todaySession) {
       router.push(`/school/${schoolId}/attendance/${todaySession.id}`);
     }
+  };
+
+  const handleNavigateToTrainings = () => {
+    router.push(`/school/${schoolId}/trainings` as any);
   };
 
   /**
@@ -198,6 +206,17 @@ const SchoolDashboardComponent: React.FC<SchoolDashboardProps> = ({
                   iconColor="$primaryText"
                   iconBackground="$primarySurface"
                   onPress={() => handleNavigateToAttendance(schoolId)}
+                />
+              </YStack>
+
+              <YStack width="30%">
+                <DashboardStatCard
+                  title={t("trainingsTitle")}
+                  Icon={CalendarClock}
+                  iconColor="$jadeGreen"
+                  iconBackground="$successSurface"
+                  badgeCount={trainingsBadge}
+                  onPress={handleNavigateToTrainings}
                 />
               </YStack>
 

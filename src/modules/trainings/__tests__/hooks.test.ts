@@ -93,4 +93,26 @@ describe("trainings hooks", () => {
     ]);
     await hook.unmount();
   });
+
+  it("useInviteeMembers lists names, greys archived members and filters by school", async () => {
+    await seedMember("m-a", "school-a");
+    await seedRow("school_members", { id: "m-old", school_id: "school-a", display_name: "Old", status: "archived" });
+    await seedMember("m-b", "school-b");
+    const [training] = await service.createSingleTrainings({
+      organizationId: "org-1", createdBy: "owner", name: "Private", visibility: "whitelist",
+      inviteeIds: ["m-a", "m-old", "m-b"], dates: ["2099-01-04"], startTime: "10:00", endTime: "11:00",
+    });
+
+    const all = await renderHook(() => hooks.useInviteeMembers(training.id));
+    assert.deepEqual(all.current().invitees.map((m) => [m.name, m.inactive]), [
+      ["m-a", false],
+      ["m-b", false],
+      ["Old", true],
+    ]);
+    await all.unmount();
+
+    const schoolA = await renderHook(() => hooks.useInviteeMembers(training.id, "school-a"));
+    assert.deepEqual(schoolA.current().invitees.map((m) => m.id).sort(), ["m-a", "m-old"]);
+    await schoolA.unmount();
+  });
 });
