@@ -1,6 +1,6 @@
 # Planned Trainings
 
-Brief: [briefs/2026-10-03-planned-training-sessions.md](briefs/2026-10-03-planned-training-sessions.md). Supersedes spec PR #14 (`2026-10-03-school-training-schedule.md`).
+This is the single spec for planning trainings. It replaces the earlier school-only schedule draft (PR #14) and the brainstorm brief, both removed.
 
 ## 📝 TLDR
 Owners have no place to plan future trainings. `training_sessions` belongs to the separate attendance module and records only past attendance. This spec proposes a new **planned trainings** feature:
@@ -11,8 +11,26 @@ Owners have no place to plan future trainings. `training_sessions` belongs to th
 
 Attendance is not part of this work.
 
+## 📝 Product owner decisions
+These were decided by the product owner in the brainstorm and are not defaults:
+- One **"+ Add training"** form with a short name and a choice between **Recurring** and **Single**.
+- **Recurring:** one or more "day + weekly/monthly" rules.
+- **Single:** several dates selected at once.
+- **Audience** like events: organization, school or selected people.
+- **Location:** free text, or copy a school's address from a list of schools.
+- **Future dates only.**
+- **Dashboards:** organization (all, like events) and school (only its students).
+- **Attendance stays in its own module** and is untouched.
+
+**Non-goals:**
+- attendance;
+- prices or payments per training;
+- open-ended recurrence or background generation;
+- notifications;
+- migrating `events` into trainings.
+
 ## Resolved assumptions (autonomous defaults)
-The flow, audience, short name, multi-date single mode, location picker, future-only rule, dashboards and "no attendance" are the product owner's decisions (see the brief). These are the agent's defaults for what the brief left open:
+The flow, audience, short name, multi-date single mode, location picker, future-only rule, dashboards and "no attendance" are the product owner's decisions (above). These are the agent's defaults for what was left open:
 
 | # | Question | Applied default | Why | Confirm? |
 |---|----------|-----------------|-----|----------|
@@ -41,7 +59,7 @@ A new `trainings` module modelled on `events` for audience and RLS, with three t
 Single mode writes N `trainings` rows (one per chosen date) with no series.
 
 **Alternatives rejected:**
-- **Spec PR #14** (a school-only schedule with computed occurrences): no audience, name or location, and no per-occurrence cancel.
+- **The earlier school-only schedule draft (PR #14)** (computed occurrences): no audience, name or location, and no per-occurrence cancel.
 - **Extending `events`:** wrong semantics (price, RSVP, multi-day).
 - **Extending `training_sessions`:** the owner wants attendance kept separate.
 - **Computed occurrences without stored rows:** they cannot carry a per-occurrence cancel or edit.
