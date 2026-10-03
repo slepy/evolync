@@ -809,6 +809,5 @@
   "trainingsValidationSeriesTooLong": "At most 6 months. Use “Extend series” later to continue.",
   "trainingsValidationNoOccurrences": "These days produce no trainings in the chosen dates",
   "trainingsValidationExtendAfterEnd": "Pick a date after the current end of the series",
-  "trainingsValidationInvalidVisibility": "Choose who the training is for",
-  "trainingsTimePlaceholder": "HH:mm"
+  "trainingsValidationInvalidVisibility": "Choose who the training is for"
 }

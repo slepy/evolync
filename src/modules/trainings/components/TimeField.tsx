@@ -1,8 +1,8 @@
-import { TextInput } from "@/modules/core/components";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import React, { useState } from "react";
 import { Platform } from "react-native";
 import { Button, Sheet, Text, XStack, YStack } from "tamagui";
+import { WebInput } from "./WebInput";
 
 interface TimeFieldProps {
   label: string;
@@ -23,7 +23,7 @@ const toValue = (date: Date) => `${pad(date.getHours())}:${pad(date.getMinutes()
 
 /**
  * "HH:mm" wall-clock time input: the native time picker on iOS/Android,
- * a plain text field on web.
+ * a browser time input on web.
  */
 export const TimeField: React.FC<TimeFieldProps> = ({ label, value, onChange, error, disabled = false }) => {
   const [open, setOpen] = useState(false);
@@ -31,16 +31,24 @@ export const TimeField: React.FC<TimeFieldProps> = ({ label, value, onChange, er
 
   if (Platform.OS === "web") {
     return (
-      <TextInput
-        label={label}
-        value={value}
-        onChangeText={(text) => onChange(text.trim())}
-        placeholder={t("trainingsTimePlaceholder")}
-        error={error}
-        disabled={disabled}
-        maxLength={5}
-        flex={1}
-      />
+      <YStack gap="$2" flex={1}>
+        <Text fontSize="$3" color="$textSecondary" fontWeight="500">
+          {label}
+        </Text>
+        <WebInput
+          type="time"
+          label={label}
+          value={value}
+          disabled={disabled}
+          invalid={!!error}
+          onChange={(next) => next && onChange(next.slice(0, 5))}
+        />
+        {error && (
+          <Text color="$imperialRed" fontSize="$3" fontWeight="500">
+            {error}
+          </Text>
+        )}
+      </YStack>
     );
   }
 

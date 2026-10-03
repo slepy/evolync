@@ -1,4 +1,4 @@
-import { DatePickerInput, ErrorBanner, TextInput } from "@/modules/core/components";
+import { ErrorBanner, TextInput } from "@/modules/core/components";
 import { TRAINING_VISIBILITY, type TrainingVisibility } from "@/database/models/Training";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { MapPin } from "lucide-react-native";
@@ -18,6 +18,7 @@ import {
 } from "../types/helpers";
 import type { SchoolAddressOption } from "../hooks/useSchoolsWithAddress";
 import { trainingSchema, type TrainingFormValues } from "../validation";
+import { DayField } from "./DayField";
 import { MultiDateCalendar } from "./MultiDateCalendar";
 import { SchoolAddressSheet } from "./SchoolAddressSheet";
 import { SeriesRulesEditor, newRule, type RuleErrors } from "./SeriesRulesEditor";
@@ -87,12 +88,6 @@ const defaultState = (): TrainingFormState => {
 };
 
 const translate = (message?: string) => (message ? t(message) : undefined);
-
-/** Day string ↔ the local-midnight Date the native date picker works with. */
-const dayToLocalDate = (day: string) => {
-  const [y, m, d] = day.split("-").map(Number);
-  return new Date(y, m - 1, d);
-};
 
 // ============================================================================
 // TrainingForm
@@ -260,24 +255,23 @@ export const TrainingForm = forwardRef<TrainingFormHandle, TrainingFormProps>(
               disabled={isLoading}
             />
             <XStack gap="$3">
-              <DatePickerInput
+              <DayField
                 label={t("trainingsFrom")}
-                value={dayToLocalDate(startDate)}
-                minimumDate={dayToLocalDate(localToday())}
-                onChange={(date) => {
-                  const day = localToday(date);
+                value={startDate}
+                min={localToday()}
+                onChange={(day) => {
                   set("startDate", day);
                   if (endDate < day) set("endDate", day);
                 }}
                 error={translate(errors.startDate?.message)}
                 disabled={isLoading}
               />
-              <DatePickerInput
+              <DayField
                 label={t("trainingsUntil")}
-                value={dayToLocalDate(endDate)}
-                minimumDate={dayToLocalDate(startDate)}
-                maximumDate={dayToLocalDate(maxSeriesEnd(startDate))}
-                onChange={(date) => set("endDate", localToday(date))}
+                value={endDate}
+                min={startDate}
+                max={maxSeriesEnd(startDate)}
+                onChange={(day) => set("endDate", day)}
                 error={translate(errors.endDate?.message)}
                 disabled={isLoading}
               />

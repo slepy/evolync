@@ -814,6 +814,5 @@
   "trainingsValidationSeriesTooLong": "Maksymalnie 6 miesięcy. Później użyj „Przedłuż serię”.",
   "trainingsValidationNoOccurrences": "Wybrane dni nie dają żadnego treningu w tym okresie",
   "trainingsValidationExtendAfterEnd": "Wybierz datę po obecnym końcu serii",
-  "trainingsValidationInvalidVisibility": "Wybierz, dla kogo jest trening",
-  "trainingsTimePlaceholder": "GG:MM"
+  "trainingsValidationInvalidVisibility": "Wybierz, dla kogo jest trening"
 }
