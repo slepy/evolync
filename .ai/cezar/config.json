@@ -1,3 +1,4 @@
 {
-  "reviewGate": true
+  "reviewGate": true,
+  "baseBranch": "main"
 }
