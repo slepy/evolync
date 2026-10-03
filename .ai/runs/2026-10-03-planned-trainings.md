@@ -64,3 +64,8 @@ Attendance / `training_sessions` (untouched), prices or payments, open-ended rec
 
 - [x] 3.1 Audience-scoped trainings pull in sync-user — c0018a5, 634129d
 - [x] 3.2 Student upcoming trainings screen and entry point — 8a4487e
+
+### Post-review fixes
+
+- [x] Post-review fix: restrict training schools and invitees to the owner's organization (sync push + RLS) — 4db3b54
+- [x] Post-review fix: re-validate form fields after a failed submit — f5a68f3
