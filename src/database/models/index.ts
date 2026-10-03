@@ -33,3 +33,8 @@ export { default as Taggable } from './Taggable'
 
 // Notifications Module
 export { default as Notification } from './Notification'
+
+// Trainings Module
+export { default as Training } from './Training'
+export { default as TrainingSeries } from './TrainingSeries'
+export { default as TrainingInvitee } from './TrainingInvitee'
