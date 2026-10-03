@@ -41,14 +41,14 @@ Attendance / `training_sessions` (untouched), prices or payments, open-ended rec
 
 ### Phase 1: Data layer
 
-- [ ] 1.1 Scaffold trainings module with schema, models, registration and WatermelonDB migration
-- [ ] 1.2 Supabase migration with tables, checks, indexes, can_view_training and RLS
-- [ ] 1.3 Organization sync push and pull for the three tables
-- [ ] 1.4 Repositories with upcoming and school audience queries
-- [ ] 1.5 expandSeriesRules helper
-- [ ] 1.6 Zod trainingSchema and DTOs
-- [ ] 1.7 trainingService mutations
-- [ ] 1.8 Observable hooks and barrel export
+- [x] 1.1 Scaffold trainings module with schema, models, registration and WatermelonDB migration — 073fe14
+- [x] 1.2 Supabase migration with tables, checks, indexes, can_view_training and RLS — 0890a5a
+- [x] 1.3 Organization sync push and pull for the three tables — f74036c
+- [x] 1.4 Repositories with upcoming and school audience queries — 519f49f
+- [x] 1.5 expandSeriesRules helper — 1f57d0d
+- [x] 1.6 Zod trainingSchema and DTOs — 6146187
+- [x] 1.7 trainingService mutations — 42d53c6
+- [x] 1.8 Observable hooks and barrel export — 3a89fd6
 
 ### Phase 2: Owner UI
 
