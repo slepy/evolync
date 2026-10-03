@@ -243,15 +243,16 @@ const memberFixture = (): Record<string, any[]> => ({
     tr("deleted", { visibility: "organization", deleted_at: ts("02"), updated_at: ts("02") }),
   ],
   training_invitees: [
-    { training_id: "private-me", school_member_id: "me-a", updated_at: ts("01"), deleted_at: null },
-    { training_id: "private-other", school_member_id: "someone", updated_at: ts("01"), deleted_at: null },
+    { id: "inv-me", training_id: "private-me", school_member_id: "me-a", created_at: ts("01"), updated_at: ts("01"), deleted_at: null },
+    { id: "inv-other", training_id: "private-other", school_member_id: "someone", created_at: ts("01"), updated_at: ts("01"), deleted_at: null },
   ],
 });
 
 Deno.test("member first pull: organization, own school and invited trainings only", async () => {
   const { client } = fakeClient(memberFixture());
-  const { trainings } = await pullTrainingsForMember(ctx(client), SCOPE);
+  const { trainings, training_invitees } = await pullTrainingsForMember(ctx(client), SCOPE);
   assertEquals(trainings.created.map((r) => r.id).sort(), ["org", "private-me", "school-a"]);
+  assertEquals(training_invitees.created.map((r) => r.id), ["inv-me"], "only the member's own invitations");
   assertEquals(trainings.updated, []);
   assertEquals(trainings.deleted, []);
 });
@@ -286,11 +287,13 @@ Deno.test("member incremental pull: audience changes and removed invitations bec
     tr("untouched", { visibility: "organization" }),
   ];
   fixture.training_invitees = [
-    { training_id: "revoked", school_member_id: "me-a", updated_at: ts("11"), deleted_at: ts("11") },
-    { training_id: "invited", school_member_id: "me-a", updated_at: ts("11"), deleted_at: null },
+    { id: "inv-revoked", training_id: "revoked", school_member_id: "me-a", created_at: ts("01"), updated_at: ts("11"), deleted_at: ts("11") },
+    { id: "inv-new", training_id: "invited", school_member_id: "me-a", created_at: ts("11"), updated_at: ts("11"), deleted_at: null },
   ];
   const { client } = fakeClient(fixture);
-  const { trainings } = await pullTrainingsForMember(ctx(client, {}, { lastPulledAt }), SCOPE);
+  const { trainings, training_invitees } = await pullTrainingsForMember(ctx(client, {}, { lastPulledAt }), SCOPE);
+  assertEquals(training_invitees.created.map((r) => r.id), ["inv-new"]);
+  assertEquals(training_invitees.deleted, ["inv-revoked"]);
   assertEquals(trainings.created.map((r) => r.id).sort(), ["invited", "new"]);
   assertEquals(trainings.updated.map((r) => r.id), ["org"]);
   assertEquals(trainings.deleted.sort(), ["moved", "revoked"]);

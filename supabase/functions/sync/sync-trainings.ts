@@ -283,21 +283,36 @@ export const isTrainingVisibleToMember = (
 export async function pullTrainingsForMember(
   ctx: SyncTrainingsContext,
   scope: MemberScope,
-): Promise<{ trainings: TableChanges }> {
+): Promise<{ trainings: TableChanges; training_invitees: TableChanges }> {
   const { supabaseClient, lastPulledAt, migratedTables = [] } = ctx;
   const changes = empty();
-  if (scope.organizationIds.length === 0 || scope.memberIds.length === 0) return { trainings: changes };
+  const ownInvitations = empty();
+  if (scope.organizationIds.length === 0 || scope.memberIds.length === 0) {
+    return { trainings: changes, training_invitees: ownInvitations };
+  }
 
   const isFirstPull = !lastPulledAt || migratedTables.includes("trainings") || !!scope.newMembership;
 
   const { data: invitations, error: invitationsError } = await supabaseClient
     .from("training_invitees")
-    .select("training_id, updated_at, deleted_at")
+    .select("*")
     .in("school_member_id", scope.memberIds);
   if (invitationsError) throw new Error(`Failed to fetch training_invitees: ${invitationsError.message}`);
   const invited = new Set<string>(
     (invitations || []).filter((i: any) => !i.deleted_at).map((i: any) => i.training_id),
   );
+
+  // The member's own invitation rows (lets the app filter by school locally).
+  for (const row of invitations || []) {
+    if (isFirstPull) {
+      if (!row.deleted_at) ownInvitations.created.push(toWatermelonTrainingRecord(row, "training_invitees"));
+    } else if (new Date(row.updated_at).getTime() >= lastPulledAt) {
+      if (row.deleted_at) ownInvitations.deleted.push(row.id);
+      else if (new Date(row.created_at).getTime() > lastPulledAt) {
+        ownInvitations.created.push(toWatermelonTrainingRecord(row, "training_invitees"));
+      } else ownInvitations.updated.push(toWatermelonTrainingRecord(row, "training_invitees"));
+    }
+  }
 
   if (isFirstPull) {
     const { data, error } = await supabaseClient
@@ -311,7 +326,7 @@ export async function pullTrainingsForMember(
         changes.created.push(toWatermelonTrainingRecord(row, "trainings"));
       }
     }
-    return { trainings: changes };
+    return { trainings: changes, training_invitees: ownInvitations };
   }
 
   const since = new Date(lastPulledAt).toISOString();
@@ -348,5 +363,5 @@ export async function pullTrainingsForMember(
       changes.updated.push(toWatermelonTrainingRecord(row, "trainings"));
     }
   }
-  return { trainings: changes };
+  return { trainings: changes, training_invitees: ownInvitations };
 }
