@@ -116,7 +116,7 @@ export const TrainingForm = forwardRef<TrainingFormHandle, TrainingFormProps>(
       control,
       handleSubmit,
       setValue,
-      formState: { errors, isDirty },
+      formState: { errors, isDirty, isSubmitted },
     } = useForm<TrainingFormState>({
       resolver: zodResolver(trainingSchema) as unknown as Resolver<TrainingFormState>,
       defaultValues: { ...defaultState(), ...initialValues },
@@ -141,8 +141,9 @@ export const TrainingForm = forwardRef<TrainingFormHandle, TrainingFormProps>(
       return expandSeriesRules(rules, startDate, endDate).length;
     }, [rules, startDate, endDate]);
 
+    // After a failed submit, re-validate on change so fixed fields clear their errors.
     const set = <K extends keyof TrainingFormState>(key: K, value: TrainingFormState[K]) =>
-      setValue(key, value as never, { shouldDirty: true, shouldValidate: false });
+      setValue(key, value as never, { shouldDirty: true, shouldValidate: isSubmitted });
 
     useImperativeHandle(ref, () => ({
       submit: handleSubmit((values) => onSubmit(values as unknown as TrainingFormValues)),
