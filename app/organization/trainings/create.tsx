@@ -6,6 +6,7 @@ import {
   createSingleTrainings,
   createTrainingSeries,
   useAudienceOptions,
+  useSchoolsWithAddress,
   type TrainingFormHandle,
   type TrainingFormValues,
 } from "@/modules/trainings";
@@ -28,6 +29,7 @@ export default function CreateTrainingScreen() {
   const formRef = useRef<TrainingFormHandle>(null);
   const { organization, user } = useStore();
   const { schools, members } = useAudienceOptions(organization?.id);
+  const { schools: schoolAddresses } = useSchoolsWithAddress(organization?.id);
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -65,6 +67,7 @@ export default function CreateTrainingScreen() {
                 modes={[TRAINING_MODE.SINGLE, TRAINING_MODE.RECURRING]}
                 schools={schools}
                 members={members}
+                schoolAddresses={schoolAddresses}
                 onSubmit={handleSubmit}
                 isLoading={isSaving}
                 error={error}

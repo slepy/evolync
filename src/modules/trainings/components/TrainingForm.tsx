@@ -1,9 +1,10 @@
 import { DatePickerInput, ErrorBanner, TextInput } from "@/modules/core/components";
 import { TRAINING_VISIBILITY, type TrainingVisibility } from "@/database/models/Training";
 import { zodResolver } from "@hookform/resolvers/zod";
-import React, { forwardRef, useEffect, useImperativeHandle, useMemo } from "react";
+import { MapPin } from "lucide-react-native";
+import React, { forwardRef, useEffect, useImperativeHandle, useMemo, useState } from "react";
 import { useForm, useWatch, type Resolver } from "react-hook-form";
-import { Text, XStack, YStack } from "tamagui";
+import { Button, Text, XStack, YStack, useTheme } from "tamagui";
 
 import type { SeriesRule } from "../types/dto";
 import { TRAINING_MODE, type TrainingMode } from "../types/enums";
@@ -15,8 +16,10 @@ import {
   localToday,
   maxSeriesEnd,
 } from "../types/helpers";
+import type { SchoolAddressOption } from "../hooks/useSchoolsWithAddress";
 import { trainingSchema, type TrainingFormValues } from "../validation";
 import { MultiDateCalendar } from "./MultiDateCalendar";
+import { SchoolAddressSheet } from "./SchoolAddressSheet";
 import { SeriesRulesEditor, newRule, type RuleErrors } from "./SeriesRulesEditor";
 import { TimeField } from "./TimeField";
 import { TrainingAudienceFields, type AudienceMember } from "./TrainingAudienceFields";
@@ -56,6 +59,8 @@ interface TrainingFormProps {
   maxDates?: number;
   schools: Array<{ id: string; name: string }>;
   members: AudienceMember[];
+  /** Schools offered by "Use school address". */
+  schoolAddresses?: SchoolAddressOption[];
   onSubmit: (values: TrainingFormValues) => Promise<void>;
   isLoading: boolean;
   error: string | null;
@@ -101,6 +106,7 @@ export const TrainingForm = forwardRef<TrainingFormHandle, TrainingFormProps>(
       maxDates,
       schools,
       members,
+      schoolAddresses = [],
       onSubmit,
       isLoading,
       error,
@@ -109,6 +115,8 @@ export const TrainingForm = forwardRef<TrainingFormHandle, TrainingFormProps>(
     },
     ref,
   ) => {
+    const theme = useTheme();
+    const [addressSheetOpen, setAddressSheetOpen] = useState(false);
     const {
       control,
       handleSubmit,
@@ -310,6 +318,27 @@ export const TrainingForm = forwardRef<TrainingFormHandle, TrainingFormProps>(
           error={translate(errors.location?.message)}
           disabled={isLoading}
           maxLength={300}
+        />
+        {schoolAddresses.length > 0 && (
+          <Button
+            size="$3"
+            alignSelf="flex-start"
+            chromeless
+            disabled={isLoading}
+            icon={<MapPin size={16} color={theme.chineseGold?.val} />}
+            onPress={() => setAddressSheetOpen(true)}
+          >
+            <Text color="$chineseGold" fontWeight="600">
+              {t("trainingsUseSchoolAddress")}
+            </Text>
+          </Button>
+        )}
+
+        <SchoolAddressSheet
+          open={addressSheetOpen}
+          onOpenChange={setAddressSheetOpen}
+          schools={schoolAddresses}
+          onPick={(address) => set("location", address)}
         />
       </YStack>
     );

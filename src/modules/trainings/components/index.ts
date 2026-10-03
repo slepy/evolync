@@ -7,3 +7,5 @@ export { TimeField } from "./TimeField";
 export { SeriesRulesEditor } from "./SeriesRulesEditor";
 export { SimpleSelect } from "./SimpleSelect";
 export * from "./format";
+export { SchoolAddressSheet } from "./SchoolAddressSheet";
+export { toSchoolAddressItems, pickSchoolAddress } from "./schoolAddress";
