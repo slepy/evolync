@@ -62,5 +62,5 @@ Attendance / `training_sessions` (untouched), prices or payments, open-ended rec
 
 ### Phase 3: Student view
 
-- [ ] 3.1 Audience-scoped trainings pull in sync-user
-- [ ] 3.2 Student upcoming trainings screen and entry point
+- [x] 3.1 Audience-scoped trainings pull in sync-user — c0018a5, 634129d
+- [x] 3.2 Student upcoming trainings screen and entry point — 8a4487e
