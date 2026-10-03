@@ -28,6 +28,8 @@ create table public.training_series (
   start_date date not null,
   end_date date not null,
   rules jsonb not null check (jsonb_typeof(rules) = 'array'),
+  -- the series this one continues (Extend beyond the window, or a "this and following" edit)
+  previous_series_id uuid references public.training_series(id) on delete set null,
   created_by uuid not null references auth.users(id),
   created_at timestamptz default now(),
   updated_at timestamptz default now(),
@@ -106,6 +108,7 @@ create index idx_trainings_updated_at on public.trainings(updated_at);
 
 create index idx_training_series_organization_id on public.training_series(organization_id);
 create index idx_training_series_updated_at on public.training_series(updated_at);
+create index idx_training_series_previous_series_id on public.training_series(previous_series_id);
 
 create index idx_training_invitees_training_id on public.training_invitees(training_id);
 create index idx_training_invitees_member_id on public.training_invitees(school_member_id);
@@ -167,6 +170,13 @@ begin
 end;
 $$ language plpgsql security definer stable;
 
+-- Organization of a series. Security definer so the training_series policy can
+-- check previous_series_id without recursing into its own RLS.
+create or replace function public.training_series_organization(check_series_id uuid)
+returns uuid as $$
+  select organization_id from public.training_series where id = check_series_id;
+$$ language sql security definer stable;
+
 -- 4. Row Level Security Policies
 -- -----------------------------------------------------------------------------
 
@@ -180,6 +190,9 @@ create policy "Org owner can manage training series"
       select 1 from public.schools s
       where s.id = school_id and s.organization_id = training_series.organization_id
     ))
+    -- a series can only continue a series of the same organization
+    and (previous_series_id is null
+      or public.training_series_organization(previous_series_id) = organization_id)
   );
 
 create policy "Org owner can manage trainings"
@@ -228,6 +241,9 @@ create policy "Members can view own training invitations"
 
 comment on function public.can_view_training is
 'Determines if the current user can view a planned training based on its visibility (organization, school, or whitelist).';
+
+comment on function public.training_series_organization is
+'Organization of a planned-training series (used by the training_series RLS policy).';
 
 comment on function public.is_training_owner is
 'Checks if the current user owns the organization of a planned training.';

@@ -41,6 +41,7 @@ export default schemaMigrations({
             { name: "start_date", type: "number" },
             { name: "end_date", type: "number" },
             { name: "rules", type: "string" },
+            { name: "previous_series_id", type: "string", isOptional: true, isIndexed: true },
             { name: "created_by", type: "string" },
             { name: "created_at", type: "number" },
             { name: "updated_at", type: "number" },

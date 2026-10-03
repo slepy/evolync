@@ -91,23 +91,44 @@ async function foreignIds(
   return foreign;
 }
 
-/** Training ids among `ids` that belong to the organization. */
-async function ownTrainingIds(
+/** Ids among `ids` that exist on the server under the organization. */
+async function ownIds(
   supabaseClient: any,
+  table: "training_series" | "trainings",
   ids: string[],
   organizationId: string,
 ): Promise<Set<string>> {
   const own = new Set<string>();
   for (const part of chunks([...new Set(ids)])) {
     const { data, error } = await supabaseClient
-      .from("trainings")
+      .from(table)
       .select("id")
       .in("id", part)
       .eq("organization_id", organizationId);
-    if (error) throw new Error(`Failed to verify trainings: ${error.message}`);
+    if (error) throw new Error(`Failed to verify ${table}: ${error.message}`);
     for (const row of data || []) own.add(row.id);
   }
   return own;
+}
+
+const ownTrainingIds = (supabaseClient: any, ids: string[], organizationId: string) =>
+  ownIds(supabaseClient, "trainings", ids, organizationId);
+
+/**
+ * A series may only continue a series of the same organization: one pushed in
+ * this batch or already on the server. Any other link is dropped.
+ */
+async function scopePreviousSeries(supabaseClient: any, rows: any[], organizationId: string): Promise<void> {
+  const linked = rows.map((r) => r.previous_series_id).filter(Boolean);
+  if (linked.length === 0) return;
+  const allowed = new Set<string>(rows.map((r) => r.id));
+  const existing = await ownIds(supabaseClient, "training_series", linked.filter((id) => !allowed.has(id)), organizationId);
+  for (const row of rows) {
+    if (row.previous_series_id && !allowed.has(row.previous_series_id) && !existing.has(row.previous_series_id)) {
+      console.warn(`[SYNC:TRAININGS] Dropped previous_series_id outside organization ${organizationId}`);
+      row.previous_series_id = null;
+    }
+  }
 }
 
 /** Every school id of the organization (soft-deleted ones included). */
@@ -154,6 +175,7 @@ export async function pushTrainingsChanges(
     const rows = incoming
       .filter((r) => !foreign.has(r.id))
       .map((r) => toSupabaseTrainingRecord(r, table));
+    if (table === "training_series") await scopePreviousSeries(supabaseClient, rows, organizationId);
 
     if (rows.length > 0) {
       const { error } = await supabaseClient.from(table).upsert(rows);

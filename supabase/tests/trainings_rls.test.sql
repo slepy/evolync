@@ -70,6 +70,8 @@ insert into public.schools (id, organization_id, name) values
   ('30000000-0000-0000-0000-0000000000ff', '20000000-0000-0000-0000-000000000002', 'Foreign school');
 insert into public.school_members (id, school_id, display_name) values
   ('40000000-0000-0000-0000-0000000000ff', '30000000-0000-0000-0000-0000000000ff', 'Foreign member');
+insert into public.training_series (id, organization_id, name, start_date, end_date, rules, created_by) values
+  ('60000000-0000-0000-0000-0000000000ff', '20000000-0000-0000-0000-000000000002', 'Foreign series', '2099-01-01', '2099-02-01', '[]', '00000000-0000-0000-0000-0000000000d0');
 
 -- Owner: full CRUD
 set local role authenticated;
@@ -88,6 +90,19 @@ insert into public.trainings (id, organization_id, series_id, name, date, start_
 values ('50000000-0000-0000-0000-000000000099', '20000000-0000-0000-0000-000000000001', '60000000-0000-0000-0000-000000000001',
         'Weekly', '2099-01-05', '18:00', '19:00', '00000000-0000-0000-0000-0000000000a0');
 update public.trainings set status = 'cancelled' where id = '50000000-0000-0000-0000-000000000099';
+
+-- A series can continue the organization's own series, never another organization's
+insert into public.training_series (organization_id, name, start_date, end_date, rules, previous_series_id, created_by)
+values ('20000000-0000-0000-0000-000000000001', 'Weekly (continued)', '2099-03-02', '2099-05-01', '[]',
+        '60000000-0000-0000-0000-000000000001', '00000000-0000-0000-0000-0000000000a0');
+do $$
+begin
+  insert into public.training_series (organization_id, name, start_date, end_date, rules, previous_series_id, created_by)
+  values ('20000000-0000-0000-0000-000000000001', 'Hijack', '2099-03-02', '2099-05-01', '[]',
+          '60000000-0000-0000-0000-0000000000ff', '00000000-0000-0000-0000-0000000000a0');
+  raise exception 'continuing a foreign series should be denied';
+exception when insufficient_privilege then null;
+end $$;
 delete from public.trainings where id = '50000000-0000-0000-0000-000000000099';
 
 -- Owner cannot point a training at another organization's school ...

@@ -19,6 +19,7 @@ import {
   deleteTraining,
   extendSeries,
   formatDayLong,
+  getExtendableSeriesEnd,
   localToday,
   setTrainingStatus,
   showError,
@@ -71,7 +72,8 @@ export default function TrainingDetailsScreen() {
     [schools, training?.schoolId],
   );
   const [scopedAction, setScopedAction] = useState<ScopedAction | null>(null);
-  const [extendOpen, setExtendOpen] = useState(false);
+  // Last day of the series' lineage while the Extend sheet is open
+  const [extendFrom, setExtendFrom] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
 
   if (isLoading) return <LoadingScreen />;
@@ -266,7 +268,7 @@ export default function TrainingDetailsScreen() {
                   size="$4"
                   backgroundColor="$infoSurface"
                   disabled={busy}
-                  onPress={() => setExtendOpen(true)}
+                  onPress={() => run(async () => setExtendFrom(await getExtendableSeriesEnd(series.id)))}
                   icon={<CalendarPlus size={18} color={theme.chineseCyan?.val} />}
                 >
                   <Text color="$chineseCyan" fontWeight="600">
@@ -310,11 +312,11 @@ export default function TrainingDetailsScreen() {
         ]}
       />
 
-      {series && (
+      {series && extendFrom && (
         <ExtendSeriesSheet
-          open={extendOpen}
-          onOpenChange={setExtendOpen}
-          currentEnd={timestampToDay(series.endDate)}
+          open
+          onOpenChange={(open) => !open && setExtendFrom(null)}
+          currentEnd={extendFrom}
           onSubmit={async (newEnd) => {
             await extendSeries(series.id, newEnd);
           }}

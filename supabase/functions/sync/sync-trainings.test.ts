@@ -139,6 +139,47 @@ Deno.test("push keeps rows inside the caller's organization only", async () => {
   );
 });
 
+Deno.test("push keeps a series' previous_series_id only inside the organization", async () => {
+  const { client, writes } = fakeClient({
+    training_series: [
+      { id: "s-own", organization_id: ORG },
+      { id: "s-foreign", organization_id: OTHER_ORG },
+    ],
+  });
+  const series = (id: string, previous: string | null) => ({
+    id, organization_id: ORG, previous_series_id: previous, rules: "[]", invitee_ids: "[]",
+  });
+
+  await pushTrainingsChanges(
+    ctx(client, {
+      training_series: {
+        created: [
+          series("s-batch", null),
+          series("s-after-batch", "s-batch"), // parent pushed in the same batch
+          series("s-after-own", "s-own"), // parent already on the server
+          series("s-after-foreign", "s-foreign"), // another organization's series: link dropped
+          series("s-after-missing", "s-missing"), // unknown parent: link dropped
+        ],
+        updated: [],
+        deleted: [],
+      },
+    }),
+    ORG,
+  );
+
+  const upsert = writes.find((w) => w.table === "training_series" && w.op === "upsert");
+  assertEquals(
+    Object.fromEntries(upsert?.payload.map((r: any) => [r.id, r.previous_series_id])),
+    {
+      "s-batch": null,
+      "s-after-batch": "s-batch",
+      "s-after-own": "s-own",
+      "s-after-foreign": null,
+      "s-after-missing": null,
+    },
+  );
+});
+
 Deno.test("push accepts invitees only for the organization's trainings", async () => {
   const { client, writes } = fakeClient({
     trainings: [

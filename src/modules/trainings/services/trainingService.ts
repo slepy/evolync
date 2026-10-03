@@ -108,6 +108,7 @@ const prepareOccurrences = (
   values: SeriesValues,
   seriesId: string,
   occurrences: SeriesOccurrence[],
+  cancelledDays: Set<string> = new Set(),
 ) => {
   const trainings: Training[] = [];
   const operations: Model[] = [];
@@ -123,7 +124,9 @@ const prepareOccurrences = (
         endTime: occurrence.endTime,
         location: values.location,
         visibility: values.visibility,
-        status: TRAINING_STATUS.ACTIVE,
+        status: cancelledDays.has(occurrence.day)
+          ? TRAINING_STATUS.CANCELLED
+          : TRAINING_STATUS.ACTIVE,
         createdBy: values.createdBy,
       },
       values.inviteeIds,
@@ -139,6 +142,7 @@ const prepareSeries = (
   startDate: string,
   endDate: string,
   rules: SeriesRule[],
+  previousSeriesId?: string,
 ) =>
   TrainingSeriesRepository.prepareCreate({
     organizationId: values.organizationId,
@@ -150,6 +154,7 @@ const prepareSeries = (
     startDate: new Date(dayToTimestamp(startDate)),
     endDate: new Date(dayToTimestamp(endDate)),
     rules: JSON.stringify(rules),
+    previousSeriesId,
     createdBy: values.createdBy,
   });
 
@@ -173,6 +178,58 @@ const prepareEndSeriesBefore = (series: TrainingSeries, fromDay: string): Model 
     : TrainingSeriesRepository.prepareUpdate(series, {
         endDate: new Date(dayToTimestamp(newEnd)),
       });
+};
+
+/** Every series continuing `series`, directly or through other continuations. */
+const findDescendants = async (series: TrainingSeries): Promise<TrainingSeries[]> => {
+  const found: TrainingSeries[] = [];
+  const seen = new Set([series.id]);
+  let level = [series];
+  while (level.length > 0) {
+    const next: TrainingSeries[] = [];
+    for (const parent of level) {
+      for (const child of await TrainingSeriesRepository.findSuccessors(parent.id)) {
+        if (seen.has(child.id)) continue;
+        seen.add(child.id);
+        next.push(child);
+      }
+    }
+    found.push(...next);
+    level = next;
+  }
+  return found;
+};
+
+/** The newest series of a lineage: the latest-ending continuation, if any. */
+const findLatestContinuation = async (series: TrainingSeries): Promise<TrainingSeries> => {
+  const descendants = await findDescendants(series);
+  return descendants.reduce(
+    (latest, s) => (s.endDate.getTime() > latest.endDate.getTime() ? s : latest),
+    series,
+  );
+};
+
+/**
+ * Ends a series the day before `fromDay` and removes its trainings from that
+ * day on, together with every continuation of it (which all lie after the
+ * series' own end), so "this and following" reaches them too.
+ */
+const prepareCutLineageFrom = async (
+  series: TrainingSeries,
+  fromDay: string,
+): Promise<{ operations: Model[]; removed: Training[] }> => {
+  const lineage = [series, ...(await findDescendants(series))];
+  const removed: Training[] = [];
+  for (const s of lineage) {
+    removed.push(...(await TrainingRepository.findBySeriesFrom(s.id, dayToTimestamp(fromDay))));
+  }
+  return {
+    operations: [
+      ...lineage.map((s) => prepareEndSeriesBefore(s, fromDay)),
+      ...(await prepareDeleteTrainings(removed)),
+    ],
+    removed,
+  };
 };
 
 // ============================================================================
@@ -294,8 +351,10 @@ export const updateTraining = async (
 
 /**
  * "This and following": the original series ends the day before the
- * selected training, its trainings from that day on are replaced by a new
- * series built from `input`. Earlier trainings are never touched.
+ * selected training, its trainings from that day on (continuations included)
+ * are replaced by a new series built from `input`, which continues the
+ * original one. Days that were cancelled stay cancelled. Earlier trainings
+ * are never touched.
  */
 export const updateSeriesFrom = async (
   trainingId: string,
@@ -313,7 +372,12 @@ export const updateSeriesFrom = async (
   const occurrences = expandSeriesRules(input.rules, input.startDate, input.endDate);
   if (occurrences.length === 0) throw new Error("trainingsValidationNoOccurrences");
 
-  const replaced = await TrainingRepository.findBySeriesFrom(series.id, dayToTimestamp(fromDay));
+  const cut = await prepareCutLineageFrom(series, fromDay);
+  const cancelledDays = new Set(
+    cut.removed
+      .filter((t) => t.status === TRAINING_STATUS.CANCELLED)
+      .map((t) => timestampToDay(t.date)),
+  );
   const values: SeriesValues = {
     ...audienceOf(input),
     organizationId: series.organizationId,
@@ -321,30 +385,36 @@ export const updateSeriesFrom = async (
     name: input.name.trim(),
     location: cleanLocation(input.location),
   };
-  const next = prepareSeries(values, input.startDate, input.endDate, input.rules);
-  const created = prepareOccurrences(values, next.id, occurrences);
+  const next = prepareSeries(values, input.startDate, input.endDate, input.rules, series.id);
+  const created = prepareOccurrences(values, next.id, occurrences, cancelledDays);
 
-  await TrainingRepository.commit([
-    prepareEndSeriesBefore(series, fromDay),
-    ...(await prepareDeleteTrainings(replaced)),
-    next,
-    ...created.operations,
-  ]);
+  await TrainingRepository.commit([...cut.operations, next, ...created.operations]);
   syncInBackground("updateSeriesFrom");
   return next;
 };
 
+/** Last day ("YYYY-MM-DD") of a series' lineage — where Extend continues from. */
+export const getExtendableSeriesEnd = async (seriesId: string): Promise<string> => {
+  const series = await TrainingSeriesRepository.findById(seriesId);
+  if (!series) throw new Error("trainingsErrorNotFound");
+  return timestampToDay((await findLatestContinuation(series)).endDate);
+};
+
 /**
- * Adds occurrences after a series' current end. Within the series' 6-month
- * window the series itself is extended; beyond it a continuation series with
- * the same rules and audience is started, so every series stays ≤ 6 months.
+ * Adds occurrences after a series' current end. The newest series of the
+ * lineage is the one extended, so an older part of an edited series never
+ * regenerates days its continuation already covers. Within that series'
+ * 6-month window the series itself is extended; beyond it a continuation
+ * series with the same rules and audience is started, so every series stays
+ * ≤ 6 months.
  */
 export const extendSeries = async (
   seriesId: string,
   newEndDate: string,
 ): Promise<Training[]> => {
-  const series = await TrainingSeriesRepository.findById(seriesId);
-  if (!series) throw new Error("trainingsErrorNotFound");
+  const selected = await TrainingSeriesRepository.findById(seriesId);
+  if (!selected) throw new Error("trainingsErrorNotFound");
+  const series = await findLatestContinuation(selected);
 
   const currentEnd = timestampToDay(series.endDate);
   const today = localToday();
@@ -373,7 +443,7 @@ export const extendSeries = async (
     ? TrainingSeriesRepository.prepareUpdate(series, {
         endDate: new Date(dayToTimestamp(newEndDate)),
       })
-    : prepareSeries(values, from, newEndDate, rules);
+    : prepareSeries(values, from, newEndDate, rules, series.id);
   const created = prepareOccurrences(values, target.id, occurrences);
 
   await TrainingRepository.commit([target, ...created.operations]);
@@ -405,7 +475,10 @@ export const deleteTraining = async (id: string): Promise<void> => {
   syncInBackground("deleteTraining");
 };
 
-/** Soft-deletes a series' trainings from the selected one on; earlier stay. */
+/**
+ * Soft-deletes a series' trainings from the selected one on, continuations
+ * included; earlier ones stay.
+ */
 export const deleteSeriesFrom = async (trainingId: string): Promise<void> => {
   const training = await requireTraining(trainingId);
   assertEditable(training);
@@ -413,12 +486,7 @@ export const deleteSeriesFrom = async (trainingId: string): Promise<void> => {
   const series = await TrainingSeriesRepository.findById(training.seriesId);
   if (!series) throw new Error("trainingsErrorNotFound");
 
-  const fromDay = timestampToDay(training.date);
-  const removed = await TrainingRepository.findBySeriesFrom(series.id, dayToTimestamp(fromDay));
-
-  await TrainingRepository.commit([
-    prepareEndSeriesBefore(series, fromDay),
-    ...(await prepareDeleteTrainings(removed)),
-  ]);
+  const cut = await prepareCutLineageFrom(series, timestampToDay(training.date));
+  await TrainingRepository.commit(cut.operations);
   syncInBackground("deleteSeriesFrom");
 };

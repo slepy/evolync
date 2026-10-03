@@ -105,7 +105,7 @@ WatermelonDB schema version bump with `createTable` steps. The table schemas liv
 | `created_by` | string | |
 | `created_at` / `updated_at` / `deleted_at` | number | |
 
-**`training_series`**: `organization_id`, `school_id?`, `name`, `location?`, `visibility`, `invitee_ids` (JSON string array, for whitelist), `start_date`, `end_date` (UTC-midnight; at most 6 months after the start), `rules` (JSON string), `created_by` and the timestamps.
+**`training_series`**: `organization_id`, `school_id?`, `name`, `location?`, `visibility`, `invitee_ids` (JSON string array, for whitelist), `start_date`, `end_date` (UTC-midnight; at most 6 months after the start), `rules` (JSON string), `previous_series_id?` (the series it continues: an Extend beyond the 6-month window or a "this and following" edit), `created_by` and the timestamps.
 
 `rules` is an array of `{ weekday: 0–6, frequency: "weekly" | "monthly", weekOfMonth?: 1|2|3|4|-1, startTime: "HH:mm", endTime: "HH:mm" }`, validated by Zod on write. A `jsonb` column on the server holds it, with a `check (jsonb_typeof(rules) = 'array')`.
 
@@ -172,6 +172,7 @@ All strings go through `t()`. Keys are added to `en.json` and `pl.json` after a 
 **Lists:**
 - Upcoming trainings are grouped by day. Each card is a `BaseCard` showing the name, time, location and an audience badge. Series occurrences also show a ↻ icon. Cancelled trainings appear struck through with a "Cancelled" badge.
 - The detail screen offers Edit (this / this and following), Cancel/Restore, Delete (this / this and following) and, for series, Extend.
+- Series actions follow the `previous_series_id` chain: Extend always continues the newest series of the chain, and "this and following" edits and deletes also reach later series in the chain. A "this and following" edit keeps cancelled days cancelled.
 
 **Dashboards:**
 - **Organization** (`Dashboard.tsx`): a "Trainings" `DashboardStatCard` next to "Events" opens `/organization/trainings`. Its `badgeCount` is the number of trainings in the next 7 days.

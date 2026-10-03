@@ -1,5 +1,6 @@
 import { database } from "@/database";
 import TrainingSeries from "@/database/models/TrainingSeries";
+import { Q } from "@nozbe/watermelondb";
 import { v4 as uuidv4 } from "uuid";
 
 const series = () => database.get<TrainingSeries>("training_series");
@@ -25,6 +26,13 @@ export const TrainingSeriesRepository = {
     } catch {
       return null;
     }
+  },
+
+  /** Live series that continue `seriesId`. */
+  async findSuccessors(seriesId: string): Promise<TrainingSeries[]> {
+    return series()
+      .query(Q.where("previous_series_id", seriesId), Q.where("deleted_at", null))
+      .fetch();
   },
 
   observeById(id: string) {

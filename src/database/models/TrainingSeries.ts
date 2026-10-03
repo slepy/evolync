@@ -30,6 +30,8 @@ export default class TrainingSeries extends Model {
   @date("end_date") endDate!: Date;
   /** JSON string of SeriesRule[]. */
   @field("rules") rules!: string;
+  /** The series this one continues (Extend beyond the window, or a "this and following" edit). */
+  @field("previous_series_id") previousSeriesId?: string;
   @field("created_by") createdBy!: string;
 
   @relation("organizations", "organization_id") organization!: Organization;

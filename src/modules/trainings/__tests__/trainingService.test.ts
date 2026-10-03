@@ -183,9 +183,66 @@ describe("trainingService", () => {
     // Window of the original series ends 2099-07-05; going further starts a continuation.
     const more = await service.extendSeries(series.id, "2099-08-10");
     assert.ok(more.every((t) => t.seriesId !== series.id));
+    const continuation = await database.get<TrainingSeries>("training_series").find(more[0].seriesId!);
+    assert.equal(continuation.previousSeriesId, series.id);
     assert.equal(days(more)[0], "2099-03-02");
     assert.equal(days(more).at(-1), "2099-08-10");
     await assert.rejects(service.extendSeries(series.id, "2099-02-20"), /trainingsValidationExtendAfterEnd/);
+  });
+
+  it("extending an edited series continues its newest part, never duplicating days", async () => {
+    const { series, trainings } = await service.createTrainingSeries({
+      ...base, visibility: "organization", startDate: "2099-01-05", endDate: "2099-02-01", rules: [weekly(1)],
+    });
+    const third = trainings.find((t) => timestampToDay(t.date) === "2099-01-19")!;
+    const next = await service.updateSeriesFrom(third.id, {
+      ...base, visibility: "organization", startDate: "2099-01-19", endDate: "2099-02-01",
+      rules: [{ ...weekly(1), startTime: "19:00", endTime: "20:00" }],
+    });
+    assert.equal(next.previousSeriesId, series.id);
+    assert.equal(await service.getExtendableSeriesEnd(series.id), "2099-02-01");
+
+    // Extend from an occurrence of the original (older) part of the series.
+    const added = await service.extendSeries(series.id, "2099-02-15");
+    assert.deepEqual(days(added), ["2099-02-02", "2099-02-09"]);
+    assert.ok(added.every((t) => t.seriesId === next.id && t.startTime === "19:00"));
+    const all = days(await live<Training>("trainings"));
+    assert.deepEqual(all, [...new Set(all)], "no day is planned twice");
+  });
+
+  it("'this and following' keeps cancelled days cancelled", async () => {
+    const { trainings } = await service.createTrainingSeries({
+      ...base, visibility: "organization", startDate: "2099-01-05", endDate: "2099-02-01", rules: [weekly(1)],
+    });
+    const byDay = (day: string) => trainings.find((t) => timestampToDay(t.date) === day)!;
+    await service.setTrainingStatus(byDay("2099-01-26").id, "cancelled");
+    await service.updateSeriesFrom(byDay("2099-01-12").id, {
+      ...base, visibility: "organization", startDate: "2099-01-12", endDate: "2099-02-01",
+      rules: [{ ...weekly(1), startTime: "19:00", endTime: "20:00" }],
+    });
+    const status = Object.fromEntries(
+      (await live<Training>("trainings")).map((t) => [timestampToDay(t.date), t.status]),
+    );
+    assert.deepEqual(status, {
+      "2099-01-05": "active", "2099-01-12": "active", "2099-01-19": "active", "2099-01-26": "cancelled",
+    });
+  });
+
+  it("'this and following' reaches the series' continuations", async () => {
+    const { series, trainings } = await service.createTrainingSeries({
+      ...base, visibility: "organization", startDate: "2099-01-05", endDate: "2099-01-31", rules: [weekly(1)],
+    });
+    // Beyond the original window (ends 2099-07-05): a continuation series.
+    const continued = await service.extendSeries(series.id, "2099-07-20");
+    const continuation = continued[0].seriesId!;
+    assert.equal(
+      (await database.get<TrainingSeries>("training_series").find(continuation)).previousSeriesId,
+      series.id,
+    );
+
+    await service.deleteSeriesFrom(trainings.find((t) => timestampToDay(t.date) === "2099-01-19")!.id);
+    assert.deepEqual(days(await live<Training>("trainings")), ["2099-01-05", "2099-01-12"]);
+    assert.equal((await live<TrainingSeries>("training_series", Q.where("id", continuation))).length, 0);
   });
 
   it("cancel/restore, and past trainings are read-only", async () => {
