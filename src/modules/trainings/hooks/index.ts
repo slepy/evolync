@@ -5,3 +5,4 @@ export type { SchoolAddressOption } from "./useSchoolsWithAddress";
 export { useAudienceOptions } from "./useAudienceOptions";
 export { useInviteeMembers } from "./useInviteeMembers";
 export type { InviteeMember } from "./useInviteeMembers";
+export { useTrainingsBadge } from "./useTrainingsBadge";

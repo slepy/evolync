@@ -6,6 +6,7 @@ import { useCallback, useEffect } from "react";
 import {
   Award,
   Building2,
+  CalendarClock,
   CalendarDays,
   Package,
   ShoppingBag,
@@ -21,6 +22,7 @@ import { DashboardStatCard } from "../../dashboard/components/DashboardStatCard"
 import { withObservables } from "@nozbe/watermelondb/react";
 import { SchoolRepository } from "@/modules/school/repositories";
 import School from "@/database/models/School";
+import { useTrainingsBadge, useUpcomingTrainings } from "@/modules/trainings";
 
 // ============================================================================
 // Types
@@ -53,6 +55,9 @@ function DashboardInner({ organization, schools }: OrganizationDashboardProps) {
   const { dashboardData, isLoading } = useOrganizationDashboard(
     organization.id,
   );
+
+  const { trainings } = useUpcomingTrainings(organization.id);
+  const trainingsBadge = useTrainingsBadge(trainings);
 
   const schoolMemberships = useStore((s) => s.schoolMemberships);
   const setActiveMembershipId = useStore((s) => s.setActiveMembershipId);
@@ -127,6 +132,10 @@ function DashboardInner({ organization, schools }: OrganizationDashboardProps) {
     router.push("/organization/events");
   };
 
+  const handleNavigateToTrainings = () => {
+    router.push("/organization/trainings" as any);
+  };
+
   const handleNavigateToGrading = () => {
     router.push("/organization/grading");
   };
@@ -193,6 +202,17 @@ function DashboardInner({ organization, schools }: OrganizationDashboardProps) {
                   iconColor="$chineseGold"
                   iconBackground="$warningSurface"
                   onPress={handleNavigateToEvents}
+                />
+              </YStack>
+
+              <YStack width="30%">
+                <DashboardStatCard
+                  title={t("trainingsTitle")}
+                  Icon={CalendarClock}
+                  iconColor="$jadeGreen"
+                  iconBackground="$successSurface"
+                  badgeCount={trainingsBadge}
+                  onPress={handleNavigateToTrainings}
                 />
               </YStack>
 
