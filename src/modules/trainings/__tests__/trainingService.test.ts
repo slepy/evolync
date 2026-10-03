@@ -75,6 +75,26 @@ describe("trainingService", () => {
     assert.equal(trainings[0].seriesId ?? null, null);
   });
 
+  it("single mode supports the school and selected-people audiences", async () => {
+    const [schoolTraining] = await service.createSingleTrainings({
+      ...base, visibility: "school", schoolId: "school-a", inviteeIds: ["m1"],
+      dates: ["2099-01-03"], startTime: "10:00", endTime: "11:00",
+    });
+    assert.equal(schoolTraining.schoolId, "school-a");
+    assert.equal((await live("training_invitees")).length, 0, "invitees only for whitelist");
+
+    const people = await service.createSingleTrainings({
+      ...base, visibility: "whitelist", inviteeIds: ["m1", "m2"],
+      dates: ["2099-01-03", "2099-01-04"], startTime: "10:00", endTime: "11:00",
+    });
+    assert.equal(people.length, 2);
+    assert.equal((await live("training_invitees")).length, 4);
+    await assert.rejects(
+      service.createSingleTrainings({ ...base, visibility: "school", dates: ["2099-01-03"], startTime: "10:00", endTime: "11:00" }),
+      /eventValidationSchoolIdRequired/,
+    );
+  });
+
   it("'this and following' edit replaces only trainings from the selected day on", async () => {
     const { series, trainings } = await service.createTrainingSeries({
       ...base, visibility: "organization", startDate: "2099-01-05", endDate: "2099-02-01", rules: [weekly(1)],

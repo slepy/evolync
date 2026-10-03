@@ -6,3 +6,4 @@ export * from "./repositories";
 export * from "./services";
 export * from "./validation";
 export * from "./hooks";
+export * from "./components";

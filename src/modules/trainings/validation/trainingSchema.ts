@@ -22,7 +22,10 @@ export const trainingVisibilitySchema = z.enum(
 
 export const seriesRuleSchema = z
   .object({
-    weekday: z.number().int().min(0).max(6),
+    weekday: z.union([
+      z.literal(0), z.literal(1), z.literal(2), z.literal(3),
+      z.literal(4), z.literal(5), z.literal(6),
+    ]),
     frequency: z.enum(["weekly", "monthly"]),
     weekOfMonth: z
       .union([z.literal(1), z.literal(2), z.literal(3), z.literal(4), z.literal(-1)])
