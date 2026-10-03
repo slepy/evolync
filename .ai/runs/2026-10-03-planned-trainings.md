@@ -52,13 +52,13 @@ Attendance / `training_sessions` (untouched), prices or payments, open-ended rec
 
 ### Phase 2: Owner UI
 
-- [ ] 2.1 Translation keys
-- [ ] 2.2 TrainingForm shell with Single mode and create route
-- [ ] 2.3 Recurring mode rules editor
-- [ ] 2.4 Use school address sheet
-- [ ] 2.5 Organization list, detail and edit routes with series actions
-- [ ] 2.6 Organization dashboard Trainings card
-- [ ] 2.7 School trainings list and SchoolDashboard card
+- [x] 2.1 Translation keys — c9c02b8
+- [x] 2.2 TrainingForm shell with Single mode and create route — 0c32e81
+- [x] 2.3 Recurring mode rules editor — 26a8c25
+- [x] 2.4 Use school address sheet — d98c83e
+- [x] 2.5 Organization list, detail and edit routes with series actions — ad615c4
+- [x] 2.6 Organization dashboard Trainings card — 995889b
+- [x] 2.7 School trainings list and SchoolDashboard card — 7008f10
 
 ### Phase 3: Student view
 
