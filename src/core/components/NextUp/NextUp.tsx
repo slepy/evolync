@@ -1,9 +1,9 @@
 import type { ContextKey } from "@/core/theme/tokens";
-import { HeroCard } from "./HeroCard";
-import { addDays, dayToTimestamp, localToday, type NextUpItem } from "./nextUp";
+import { NextUpCard } from "./NextUpCard";
+import { addDays, dayToTimestamp, localToday, type NextUpItem } from "./pickNextUp";
 import { useNextUp, type NextUpScope, type NextUpSource } from "./useNextUp";
 
-export interface NextUpHeroProps {
+export interface NextUpProps {
   scope: NextUpScope | undefined;
   /** Defaults to the scope: organization → amber, school → red, student → blue. */
   context?: ContextKey;
@@ -21,8 +21,8 @@ const CONTEXT_BY_SCOPE: Record<NextUpScope["kind"], ContextKey> = {
 
 /** "Today", "Tomorrow", or e.g. "Sat, 10 Oct" in the app language. */
 export function formatNextUpDay(day: string, today: string = localToday()): string {
-  if (day === today) return t("heroToday");
-  if (day === addDays(today, 1)) return t("heroTomorrow");
+  if (day === today) return t("nextUpToday");
+  if (day === addDays(today, 1)) return t("nextUpTomorrow");
   return new Date(dayToTimestamp(day)).toLocaleDateString(t("locale") === "pl" ? "pl-PL" : "en-US", {
     weekday: "short",
     day: "numeric",
@@ -32,20 +32,20 @@ export function formatNextUpDay(day: string, today: string = localToday()): stri
 }
 
 /**
- * Hero header that loads itself: the nearest day with an event and/or
+ * Header box that loads itself: the nearest day with an event and/or
  * training in the scope (from the local events / trainings tables), and every
  * item on that day (board 1C, "next up").
  */
-export function NextUpHero({ scope, context, show, onCalendarPress, onItemPress }: NextUpHeroProps) {
+export function NextUp({ scope, context, show, onCalendarPress, onItemPress }: NextUpProps) {
   const { nextUp, isLoading } = useNextUp(scope, show);
 
   return (
-    <HeroCard
+    <NextUpCard
       context={context ?? (scope ? CONTEXT_BY_SCOPE[scope.kind] : "organization")}
-      eyebrow={t("heroNextUp")}
-      title={nextUp ? formatNextUpDay(nextUp.day) : t("heroToday")}
+      eyebrow={t("nextUpEyebrow")}
+      title={nextUp ? formatNextUpDay(nextUp.day) : t("nextUpToday")}
       items={nextUp?.items}
-      emptyText={t("heroNothingPlanned")}
+      emptyText={t("nextUpNothingPlanned")}
       isLoading={isLoading}
       onCalendarPress={onCalendarPress}
       onItemPress={onItemPress}

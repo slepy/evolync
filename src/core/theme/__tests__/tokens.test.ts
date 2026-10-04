@@ -40,7 +40,7 @@ describe("module accents", () => {
 });
 
 describe("context colors", () => {
-  it("defines three-stop hero gradients from 0 to 1", () => {
+  it("defines three-stop header gradients from 0 to 1", () => {
     for (const context of Object.values(contextColors)) {
       assert.equal(context.gradient.length, 3);
       assert.equal(context.gradient[0].at, 0);

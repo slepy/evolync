@@ -808,11 +808,11 @@
   "trainingsValidationExtendAfterEnd": "Pick a date after the current end of the series",
   "trainingsValidationInvalidVisibility": "Choose who the training is for",
 
-  "heroNextUp": "Next up",
-  "heroToday": "Today",
-  "heroTomorrow": "Tomorrow",
-  "heroChipEvent": "EVENT",
-  "heroChipTraining": "TRAINING",
-  "heroOpenCalendar": "Open calendar",
-  "heroNothingPlanned": "Nothing planned yet"
+  "nextUpEyebrow": "Next up",
+  "nextUpToday": "Today",
+  "nextUpTomorrow": "Tomorrow",
+  "nextUpChipEvent": "EVENT",
+  "nextUpChipTraining": "TRAINING",
+  "nextUpOpenCalendar": "Open calendar",
+  "nextUpNothingPlanned": "Nothing planned yet"
 }

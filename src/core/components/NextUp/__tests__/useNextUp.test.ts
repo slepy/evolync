@@ -10,9 +10,9 @@ import {
   seedRow,
   seedTraining,
 } from "@/modules/trainings/__tests__/testUtils";
-import type { NextUpScope, NextUpSource } from "@/core/components/HeroCard/useNextUp";
+import type { NextUpScope, NextUpSource } from "@/core/components/NextUp/useNextUp";
 
-const { useNextUp } = require("@/core/components/HeroCard/useNextUp") as typeof import("@/core/components/HeroCard/useNextUp");
+const { useNextUp } = require("@/core/components/NextUp/useNextUp") as typeof import("@/core/components/NextUp/useNextUp");
 
 (globalThis as any).IS_REACT_ACT_ENVIRONMENT = true;
 

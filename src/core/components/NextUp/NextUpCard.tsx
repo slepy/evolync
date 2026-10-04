@@ -3,9 +3,9 @@ import { LinearGradient } from "expo-linear-gradient";
 import { CalendarDays, MapPin } from "lucide-react-native";
 import { StyleSheet } from "react-native";
 import { Spinner, Text, View, XStack, YStack } from "tamagui";
-import type { NextUpItem } from "./nextUp";
+import type { NextUpItem } from "./pickNextUp";
 
-export interface HeroCardProps {
+export interface NextUpCardProps {
   /** Organization = amber, School = red, Student = blue. */
   context: ContextKey;
   /** Small uppercase line above the title (e.g. "NEXT UP"). */
@@ -20,11 +20,11 @@ export interface HeroCardProps {
 }
 
 /**
- * Hero header box (board S, 1A / 2A / 4 / 1C): context gradient, eyebrow +
+ * Header box (board S, 1A / 2A / 4 / 1C): context gradient, eyebrow +
  * title with a calendar shortcut, then event / training rows. Presentational
- * only — NextUpHero feeds it from the database.
+ * only — NextUp feeds it from the database.
  */
-export function HeroCard({
+export function NextUpCard({
   context,
   eyebrow,
   title,
@@ -33,11 +33,11 @@ export function HeroCard({
   isLoading,
   onCalendarPress,
   onItemPress,
-}: HeroCardProps) {
+}: NextUpCardProps) {
   const c = contextColors[context];
 
   return (
-    <YStack position="relative" overflow="hidden" borderRadius="$hero" padding={22} gap={18}>
+    <YStack position="relative" overflow="hidden" borderRadius="$header" padding={22} gap={18}>
       <LinearGradient
         colors={c.gradient.map((stop) => stop.color) as [string, string, ...string[]]}
         locations={c.gradient.map((stop) => stop.at) as [number, number, ...number[]]}
@@ -80,9 +80,9 @@ export function HeroCard({
             </Text>
           ) : null}
           <Text
-            fontSize="$heroTitle"
-            fontWeight="$heroTitle"
-            letterSpacing="$heroTitle"
+            fontSize="$headerTitle"
+            fontWeight="$headerTitle"
+            letterSpacing="$headerTitle"
             color={c.fg}
             numberOfLines={1}
           >
@@ -92,7 +92,7 @@ export function HeroCard({
         {onCalendarPress ? (
           <View
             accessibilityRole="button"
-            aria-label={t("heroOpenCalendar")}
+            aria-label={t("nextUpOpenCalendar")}
             onPress={onCalendarPress}
             width={46}
             height={46}
@@ -113,7 +113,7 @@ export function HeroCard({
       ) : items.length > 0 ? (
         <YStack gap={10}>
           {items.map((item) => (
-            <HeroRow
+            <NextUpRow
               key={`${item.kind}:${item.id}`}
               context={context}
               item={item}
@@ -130,7 +130,7 @@ export function HeroCard({
   );
 }
 
-function HeroRow({
+function NextUpRow({
   context,
   item,
   onPress,
@@ -151,20 +151,20 @@ function HeroRow({
       gap={12}
       paddingVertical={12}
       paddingHorizontal={14}
-      borderRadius="$heroRow"
+      borderRadius="$headerRow"
       backgroundColor={c.rowBg}
     >
       <YStack gap={4} flex={1} minWidth={0}>
         {isEvent ? (
           <View alignSelf="flex-start" paddingHorizontal={8} paddingVertical={2} borderRadius="$chip" backgroundColor={c.chipBg}>
             <Text fontSize="$chip" fontWeight="$chip" letterSpacing="$chip" color={c.chipFg}>
-              {t("heroChipEvent")}
+              {t("nextUpChipEvent")}
             </Text>
           </View>
         ) : (
           <View alignSelf="flex-start" paddingHorizontal={8} borderRadius="$chip" borderWidth={1.5} borderColor={c.fg}>
             <Text fontSize="$chip" fontWeight="$chip" letterSpacing="$chip" lineHeight={17} color={c.fg}>
-              {t("heroChipTraining")}
+              {t("nextUpChipTraining")}
             </Text>
           </View>
         )}

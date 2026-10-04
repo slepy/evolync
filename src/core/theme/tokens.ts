@@ -34,21 +34,21 @@ export const danger = {
 } as const;
 
 // ============================================================================
-// Context colors — tint only the hero header, the Home pill, the context
+// Context colors — tint only the header box, the Home pill, the context
 // switcher and the page glow. Never used for module tiles.
 // ============================================================================
 
 export type ContextKey = "organization" | "school" | "student";
 
 export interface ContextColors {
-  /** Hero gradient stops (135deg), with their positions 0..1. */
+  /** Header box gradient stops (135deg), with their positions 0..1. */
   gradient: readonly { color: string; at: number }[];
-  /** Text on the hero. */
+  /** Text on the header box. */
   fg: string;
   fgSoft: string;
-  /** Decorative rings on the hero. */
+  /** Decorative rings on the header box. */
   ring: string;
-  /** Event / training rows inside the hero. */
+  /** Event / training rows inside the header box. */
   rowBg: string;
   iconButton: string;
   chipBg: string;
@@ -222,10 +222,10 @@ export const moduleAccents: Record<ModuleKey, ModuleAccent> = {
 // ============================================================================
 
 export const radii = {
-  hero: 28,
+  header: 28,
   card: 22,
   pill: 20,
-  heroRow: 18,
+  headerRow: 18,
   rowIcon: 16,
   tileIcon: 14,
   chip: 8,
@@ -254,8 +254,8 @@ export interface TextRole {
 export const textRoles = {
   /** Board / screen title. */
   title: { size: 28, weight: 800, letterSpacing: -0.4 },
-  /** Hero title line (date). */
-  heroTitle: { size: 24, weight: 800, letterSpacing: -0.4 },
+  /** Header box title line (date). */
+  headerTitle: { size: 24, weight: 800, letterSpacing: -0.4 },
   section: { size: 20, weight: 800, letterSpacing: -0.2 },
   tileTitle: { size: 17, weight: 800, letterSpacing: 0 },
   rowTitle: { size: 16, weight: 800, letterSpacing: 0 },

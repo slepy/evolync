@@ -811,11 +811,11 @@
   "trainingsValidationExtendAfterEnd": "Wybierz datę po obecnym końcu serii",
   "trainingsValidationInvalidVisibility": "Wybierz, dla kogo jest trening",
 
-  "heroNextUp": "Najbliżej",
-  "heroToday": "Dzisiaj",
-  "heroTomorrow": "Jutro",
-  "heroChipEvent": "WYDARZENIE",
-  "heroChipTraining": "TRENING",
-  "heroOpenCalendar": "Otwórz kalendarz",
-  "heroNothingPlanned": "Nic jeszcze nie zaplanowano"
+  "nextUpEyebrow": "Najbliżej",
+  "nextUpToday": "Dzisiaj",
+  "nextUpTomorrow": "Jutro",
+  "nextUpChipEvent": "WYDARZENIE",
+  "nextUpChipTraining": "TRENING",
+  "nextUpOpenCalendar": "Otwórz kalendarz",
+  "nextUpNothingPlanned": "Nic jeszcze nie zaplanowano"
 }

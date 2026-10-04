@@ -8,12 +8,12 @@ import {
   dayToTimestamp,
   localToday,
   pickNextUp,
-  type NextUp,
+  type NextUpDay,
   type NextUpEventSource,
   type NextUpTrainingSource,
-} from "./nextUp";
+} from "./pickNextUp";
 
-/** Whose events and trainings the hero shows. */
+/** Whose events and trainings the header shows. */
 export type NextUpScope =
   | { kind: "organization"; organizationId: string }
   | { kind: "school"; schoolId: string }
@@ -69,7 +69,7 @@ const scopeKey = (scope: NextUpScope | undefined) =>
         : `m:${scope.memberId}:${scope.schoolId}`;
 
 /**
- * Reactive "next up" for the hero header: the nearest day with an active
+ * Reactive "next up" for the header box: the nearest day with an active
  * event or training in the scope, and every item on that day. Reads the
  * local database (events, trainings tables) through the module repositories.
  */
@@ -77,7 +77,7 @@ export function useNextUp(
   scope: NextUpScope | undefined,
   show: NextUpSource[] = ["events", "trainings"],
 ) {
-  const [nextUp, setNextUp] = useState<NextUp | null>(null);
+  const [nextUp, setNextUp] = useState<NextUpDay | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const key = scopeKey(scope);
   const showKey = show.join(",");

@@ -5,7 +5,7 @@ import {
   pickNextUp,
   type NextUpEventSource,
   type NextUpTrainingSource,
-} from "@/core/components/HeroCard/nextUp";
+} from "@/core/components/NextUp/pickNextUp";
 
 const day = (value: string) => new Date(`${value}T00:00:00Z`);
 

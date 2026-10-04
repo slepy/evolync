@@ -1,5 +1,5 @@
 /**
- * Pure "next up" selection for the hero header: the nearest day that has an
+ * Pure "next up" selection for the NextUp header box: the nearest day that has an
  * active event or training, and everything on that day. Days are
  * "YYYY-MM-DD"; events and trainings store days as UTC-midnight timestamps.
  */
@@ -33,7 +33,7 @@ export type NextUpItem =
       endTime: string;
     };
 
-export interface NextUp {
+export interface NextUpDay {
   day: string; // "YYYY-MM-DD"
   items: NextUpItem[];
 }
@@ -67,7 +67,7 @@ export function pickNextUp(
   events: NextUpEventSource[],
   trainings: NextUpTrainingSource[],
   today: string,
-): NextUp | null {
+): NextUpDay | null {
   const upcomingEvents = events
     .map((event) => ({
       event,
