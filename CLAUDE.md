@@ -22,6 +22,7 @@ Use these skills for structured workflows:
 | `new-module` | Auto | Creating a new feature module from scratch |
 | `add-types` | Auto | Adding DTOs, enums, db interfaces, or helpers to a module's types/ folder |
 | `threed-guide` | Auto | Working with 3D editor, techniques, sequences, bone transforms |
+| `design-mockups` | Auto | Building design mockups on the canvas: accent colors, button labels, list / tile / hero header components |
 | `/add-feature` | Manual | End-to-end feature implementation workflow |
 | `/fix-bug` | Manual | Systematic bug investigation and fixing |
 | `/add-translations` | Manual | Adding translation keys with mandatory duplicate checking |
