@@ -183,6 +183,22 @@ function DashboardInner({ organization, schools }: OrganizationDashboardProps) {
 
         <ModuleTileGrid title={t("dashboardManage")}>
           <ModuleTile
+            module="events"
+            icon={CalendarDays}
+            title={t("eventsTitle")}
+            subtitle={t("dashboardTileEvents")}
+            href="/organization/events"
+            addHref="/organization/events/create"
+          />
+          <ModuleTile
+            module="trainings"
+            icon={Repeat}
+            title={t("trainingsTitle")}
+            subtitle={t("dashboardTileTrainings")}
+            href="/organization/trainings"
+            addHref="/organization/trainings/create"
+          />
+          <ModuleTile
             module="orders"
             icon={ShoppingBag}
             title={t("ordersTitle")}
