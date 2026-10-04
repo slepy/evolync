@@ -806,5 +806,13 @@
   "trainingsValidationSeriesTooLong": "At most 6 months. Use “Extend series” later to continue.",
   "trainingsValidationNoOccurrences": "These days produce no trainings in the chosen dates",
   "trainingsValidationExtendAfterEnd": "Pick a date after the current end of the series",
-  "trainingsValidationInvalidVisibility": "Choose who the training is for"
+  "trainingsValidationInvalidVisibility": "Choose who the training is for",
+
+  "heroNextUp": "Next up",
+  "heroToday": "Today",
+  "heroTomorrow": "Tomorrow",
+  "heroChipEvent": "EVENT",
+  "heroChipTraining": "TRAINING",
+  "heroOpenCalendar": "Open calendar",
+  "heroNothingPlanned": "Nothing planned yet"
 }

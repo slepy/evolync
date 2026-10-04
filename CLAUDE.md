@@ -70,6 +70,13 @@ import { BaseCard } from "@/modules/core/components";
 <BaseCard onPress={handlePress}>{/* content */}</BaseCard>
 ```
 
+### Shared Components and Design Tokens
+
+- **All general (module-independent) components go in `src/core/components/`**, one folder per component (e.g. `src/core/components/HeroCard/`), exported from `src/core/components/index.ts`, imported as `@/core/components`. Module folders keep only module-specific UI. Do not add new shared components to `src/modules/core/components` (legacy: `BaseCard`, `Header`, …).
+- Components never hardcode hex: values come from `src/core/theme/tokens.ts`, exposed in Tamagui as tokens (`$neutralCard`, `$paymentsTint`, `$schoolFrom`, radius `$hero` / `$card`, text roles `fontSize="$section" fontWeight="$section"`). Rules and component specs: `design-mockups` skill.
+- Split presentational from data: the presentational component takes plain props (`HeroCard`); a connected wrapper loads its own data from WatermelonDB through module repositories (`NextUpHero` + `useNextUp`). Pure logic in its own file, tested in `__tests__/`.
+- Built so far: hero header → `HeroCard` / `NextUpHero`.
+
 ### Offline-First Data Flow
 
 1. All reads/writes go through local **WatermelonDB** - never directly from Supabase
@@ -104,7 +111,7 @@ src/modules/{module}/
 
 **Modules:** attendance, auth, core, dashboard, events, grading, inventory, notifications, orders, organization, payments, school, settings, students, threed
 
-**Infrastructure:** `src/database/` - central WatermelonDB config, models, schema, migrations
+**Infrastructure:** `src/database/` - central WatermelonDB config, models, schema, migrations · `src/core/` - shared components, design tokens/theme, i18n (`src/core/components` may read data only through module repositories, never services or module components)
 
 **Rules:** No circular deps between modules. `core` never imports from other modules. Import from barrel exports.
 
