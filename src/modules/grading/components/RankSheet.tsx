@@ -155,6 +155,7 @@ export const RankSheet: React.FC<RankSheetProps> = ({
             placeholder={t("gradingPickColor")}
             leading={color ? <RankIcon color={color} size={36} /> : undefined}
             onPress={openPicker}
+            chevron="right"
             accent="grading"
           />
         </>

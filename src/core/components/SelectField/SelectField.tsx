@@ -1,5 +1,5 @@
 import { neutral } from "@/core/theme/tokens";
-import { ChevronDown, ChevronUp } from "lucide-react-native";
+import { ChevronDown, ChevronRight, ChevronUp } from "lucide-react-native";
 import type { ReactNode } from "react";
 import { Text, XStack, YStack } from "tamagui";
 import { resolveListAccent, type ListAccent } from "../List/accent";
@@ -17,15 +17,29 @@ export interface SelectFieldProps {
   /** Picker open: border and chevron in the module tint. */
   open?: boolean;
   accent?: ListAccent;
+  /**
+   * "down" (default): the picker opens as a sheet over the field.
+   * "right": the picker replaces the current view (e.g. the color step of a sheet).
+   */
+  chevron?: "down" | "right";
 }
 
 /**
  * Field that opens a picker (board S section 7): 56px, radius 16, card fill,
- * chevron down on the right; 1.5px tint border while its picker is open.
+ * chevron on the right (down, or right when it opens a next step); 1.5px tint border while its picker is open.
  */
-export function SelectField({ label, value, placeholder, leading, onPress, open, accent = "neutral" }: SelectFieldProps) {
+export function SelectField({
+  label,
+  value,
+  placeholder,
+  leading,
+  onPress,
+  open,
+  accent = "neutral",
+  chevron = "down",
+}: SelectFieldProps) {
   const tint = resolveListAccent(accent).tint;
-  const Chevron = open ? ChevronUp : ChevronDown;
+  const Chevron = chevron === "right" ? ChevronRight : open ? ChevronUp : ChevronDown;
 
   return (
     <YStack gap={8}>
