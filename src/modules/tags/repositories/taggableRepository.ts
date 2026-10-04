@@ -55,6 +55,11 @@ export const TaggableRepository = {
       .observeWithColumns(["tag_id"]);
   },
 
+  observeByTagIds(tagIds: string[]) {
+    const collection = database.get<Taggable>("taggables");
+    return collection.query(Q.where("tag_id", Q.oneOf(tagIds))).observe();
+  },
+
   async fetchTagIdsForEntity(taggableId: string, taggableType: TaggableType): Promise<string[]> {
     const collection = database.get<Taggable>("taggables");
     const records = await collection
