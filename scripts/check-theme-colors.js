@@ -22,6 +22,8 @@ const path = require("path");
 
 const ROOT = path.resolve(__dirname, "..");
 const SCAN_DIRS = ["app", "src"];
+// The one place raw color values live; tamagui.config.ts turns them into tokens.
+const TOKENS_FILE = "src/core/theme/tokens.ts";
 
 // Static palette tokens replaced by semantic keys. Solid brand fills
 // ($imperialRed, $jadeGreen, …) and on-accent white ($pearlWhite*) stay allowed.
@@ -89,6 +91,20 @@ function knownColorNames() {
   for (const match of source.matchAll(/^\s{2,4}([A-Za-z0-9]+):\s*"(?:#|rgba?\()/gm)) {
     names.add(match[1]);
   }
+  // Redesign tokens read from src/core/theme/tokens.ts (`neutralCard: neutral.card`).
+  for (const match of source.matchAll(/^\s{2,4}([A-Za-z0-9]+):\s*(?:neutral|danger)\.[A-Za-z]+,/gm)) {
+    names.add(match[1]);
+  }
+  // Generated per module ($studentsTint, …) and per context ($schoolLabel, …).
+  const tokens = fs.readFileSync(path.join(ROOT, TOKENS_FILE), "utf8");
+  const unionOf = (type) =>
+    [...(tokens.match(new RegExp(String.raw`export type ${type} =([^;]+);`))?.[1] ?? "").matchAll(/"([a-z]+)"/g)].map((m) => m[1]);
+  for (const module of unionOf("ModuleKey")) {
+    for (const key of ["Tint", "Fill", "From", "To", "ButtonText"]) names.add(module + key);
+  }
+  for (const context of unionOf("ContextKey")) {
+    for (const key of ["From", "Via", "To", "Fg", "FgSoft", "Glow", "Label", "Fill"]) names.add(context + key);
+  }
   names.add("transparent");
   return names;
 }
@@ -107,7 +123,7 @@ const escapeRegExp = (value) => value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
 /** Problems in one file's source. `rel` is the repo-relative path. */
 function checkSource(rel, source, known) {
-  const allowed = ALLOWED_LITERALS[rel] ?? [];
+  const allowed = rel === TOKENS_FILE ? ["*"] : (ALLOWED_LITERALS[rel] ?? []);
   const problems = [];
 
   source.split("\n").forEach((line, i) => {

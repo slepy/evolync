@@ -1,3 +1,4 @@
+import { useBottomNavSpace } from "@/core/components";
 import type Notification from "@/database/models/Notification";
 import { Header, HeaderTitle } from "@/modules/core/components";
 import { useStore } from "@/store";
@@ -25,6 +26,7 @@ export function NotificationsScreen() {
   const router = useRouter();
   const theme = useTheme();
   const insets = useSafeAreaInsets();
+  const navSpace = useBottomNavSpace();
   const userId = useStore((s) => s.user?.id);
   const notifications = useNotifications(userId);
   const hasUnread = notifications.some((n) => !n.readAt);
@@ -119,7 +121,7 @@ export function NotificationsScreen() {
           data={notifications}
           keyExtractor={(item) => item.id}
           renderItem={({ item }) => <NotificationCard notification={item} onPress={handlePress} />}
-          contentContainerStyle={{ paddingVertical: 8, paddingBottom: insets.bottom + 24 }}
+          contentContainerStyle={{ paddingVertical: 8, paddingBottom: navSpace }}
         />
       )}
     </View>

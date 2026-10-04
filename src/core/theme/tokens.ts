@@ -18,12 +18,16 @@ export const neutral = {
   raisedBorder: "#2A3345",
   text: "#F4F6FA",
   muted: "#A7B1C6",
+  /** Empty checkbox / radio ring, Absent bar segment. */
+  control: "#3A4458",
   /** Settings rows and other chrome that belongs to no module. */
   tint: "#CBD5E1",
   tintFill: "rgba(148,163,184,0.16)",
   synced: "#4ADE9F",
   syncedFill: "rgba(52,211,153,0.12)",
   alertDot: "#FF5A5A",
+  /** Floating bottom nav shadow. */
+  shadow: "rgba(0,0,0,0.5)",
 } as const;
 
 /** Destructive (trash) button: red in every context, never neutral gray. */

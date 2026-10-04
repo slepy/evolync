@@ -14,6 +14,7 @@ import {
   parsePhoneNumber,
   formatPhoneNumber,
 } from "@/modules/core/utils/phoneHelpers";
+import { MainNav, useBottomNavSpace } from "@/core/components";
 import { sync } from "@/database/sync";
 import { useStore } from "@/store";
 import { useRouter } from "expo-router";
@@ -35,6 +36,7 @@ export default function ProfileScreen() {
   const [formError, setFormError] = useState<string | null>(null);
   const { isDirty, markDirty, reset: resetDirty } = useDirtyFlag();
   const insets = useSafeAreaInsets();
+  const navSpace = useBottomNavSpace();
 
   const currentName = user?.user_metadata?.full_name ?? "";
   const currentAvatar = user?.user_metadata?.avatar_url ?? null;
@@ -104,7 +106,7 @@ export default function ProfileScreen() {
             contentContainerStyle={{
               flexGrow: 1,
               padding: 20,
-              paddingBottom: 100,
+              paddingBottom: navSpace,
             }}
             keyboardShouldPersistTaps="handled"
           >
@@ -136,6 +138,8 @@ export default function ProfileScreen() {
           )}
         </YStack>
       </KeyboardAvoidingView>
+      {/* The Save button takes the nav's place once the form is changed. */}
+      {!isDirty && <MainNav />}
     </View>
   );
 }

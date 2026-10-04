@@ -91,7 +91,7 @@ export function NextUpCard({
         </YStack>
         {onCalendarPress ? (
           <View
-            accessibilityRole="button"
+            role="button"
             aria-label={t("nextUpOpenCalendar")}
             onPress={onCalendarPress}
             width={46}
@@ -144,7 +144,7 @@ function NextUpRow({
 
   return (
     <XStack
-      accessibilityRole={onPress ? "button" : undefined}
+      role={onPress ? "button" : undefined}
       onPress={onPress}
       pressStyle={onPress ? { opacity: 0.85 } : undefined}
       alignItems="stretch"

@@ -1,28 +1,38 @@
-import { Header, HeaderSelector, HeaderTitle } from "@/modules/core/components";
-import { NotificationBell, PushPermissionPrompt } from "@/modules/notifications";
+import {
+  DashboardHeader,
+  DashboardPage,
+  ContextSheet,
+  ListCard,
+  ListIcon,
+  ListRow,
+  ListSection,
+  MainNav,
+  ModuleTile,
+  ModuleTileGrid,
+  NextUp,
+  SyncedPill,
+  TechniqueNotebook,
+  type ContextOption,
+  type NextUpItem,
+} from "@/core/components";
+import { PushPermissionPrompt } from "@/modules/notifications";
 import { useStore, type Organization } from "@/store";
 import { useRouter } from "expo-router";
-import { useCallback, useEffect } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   Award,
   Building2,
-  CalendarClock,
   CalendarDays,
+  MapPin,
   Package,
+  Repeat,
   ShoppingBag,
-  PersonStanding,
-  Tags,
 } from "lucide-react-native";
 import React from "react";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { ScrollView, Text, XStack, YStack } from "tamagui";
 import { useOrganizationDashboard } from "../hooks/useOrganizationDashboard";
-import { DashboardFAB } from "./DashboardFAB";
-import { DashboardStatCard } from "../../dashboard/components/DashboardStatCard";
 import { withObservables } from "@nozbe/watermelondb/react";
 import { SchoolRepository } from "@/modules/school/repositories";
 import School from "@/database/models/School";
-import { useTrainingsBadge, useUpcomingTrainings } from "@/modules/trainings";
 
 // ============================================================================
 // Types
@@ -38,29 +48,17 @@ interface OrganizationDashboardProps {
 // ============================================================================
 
 /**
- * Main dashboard component for organization-level view.
- *
- * Features:
- * - Organization overview across all schools
- * - Sync status indicator
- * - Aggregated metrics (Schools, Students, Revenue, Orders, Inventory)
- * - FAB for quick actions at organization level
- * - Responsive grid layout
- * - Offline-first architecture with WatermelonDB observables
- * - Real-time updates when data changes
+ * Organization dashboard (boards 1A / 1C): amber context header with the
+ * context switcher, next-up header box, the organization's schools and the
+ * module tiles. Everything reads from WatermelonDB, so it works offline.
  */
 function DashboardInner({ organization, schools }: OrganizationDashboardProps) {
   const router = useRouter();
-
-  const { dashboardData, isLoading } = useOrganizationDashboard(
-    organization.id,
-  );
-
-  const { trainings } = useUpcomingTrainings(organization.id);
-  const trainingsBadge = useTrainingsBadge(trainings);
+  const { dashboardData } = useOrganizationDashboard(organization.id);
 
   const schoolMemberships = useStore((s) => s.schoolMemberships);
   const setActiveMembershipId = useStore((s) => s.setActiveMembershipId);
+  const [switcherOpen, setSwitcherOpen] = useState(false);
 
   // Fetch schools from Supabase for memberships not yet in local DB (foreign org schools)
   useEffect(() => {
@@ -74,208 +72,156 @@ function DashboardInner({ organization, schools }: OrganizationDashboardProps) {
     }
   }, [schoolMemberships, schools]);
 
-  const ORG_OPTION_ID = `org:${organization.id}`;
-  const selectorOptions = [
-    { id: ORG_OPTION_ID, label: organization.name, icon: Building2, iconColor: "$blue11" },
-    ...schoolMemberships.map((m) => {
-      const school = schools.find((s) => s.id === m.schoolId);
-      return {
-        id: m.memberId,
-        label: school?.name ?? m.schoolId,
-        icon: Building2,
-        iconColor: "$blue11",
-      };
-    }),
-  ];
-
-  const handleContextSelect = useCallback(
-    async (optionId: string) => {
-      if (optionId === ORG_OPTION_ID) return; // already here
-      // Switch to user dashboard with chosen membership active
-      setActiveMembershipId(optionId);
-      const AsyncStorage =
-        require("@react-native-async-storage/async-storage").default;
-      await AsyncStorage.setItem("activeMembershipId", optionId);
-      router.replace("/user/dashboard" as any);
-    },
-    [ORG_OPTION_ID, setActiveMembershipId, router],
+  const ownSchools = useMemo(
+    () =>
+      schools
+        .filter((s) => s.organizationId === organization.id)
+        .sort((a, b) => a.name.localeCompare(b.name)),
+    [schools, organization.id],
   );
 
-  const headerCenter =
-    schoolMemberships.length > 0 ? (
-      <HeaderSelector
-        selectedOption={{ id: ORG_OPTION_ID, label: organization.name }}
-        options={selectorOptions}
-        onSelect={handleContextSelect}
-      />
-    ) : (
-      <HeaderTitle text={organization.name} />
-    );
+  // ==========================================================================
+  // Context switcher (organization ↔ schools the user is a member of)
+  // ==========================================================================
+
+  const handleMembershipSelect = useCallback(
+    async (membershipId: string) => {
+      setActiveMembershipId(membershipId);
+      const AsyncStorage =
+        require("@react-native-async-storage/async-storage").default;
+      await AsyncStorage.setItem("activeMembershipId", membershipId);
+      router.replace("/user/dashboard" as any);
+    },
+    [setActiveMembershipId, router],
+  );
+
+  const orgOptionId = `org:${organization.id}`;
+  const switcherOptions: ContextOption[] = [
+    {
+      id: orgOptionId,
+      context: "organization",
+      title: organization.name,
+      subtitle: t("contextOrganization"),
+    },
+    ...schoolMemberships.map((m) => ({
+      id: m.memberId,
+      context: "student" as const,
+      title: schools.find((s) => s.id === m.schoolId)?.name ?? m.schoolId,
+      subtitle: t("contextStudent"),
+    })),
+  ];
 
   // ==========================================================================
   // Event Handlers
   // ==========================================================================
 
-  const handleNavigateToSchools = () => {
-    router.push("/school");
+  const handleNextUpItemPress = (item: NextUpItem) => {
+    router.push(
+      (item.kind === "event"
+        ? `/organization/events/${item.id}`
+        : `/organization/trainings/${item.id}`) as any,
+    );
   };
 
-  const handleNavigateToOrders = () => {
-    router.push("/organization/orders");
-  };
-
-  const handleNavigateToInventory = () => {
-    router.push("/organization/inventory");
-  };
-
-  const handleNavigateToEvents = () => {
-    router.push("/organization/events");
-  };
-
-  const handleNavigateToTrainings = () => {
-    router.push("/organization/trainings" as any);
-  };
-
-  const handleNavigateToGrading = () => {
-    router.push("/organization/grading");
-  };
-
-  const handleNavigateToThreed = () => {
-    router.push("/techniques" as any);
-  };
-
-  const handleNavigateToTags = () => {
-    router.push("/tags" as any);
-  };
+  const pendingOrders = dashboardData.pendingOrdersAllSchools;
 
   // ==========================================================================
   // Main Render
   // ==========================================================================
 
   return (
-    <SafeAreaView style={{ flex: 1 }} edges={["top"]}>
-      <YStack flex={1}>
-        {/* Header with Organization Info and Sync Status */}
-        <Header centerContent={headerCenter} leftContent={<NotificationBell />} />
-        <PushPermissionPrompt />
+    <>
+      <DashboardPage
+        context="organization"
+        header={
+          <DashboardHeader
+            context="organization"
+            title={organization.name}
+            onSwitchPress={
+              schoolMemberships.length > 0
+                ? () => setSwitcherOpen(true)
+                : undefined
+            }
+            switchLabel={t("contextSwitchTitle")}
+            right={<SyncedPill />}
+          />
+        }
+        banner={<PushPermissionPrompt />}
+        nav={<MainNav home="organization" />}
+      >
+        <NextUp
+          scope={{ kind: "organization", organizationId: organization.id }}
+          onCalendarPress={() => router.push("/organization/events")}
+          onItemPress={handleNextUpItemPress}
+        />
 
-        {/* Scrollable Content */}
-        <ScrollView
-          flex={1}
-          contentContainerStyle={{
-            padding: 16,
+        <ListSection
+          title={t("dashboardYourSchools")}
+          accent="organization"
+          action={{
+            label: t("addNew"),
+            onPress: () => router.push("/school/create"),
           }}
         >
-          <YStack
-            maxWidth={500}
-            width="100%"
-            alignSelf="center"
-            gap="$4"
-            paddingVertical="$4"
-          >
-            {/* Welcome Section */}
-            <YStack gap="$2" marginBottom="$2">
-              <Text fontSize="$7" fontWeight="700" color="$textPrimary">
-                {t("dashboardWelcomeBack")}
-              </Text>
-              <Text fontSize="$4" color="$textBody">
-                {t("dashboardOverview")}
-              </Text>
-            </YStack>
-
-            {/* Stats Grid - 3 per row */}
-            <XStack gap="$3" flexWrap="wrap">
-              <YStack width="30%">
-                <DashboardStatCard
-                  title={t("schoolsTitle")}
-                  Icon={Building2}
-                  iconColor="$blue11"
-                  iconBackground="$blue3"
-                  onPress={handleNavigateToSchools}
+          {ownSchools.length > 0 ? (
+            <ListCard aria-label={t("dashboardYourSchools")}>
+              {ownSchools.map((school) => (
+                <ListRow
+                  key={school.id}
+                  title={school.name}
+                  subtitle={school.address || t("emptyNoAddress")}
+                  subtitleIcon={MapPin}
+                  leading={<ListIcon icon={Building2} accent="school" />}
+                  onPress={() =>
+                    router.push(`/school/${school.id}/dashboard` as any)
+                  }
                 />
-              </YStack>
+              ))}
+            </ListCard>
+          ) : null}
+        </ListSection>
 
-              <YStack width="30%">
-                <DashboardStatCard
-                  title={t("eventsTitle")}
-                  Icon={CalendarDays}
-                  iconColor="$chineseGold"
-                  iconBackground="$warningSurface"
-                  onPress={handleNavigateToEvents}
-                />
-              </YStack>
+        <ModuleTileGrid title={t("dashboardManage")}>
+          <ModuleTile
+            module="orders"
+            icon={ShoppingBag}
+            title={t("ordersTitle")}
+            subtitle={
+              pendingOrders > 0
+                ? t("dashboardTileOrdersPending", { count: pendingOrders })
+                : t("dashboardTileOrders")
+            }
+            href="/organization/orders"
+          />
+          <ModuleTile
+            module="products"
+            icon={Package}
+            title={t("dashboardTileProductsTitle")}
+            subtitle={t("dashboardTileProducts")}
+            href="/organization/inventory"
+            addHref="/organization/inventory/create"
+          />
+          <ModuleTile
+            module="grading"
+            icon={Award}
+            title={t("gradingTitle")}
+            subtitle={t("dashboardTileGrading")}
+            href="/organization/grading"
+            addHref="/organization/grading/create"
+          />
+        </ModuleTileGrid>
 
-              <YStack width="30%">
-                <DashboardStatCard
-                  title={t("trainingsTitle")}
-                  Icon={CalendarClock}
-                  iconColor="$jadeGreen"
-                  iconBackground="$successSurface"
-                  badgeCount={trainingsBadge}
-                  onPress={handleNavigateToTrainings}
-                />
-              </YStack>
+        <TechniqueNotebook />
+      </DashboardPage>
 
-              <YStack width="30%">
-                <DashboardStatCard
-                  title={t("ordersTitle")}
-                  Icon={ShoppingBag}
-                  iconColor="$purple11"
-                  iconBackground="$purple3"
-                  badgeCount={dashboardData.pendingOrdersAllSchools}
-                  onPress={handleNavigateToOrders}
-                />
-              </YStack>
-            </XStack>
-
-            <XStack gap="$3" flexWrap="wrap">
-              <YStack width="30%">
-                <DashboardStatCard
-                  title={t("inventoryTitle")}
-                  Icon={Package}
-                  iconColor="$pink11"
-                  iconBackground="$pink3"
-                  onPress={handleNavigateToInventory}
-                />
-              </YStack>
-
-              <YStack width="30%">
-                <DashboardStatCard
-                  title={t("gradingTitle")}
-                  Icon={Award}
-                  iconColor="$textMuted"
-                  iconBackground="$fillSubtle"
-                  onPress={handleNavigateToGrading}
-                />
-              </YStack>
-
-              <YStack width="30%">
-                <DashboardStatCard
-                  title={t("techniquesNotebook")}
-                  Icon={PersonStanding}
-                  iconColor="$chineseCyan"
-                  iconBackground="$infoSurface"
-                  onPress={handleNavigateToThreed}
-                />
-              </YStack>
-
-              <YStack width="30%">
-                <DashboardStatCard
-                  title={t("tagsPicker")}
-                  Icon={Tags}
-                  iconColor="$chineseCoral"
-                  iconBackground="$roseSurface"
-                  onPress={handleNavigateToTags}
-                />
-              </YStack>
-            </XStack>
-          </YStack>
-        </ScrollView>
-
-        {/* Floating Action Button */}
-        <DashboardFAB />
-      </YStack>
-    </SafeAreaView>
+      <ContextSheet
+        open={switcherOpen}
+        onOpenChange={setSwitcherOpen}
+        options={switcherOptions}
+        activeId={orgOptionId}
+        onSelect={(option) => handleMembershipSelect(option.id)}
+      />
+    </>
   );
 }
 
