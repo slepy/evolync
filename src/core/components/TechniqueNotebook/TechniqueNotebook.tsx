@@ -9,7 +9,7 @@ export function TechniqueNotebook() {
     <TechniqueNotebookSection
       onOpenNotebook={() => router.push("/techniques" as any)}
       onOpenTags={() => router.push("/tags" as any)}
-      onAddTag={() => router.push("/tags/create" as any)}
+      onAddTag={() => router.push("/tags?create=1" as any)}
     />
   );
 }

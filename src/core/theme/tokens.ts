@@ -18,6 +18,8 @@ export const neutral = {
   raisedBorder: "#2A3345",
   text: "#F4F6FA",
   muted: "#A7B1C6",
+  /** Field placeholder and hint text. */
+  placeholder: "#7D889F",
   /** Empty checkbox / radio ring, Absent bar segment. */
   control: "#3A4458",
   /** Settings rows and other chrome that belongs to no module. */

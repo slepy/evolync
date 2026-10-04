@@ -1,7 +1,9 @@
+import { PrimaryButton, TextField } from "@/core/components";
+import { moduleAccents } from "@/core/theme/tokens";
 import { useStore } from "@/store";
 import { Plus } from "lucide-react-native";
 import React, { useState } from "react";
-import { Button, Input, Sheet, Text, XStack, YStack, useTheme } from "tamagui";
+import { Button, Sheet, Text, XStack, YStack } from "tamagui";
 import { useTags } from "../hooks";
 import { createTag } from "../services";
 import type { TaggableType } from "../types";
@@ -23,13 +25,10 @@ export const TagPickerSheet: React.FC<TagPickerSheetProps> = ({
 }) => {
   const { user } = useStore();
   const { tags } = useTags();
-  const theme = useTheme();
 
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [newTagName, setNewTagName] = useState("");
   const [isSaving, setIsSaving] = useState(false);
-
-  const defaultColor = theme.chineseCyan?.val ?? "#0891B2";
 
   const handleCreateTag = async () => {
     if (!newTagName.trim() || !user) return;
@@ -38,7 +37,7 @@ export const TagPickerSheet: React.FC<TagPickerSheetProps> = ({
       const tag = await createTag({
         userId: user.id,
         name: newTagName.trim(),
-        color: defaultColor,
+        color: moduleAccents.tags.tint,
       });
       onToggleTag(tag.id);
       setNewTagName("");
@@ -102,28 +101,31 @@ export const TagPickerSheet: React.FC<TagPickerSheetProps> = ({
           )}
 
           {showCreateForm ? (
-            <YStack gap="$2">
+            <YStack gap="$3">
+              <TextField
+                label={t("fieldName")}
+                value={newTagName}
+                onChangeText={setNewTagName}
+                placeholder={t("tagsNewTagName")}
+                accent="tags"
+                maxLength={30}
+                autoFocus
+                returnKeyType="done"
+                onSubmitEditing={handleCreateTag}
+              />
               <XStack gap="$2" alignItems="center">
-                <Input
-                  flex={1}
-                  size="$3"
-                  placeholder={t("tagsNewTagName")}
-                  value={newTagName}
-                  onChangeText={setNewTagName}
-                  autoFocus
-                />
-                <Button
-                  size="$3"
-                  theme="active"
-                  onPress={handleCreateTag}
-                  disabled={!newTagName.trim() || isSaving}
-                  opacity={!newTagName.trim() || isSaving ? 0.6 : 1}
-                >
-                  {t("save")}
-                </Button>
-                <Button size="$3" variant="outlined" onPress={handleCancel}>
+                <Button size="$4" variant="outlined" borderRadius={26} height={52} onPress={handleCancel}>
                   {t("cancel")}
                 </Button>
+                <YStack flex={1}>
+                  <PrimaryButton
+                    label={t("create")}
+                    accent="tags"
+                    onPress={handleCreateTag}
+                    disabled={!newTagName.trim()}
+                    loading={isSaving}
+                  />
+                </YStack>
               </XStack>
             </YStack>
           ) : (

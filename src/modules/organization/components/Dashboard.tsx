@@ -223,7 +223,7 @@ function DashboardInner({ organization, schools }: OrganizationDashboardProps) {
             title={t("gradingTitle")}
             subtitle={t("dashboardTileGrading")}
             href="/organization/grading"
-            addHref="/organization/grading/create"
+            addHref="/organization/grading?create=1"
           />
         </ModuleTileGrid>
 
