@@ -227,6 +227,8 @@
   "emptyNoOrdersFiltered": "No orders match the selected filter",
 
   "fieldName": "Name",
+  "fieldColor": "Color",
+  "fieldHex": "Hex",
   "fieldNamePlaceholder": "Enter name",
   "fieldDescription": "Description",
   "fieldDescriptionPlaceholder": "Enter description (optional)",
@@ -480,6 +482,9 @@
   "gradingValidationNameTooLong": "Rank name must be 50 characters or fewer",
   "gradingValidationColorInvalid": "Color must be a valid hex code",
   "gradingErrorDuplicateName": "A rank with this name already exists",
+  "gradingYourRanks": "Your ranks",
+  "gradingNewRank": "New rank",
+  "gradingEditRank": "Edit rank",
 
   "userDashboard": "My Dashboard",
   "mySchools": "My Schools",

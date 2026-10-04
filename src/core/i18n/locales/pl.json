@@ -227,6 +227,8 @@
   "emptyNoOrdersFiltered": "Brak zamówień pasujących do filtra",
 
   "fieldName": "Nazwa",
+  "fieldColor": "Kolor",
+  "fieldHex": "Hex",
   "fieldNamePlaceholder": "Wpisz nazwę",
   "fieldDescription": "Opis",
   "fieldDescriptionPlaceholder": "Wpisz opis (opcjonalnie)",
@@ -480,6 +482,9 @@
   "gradingValidationNameTooLong": "Nazwa rangi może mieć maksymalnie 50 znaków",
   "gradingValidationColorInvalid": "Kolor musi być prawidłowym kodem hex",
   "gradingErrorDuplicateName": "Ranga z tą nazwą już istnieje",
+  "gradingYourRanks": "Twoje stopnie",
+  "gradingNewRank": "Nowy stopień",
+  "gradingEditRank": "Edytuj stopień",
 
   "userDashboard": "Mój Panel",
   "mySchools": "Moje Szkoły",
