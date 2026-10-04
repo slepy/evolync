@@ -12,6 +12,7 @@ import { addRank, deleteRank, updateRank } from "../services/gradingService";
 import { createRankSchema } from "../validation";
 import { RankColorPicker } from "./RankColorPicker";
 import { RankIcon } from "./RankIcon";
+import { canSubmitRank, pickerStartColor } from "./rankSheetState";
 
 const NAME_MAX_LENGTH = 50;
 
@@ -36,7 +37,7 @@ export const RankSheet: React.FC<RankSheetProps> = ({
   const [name, setName] = useState("");
   const [color, setColor] = useState<string | null>(null);
   const [picking, setPicking] = useState(false);
-  const [pickedColor, setPickedColor] = useState<string | null>(null);
+  const [pickedColor, setPickedColor] = useState(pickerStartColor(null));
   const [error, setError] = useState<string | undefined>();
   const [isSaving, setIsSaving] = useState(false);
   const editing = !!rank;
@@ -50,9 +51,7 @@ export const RankSheet: React.FC<RankSheetProps> = ({
   }, [open, rank]);
 
   const trimmed = name.trim();
-  const changed =
-    !editing || trimmed !== rank.name || color !== (rank.color ?? null);
-  const canSubmit = trimmed.length > 0 && changed;
+  const canSubmit = canSubmitRank(name, color, rank);
 
   const handleSubmit = async () => {
     if (!canSubmit || isSaving) return;
@@ -88,7 +87,7 @@ export const RankSheet: React.FC<RankSheetProps> = ({
   };
 
   const openPicker = () => {
-    setPickedColor(color);
+    setPickedColor(pickerStartColor(color));
     setPicking(true);
   };
 
@@ -117,7 +116,7 @@ export const RankSheet: React.FC<RankSheetProps> = ({
             label={t("confirm")}
             accent="grading"
             onPress={() => {
-              if (pickedColor) setColor(pickedColor);
+              setColor(pickedColor);
               setPicking(false);
             }}
           />
@@ -133,7 +132,7 @@ export const RankSheet: React.FC<RankSheetProps> = ({
       }
     >
       {picking ? (
-        <RankColorPicker initialColor={color} onChange={setPickedColor} />
+        <RankColorPicker initialColor={pickerStartColor(color)} onChange={setPickedColor} />
       ) : (
         <>
           <TextField

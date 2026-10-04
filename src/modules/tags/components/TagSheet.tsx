@@ -30,7 +30,7 @@ export const TagSheet: React.FC<TagSheetProps> = ({ open, onOpenChange, tag }) =
   const canSubmit = trimmed.length > 0 && (!editing || trimmed !== tag.name);
 
   const handleSubmit = async () => {
-    if (!canSubmit || isSaving) return;
+    if (!canSubmit || isSaving || (!tag && !user)) return;
     setIsSaving(true);
     try {
       if (tag) {

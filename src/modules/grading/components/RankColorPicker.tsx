@@ -3,9 +3,9 @@ import React, { useRef, useState } from "react";
 import ColorPicker, { HueSlider, Panel1 } from "reanimated-color-picker";
 import type { ColorFormatsObject, ColorPickerRef } from "reanimated-color-picker";
 import { YStack } from "tamagui";
+import { DEFAULT_RANK_COLOR as DEFAULT_COLOR } from "./rankSheetState";
 
 const HEX_COLOR_REGEX = /^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/;
-const DEFAULT_COLOR = "#FFFFFF";
 
 interface RankColorPickerProps {
   initialColor?: string | null;

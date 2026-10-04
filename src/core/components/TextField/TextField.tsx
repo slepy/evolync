@@ -54,7 +54,7 @@ export function TextField({
         value={value}
         onChangeText={onChangeText}
         placeholder={placeholder}
-        placeholderTextColor={neutral.placeholder as any}
+        placeholderTextColor={neutral.placeholder}
         autoFocus={autoFocus}
         maxLength={maxLength}
         onSubmitEditing={onSubmitEditing}
