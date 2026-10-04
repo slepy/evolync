@@ -19,6 +19,7 @@ import {
 import { usePendingJoinRequests } from "@/modules/school/hooks";
 import { DashboardStatCard } from "@/modules/dashboard/components/DashboardStatCard";
 import { NotificationBell, PushPermissionPrompt } from "@/modules/notifications";
+import { MainNav, useBottomNavSpace } from "@/core/components";
 import { useStore } from "@/store";
 import { withObservables } from "@nozbe/watermelondb/react";
 import {
@@ -44,6 +45,7 @@ interface UserDashboardInnerProps {
 function UserDashboardInner({ schools }: UserDashboardInnerProps) {
   const router = useRouter();
   const insets = useSafeAreaInsets();
+  const navSpace = useBottomNavSpace();
   const schoolMemberships = useStore((s) => s.schoolMemberships);
 
   // Fetch schools from Supabase for memberships not yet in local DB (foreign org schools)
@@ -208,6 +210,7 @@ function UserDashboardInner({ schools }: UserDashboardInnerProps) {
         <YStack flex={1} alignItems="center" justifyContent="center">
           <Spinner size="large" />
         </YStack>
+        <MainNav home="student" />
       </View>
     );
   }
@@ -233,7 +236,7 @@ function UserDashboardInner({ schools }: UserDashboardInnerProps) {
       <Header centerContent={headerCenter} leftContent={<NotificationBell />} />
       <PushPermissionPrompt />
 
-      <ScrollView>
+      <ScrollView contentContainerStyle={{ paddingBottom: navSpace }}>
         <YStack padding="$4" gap="$4">
           {pendingJoinRequests.length > 0 && (
             <YStack gap="$2">
@@ -295,6 +298,7 @@ function UserDashboardInner({ schools }: UserDashboardInnerProps) {
           )}
         </YStack>
       </ScrollView>
+      <MainNav home="student" />
     </View>
   );
 }
@@ -324,6 +328,7 @@ export default function UserDashboard() {
         <YStack flex={1} alignItems="center" justifyContent="center">
           <Spinner size="large" />
         </YStack>
+        <MainNav home="student" />
       </View>
     );
   }

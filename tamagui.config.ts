@@ -1,5 +1,109 @@
 import { config } from "@tamagui/config/v3";
-import { createTamagui, createTokens } from "tamagui";
+import { createFont, createTamagui, createTokens } from "tamagui";
+import {
+  contextColors,
+  danger,
+  fontFamilies,
+  moduleAccents,
+  neutral,
+  radii,
+  textRoles,
+  type ContextKey,
+  type ModuleAccent,
+  type ModuleKey,
+  type TextRoleKey,
+} from "./src/core/theme/tokens";
+
+// ============================================================================
+// Redesign tokens — generated from src/core/theme/tokens.ts so every value has
+// one source. Naming: $neutralCard, $studentsTint, $schoolFrom, $trashText…
+// ============================================================================
+
+type ModuleColorTokens = Record<`${ModuleKey}${Capitalize<keyof ModuleAccent>}`, string>;
+type ContextColorTokens = Record<
+  `${ContextKey}${"From" | "Via" | "To" | "Fg" | "FgSoft" | "Glow" | "Label" | "Fill"}`,
+  string
+>;
+
+const capitalize = <S extends string>(value: S) =>
+  (value.charAt(0).toUpperCase() + value.slice(1)) as Capitalize<S>;
+
+const moduleColorTokens = Object.fromEntries(
+  (Object.keys(moduleAccents) as ModuleKey[]).flatMap((module) =>
+    (Object.keys(moduleAccents[module]) as (keyof ModuleAccent)[]).map((key) => [
+      `${module}${capitalize(key)}`,
+      moduleAccents[module][key],
+    ])
+  )
+) as ModuleColorTokens;
+
+const contextColorTokens = Object.fromEntries(
+  (Object.keys(contextColors) as ContextKey[]).flatMap((context) => {
+    const c = contextColors[context];
+    return [
+      [`${context}From`, c.gradient[0].color],
+      [`${context}Via`, c.gradient[1].color],
+      [`${context}To`, c.gradient[c.gradient.length - 1].color],
+      [`${context}Fg`, c.fg],
+      [`${context}FgSoft`, c.fgSoft],
+      [`${context}Glow`, c.glow],
+      [`${context}Label`, c.label],
+      [`${context}Fill`, c.fill],
+    ];
+  })
+) as ContextColorTokens;
+
+const designColorTokens = {
+  neutralPage: neutral.page,
+  neutralCard: neutral.card,
+  neutralCardBorder: neutral.cardBorder,
+  neutralRaised: neutral.raised,
+  neutralRaisedBorder: neutral.raisedBorder,
+  neutralText: neutral.text,
+  neutralMuted: neutral.muted,
+  neutralControl: neutral.control,
+  neutralTint: neutral.tint,
+  neutralTintFill: neutral.tintFill,
+  synced: neutral.synced,
+  syncedFill: neutral.syncedFill,
+  alertDot: neutral.alertDot,
+  neutralShadow: neutral.shadow,
+  trashText: danger.text,
+  trashFill: danger.fill,
+  trashBorder: danger.border,
+  ...contextColorTokens,
+  ...moduleColorTokens,
+};
+
+// Manrope ships 500–800; v3's 400 steps fall back to Medium.
+const manropeFace = {
+  400: { normal: fontFamilies[500] },
+  500: { normal: fontFamilies[500] },
+  600: { normal: fontFamilies[600] },
+  700: { normal: fontFamilies[700] },
+  800: { normal: fontFamilies[800] },
+};
+
+const roleKeys = Object.keys(textRoles) as TextRoleKey[];
+const fromRoles = <T>(pick: (role: (typeof textRoles)[TextRoleKey]) => T) =>
+  Object.fromEntries(roleKeys.map((key) => [key, pick(textRoles[key])])) as Record<
+    TextRoleKey,
+    T
+  >;
+
+// Keeps v3's numeric scale (existing screens keep their metrics) and adds the
+// named redesign roles: fontSize="$section", fontWeight="$section", …
+function manrope(base: typeof config.fonts.body) {
+  return createFont({
+    ...base,
+    family: fontFamilies[500],
+    size: { ...base.size, ...fromRoles((r) => r.size) },
+    lineHeight: { ...base.lineHeight, ...fromRoles((r) => Math.round(r.size * 1.3)) },
+    weight: { ...base.weight, ...fromRoles((r) => String(r.weight)) },
+    letterSpacing: { ...base.letterSpacing, ...fromRoles((r) => r.letterSpacing) },
+    face: manropeFace,
+  });
+}
 
 // ============================================================================
 // Chinese-Inspired Color Palette
@@ -63,6 +167,12 @@ const customTokens = createTokens({
     chineseCoralLight: "#FB7185",
     chineseCoralLighter: "#ffe4e6",
     chineseCoralDark: "#E11D48",
+
+    ...designColorTokens,
+  },
+  radius: {
+    ...config.tokens.radius,
+    ...radii,
   },
 });
 
@@ -102,18 +212,19 @@ const lightSemantic = {
   purpleFill: "#793AAF",
 };
 
+// Dark neutrals follow the redesign (src/core/theme/tokens.ts).
 const darkSemantic: typeof lightSemantic = {
-  surface: "#1E293B",
-  surfaceTranslucent: "rgba(30, 41, 59, 0.7)",
-  textPrimary: "#F8FAFC",
+  surface: neutral.card,
+  surfaceTranslucent: "rgba(19, 24, 35, 0.7)",
+  textPrimary: neutral.text,
   textBody: "#E2E8F0",
-  textSecondary: "#CBD5E1",
-  textMuted: "#94A3B8",
-  fillMuted: "#475569",
-  borderStrong: "#475569",
-  fillStrong: "#334155",
-  borderSubtle: "#334155",
-  fillSubtle: "#1E293B",
+  textSecondary: neutral.muted,
+  textMuted: "#7D889F",
+  fillMuted: "#3A4458",
+  borderStrong: "#3A4458",
+  fillStrong: neutral.raisedBorder,
+  borderSubtle: neutral.cardBorder,
+  fillSubtle: neutral.raised,
   successSurface: "#022C22",
   successText: "#6EE7B7",
   dangerSurface: "#450A0A",
@@ -133,7 +244,7 @@ const darkSemantic: typeof lightSemantic = {
 /** Raw values for non-Tamagui consumers (navigation theme, root views). */
 export const themeColors = {
   light: { background: "#F8FAFC", ...lightSemantic },
-  dark: { background: "#0F172A", ...darkSemantic },
+  dark: { background: neutral.page, ...darkSemantic },
 };
 
 type BaseThemes = typeof config.themes;
@@ -157,6 +268,11 @@ const themes = withSemanticKeys(config.themes);
 const tamaguiConfig = createTamagui({
   ...config,
   tokens: customTokens,
+  fonts: {
+    ...config.fonts,
+    heading: manrope(config.fonts.heading),
+    body: manrope(config.fonts.body),
+  },
   themes: {
     ...themes,
     light: {
@@ -176,18 +292,18 @@ const tamaguiConfig = createTamagui({
     },
     dark: {
       ...themes.dark,
-      background: "#0F172A",
-      backgroundHover: "#1E293B",
-      backgroundPress: "#334155",
-      backgroundFocus: "#334155",
-      color: "#F8FAFC",
+      background: neutral.page,
+      backgroundHover: neutral.raised,
+      backgroundPress: neutral.raisedBorder,
+      backgroundFocus: neutral.raisedBorder,
+      color: neutral.text,
       colorHover: "#E2E8F0",
-      colorPress: "#CBD5E1",
-      colorFocus: "#CBD5E1",
-      borderColor: "#334155",
-      borderColorHover: "#475569",
-      borderColorPress: "#64748B",
-      borderColorFocus: "#64748B",
+      colorPress: neutral.muted,
+      colorFocus: neutral.muted,
+      borderColor: neutral.cardBorder,
+      borderColorHover: neutral.raisedBorder,
+      borderColorPress: "#3A4458",
+      borderColorFocus: "#3A4458",
     },
   },
   defaultTheme: "light",

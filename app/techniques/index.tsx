@@ -1,3 +1,4 @@
+import { MainNav } from "@/core/components";
 import { Header, HeaderTitle } from "@/modules/core/components";
 import { NotesModeCard } from "@/modules/techniques/components";
 import { useRouter } from "expo-router";
@@ -46,6 +47,7 @@ export default function TechniquesScreen() {
           onPress={() => router.push("/techniques/notes" as any)}
         />
       </YStack>
+      <MainNav />
     </View>
   );
 }

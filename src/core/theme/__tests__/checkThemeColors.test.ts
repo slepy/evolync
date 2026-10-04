@@ -58,4 +58,13 @@ const defaultColor = theme.chineseCyan?.val ?? "#0891B2";`),
       ['"$softGrayBark"', '"$white"'],
     );
   });
+
+  it("knows the redesign tokens and lets tokens.ts hold raw values", () => {
+    assert.deepEqual(
+      check(`<View backgroundColor="$neutralCard" borderColor="$neutralControl" />
+<Text color={on ? "$studentsTint" : "$organizationLabel"} />`),
+      [],
+    );
+    assert.deepEqual(check(`  page: { backgroundColor: "#0B0E14" },`, "src/core/theme/tokens.ts"), []);
+  });
 });

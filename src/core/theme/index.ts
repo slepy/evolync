@@ -5,6 +5,7 @@ import { resolveTheme, type ResolvedTheme } from "./resolve";
 import { createThemeStore } from "./themeStore";
 
 export type { ResolvedTheme, ThemePreference } from "./resolve";
+export * from "./tokens";
 
 export const themeStore = createThemeStore(storage);
 
