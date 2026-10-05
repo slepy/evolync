@@ -38,6 +38,8 @@ Rebuild the school dashboard (`/school/[schoolId]/dashboard`) on the redesign co
 
 ## Progress
 
+PR: #27
+
 > Convention: `- [ ]` pending, `- [x]` done. Append ` — <commit sha>` when a step lands. Do not rename step titles.
 
 ### Phase 1: Data and shared pieces
