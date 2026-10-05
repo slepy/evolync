@@ -10,6 +10,7 @@ const SOURCES = [
   "src/modules/trainings",
   "app/organization/trainings",
   "src/core/components/ChoiceList",
+  "src/core/components/AudienceChoice",
   "src/core/components/PillGroup",
   "src/core/components/DateTimeField",
   "app/user/dashboard.tsx",

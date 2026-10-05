@@ -1,4 +1,3 @@
-export { useEvents } from "./useEvents";
 export { useEvent } from "./useEvent";
 export {
   useEventParticipants,
@@ -10,3 +9,4 @@ export { useUpdateEvent } from "./useUpdateEvent";
 export { useParticipantStatus } from "./useParticipantStatus";
 export { useStudentEvents, type StudentEvent } from "./useStudentEvents";
 export { useStudentEventStatuses } from "./useStudentEventStatuses";
+export { useEventParticipantIds } from "./useEventParticipantIds";

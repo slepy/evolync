@@ -1,4 +1,5 @@
 import {
+  ActionPill,
   ListAvatar,
   ListCard,
   ListChip,
@@ -303,42 +304,3 @@ export const TrainingDetailsScreen: React.FC<TrainingDetailsScreenProps> = ({
   );
 };
 
-/** Half-width 52px action pill (11D "Edit" / "Cancel"). */
-function ActionPill({
-  label,
-  icon: Icon,
-  tint,
-  fill,
-  disabled,
-  onPress,
-}: {
-  label: string;
-  icon: LucideIcon;
-  tint: string;
-  fill: string;
-  disabled?: boolean;
-  onPress: () => void;
-}) {
-  return (
-    <XStack
-      role="button"
-      aria-label={label}
-      aria-disabled={disabled}
-      onPress={disabled ? undefined : onPress}
-      pressStyle={disabled ? undefined : { opacity: 0.8 }}
-      opacity={disabled ? 0.6 : 1}
-      flex={1}
-      height={52}
-      borderRadius={26}
-      backgroundColor={fill}
-      alignItems="center"
-      justifyContent="center"
-      gap={8}
-    >
-      <Icon size={18} color={tint} strokeWidth={2.2} />
-      <Text fontSize={15} fontWeight="$button" color={tint}>
-        {label}
-      </Text>
-    </XStack>
-  );
-}

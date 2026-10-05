@@ -1,4 +1,5 @@
 import {
+  CurrencySheet,
   ListSection,
   PhotoField,
   PrimaryButton,
@@ -11,7 +12,7 @@ import { confirmDelete } from "@/modules/core/utils/confirmDelete";
 import React, { useMemo, useState } from "react";
 import { Text, XStack, YStack } from "tamagui";
 import type { ProductDto } from "../types/dto";
-import { CurrencySheet } from "./CurrencySheet";
+import { SUPPORTED_CURRENCIES } from "../validation";
 import {
   hasProductChanges,
   initialProductForm,
@@ -196,6 +197,8 @@ export const ProductFormScreen: React.FC<ProductFormScreenProps> = ({
 
       <CurrencySheet
         open={currencyFor !== null}
+        options={SUPPORTED_CURRENCIES}
+        accent="products"
         onOpenChange={(open) => {
           if (!open) setCurrencyFor(null);
         }}

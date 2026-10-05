@@ -1,32 +1,38 @@
-import { FormSheet, ListCard, ListCheck, ListRow } from "@/core/components";
 import React from "react";
-import { SUPPORTED_CURRENCIES } from "../validation";
+import { FormSheet } from "../FormSheet";
+import { ListCard, ListCheck, ListRow } from "../List";
+import type { ListAccent } from "../List/accent";
 
-interface CurrencySheetProps {
+export interface CurrencySheetProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  /** Currency codes offered, in order. */
+  options: readonly string[];
   value?: string;
   onSelect: (currency: string) => void;
+  accent: ListAccent;
 }
 
-/** Select sheet of the CURRENCY field (board S section 7): tap a row to choose and close. */
+/** Select sheet of a CURRENCY field (board S section 7, 9B, 10A): tap a row to choose and close. */
 export const CurrencySheet: React.FC<CurrencySheetProps> = ({
   open,
   onOpenChange,
+  options,
   value,
   onSelect,
+  accent,
 }) => (
   <FormSheet open={open} onOpenChange={onOpenChange} title={t("fieldCurrency")}>
     <ListCard role="group" aria-label={t("fieldCurrency")}>
-      {SUPPORTED_CURRENCIES.map((currency) => (
+      {options.map((currency) => (
         <ListRow
           key={currency}
           size="md"
           role="option"
           title={currency}
           selected={currency === value}
-          accent="products"
-          trailing={currency === value ? <ListCheck accent="products" /> : undefined}
+          accent={accent}
+          trailing={currency === value ? <ListCheck accent={accent} /> : undefined}
           onPress={() => {
             onSelect(currency);
             onOpenChange(false);

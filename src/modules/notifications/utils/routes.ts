@@ -17,7 +17,7 @@ export function getNotificationRoute(notification: NotificationTarget): string |
 
     case NOTIFICATION_TYPE.EVENT_RSVP_ATTENDING: {
       const eventId = typeof payload.eventId === "string" ? payload.eventId : null;
-      return eventId ? `/organization/events/${eventId}` : "/organization/events";
+      return eventId ? `/organization/events/${eventId}` : "/organization/calendar";
     }
 
     case NOTIFICATION_TYPE.PAYMENT_CREATED:

@@ -1,7 +1,5 @@
 export { TrainingFormScreen } from "./TrainingFormScreen";
 export { TrainingDetailsScreen } from "./TrainingDetailsScreen";
-export { TrainingAudienceChoice } from "./TrainingAudienceChoice";
-export type { AudienceMember } from "./TrainingAudienceChoice";
 export { SeriesRuleCard } from "./SeriesRuleCard";
 export { TrainingScopeSheet } from "./TrainingScopeSheet";
 export type { TrainingScopeAction } from "./TrainingScopeSheet";
