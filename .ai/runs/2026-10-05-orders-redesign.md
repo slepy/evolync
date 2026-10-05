@@ -69,10 +69,10 @@ The design artifact (`claude.ai/artifact/5GM35Pr9XwTRWQAez7pCWx`) is not shared 
 
 ### Phase 2: Screens 12A–12F
 
-- [ ] 2.1 `OrdersScreen` (12A + 12B) + list routes
-- [ ] 2.2 `AddProductSheet` (12F)
-- [ ] 2.3 `OrderDetailsScreen` (12D) + `OrderStatusSheet` (12C) + detail routes
-- [ ] 2.4 `OrderFormScreen` (12E) + `StudentSelectSheet` (12E1 / 12E2) + create routes
+- [x] 2.1 `OrdersScreen` (12A + 12B) + list routes — 00aa407
+- [x] 2.2 `AddProductSheet` (12F) — 6d315c8
+- [x] 2.3 `OrderDetailsScreen` (12D) + `OrderStatusSheet` (12C) + detail routes — 690ef38
+- [x] 2.4 `OrderFormScreen` (12E) + `StudentSelectSheet` (12E1 / 12E2) + create routes — 0d292dc
 
 ### Phase 3: Cleanup and gate
 
