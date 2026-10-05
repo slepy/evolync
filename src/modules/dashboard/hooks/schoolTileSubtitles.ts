@@ -30,10 +30,6 @@ export function schoolTileSubtitles(counts: SchoolDashboardCounts): SchoolTileSu
     students: counted(counts.pendingJoinRequests, "dashboardStudentsSubtitle", "dashboardTileStudents"),
     attendance: { key: "dashboardTileAttendance" },
     payments: counted(counts.overduePayments, "dashboardPaymentsSubtitle", "dashboardTilePayments"),
-<<<<<<< HEAD
-    orders: counted(counts.pendingOrders, "dashboardTileOrdersPending", "dashboardTileOrders"),
-=======
     orders: counted(counts.pendingOrders, "dashboardTileOrdersPending", "dashboardTileSchoolOrders"),
->>>>>>> feat/school-dashboard-2a
   };
 }

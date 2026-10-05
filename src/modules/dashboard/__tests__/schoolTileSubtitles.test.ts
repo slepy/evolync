@@ -10,11 +10,7 @@ describe("schoolTileSubtitles", () => {
         students: { key: "dashboardTileStudents" },
         attendance: { key: "dashboardTileAttendance" },
         payments: { key: "dashboardTilePayments" },
-<<<<<<< HEAD
-        orders: { key: "dashboardTileOrders" },
-=======
         orders: { key: "dashboardTileSchoolOrders" },
->>>>>>> feat/school-dashboard-2a
       },
     );
   });
