@@ -22,10 +22,8 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   Award,
   Building2,
-  CalendarDays,
   MapPin,
   Package,
-  Repeat,
   ShoppingBag,
 } from "lucide-react-native";
 import React from "react";
@@ -182,22 +180,6 @@ function DashboardInner({ organization, schools }: OrganizationDashboardProps) {
         </ListSection>
 
         <ModuleTileGrid title={t("dashboardManage")}>
-          <ModuleTile
-            module="events"
-            icon={CalendarDays}
-            title={t("eventsTitle")}
-            subtitle={t("dashboardTileEvents")}
-            href="/organization/events"
-            addHref="/organization/events/create"
-          />
-          <ModuleTile
-            module="trainings"
-            icon={Repeat}
-            title={t("trainingsTitle")}
-            subtitle={t("dashboardTileTrainings")}
-            href="/organization/trainings"
-            addHref="/organization/trainings/create"
-          />
           <ModuleTile
             module="orders"
             icon={ShoppingBag}
