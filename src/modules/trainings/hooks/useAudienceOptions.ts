@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { SchoolRepository } from "@/modules/school/repositories";
 import { StudentRepository } from "@/modules/students/repositories";
-import type { AudienceMember } from "../components/TrainingAudienceFields";
+import type { AudienceMember } from "../components/TrainingAudienceChoice";
 
 /** Schools and members offered by the audience picker (as the event form does). */
 export const useAudienceOptions = (organizationId: string | undefined) => {
