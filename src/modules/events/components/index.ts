@@ -3,8 +3,6 @@ export {
   BADGE_VARIANT,
   type BadgeVariant,
 } from "./EventStatusBadge";
-export { EventCard } from "./EventCard";
-export { EventForm, type EventFormHandle } from "./EventForm";
 export { EventFormScreen } from "./EventFormScreen";
 export * from "./eventFormState";
 export { EventDetailsScreen } from "./EventDetailsScreen";

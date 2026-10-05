@@ -1,4 +1,3 @@
-export { useEvents } from "./useEvents";
 export { useEvent } from "./useEvent";
 export {
   useEventParticipants,
