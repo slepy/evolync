@@ -72,9 +72,9 @@ Canvas boards (local copies of the "Evolync Redesign Mockups" canvas, read from 
 
 ### Phase 2: Screens 10A–10E
 
-- [ ] 2.1 Event form screen and create / edit routes
-- [ ] 2.2 Event details screen and cancel / delete sheet
-- [ ] 2.3 Participants screen
+- [x] 2.1 Event form screen and create / edit routes — af8efbe
+- [x] 2.2 Event details screen and cancel / delete sheet — 2e4ef7d
+- [x] 2.3 Participants screen — f9e002d
 
 ### Phase 3: Calendar-only entry and cleanup
 
