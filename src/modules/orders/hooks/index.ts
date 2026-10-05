@@ -5,3 +5,4 @@ export * from './useMemberOrders';
 export * from './useOrganizationOrders';
 export * from './useOrdersList';
 export * from './useOrganizationIdOfSchool';
+export * from './useSchoolStudents';

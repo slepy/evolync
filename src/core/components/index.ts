@@ -13,6 +13,7 @@ export * from "./TrashButton";
 export * from "./TextField";
 export * from "./FormSheet";
 export * from "./SelectField";
+export * from "./SearchField";
 export * from "./PhotoField";
 export * from "./Calendar";
 export * from "./ChoiceList";
