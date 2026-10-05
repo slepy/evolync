@@ -1,20 +1,21 @@
-import {
-  ChoiceList,
-  FormSheet,
-  ListAvatar,
-  ListCard,
-  ListCheck,
-  ListCheckbox,
-  ListIcon,
-  ListRow,
-  ListSection,
-} from "@/core/components";
-import { TRAINING_VISIBILITY, type TrainingVisibility } from "@/database/models/Training";
 import { School } from "lucide-react-native";
 import React, { useState } from "react";
 import { ScrollView } from "react-native";
 import { Text, YStack } from "tamagui";
-import { memberInitials } from "./format";
+import { ChoiceList } from "../ChoiceList";
+import { FormSheet } from "../FormSheet";
+import { ListAvatar, ListCard, ListCheck, ListCheckbox, ListIcon, ListRow, ListSection } from "../List";
+import type { ListAccent } from "../List/accent";
+import { memberInitials } from "./initials";
+
+/** Who an event or a training is for (same values as their `visibility`). */
+export const AUDIENCE = {
+  ORGANIZATION: "organization",
+  SCHOOL: "school",
+  WHITELIST: "whitelist",
+} as const;
+
+export type Audience = (typeof AUDIENCE)[keyof typeof AUDIENCE];
 
 export interface AudienceMember {
   id: string;
@@ -22,11 +23,14 @@ export interface AudienceMember {
   schoolName?: string;
 }
 
-interface TrainingAudienceChoiceProps {
-  visibility: TrainingVisibility;
+export interface AudienceChoiceProps<T extends Audience> {
+  /** "Who is it for?" (trainings) / "Who can see it?" (events). */
+  title: string;
+  accent: ListAccent;
+  visibility: T;
   schoolId?: string;
   inviteeIds: string[];
-  onVisibilityChange: (value: TrainingVisibility) => void;
+  onVisibilityChange: (value: T) => void;
   onSchoolChange: (schoolId: string) => void;
   onInviteesChange: (ids: string[]) => void;
   schools: Array<{ id: string; name: string }>;
@@ -36,11 +40,13 @@ interface TrainingAudienceChoiceProps {
 }
 
 /**
- * "Who is it for?" (11A / 11B): entire organization, one school (picked in
+ * Audience choice (10A / 11A): entire organization, one school (picked in
  * a sheet, its name shown as the hint; tapping it again changes the school)
- * or selected members (checkbox list under the choice).
+ * or selected members (SELECT MEMBERS checkbox list under the choice, 10B).
  */
-export const TrainingAudienceChoice: React.FC<TrainingAudienceChoiceProps> = ({
+export function AudienceChoice<T extends Audience>({
+  title,
+  accent,
   visibility,
   schoolId,
   inviteeIds,
@@ -51,12 +57,12 @@ export const TrainingAudienceChoice: React.FC<TrainingAudienceChoiceProps> = ({
   members,
   errors,
   disabled,
-}) => {
+}: AudienceChoiceProps<T>) {
   const [schoolSheetOpen, setSchoolSheetOpen] = useState(false);
   const schoolName = schools.find((s) => s.id === schoolId)?.name;
 
-  const choose = (value: TrainingVisibility) => {
-    if (value === TRAINING_VISIBILITY.SCHOOL) {
+  const choose = (value: T) => {
+    if (value === AUDIENCE.SCHOOL) {
       if (schools.length === 1) onSchoolChange(schools[0].id);
       else if (schools.length > 1) setSchoolSheetOpen(true);
     }
@@ -68,37 +74,37 @@ export const TrainingAudienceChoice: React.FC<TrainingAudienceChoiceProps> = ({
 
   return (
     <YStack gap={16}>
-      <ChoiceList
-        title={t("trainingsAudienceTitle")}
-        accent="trainings"
+      <ChoiceList<T>
+        title={title}
+        accent={accent}
         value={visibility}
         onChange={choose}
         disabled={disabled}
-        error={errors?.visibility ?? (visibility === TRAINING_VISIBILITY.SCHOOL ? errors?.schoolId : undefined)}
+        error={errors?.visibility ?? (visibility === AUDIENCE.SCHOOL ? errors?.schoolId : undefined)}
         options={[
           {
-            value: TRAINING_VISIBILITY.ORGANIZATION,
-            title: t("trainingsAudienceEntireOrganization"),
-            hint: t("trainingsAudienceOrganizationHint"),
+            value: AUDIENCE.ORGANIZATION as T,
+            title: t("audienceEntireOrganization"),
+            hint: t("audienceOrganizationHint"),
           },
           {
-            value: TRAINING_VISIBILITY.SCHOOL,
-            title: t("trainingsAudienceSchool"),
-            hint: (visibility === TRAINING_VISIBILITY.SCHOOL && schoolName) || t("trainingsAudienceSchoolHint"),
+            value: AUDIENCE.SCHOOL as T,
+            title: t("audienceSchool"),
+            hint: (visibility === AUDIENCE.SCHOOL && schoolName) || t("audienceSchoolHint"),
           },
           {
-            value: TRAINING_VISIBILITY.WHITELIST,
-            title: t("trainingsAudienceSelected"),
-            hint: t("trainingsAudienceSelectedHint"),
+            value: AUDIENCE.WHITELIST as T,
+            title: t("audienceSelected"),
+            hint: t("audienceSelectedHint"),
           },
         ]}
       />
 
-      {visibility === TRAINING_VISIBILITY.WHITELIST ? (
+      {visibility === AUDIENCE.WHITELIST ? (
         <ListSection
           variant="label"
-          title={t("trainingsSelectMembers")}
-          accent="trainings"
+          title={t("audienceSelectMembers")}
+          accent={accent}
           chip={inviteeIds.length > 0 ? t("selectedCount", { count: inviteeIds.length }) : undefined}
         >
           {members.length === 0 ? (
@@ -106,7 +112,7 @@ export const TrainingAudienceChoice: React.FC<TrainingAudienceChoiceProps> = ({
               {t("emptyNoMembersAvailable")}
             </Text>
           ) : (
-            <ListCard role="group" aria-label={t("trainingsSelectMembers")}>
+            <ListCard role="group" aria-label={t("audienceSelectMembers")}>
               {members.map((member) => {
                 const checked = inviteeIds.includes(member.id);
                 return (
@@ -118,7 +124,7 @@ export const TrainingAudienceChoice: React.FC<TrainingAudienceChoiceProps> = ({
                     title={member.displayName}
                     subtitle={member.schoolName}
                     leading={<ListAvatar initials={memberInitials(member.displayName)} />}
-                    trailing={<ListCheckbox checked={checked} accent="trainings" />}
+                    trailing={<ListCheckbox checked={checked} accent={accent} />}
                     onPress={disabled ? undefined : () => toggleMember(member.id)}
                   />
                 );
@@ -133,9 +139,9 @@ export const TrainingAudienceChoice: React.FC<TrainingAudienceChoiceProps> = ({
         </ListSection>
       ) : null}
 
-      <FormSheet open={schoolSheetOpen} onOpenChange={setSchoolSheetOpen} title={t("eventsSchoolPlaceholder")}>
+      <FormSheet open={schoolSheetOpen} onOpenChange={setSchoolSheetOpen} title={t("audienceSelectSchool")}>
         <ScrollView style={{ maxHeight: 420 }}>
-          <ListCard role="radiogroup" aria-label={t("eventsSchoolPlaceholder")}>
+          <ListCard role="radiogroup" aria-label={t("audienceSelectSchool")}>
             {schools.map((school) => (
               <ListRow
                 key={school.id}
@@ -144,12 +150,12 @@ export const TrainingAudienceChoice: React.FC<TrainingAudienceChoiceProps> = ({
                 aria-checked={school.id === schoolId}
                 title={school.name}
                 selected={school.id === schoolId}
-                accent="trainings"
+                accent={accent}
                 leading={<ListIcon icon={School} accent="school" size={44} />}
-                trailing={school.id === schoolId ? <ListCheck accent="trainings" /> : undefined}
+                trailing={school.id === schoolId ? <ListCheck accent={accent} /> : undefined}
                 onPress={() => {
                   onSchoolChange(school.id);
-                  onVisibilityChange(TRAINING_VISIBILITY.SCHOOL);
+                  onVisibilityChange(AUDIENCE.SCHOOL as T);
                   setSchoolSheetOpen(false);
                 }}
               />
@@ -159,4 +165,4 @@ export const TrainingAudienceChoice: React.FC<TrainingAudienceChoiceProps> = ({
       </FormSheet>
     </YStack>
   );
-};
+}

@@ -1,6 +1,8 @@
 import {
+  AudienceChoice,
   DateTimeField,
   ListChip,
+  type AudienceMember,
   PillGroup,
   PrimaryButton,
   SubScreenPage,
@@ -19,7 +21,6 @@ import type { TrainingFormValues } from "../validation";
 import { formatDay } from "./format";
 import { SchoolAddressSheet } from "./SchoolAddressSheet";
 import { SeriesRuleCard } from "./SeriesRuleCard";
-import { TrainingAudienceChoice, type AudienceMember } from "./TrainingAudienceChoice";
 import {
   countOccurrences,
   hasTrainingChanges,
@@ -340,7 +341,9 @@ export const TrainingFormScreen: React.FC<TrainingFormScreenProps> = ({
             ) : null}
           </YStack>
 
-          <TrainingAudienceChoice
+          <AudienceChoice
+            title={t("trainingsAudienceTitle")}
+            accent="trainings"
             visibility={form.visibility}
             schoolId={form.schoolId}
             inviteeIds={form.inviteeIds}

@@ -24,12 +24,4 @@ export const WEEKDAYS_MONDAY_FIRST = [1, 2, 3, 4, 5, 6, 0] as const;
 
 export const weekdayShort = (weekday: number): string => t(`trainingsWeekdayShort${weekday}`);
 
-/** Up to two initials of a person's name ("Anna Nowak" → "AN"). */
-export const memberInitials = (name: string): string =>
-  name
-    .trim()
-    .split(/\s+/)
-    .filter(Boolean)
-    .slice(0, 2)
-    .map((part) => part[0]!.toUpperCase())
-    .join("") || "?";
+export { memberInitials } from "@/core/components/AudienceChoice/initials";
