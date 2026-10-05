@@ -19,14 +19,14 @@ describe("getNotificationRoute", () => {
     assert.equal(getNotificationRoute({ type: "join_request_created", entityId: "r1" }), null);
   });
 
-  it("N3 RSVP → the event detail (participant id is not the event id)", () => {
+  it("N3 RSVP → the event detail (participant id is not the event id), else the calendar", () => {
     assert.equal(
       getNotificationRoute({ type: "event_rsvp_attending", entityId: "p1", payload: { eventId: "e1" } }),
       "/organization/events/e1",
     );
     assert.equal(
       getNotificationRoute({ type: "event_rsvp_attending", entityId: "p1" }),
-      "/organization/events",
+      "/organization/calendar", // no events list: the calendar holds them
     );
   });
 
