@@ -47,5 +47,5 @@ Rebuild the school dashboard (`/school/[schoolId]/dashboard`) on the redesign co
 
 ### Phase 2: Dashboard screen
 
-- [ ] 2.1 Rewrite `SchoolDashboard` on the 2A layout (header, red Next up with trainings only, tiles, settings row, notebook, nav)
-- [ ] 2.2 Translations (en + pl) and cleanup of the unused FAB / stat card
+- [x] 2.1 Rewrite `SchoolDashboard` on the 2A layout (header, red Next up with trainings only, tiles, settings row, notebook, nav) — 1f19253
+- [x] 2.2 Translations (en + pl) and cleanup of the unused FAB / stat card — 3dfad9f
