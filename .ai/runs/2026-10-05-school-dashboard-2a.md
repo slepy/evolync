@@ -42,8 +42,8 @@ Rebuild the school dashboard (`/school/[schoolId]/dashboard`) on the redesign co
 
 ### Phase 1: Data and shared pieces
 
-- [ ] 1.1 School dashboard hook: per-school pending orders count like the organization dashboard + pure subtitle helper with tests
-- [ ] 1.2 Shared `SettingsTile` wide row in `src/core/components`
+- [x] 1.1 School dashboard hook: per-school pending orders count like the organization dashboard + pure subtitle helper with tests — 9b12029
+- [x] 1.2 Shared `SettingsTile` wide row in `src/core/components` — 2a07bc0
 
 ### Phase 2: Dashboard screen
 
