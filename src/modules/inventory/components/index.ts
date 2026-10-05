@@ -2,5 +2,5 @@
 // Inventory Components
 // ============================================================================
 
-export { ProductForm } from './ProductForm';
-export { ProductCard } from './ProductCard';
+export { ProductsScreen } from './ProductsScreen';
+export { ProductFormScreen } from './ProductFormScreen';

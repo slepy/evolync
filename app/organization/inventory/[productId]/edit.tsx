@@ -1,198 +1,88 @@
-import {
-  Header,
-  HeaderTitle,
-  SubmitComponent,
-} from "@/modules/core/components";
-import { useDirtyFlag } from "@/modules/core/hooks";
 import { LoadingScreen } from "@/modules/core/components/LoadingScreen";
 import { confirmDelete } from "@/modules/core/utils/confirmDelete";
-import { OrderItemRepository } from "@/modules/orders/repositories";
-
-import {
-  ProductForm,
-  ProductFormHandle,
-} from "@/modules/inventory/components/ProductForm";
-import { useEditProduct } from "@/modules/inventory/hooks";
+import { ProductFormScreen } from "@/modules/inventory/components";
 import {
   deleteProduct,
   getProductById,
+  updateProductWithVariants,
 } from "@/modules/inventory/services/productService";
 import type { ProductDto } from "@/modules/inventory/types/dto";
-import { useLocalSearchParams, useRouter } from "expo-router";
-import { Trash2 } from "lucide-react-native";
-import React, { useEffect, useRef, useState } from "react";
-import { KeyboardAvoidingView, Platform, ScrollView, View } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { Button, Text, useTheme, YStack } from "tamagui";
+import { OrderItemRepository } from "@/modules/orders/repositories";
 import { useRequireOrganizationOwner } from "@/modules/organization/hooks/useRequireOrganizationOwner";
+import { useLocalSearchParams, useRouter } from "expo-router";
+import React, { useEffect, useState } from "react";
 
-/**
- * Screen for editing an existing product
- *
- * Route: /inventory/[productId]/edit
- *
- * Features:
- * - Form with product details and variants
- * - Validation (Zod)
- * - Offline support
- * - Optimistic UI (immediate feedback)
- * - Auto-navigation on success
- */
+/** Edit product (9C). Route: /organization/inventory/[productId]/edit */
 export default function EditProductScreen() {
   useRequireOrganizationOwner();
   const router = useRouter();
   const { productId } = useLocalSearchParams<{ productId: string }>();
-  const scrollViewRef = useRef<ScrollView>(null);
-  const formRef = useRef<ProductFormHandle>(null);
-  const insets = useSafeAreaInsets();
-
-  const [initialData, setInitialData] = useState<ProductDto | null>(null);
-  const [loadingProduct, setLoadingProduct] = useState(true);
-
-  const { updateProduct, isLoading, error, reset } = useEditProduct();
-  const { isDirty, markDirty, reset: resetDirty } = useDirtyFlag();
-  const theme = useTheme();
-
-  const handleDelete = async () => {
-    if (!productId) return;
-
-    const variantIds = initialData?.variants.map((v) => v.id).filter(Boolean) as
-      | string[]
-      | undefined;
-    const orderCount = variantIds?.length
-      ? await OrderItemRepository.countByVariantIds(variantIds)
-      : 0;
-
-    const message =
-      orderCount > 0
-        ? t("inventoryDeleteProductConfirmWithOrders", { count: orderCount })
-        : t("inventoryDeleteProductConfirm");
-
-    confirmDelete(t("delete"), message, async () => {
-      await deleteProduct(productId);
-      router.back();
-    });
-  };
-
-  // Load product data
-  useEffect(() => {
-    if (!productId) return;
-
-    const loadProduct = async () => {
-      try {
-        const product = await getProductById(productId);
-        if (product) {
-          setInitialData({
-            name: product.name,
-            description: product.description ?? undefined,
-            imageUri: product.imageUrl ?? undefined,
-            variants: product.variants.map((v) => ({
-              id: v.id,
-              name: v.name,
-              price: v.price,
-              currency: v.currency,
-              stockQuantity: v.stockQuantity,
-            })),
-          });
-        }
-      } catch (err) {
-        console.error("Error loading product:", err);
-      } finally {
-        setLoadingProduct(false);
-      }
-    };
-
-    loadProduct();
-  }, [productId]);
-
-  const handleSubmit = async (data: ProductDto) => {
-    if (!productId) return;
-
-    const product = await updateProduct(productId, data);
-    if (product) {
-      resetDirty();
-      router.back();
-    }
-  };
-
-  const handleScrollToEnd = () => {
-    scrollViewRef.current?.scrollToEnd({ animated: true });
-  };
+  const [product, setProduct] = useState<ProductDto | null>(null);
 
   useEffect(() => {
     if (!productId) {
       router.back();
+      return;
     }
+
+    getProductById(productId)
+      .then((found) => {
+        if (!found) {
+          router.back();
+          return;
+        }
+        setProduct({
+          name: found.name,
+          description: found.description ?? undefined,
+          imageUri: found.imageUrl ?? undefined,
+          variants: found.variants.map((v) => ({
+            id: v.id,
+            name: v.name,
+            price: v.price,
+            currency: v.currency,
+            stockQuantity: v.stockQuantity,
+          })),
+        });
+      })
+      .catch((err) => {
+        console.error("Error loading product:", err);
+        router.back();
+      });
   }, [productId, router]);
 
-  if (!initialData) {
-    return (
-      <View style={{ flex: 1, paddingTop: insets.top }}>
-        <Header
-          onBack={() => router.back()}
-          centerContent={<HeaderTitle text={t("inventoryEditTitle")} />}
-        />
-        <YStack flex={1} justifyContent="center" alignItems="center">
-          <Text color="$textPrimary">{t("errorNotFound")}</Text>
-        </YStack>
-      </View>
+  const handleSubmit = async (data: ProductDto) => {
+    await updateProductWithVariants(productId, data);
+    router.back();
+  };
+
+  // Orders keep showing a deleted product, so the confirmation says how many reference it.
+  const handleDelete = async () => {
+    const variantIds = (product?.variants ?? [])
+      .map((v) => v.id)
+      .filter((id): id is string => !!id);
+    const orderCount = variantIds.length
+      ? await OrderItemRepository.countByVariantIds(variantIds)
+      : 0;
+
+    confirmDelete(
+      t("delete"),
+      orderCount > 0
+        ? t("inventoryDeleteProductConfirmWithOrders", { count: orderCount })
+        : t("inventoryDeleteProductConfirm"),
+      async () => {
+        await deleteProduct(productId);
+        router.back();
+      },
     );
-  }
+  };
+
+  if (!product) return <LoadingScreen />;
 
   return (
-    <View style={{ flex: 1, paddingTop: insets.top }}>
-      <Header
-        onBack={() => router.back()}
-        centerContent={<HeaderTitle text={t("inventoryEditTitle")} />}
-        rightContent={
-          <Button size="$3" chromeless onPress={handleDelete} disabled={isLoading}>
-            <Trash2 size={20} color={theme.dangerText?.val} pointerEvents="none" />
-          </Button>
-        }
-      />
-
-      <KeyboardAvoidingView
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
-        style={{ flex: 1 }}
-      >
-        <YStack flex={1}>
-          <ScrollView
-            ref={scrollViewRef}
-            contentContainerStyle={{
-              flexGrow: 1,
-              padding: 20,
-            }}
-            keyboardShouldPersistTaps="handled"
-          >
-            <YStack
-              maxWidth={500}
-              width="100%"
-              alignSelf="center"
-              gap="$4"
-              paddingVertical="$4"
-            >
-              <ProductForm
-                ref={formRef}
-                initialData={initialData}
-                onSubmit={handleSubmit}
-                isLoading={isLoading}
-                error={error}
-                onResetError={reset}
-                onVariantAdded={handleScrollToEnd}
-                onDirtyChange={(dirty) => { if (dirty) markDirty(); }}
-              />
-            </YStack>
-          </ScrollView>
-
-          {isDirty && (
-            <SubmitComponent
-              onPress={() => formRef.current?.submit()}
-              isLoading={isLoading}
-              disabled={isLoading}
-            />
-          )}
-        </YStack>
-      </KeyboardAvoidingView>
-    </View>
+    <ProductFormScreen
+      product={product}
+      onSubmit={handleSubmit}
+      onDelete={handleDelete}
+    />
   );
 }
