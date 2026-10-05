@@ -382,6 +382,8 @@
   "ordersUnknownProduct": "Nieznany produkt",
   "ordersUnknownVariant": "Nieznany wariant",
   "ordersCopiedToClipboard": "Lista produktów skopiowana do schowka",
+  "ordersNoItems": "W tym zamówieniu nie ma jeszcze produktów.",
+  "ordersLockedHint": "To zamówienie jest już realizowane i nie można go zmienić.",
   "ordersNoProducts": "W katalogu nie ma jeszcze produktów.",
   "ordersAddProduct": "Dodaj produkt",
   "ordersAddProductHint": "Dotknij produktu, aby wybrać rozmiary",

@@ -380,6 +380,8 @@
   "ordersUnknownProduct": "Unknown Product",
   "ordersUnknownVariant": "Unknown Variant",
   "ordersCopiedToClipboard": "Products list copied to clipboard",
+  "ordersNoItems": "No products in this order yet.",
+  "ordersLockedHint": "This order is already being processed and can no longer be changed.",
   "ordersNoProducts": "No products in the catalog yet.",
   "ordersAddProduct": "Add product",
   "ordersAddProductHint": "Tap a product to choose sizes",
