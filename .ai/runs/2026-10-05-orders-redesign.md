@@ -64,8 +64,8 @@ The design artifact (`claude.ai/artifact/5GM35Pr9XwTRWQAez7pCWx`) is not shared 
 
 ### Phase 1: Shared avatar and order logic
 
-- [ ] 1.1 `ListAvatar` photo with initials fallback; pass member photos in existing people rows
-- [ ] 1.2 `orderListState.ts` + `orderAccess.ts` + `orderCart.ts` with unit tests
+- [x] 1.1 `ListAvatar` photo with initials fallback; pass member photos in existing people rows — 06f200f
+- [x] 1.2 `orderListState.ts` + `orderAccess.ts` + `orderCart.ts` with unit tests — 232fc18
 
 ### Phase 2: Screens 12A–12F
 
