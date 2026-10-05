@@ -1,3 +1,4 @@
+import type { ContextKey } from "@/core/theme/tokens";
 import { NotificationRepository } from "@/modules/notifications/repositories";
 import { useStore } from "@/store";
 import { usePathname, useRouter, type Href } from "expo-router";
@@ -17,6 +18,8 @@ import { useNavStore } from "./navStore";
 export interface MainNavProps {
   /** Set on a dashboard: makes it the Home the tab screens go back to. */
   home?: NavHome;
+  /** Color of the active pill when it differs from Home's (the school dashboard is red). */
+  context?: ContextKey;
 }
 
 function useUnreadCount(userId: string | undefined): number {
@@ -39,7 +42,7 @@ function useUnreadCount(userId: string | undefined): number {
  * active item from the route, the Home dashboard from the last one shown and
  * the unread alerts from the local database.
  */
-export function MainNav({ home: homeProp }: MainNavProps) {
+export function MainNav({ home: homeProp, context }: MainNavProps) {
   const router = useRouter();
   const pathname = usePathname();
   const ownsOrganization = useStore((s) => !!s.organization);
@@ -69,5 +72,5 @@ export function MainNav({ home: homeProp }: MainNavProps) {
     { key: "settings", icon: Settings, label: t("navSettings"), onPress: go(NAV_HREF.settings) },
   ];
 
-  return <BottomNav context={home} items={items} activeKey={activeNavKey(pathname)} />;
+  return <BottomNav context={context ?? home} items={items} activeKey={activeNavKey(pathname)} />;
 }

@@ -51,3 +51,11 @@ PR: #27
 
 - [x] 2.1 Rewrite `SchoolDashboard` on the 2A layout (header, red Next up with trainings only, tiles, settings row, notebook, nav) — 1f19253
 - [x] 2.2 Translations (en + pl) and cleanup of the unused FAB / stat card — 3dfad9f
+<<<<<<< HEAD
+=======
+
+### Phase 3: Review feedback (board 2A read from a local canvas copy)
+
+- [x] 3.1 Header with back button instead of the context switcher, no notebook section, `+` on Orders — a64c3a8
+- [x] 3.2 Tile order Students, Payments, Orders, Attendance; no section title; design copy; red active Home pill — 156a5d7
+>>>>>>> feat/school-dashboard-2a
