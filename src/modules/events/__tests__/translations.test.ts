@@ -12,6 +12,7 @@ const SOURCES = [
   "app/organization/events",
   "src/core/components/AudienceChoice",
   "src/core/components/CurrencySheet",
+  "src/core/components/StatusSummary",
 ];
 
 const files = (entry: string): string[] => {

@@ -6,7 +6,7 @@ import { nextParticipantStatus, PARTICIPANT_STATUS_STYLE } from "../constants";
 import { useEvent } from "../hooks/useEvent";
 import { useEventParticipants } from "../hooks/useEventParticipants";
 import type { EventParticipantStatus } from "@/database/models/EventParticipant";
-import { ParticipantCountsCard } from "./ParticipantCountsCard";
+import { ParticipantSummary } from "./ParticipantSummary";
 
 interface EventParticipantsScreenProps {
   eventId: string;
@@ -15,8 +15,8 @@ interface EventParticipantsScreenProps {
 }
 
 /**
- * Participants (10D): the event name, Absent / Attending / Paid counters,
- * member rows whose status chip cycles on tap; Save appears after a change.
+ * Participants (10D): the event name, the static Status summary, member
+ * rows whose round status button cycles on tap; Save appears after a change.
  */
 export const EventParticipantsScreen: React.FC<EventParticipantsScreenProps> = ({ eventId, onSaved }) => {
   const { event } = useEvent(eventId);
@@ -53,7 +53,7 @@ export const EventParticipantsScreen: React.FC<EventParticipantsScreenProps> = (
           {event.name}
         </Text>
       ) : null}
-      <ParticipantCountsCard counts={counts} />
+      <ParticipantSummary counts={counts} />
       <Text fontSize={13} fontWeight="$secondary" color="$neutralMuted">
         {t("eventsStatusHint")}
       </Text>
@@ -80,7 +80,7 @@ export const EventParticipantsScreen: React.FC<EventParticipantsScreenProps> = (
                 subtitle={item.member.email}
                 leading={<ListAvatar initials={memberInitials(name)} />}
                 trailing={
-                  <StatusChip
+                  <StatusButton
                     status={item.status}
                     disabled={isSaving}
                     onPress={() => toggleStatus(item.participant.id, nextParticipantStatus(item.status))}
@@ -95,8 +95,8 @@ export const EventParticipantsScreen: React.FC<EventParticipantsScreenProps> = (
   );
 };
 
-/** 40px status pill in the status color; a tap moves to the next status. */
-function StatusChip({
+/** 44px round status button, icon only (Paid wallet, Attending check, Absent x); a tap moves to the next status. */
+function StatusButton({
   status,
   disabled,
   onPress,
@@ -112,19 +112,15 @@ function StatusChip({
       aria-label={t("eventsChangeStatus", { status: t(label) })}
       onPress={disabled ? undefined : onPress}
       pressStyle={{ opacity: 0.8 }}
-      height={40}
-      paddingLeft={11}
-      paddingRight={14}
-      borderRadius={20}
-      backgroundColor={withAlpha(tint, 0.14)}
+      width={44}
+      height={44}
+      borderRadius={22}
+      backgroundColor={withAlpha(tint, 0.16)}
       alignItems="center"
-      gap={6}
+      justifyContent="center"
       flexShrink={0}
     >
-      <Icon size={16} color={tint} strokeWidth={2.4} />
-      <Text fontSize={13} fontWeight="$button" color={tint}>
-        {t(label)}
-      </Text>
+      <Icon size={18} color={tint} strokeWidth={2.6} />
     </XStack>
   );
 }

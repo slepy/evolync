@@ -1,5 +1,5 @@
 import { moduleAccents, neutral } from "@/core/theme/tokens";
-import { Check, Clock, X, type LucideIcon } from "lucide-react-native";
+import { Check, Wallet, X, type LucideIcon } from "lucide-react-native";
 import {
   type EventParticipantStatus,
   EVENT_PARTICIPANT_STATUS,
@@ -19,12 +19,33 @@ export const PARTICIPANT_STATUS_CYCLE: EventParticipantStatus[] = [
 export const nextParticipantStatus = (status: EventParticipantStatus): EventParticipantStatus =>
   PARTICIPANT_STATUS_CYCLE[(PARTICIPANT_STATUS_CYCLE.indexOf(status) + 1) % PARTICIPANT_STATUS_CYCLE.length];
 
-/** Icon, color and label key of a participant status (10C counters, 10D chips). */
+/** Order of statuses in the Status summary (board S §6): Paid, Attending, Absent. */
+export const PARTICIPANT_SUMMARY_ORDER: EventParticipantStatus[] = [
+  EVENT_PARTICIPANT_STATUS.PAID,
+  EVENT_PARTICIPANT_STATUS.ATTENDING,
+  EVENT_PARTICIPANT_STATUS.ABSENT,
+];
+
+/**
+ * Icon, colors and label key of a participant status (10C / 10D summary,
+ * 10D status buttons): Paid wallet, Attending check, Absent x. Absent's bar
+ * segment is darker than its icon, for contrast.
+ */
 export const PARTICIPANT_STATUS_STYLE: Record<
   EventParticipantStatus,
-  { icon: LucideIcon; tint: string; label: string }
+  { icon: LucideIcon; tint: string; barColor: string; label: string }
 > = {
-  [EVENT_PARTICIPANT_STATUS.ABSENT]: { icon: X, tint: neutral.tint, label: "statusAbsent" },
-  [EVENT_PARTICIPANT_STATUS.ATTENDING]: { icon: Clock, tint: moduleAccents.events.from, label: "statusAttending" },
-  [EVENT_PARTICIPANT_STATUS.PAID]: { icon: Check, tint: moduleAccents.payments.tint, label: "statusPaid" },
+  [EVENT_PARTICIPANT_STATUS.ABSENT]: { icon: X, tint: neutral.tint, barColor: neutral.control, label: "statusAbsent" },
+  [EVENT_PARTICIPANT_STATUS.ATTENDING]: {
+    icon: Check,
+    tint: moduleAccents.events.from,
+    barColor: moduleAccents.events.from,
+    label: "statusAttending",
+  },
+  [EVENT_PARTICIPANT_STATUS.PAID]: {
+    icon: Wallet,
+    tint: moduleAccents.payments.tint,
+    barColor: moduleAccents.payments.tint,
+    label: "statusPaid",
+  },
 };
