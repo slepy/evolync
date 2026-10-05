@@ -6,12 +6,9 @@ import { PaymentStatus } from "@/database/models/PaymentRecord";
 import { SchoolJoinRequestRepository } from "@/modules/school/repositories/schoolJoinRequestRepository";
 import { useEffect, useState } from "react";
 import type { Subscription } from "rxjs";
+import type { SchoolDashboardCounts } from "./schoolTileSubtitles";
 
-interface SchoolDashboardData {
-  pendingOrders: number;
-  pendingJoinRequests: number;
-  overduePayments: number;
-}
+type SchoolDashboardData = SchoolDashboardCounts;
 
 /**
  * Custom hook for observing school dashboard data from WatermelonDB
@@ -35,12 +32,11 @@ export const useSchoolDashboard = (schoolId: string) => {
     const subscriptions: Subscription[] = [];
     let overdueRecordsSubscription: Subscription | undefined;
 
-    const ordersSubscription = OrderRepository.observeBySchoolId(
-      schoolId,
-    ).subscribe((orders) => {
-      const pendingOrders = orders.filter(
-        (order) => order.status === OrderStatus.PLACED,
-      ).length;
+    // Same count as the organization dashboard's Orders tile, for this school only.
+    const ordersSubscription = OrderRepository.observeCountBySchoolIds(
+      [schoolId],
+      OrderStatus.PLACED,
+    ).subscribe((pendingOrders) => {
       setDashboardData((prev) => ({ ...prev, pendingOrders }));
       setIsLoading(false);
     });

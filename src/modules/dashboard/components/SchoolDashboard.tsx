@@ -1,24 +1,31 @@
+import {
+  ContextSheet,
+  DashboardHeader,
+  DashboardPage,
+  MainNav,
+  ModuleTile,
+  ModuleTileGrid,
+  NextUp,
+  SettingsTile,
+  SyncedPill,
+  TechniqueNotebook,
+  type ContextOption,
+} from "@/core/components";
 import School from "@/database/models/School";
-import { useTodaySession } from "@/modules/attendance/hooks";
-import { Header, HeaderTitle } from "@/modules/core/components";
+import { schoolTileSubtitles, type TileSubtitle } from "@/modules/dashboard/hooks/schoolTileSubtitles";
 import { useSchoolDashboard } from "@/modules/dashboard/hooks/useSchoolDashboard";
 import { SchoolRepository } from "@/modules/school";
+import { useStore } from "@/store";
 import { withObservables } from "@nozbe/watermelondb/react";
 import { useRouter } from "expo-router";
 import {
-  Calendar,
+  CalendarCheck,
   CreditCard,
   Settings,
   ShoppingBag,
   Users,
-  CalendarClock,
 } from "lucide-react-native";
-import React from "react";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { ScrollView, Text, XStack, YStack } from "tamagui";
-import { DashboardFAB } from "./DashboardFAB";
-import { DashboardStatCard } from "./DashboardStatCard";
-import { useSchoolUpcomingTrainings, useTrainingsBadge } from "@/modules/trainings";
+import React, { useMemo, useState } from "react";
 
 // ============================================================================
 // Types
@@ -31,99 +38,64 @@ interface SchoolDashboardProps {
   schools: School[];
 }
 
+const subtitle = ({ key, count }: TileSubtitle) =>
+  count === undefined ? t(key) : t(key, { count });
+
 // ============================================================================
 // SchoolDashboard Component
 // ============================================================================
 
 /**
- * Main dashboard component for a specific school.
- *
- * Features:
- * - School switcher in header
- * - Sync status indicator
- * - Key metrics tiles (Students, Payments, Orders, Attendance, Communication)
- * - FAB for quick actions
- * - Responsive grid layout
- * - Offline-first architecture
- *
- * This component will later be connected to WatermelonDB for real-time data.
+ * School dashboard (board 2A, tile grid): red context header with the
+ * context switcher, the next-up header box with this school's upcoming
+ * trainings, the module tiles and the School settings row. Everything reads
+ * from WatermelonDB, so it works offline.
  */
 const SchoolDashboardComponent: React.FC<SchoolDashboardProps> = ({
   schoolId,
   schools,
 }) => {
   const router = useRouter();
-  const { todaySession, hasSessionToday } = useTodaySession(schoolId);
+  const organization = useStore((s) => s.organization);
   const { dashboardData } = useSchoolDashboard(schoolId);
-  const { trainings } = useSchoolUpcomingTrainings(schoolId);
-  const trainingsBadge = useTrainingsBadge(trainings);
-
-  // ==========================================================================
-  // Mock Data (Replace with WatermelonDB queries)
-  // ==========================================================================
+  const subtitles = schoolTileSubtitles(dashboardData);
+  const [switcherOpen, setSwitcherOpen] = useState(false);
 
   const currentSchool = schools.find((s) => s.id === schoolId) ?? null;
 
   // ==========================================================================
-  // Event Handlers
+  // Context switcher (organization ↔ its schools)
   // ==========================================================================
 
-  /**
-   * Students module navigation
-   * @param schoolId
-   */
-  const handleNavigateToStudents = (schoolId: string) => {
-    router.push(`/school/${schoolId}/students`);
-  };
+  const orgOptionId = organization ? `org:${organization.id}` : null;
+  const switcherOptions = useMemo<ContextOption[]>(() => {
+    if (!organization) return [];
+    return [
+      {
+        id: `org:${organization.id}`,
+        context: "organization",
+        title: organization.name,
+        subtitle: t("contextOrganization"),
+      },
+      ...schools
+        .filter((s) => s.organizationId === organization.id)
+        .sort((a, b) => a.name.localeCompare(b.name))
+        .map((s) => ({
+          id: s.id,
+          context: "school" as const,
+          title: s.name,
+          subtitle: t("contextSchool"),
+        })),
+    ];
+  }, [organization, schools]);
 
-  const handleAddStudent = () => {
-    router.push(`/school/${schoolId}/students/create`);
-  };
-
-  /**
-   * Payments module navigation
-   * @param schoolId
-   */
-  const handleNavigateToPayments = (schoolId: string) => {
-    router.push(`/school/${schoolId}/payments`);
-  };
-
-  /**
-   * Orders module navigation
-   * @param schoolId
-   */
-  const handleNavigateToOrders = (schoolId: string) => {
-    router.push(`/school/${schoolId}/orders`);
-  };
-
-  /**
-   * Attendance module navigation
-   * @param schoolId
-   */
-  const handleNavigateToAttendance = (schoolId: string) => {
-    router.push(`/school/${schoolId}/attendance`);
-  };
-
-  const handleMarkAttendance = () => {
-    router.push(`/school/${schoolId}/attendance/create`);
-  };
-
-  const handleEditAttendance = () => {
-    if (todaySession) {
-      router.push(`/school/${schoolId}/attendance/${todaySession.id}`);
-    }
-  };
-
-  /** Trainings tile opens the school calendar (6A). */
-  const handleNavigateToTrainings = () => {
-    router.push(`/school/${schoolId}/calendar` as any);
-  };
-
-  /**
-   * Settings navigation
-   */
-  const handleSettingsPress = () => {
-    router.push(`/school/${schoolId}/settings`);
+  // The sheet closes itself and never reports the active (current) school.
+  const handleContextSelect = (option: ContextOption) => {
+    router.replace(
+      (option.id === orgOptionId
+        ? "/organization/dashboard"
+        : `/school/${option.id}/dashboard`) as any,
+    );
   };
 
   // ==========================================================================
@@ -131,139 +103,83 @@ const SchoolDashboardComponent: React.FC<SchoolDashboardProps> = ({
   // ==========================================================================
 
   return (
-    <SafeAreaView style={{ flex: 1 }} edges={["top"]}>
-      <YStack flex={1}>
-        {/* Header with School Switcher and Sync Status */}
-        <Header
-          onBack={() => router.back()}
-          centerContent={
-            <HeaderTitle text={currentSchool?.name ?? ""} />
+    <>
+      <DashboardPage
+        context="school"
+        header={
+          <DashboardHeader
+            context="school"
+            title={currentSchool?.name ?? ""}
+            onSwitchPress={
+              switcherOptions.length > 1 ? () => setSwitcherOpen(true) : undefined
+            }
+            switchLabel={t("contextSwitchTitle")}
+            right={<SyncedPill />}
+          />
+        }
+        nav={<MainNav />}
+      >
+        <NextUp
+          scope={schoolId ? { kind: "school", schoolId } : undefined}
+          show={["trainings"]}
+          onCalendarPress={() => router.push(`/school/${schoolId}/calendar` as any)}
+          onItemPress={(item) =>
+            router.push(`/organization/trainings/${item.id}?schoolId=${schoolId}` as any)
           }
         />
 
-        {/* Scrollable Content */}
-        <ScrollView
-          flex={1}
-          contentContainerStyle={{
-            padding: 16,
-          }}
-        >
-          <YStack
-            maxWidth={500}
-            width="100%"
-            alignSelf="center"
-            gap="$4"
-            paddingVertical="$4"
-          >
-            {/* Welcome Section */}
-            <YStack gap="$2" marginBottom="$2">
-              <Text fontSize="$7" fontWeight="700" color="$textPrimary">
-                {t("dashboardWelcomeBack")}
-              </Text>
-              <Text fontSize="$4" color="$textBody">
-                {t("dashboardOverview")}
-              </Text>
-            </YStack>
+        <ModuleTileGrid title={t("dashboardManage")}>
+          <ModuleTile
+            module="students"
+            icon={Users}
+            title={t("studentsTitle")}
+            subtitle={subtitle(subtitles.students)}
+            href={`/school/${schoolId}/students` as any}
+            addHref={`/school/${schoolId}/students/create` as any}
+          />
+          <ModuleTile
+            module="attendance"
+            icon={CalendarCheck}
+            title={t("attendanceTitle")}
+            subtitle={subtitle(subtitles.attendance)}
+            href={`/school/${schoolId}/attendance` as any}
+            addHref={`/school/${schoolId}/attendance/create` as any}
+          />
+          <ModuleTile
+            module="payments"
+            icon={CreditCard}
+            title={t("paymentsTitle")}
+            subtitle={subtitle(subtitles.payments)}
+            href={`/school/${schoolId}/payments` as any}
+            addHref={`/school/${schoolId}/payments/create` as any}
+          />
+          <ModuleTile
+            module="orders"
+            icon={ShoppingBag}
+            title={t("ordersTitle")}
+            subtitle={subtitle(subtitles.orders)}
+            href={`/school/${schoolId}/orders` as any}
+          />
+        </ModuleTileGrid>
 
-            {/* Stats Grid - 3 per row */}
-            <XStack gap="$3" flexWrap="wrap">
-              <YStack width="30%">
-                <DashboardStatCard
-                  title={t("dashboardStudents")}
-                  Icon={Users}
-                  iconColor="$blue11"
-                  iconBackground="$blue3"
-                  badgeCount={dashboardData.pendingJoinRequests}
-                  onPress={() => handleNavigateToStudents(schoolId)}
-                />
-              </YStack>
-
-              <YStack width="30%">
-                <DashboardStatCard
-                  title={t("dashboardPayments")}
-                  Icon={CreditCard}
-                  iconColor="$jadeGreen"
-                  iconBackground="$successSurface"
-                  badgeCount={dashboardData.overduePayments}
-                  onPress={() => handleNavigateToPayments(schoolId)}
-                />
-              </YStack>
-
-              <YStack width="30%">
-                <DashboardStatCard
-                  title={t("dashboardOrders")}
-                  Icon={ShoppingBag}
-                  iconColor="$purple11"
-                  iconBackground="$purple3"
-                  badgeCount={dashboardData.pendingOrders}
-                  onPress={() => handleNavigateToOrders(schoolId)}
-                />
-              </YStack>
-
-              <YStack width="30%">
-                <DashboardStatCard
-                  title={t("dashboardAttendance")}
-                  Icon={Calendar}
-                  iconColor="$primaryText"
-                  iconBackground="$primarySurface"
-                  onPress={() => handleNavigateToAttendance(schoolId)}
-                />
-              </YStack>
-
-              <YStack width="30%">
-                <DashboardStatCard
-                  title={t("trainingsTitle")}
-                  Icon={CalendarClock}
-                  iconColor="$jadeGreen"
-                  iconBackground="$successSurface"
-                  badgeCount={trainingsBadge}
-                  onPress={handleNavigateToTrainings}
-                />
-              </YStack>
-
-              <YStack width="30%">
-                <DashboardStatCard
-                  title={t("settingsSchool")}
-                  Icon={Settings}
-                  iconColor="$textBody"
-                  iconBackground="$fillStrong"
-                  onPress={handleSettingsPress}
-                />
-              </YStack>
-            </XStack>
-
-            <YStack
-              backgroundColor="$blue2"
-              padding="$4"
-              borderRadius="$4"
-              borderLeftWidth={4}
-              borderLeftColor="$blue11"
-              marginTop="$2"
-            >
-              <Text
-                fontSize="$4"
-                fontWeight="600"
-                color="$blue11"
-                marginBottom="$2"
-              >
-                {t("dashboardTipTitle")}
-              </Text>
-              <Text fontSize="$3" color="$blue11" lineHeight="$1">
-                {t("dashboardTipMessage")}
-              </Text>
-            </YStack>
-          </YStack>
-        </ScrollView>
-
-        {/* Floating Action Button */}
-        <DashboardFAB
-          onAddStudent={handleAddStudent}
-          onMarkAttendance={handleMarkAttendance}
-          onEditAttendance={handleEditAttendance}
-          hasTodaySession={hasSessionToday}
+        <SettingsTile
+          icon={Settings}
+          title={t("settingsSchool")}
+          subtitle={t("dashboardTileSchoolSettings")}
+          href={`/school/${schoolId}/settings` as any}
         />
-      </YStack>
-    </SafeAreaView>
+
+        <TechniqueNotebook />
+      </DashboardPage>
+
+      <ContextSheet
+        open={switcherOpen}
+        onOpenChange={setSwitcherOpen}
+        options={switcherOptions}
+        activeId={schoolId}
+        onSelect={handleContextSelect}
+      />
+    </>
   );
 };
 
