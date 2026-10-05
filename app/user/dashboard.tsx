@@ -25,7 +25,6 @@ import { withObservables } from "@nozbe/watermelondb/react";
 import {
   CreditCard,
   Calendar,
-  CalendarClock,
   CalendarDays,
   CalendarRange,
   ShoppingBag,
@@ -160,14 +159,6 @@ function UserDashboardInner({ schools }: UserDashboardInnerProps) {
       iconColor: "$chineseGold",
       iconBackground: "$warningSurface",
       onPress: () => router.push("/user/events"),
-    },
-    {
-      id: "trainings",
-      title: t("trainingsTitle"),
-      Icon: CalendarClock,
-      iconColor: "$jadeGreen",
-      iconBackground: "$successSurface",
-      onPress: () => router.push("/user/trainings" as any),
     },
     {
       id: "orders",
