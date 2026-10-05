@@ -842,8 +842,6 @@
   "dashboardYourSchools": "Twoje szkoły",
   "addNew": "Dodaj",
   "dashboardManage": "Zarządzaj",
-  "dashboardTileEvents": "Seminaria, obozy, egzaminy",
-  "dashboardTileTrainings": "Zaplanowane zajęcia",
   "dashboardTileOrders": "Zamówienia sprzętu",
   "dashboardTileOrdersPending": "Oczekujące: {{count}}",
   "dashboardTileProductsTitle": "Produkty",
