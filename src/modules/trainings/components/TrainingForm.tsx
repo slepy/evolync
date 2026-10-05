@@ -54,6 +54,8 @@ export interface TrainingFormHandle {
 
 interface TrainingFormProps {
   initialValues?: Partial<TrainingFormState>;
+  /** New training: defaults to start from (calendar day, school); not an edit. */
+  prefill?: Partial<TrainingFormState>;
   /** Modes the user may pick; one mode hides the switch (edits). */
   modes?: TrainingMode[];
   /** Cap on selectable single dates (1 for a "this training only" edit). */
@@ -97,6 +99,7 @@ export const TrainingForm = forwardRef<TrainingFormHandle, TrainingFormProps>(
   (
     {
       initialValues,
+      prefill,
       modes = [TRAINING_MODE.SINGLE],
       maxDates,
       schools,
@@ -119,7 +122,7 @@ export const TrainingForm = forwardRef<TrainingFormHandle, TrainingFormProps>(
       formState: { errors, isDirty, isSubmitted },
     } = useForm<TrainingFormState>({
       resolver: zodResolver(trainingSchema) as unknown as Resolver<TrainingFormState>,
-      defaultValues: { ...defaultState(), ...initialValues },
+      defaultValues: { ...defaultState(), ...prefill, ...initialValues },
     });
 
     const mode = useWatch({ control, name: "mode" });

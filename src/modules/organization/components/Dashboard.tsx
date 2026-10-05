@@ -149,7 +149,7 @@ function DashboardInner({ organization, schools }: OrganizationDashboardProps) {
       >
         <NextUp
           scope={{ kind: "organization", organizationId: organization.id }}
-          onCalendarPress={() => router.push("/organization/events")}
+          onCalendarPress={() => router.push("/organization/calendar" as any)}
           onItemPress={handleNextUpItemPress}
         />
 

@@ -114,8 +114,9 @@ const SchoolDashboardComponent: React.FC<SchoolDashboardProps> = ({
     }
   };
 
+  /** Trainings tile opens the school calendar (6A). */
   const handleNavigateToTrainings = () => {
-    router.push(`/school/${schoolId}/trainings` as any);
+    router.push(`/school/${schoolId}/calendar` as any);
   };
 
   /**

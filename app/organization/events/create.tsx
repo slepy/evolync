@@ -10,9 +10,10 @@ import {
   type CreateEventFormValues,
 } from "@/modules/events";
 import { SchoolRepository } from "@/modules/school/repositories";
+import { isValidDay } from "@/modules/trainings";
 import { StudentRepository } from "@/modules/students/repositories";
 import { useStore } from "@/store";
-import { useRouter } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useRef, useState, useEffect } from "react";
 import { KeyboardAvoidingView, Platform, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -29,10 +30,13 @@ import { useRequireOrganizationOwner } from "@/modules/organization/hooks/useReq
  * - School selector for visibility
  * - Offline support
  * - Auto-navigation on success
+ * - `?date=YYYY-MM-DD` (from the calendar) fills in the start date
  */
 export default function CreateEventScreen() {
   useRequireOrganizationOwner();
   const router = useRouter();
+  const { date } = useLocalSearchParams<{ date?: string }>();
+  const initialStartDate = date && isValidDay(date) ? date : undefined;
   const formRef = useRef<EventFormHandle>(null);
   const { organization } = useStore();
   const insets = useSafeAreaInsets();
@@ -134,6 +138,7 @@ export default function CreateEventScreen() {
             <YStack maxWidth={500} width="100%" alignSelf="center" gap="$4">
               <EventForm
                 ref={formRef}
+                initialStartDate={initialStartDate}
                 schools={schools}
                 members={members}
                 onSubmit={handleSubmit}

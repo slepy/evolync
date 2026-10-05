@@ -38,4 +38,10 @@ export const TrainingSeriesRepository = {
   observeById(id: string) {
     return series().findAndObserve(id);
   },
+
+  observeByIds(ids: string[]) {
+    return series()
+      .query(Q.where("id", Q.oneOf(ids)), Q.where("deleted_at", null))
+      .observeWithColumns(["rules"]);
+  },
 };

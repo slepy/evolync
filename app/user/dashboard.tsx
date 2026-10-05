@@ -27,6 +27,7 @@ import {
   Calendar,
   CalendarClock,
   CalendarDays,
+  CalendarRange,
   ShoppingBag,
   PersonStanding,
   Tags,
@@ -143,6 +144,14 @@ function UserDashboardInner({ schools }: UserDashboardInnerProps) {
       iconColor: "$primaryText",
       iconBackground: "$primarySurface",
       onPress: () => router.push("/user/attendance"),
+    },
+    {
+      id: "calendar",
+      title: t("calendarTitle"),
+      Icon: CalendarRange,
+      iconColor: "$chineseCyan",
+      iconBackground: "$infoSurface",
+      onPress: () => router.push("/user/calendar" as any),
     },
     {
       id: "events",
