@@ -21,6 +21,8 @@ export const NAV_HREF: Record<Exclude<NavKey, "home">, string> = {
 export function activeNavKey(pathname: string): NavKey | null {
   const path = pathname.replace(/\/+$/, "") || "/";
   if (path === NAV_HOME_HREF.organization || path === NAV_HOME_HREF.student) return "home";
+  // A school dashboard (2A) is the organization's Home seen inside one school.
+  if (/^\/school\/[^/]+\/dashboard$/.test(path)) return "home";
   if (path === NAV_HREF.notebook || path.startsWith(`${NAV_HREF.notebook}/`)) return "notebook";
   if (path === NAV_HREF.alerts || path.startsWith(`${NAV_HREF.alerts}/`)) return "alerts";
   if (path === NAV_HREF.profile) return "profile";

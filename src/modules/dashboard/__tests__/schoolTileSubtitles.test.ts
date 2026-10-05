@@ -10,7 +10,7 @@ describe("schoolTileSubtitles", () => {
         students: { key: "dashboardTileStudents" },
         attendance: { key: "dashboardTileAttendance" },
         payments: { key: "dashboardTilePayments" },
-        orders: { key: "dashboardTileOrders" },
+        orders: { key: "dashboardTileSchoolOrders" },
       },
     );
   });

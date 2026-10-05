@@ -72,7 +72,7 @@ const SchoolDashboardComponent: React.FC<SchoolDashboardProps> = ({
       header={
         <SubScreenHeader title={currentSchool?.name ?? ""} onBack={handleBack} />
       }
-      nav={<MainNav />}
+      nav={<MainNav context="school" />}
     >
       <NextUp
         scope={schoolId ? { kind: "school", schoolId } : undefined}
@@ -83,7 +83,7 @@ const SchoolDashboardComponent: React.FC<SchoolDashboardProps> = ({
         }
       />
 
-      <ModuleTileGrid title={t("dashboardManage")}>
+      <ModuleTileGrid>
         <ModuleTile
           module="students"
           icon={Users}
@@ -91,14 +91,6 @@ const SchoolDashboardComponent: React.FC<SchoolDashboardProps> = ({
           subtitle={subtitle(subtitles.students)}
           href={`/school/${schoolId}/students` as any}
           addHref={`/school/${schoolId}/students/create` as any}
-        />
-        <ModuleTile
-          module="attendance"
-          icon={CalendarCheck}
-          title={t("attendanceTitle")}
-          subtitle={subtitle(subtitles.attendance)}
-          href={`/school/${schoolId}/attendance` as any}
-          addHref={`/school/${schoolId}/attendance/create` as any}
         />
         <ModuleTile
           module="payments"
@@ -115,6 +107,14 @@ const SchoolDashboardComponent: React.FC<SchoolDashboardProps> = ({
           subtitle={subtitle(subtitles.orders)}
           href={`/school/${schoolId}/orders` as any}
           addHref={`/school/${schoolId}/orders/create` as any}
+        />
+        <ModuleTile
+          module="attendance"
+          icon={CalendarCheck}
+          title={t("attendanceTitle")}
+          subtitle={subtitle(subtitles.attendance)}
+          href={`/school/${schoolId}/attendance` as any}
+          addHref={`/school/${schoolId}/attendance/create` as any}
         />
       </ModuleTileGrid>
 

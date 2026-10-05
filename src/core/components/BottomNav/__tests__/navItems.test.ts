@@ -8,6 +8,12 @@ describe("activeNavKey", () => {
     assert.equal(activeNavKey("/user/dashboard/"), "home");
   });
 
+  it("maps a school dashboard to home, but not the school's sub-screens", () => {
+    assert.equal(activeNavKey("/school/abc-123/dashboard"), "home");
+    assert.equal(activeNavKey("/school/abc-123/dashboard/"), "home");
+    assert.equal(activeNavKey("/school/abc-123/orders"), null);
+  });
+
   it("maps the tab screens and their sub-screens", () => {
     assert.equal(activeNavKey("/techniques"), "notebook");
     assert.equal(activeNavKey("/techniques/notes"), "notebook");
