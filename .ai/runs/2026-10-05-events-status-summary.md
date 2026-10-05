@@ -32,14 +32,18 @@ Replace the separate participant counters on event details (10C) and participant
 
 ## Progress
 
+PR: #26
+
 > Convention: `- [ ]` pending, `- [x]` done. Append ` — <commit sha>` when a step lands. Do not rename step titles.
 
 ### Phase 1: Status summary component
 
-- [ ] 1.1 StatusSummary core component with bar tests
+- [x] 1.1 StatusSummary core component with bar tests — 80789ae
 
 ### Phase 2: Events screens
 
-- [ ] 2.1 Linked status summary on event details (10C)
-- [ ] 2.2 Static summary and icon status buttons on participants (10D)
-- [ ] 2.3 Docs and full validation gate
+- [x] 2.1 Linked status summary on event details (10C) — dbb3e80
+- [x] 2.2 Static summary and icon status buttons on participants (10D) — d10bfa4
+- [x] 2.3 Docs and full validation gate — 4b37777
+
+- Gate (2026-10-05): `npm run typecheck` ✅, `npm run check:theme` ✅, `npm test` ✅ 211 pass.
