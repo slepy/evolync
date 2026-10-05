@@ -60,8 +60,12 @@ Canvas boards (local copies of the "Evolync Redesign Mockups" canvas, read from 
 - Canvas read from a local copy of the boards (the live canvas is not reachable from this session) — later canvas edits may differ.
 - Moving the audience choice touches the trainings forms (regression risk, covered by typecheck and a visual re-check).
 - Not checked on a device / simulator (needs a logged-in owner account).
+- Shared pieces extracted along the way: `CurrencySheet` (from inventory) and `ActionPill` (from trainings 11D) moved to `src/core/components`; `danger` tokens gained the destructive button gradient.
+- Gate (2026-10-05): `npm run typecheck` ✅, `npm run check:theme` ✅, `npm test` ✅ 208 pass, `expo export --platform web` ✅.
 
 ## Progress
+
+PR: #25
 
 > Convention: `- [ ]` pending, `- [x]` done. Append ` — <commit sha>` when a step lands. Do not rename step titles.
 
@@ -78,6 +82,6 @@ Canvas boards (local copies of the "Evolync Redesign Mockups" canvas, read from 
 
 ### Phase 3: Calendar-only entry and cleanup
 
-- [ ] 3.1 Remove the events list route
-- [ ] 3.2 Remove unused event UI and translation keys
-- [ ] 3.3 Docs and full validation gate
+- [x] 3.1 Remove the events list route — 9005bd0
+- [x] 3.2 Remove unused event UI and translation keys — 50a200b
+- [x] 3.3 Docs and full validation gate — 6511122
