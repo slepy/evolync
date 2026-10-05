@@ -21,6 +21,8 @@ export interface AudienceMember {
   id: string;
   displayName: string;
   schoolName?: string;
+  /** Profile photo shown instead of the initials. */
+  avatarUrl?: string;
 }
 
 export interface AudienceChoiceProps<T extends Audience> {
@@ -123,7 +125,7 @@ export function AudienceChoice<T extends Audience>({
                     aria-checked={checked}
                     title={member.displayName}
                     subtitle={member.schoolName}
-                    leading={<ListAvatar initials={memberInitials(member.displayName)} />}
+                    leading={<ListAvatar initials={memberInitials(member.displayName)} uri={member.avatarUrl} />}
                     trailing={<ListCheckbox checked={checked} accent={accent} />}
                     onPress={disabled ? undefined : () => toggleMember(member.id)}
                   />

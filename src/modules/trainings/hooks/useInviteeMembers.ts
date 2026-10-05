@@ -8,6 +8,7 @@ import { useObservableValue } from "./useObservableList";
 export interface InviteeMember {
   id: string; // school_member id
   name: string;
+  avatarUrl?: string;
   schoolId?: string;
   /** Archived or removed members stay listed, greyed out. */
   inactive: boolean;
@@ -36,6 +37,7 @@ export const useInviteeMembers = (trainingId: string | undefined, schoolId?: str
                       return {
                         id,
                         name: member?.displayName || member?.email || t("unknown"),
+                        avatarUrl: member?.avatarUrl,
                         schoolId: member?.schoolId,
                         inactive: !member || member.status === MemberStatus.ARCHIVED,
                       };

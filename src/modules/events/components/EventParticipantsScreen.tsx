@@ -78,7 +78,7 @@ export const EventParticipantsScreen: React.FC<EventParticipantsScreenProps> = (
                 size="md"
                 title={name}
                 subtitle={item.member.email}
-                leading={<ListAvatar initials={memberInitials(name)} />}
+                leading={<ListAvatar initials={memberInitials(name)} uri={item.member.avatarUrl} />}
                 trailing={
                   <StatusButton
                     status={item.status}
