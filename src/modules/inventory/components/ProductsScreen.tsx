@@ -10,7 +10,8 @@ import { useProducts } from "../hooks/useProducts";
 import type { ProductResponseDto } from "../types/dto";
 import { summarizeProductRow } from "./productRowSummary";
 
-const stockLine = (product: ProductResponseDto): string => {
+/** "S · M · L · 24 in stock": the sizes, then stock; one-size products show only the stock. */
+const rowSubtitle = (product: ProductResponseDto): string => {
   const s = summarizeProductRow(product.variants);
   const stock =
     s.stockStatus === "out"
@@ -18,9 +19,7 @@ const stockLine = (product: ProductResponseDto): string => {
       : s.stockStatus === "low"
         ? t("inventoryLowStockCount", { count: s.totalStock })
         : t("inventoryInStockCount", { count: s.totalStock });
-  return s.variantCount > 1
-    ? `${stock} · ${t("inventoryVariantsCount", { count: s.variantCount })}`
-    : stock;
+  return s.sizes.length > 0 ? `${s.sizes.join(" · ")} · ${stock}` : stock;
 };
 
 const priceLabel = (product: ProductResponseDto): string =>
@@ -60,7 +59,7 @@ export const ProductsScreen: React.FC = () => {
               <ListRow
                 key={product.id}
                 title={product.name}
-                subtitle={stockLine(product)}
+                subtitle={rowSubtitle(product)}
                 leading={<ListImage uri={product.imageUrl} icon={Package} accent="products" />}
                 trailing={
                   <Text

@@ -23,18 +23,19 @@ describe("stockStatusOf", () => {
 
 describe("summarizeProductRow", () => {
   it("shows the single variant price without from", () => {
-    const s = summarizeProductRow([{ price: 120, currency: "PLN", stockQuantity: 8 }]);
+    const s = summarizeProductRow([{ name: "Standard", price: 120, currency: "PLN", stockQuantity: 8 }]);
     assert.deepEqual(s.prices, [{ currency: "PLN", price: 120, from: false }]);
     assert.equal(s.totalStock, 8);
     assert.equal(s.stockStatus, "in");
     assert.equal(s.variantCount, 1);
+    assert.deepEqual(s.sizes, []);
   });
 
   it("takes the lowest price per currency and never blends currencies", () => {
     const s = summarizeProductRow([
-      { price: 150, currency: "PLN", stockQuantity: 2 },
-      { price: 120, currency: "PLN", stockQuantity: 1 },
-      { price: 30, currency: "EUR", stockQuantity: 0 },
+      { name: "M", price: 150, currency: "PLN", stockQuantity: 2 },
+      { name: "L", price: 120, currency: "PLN", stockQuantity: 1 },
+      { name: "XL", price: 30, currency: "EUR", stockQuantity: 0 },
     ]);
     assert.deepEqual(s.prices, [
       { currency: "PLN", price: 120, from: true },
@@ -43,6 +44,7 @@ describe("summarizeProductRow", () => {
     assert.equal(s.totalStock, 3);
     assert.equal(s.stockStatus, "low");
     assert.equal(s.variantCount, 3);
+    assert.deepEqual(s.sizes, ["M", "L", "XL"]);
   });
 
   it("is out of stock without variants", () => {

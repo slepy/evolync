@@ -301,8 +301,6 @@
   "inventoryEmpty": "No products yet. Tap Add new to add your first one.",
   "inventoryInStockCount": "{{count}} in stock",
   "inventoryLowStockCount": "Low stock · {{count}}",
-  "inventoryVariantsCount_one": "{{count}} variant",
-  "inventoryVariantsCount_other": "{{count}} variants",
   "inventoryRemoveVariant": "Remove variant",
   "inventoryProductNamePlaceholder": "e.g. Club T-shirt",
   "fieldPhoto": "Photo",

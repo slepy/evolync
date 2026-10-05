@@ -17,9 +17,12 @@ export interface ProductRowSummary {
   totalStock: number;
   stockStatus: StockStatus;
   variantCount: number;
+  /** Variant names when there are several ("S", "M"); empty for a one-size product. */
+  sizes: string[];
 }
 
 interface VariantLike {
+  name: string;
   price: number;
   currency: string;
   stockQuantity: number;
@@ -53,5 +56,6 @@ export function summarizeProductRow(variants: VariantLike[]): ProductRowSummary 
     totalStock,
     stockStatus: stockStatusOf(totalStock),
     variantCount: variants.length,
+    sizes: variants.length > 1 ? variants.map((v) => v.name.trim()).filter(Boolean) : [],
   };
 }

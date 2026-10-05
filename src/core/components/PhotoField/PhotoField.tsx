@@ -1,10 +1,11 @@
 import * as Device from "expo-device";
 import * as ExpoImagePicker from "expo-image-picker";
-import { ImagePlus } from "lucide-react-native";
+import { Camera, ImagePlus, Images, type LucideIcon } from "lucide-react-native";
 import { useState } from "react";
 import { ActivityIndicator, Alert, Image, Platform, StyleSheet } from "react-native";
-import { Text, YStack } from "tamagui";
+import { Text, XStack, YStack } from "tamagui";
 import { resolveListAccent, type ListAccent } from "../List/accent";
+import { TrashButton } from "../TrashButton/TrashButton";
 
 export interface PhotoFieldProps {
   /** Uppercase field label above the photo ("PHOTO"). */
@@ -30,10 +31,49 @@ async function hasPermission(source: "camera" | "gallery"): Promise<boolean> {
   return false;
 }
 
+/** Tinted pill under the photo (Camera / Gallery), same chrome as the Add new pill. */
+function PhotoAction({
+  label,
+  icon: Icon,
+  onPress,
+  accent,
+  disabled,
+}: {
+  label: string;
+  icon: LucideIcon;
+  onPress: () => void;
+  accent: ListAccent;
+  disabled?: boolean;
+}) {
+  const a = resolveListAccent(accent);
+  return (
+    <XStack
+      flex={1}
+      role="button"
+      aria-label={label}
+      aria-disabled={disabled}
+      onPress={disabled ? undefined : onPress}
+      pressStyle={disabled ? undefined : { opacity: 0.8 }}
+      opacity={disabled ? 0.5 : 1}
+      height={44}
+      borderRadius="$pill"
+      backgroundColor={a.fill}
+      alignItems="center"
+      justifyContent="center"
+      gap={8}
+    >
+      <Icon size={18} color={a.tint} strokeWidth={2.2} />
+      <Text fontSize="$button" fontWeight="$button" color={a.tint} numberOfLines={1}>
+        {label}
+      </Text>
+    </XStack>
+  );
+}
+
 /**
  * Photo of a form (9B): 12/800 uppercase label, 2:1 card on the card fill.
- * Empty it shows a dashed border and the add icon in the module tint; tapping
- * picks from the camera or gallery, tapping a photo offers change / remove.
+ * Empty it shows a dashed border and the add icon in the module tint. Under the
+ * photo: Camera and Gallery pills, plus the red trash once there is a photo.
  */
 export function PhotoField({ label, value, onChange, accent = "neutral", disabled }: PhotoFieldProps) {
   const [loading, setLoading] = useState(false);
@@ -71,17 +111,9 @@ export function PhotoField({ label, value, onChange, accent = "neutral", disable
       { text: t("cancel"), style: "cancel" },
     ]);
 
+  const busy = disabled || loading;
   const handlePress = () => {
-    if (disabled || loading) return;
-    if (!value) {
-      chooseSource();
-      return;
-    }
-    Alert.alert(t("imagePickerOptionsTitle"), undefined, [
-      { text: t("imagePickerChangeImage"), onPress: chooseSource },
-      { text: t("imagePickerRemoveImage"), style: "destructive", onPress: () => onChange(null) },
-      { text: t("cancel"), style: "cancel" },
-    ]);
+    if (!busy) chooseSource();
   };
 
   return (
@@ -121,6 +153,13 @@ export function PhotoField({ label, value, onChange, accent = "neutral", disable
           </>
         )}
       </YStack>
+      <XStack gap={10} alignItems="center">
+        <PhotoAction label={t("imagePickerCamera")} icon={Camera} onPress={() => pick("camera")} accent={accent} disabled={busy} />
+        <PhotoAction label={t("imagePickerGallery")} icon={Images} onPress={() => pick("gallery")} accent={accent} disabled={busy} />
+        {value ? (
+          <TrashButton onPress={() => onChange(null)} label={t("imagePickerRemoveImage")} disabled={busy} />
+        ) : null}
+      </XStack>
     </YStack>
   );
 }
