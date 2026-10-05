@@ -60,6 +60,8 @@ The design artifact (`claude.ai/artifact/5GM35Pr9XwTRWQAez7pCWx`) is not shared 
 
 ## Progress
 
+PR: #28
+
 > Convention: `- [ ]` pending, `- [x]` done. Append ` — <commit sha>` when a step lands. Do not rename step titles.
 
 ### Phase 1: Shared avatar and order logic
@@ -76,5 +78,5 @@ The design artifact (`claude.ai/artifact/5GM35Pr9XwTRWQAez7pCWx`) is not shared 
 
 ### Phase 3: Cleanup and gate
 
-- [ ] 3.1 Remove old orders UI and unused translation keys; add new keys (en + pl)
-- [ ] 3.2 Update CLAUDE.md shared-components line; full validation gate
+- [x] 3.1 Remove old orders UI and unused translation keys; add new keys (en + pl) — fa71e03
+- [x] 3.2 Update CLAUDE.md shared-components line; full validation gate — a0b8914
