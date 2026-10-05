@@ -10,6 +10,7 @@ import {
   StyleSheet,
 } from "react-native";
 import { Text, XStack, YStack } from "tamagui";
+import { neutral } from "@/core/theme/tokens";
 import { resolveListAccent, type ListAccent } from "../List/accent";
 import { TrashButton } from "../TrashButton/TrashButton";
 
@@ -130,7 +131,7 @@ export function PhotoField({
         ) : loading ? (
           <ActivityIndicator color={a.tint} />
         ) : (
-          <Camera size={24} color="#A7B1C6" strokeWidth={2} />
+          <Camera size={24} color={neutral.muted} strokeWidth={2} />
         )}
       </YStack>
       {value ? (

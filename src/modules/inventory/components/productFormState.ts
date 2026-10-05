@@ -78,7 +78,7 @@ export type ProductFormValidation =
   | { ok: true; data: ProductDto }
   | { ok: false; errors: ProductFormErrors };
 
-/** Runs the product schema on the form; empty description / photo become undefined. */
+/** Runs the product schema on the form; empty description / photo become `null` (cleared on save). */
 export function validateProductForm(state: ProductFormState): ProductFormValidation {
   const result = productFormSchema.safeParse({
     name: state.name,
@@ -108,8 +108,8 @@ export function validateProductForm(state: ProductFormState): ProductFormValidat
     ok: true,
     data: {
       name,
-      description,
-      imageUri,
+      description: description ?? null,
+      imageUri: imageUri ?? null,
       variants: variants.map((v) => ({
         id: v.id,
         name: v.name,

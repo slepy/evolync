@@ -135,7 +135,7 @@ export const createProduct = async (
       record._raw.id = productId;
       record.organizationId = organization.id;
       record.name = data.name;
-      record.description = data.description;
+      record.description = data.description ?? undefined;
       record.imageUrl = imageUrl;
     });
 
@@ -293,9 +293,11 @@ export const updateProductWithVariants = async (
   // Get organization for image upload path
   const { organization } = useStore.getState();
 
-  // Upload new image if provided and it's a local file
-  let newImageUrl: string | undefined;
-  if (data.imageUri && !data.imageUri.startsWith("http")) {
+  // Upload new image if provided and it's a local file; `null` removes it
+  let newImageUrl: string | null | undefined;
+  if (data.imageUri === null) {
+    newImageUrl = null;
+  } else if (data.imageUri && !data.imageUri.startsWith("http")) {
     try {
       newImageUrl = await uploadImage(
         data.imageUri,
@@ -317,8 +319,9 @@ export const updateProductWithVariants = async (
     const existingProduct = await productsCollection.find(productId);
     const updatedProduct = await existingProduct.update((record) => {
       record.name = data.name;
-      if (data.description !== undefined) record.description = data.description;
-      if (newImageUrl !== undefined) record.imageUrl = newImageUrl;
+      // `null` clears the column (WatermelonDB stores undefined as null)
+      if (data.description !== undefined) record.description = data.description ?? undefined;
+      if (newImageUrl !== undefined) record.imageUrl = newImageUrl ?? undefined;
     });
 
     // 2. Get existing variants

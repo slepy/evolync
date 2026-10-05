@@ -70,8 +70,8 @@ describe("validateProductForm", () => {
     assert.ok(result.ok);
     assert.deepEqual(result.data, {
       name: "Gi",
-      description: undefined,
-      imageUri: undefined,
+      description: null,
+      imageUri: null,
       variants: [{ id: undefined, name: STANDARD_VARIANT_NAME, price: 249.5, currency: "PLN", stockQuantity: 3 }],
     });
   });

@@ -36,7 +36,7 @@ export function resolveListAccent(accent: ListAccent): ResolvedListAccent {
   if (accent === "danger") {
     return {
       tint: danger.text,
-      fill: withAlpha("#FF5A5A", 0.14),
+      fill: withAlpha(neutral.alertDot, 0.14),
       selectedFill: withAlpha(danger.text, 0.08),
       from: danger.text,
       to: danger.text,
