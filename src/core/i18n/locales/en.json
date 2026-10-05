@@ -442,6 +442,8 @@
   "imagePickerSelectSource": "Select Image Source",
   "imagePickerCamera": "Camera",
   "imagePickerGallery": "Gallery",
+  "imagePickerAddPhoto": "Add photo",
+  "imagePickerChangePhoto": "Change photo",
   "imagePickerPlaceholder": "Tap to add image",
 
   "syncOnline": "Online",

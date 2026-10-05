@@ -1,19 +1,25 @@
 import * as Device from "expo-device";
 import * as ExpoImagePicker from "expo-image-picker";
-import { Camera, ImagePlus, Images, type LucideIcon } from "lucide-react-native";
+import { Camera } from "lucide-react-native";
 import { useState } from "react";
-import { ActivityIndicator, Alert, Image, Platform, StyleSheet } from "react-native";
+import {
+  ActivityIndicator,
+  Alert,
+  Image,
+  Platform,
+  StyleSheet,
+} from "react-native";
 import { Text, XStack, YStack } from "tamagui";
 import { resolveListAccent, type ListAccent } from "../List/accent";
 import { TrashButton } from "../TrashButton/TrashButton";
 
 export interface PhotoFieldProps {
-  /** Uppercase field label above the photo ("PHOTO"). */
+  /** Accessible name of the photo ("Photo"); not drawn, 9B / 9C have no label. */
   label: string;
   /** Local file URI or remote URL; empty shows the add placeholder. */
   value?: string | null;
   onChange: (uri: string | null) => void;
-  /** Tints the placeholder icon (module accent). */
+  /** Tints the Add / Change photo action (module accent). */
   accent?: ListAccent;
   disabled?: boolean;
 }
@@ -25,57 +31,33 @@ async function hasPermission(source: "camera" | "gallery"): Promise<boolean> {
       : await ExpoImagePicker.requestMediaLibraryPermissionsAsync();
   if (status === "granted") return true;
   Alert.alert(
-    t(source === "camera" ? "imagePickerCameraPermissionTitle" : "imagePickerGalleryPermissionTitle"),
-    t(source === "camera" ? "imagePickerCameraPermissionMessage" : "imagePickerGalleryPermissionMessage"),
+    t(
+      source === "camera"
+        ? "imagePickerCameraPermissionTitle"
+        : "imagePickerGalleryPermissionTitle",
+    ),
+    t(
+      source === "camera"
+        ? "imagePickerCameraPermissionMessage"
+        : "imagePickerGalleryPermissionMessage",
+    ),
   );
   return false;
 }
 
-/** Tinted pill under the photo (Camera / Gallery), same chrome as the Add new pill. */
-function PhotoAction({
-  label,
-  icon: Icon,
-  onPress,
-  accent,
-  disabled,
-}: {
-  label: string;
-  icon: LucideIcon;
-  onPress: () => void;
-  accent: ListAccent;
-  disabled?: boolean;
-}) {
-  const a = resolveListAccent(accent);
-  return (
-    <XStack
-      flex={1}
-      role="button"
-      aria-label={label}
-      aria-disabled={disabled}
-      onPress={disabled ? undefined : onPress}
-      pressStyle={disabled ? undefined : { opacity: 0.8 }}
-      opacity={disabled ? 0.5 : 1}
-      height={44}
-      borderRadius="$pill"
-      backgroundColor={a.fill}
-      alignItems="center"
-      justifyContent="center"
-      gap={8}
-    >
-      <Icon size={18} color={a.tint} strokeWidth={2.2} />
-      <Text fontSize="$button" fontWeight="$button" color={a.tint} numberOfLines={1}>
-        {label}
-      </Text>
-    </XStack>
-  );
-}
-
 /**
- * Photo of a form (9B): 12/800 uppercase label, 2:1 card on the card fill.
- * Empty it shows a dashed border and the add icon in the module tint. Under the
- * photo: Camera and Gallery pills, plus the red trash once there is a photo.
+ * Photo of a form (9B / 9C): centered 96px square. Empty it is a dashed square
+ * with a camera icon and the "Add photo" link in the module tint; with a photo
+ * it shows the image, and under it the "Change photo" pill and the red trash.
+ * Tapping the square or the pill asks Camera or Gallery.
  */
-export function PhotoField({ label, value, onChange, accent = "neutral", disabled }: PhotoFieldProps) {
+export function PhotoField({
+  label,
+  value,
+  onChange,
+  accent = "neutral",
+  disabled,
+}: PhotoFieldProps) {
   const [loading, setLoading] = useState(false);
   const tint = resolveListAccent(accent).tint;
 
@@ -116,50 +98,84 @@ export function PhotoField({ label, value, onChange, accent = "neutral", disable
     if (!busy) chooseSource();
   };
 
+  const a = resolveListAccent(accent);
+
   return (
-    <YStack gap={8}>
-      <Text fontSize={12} fontWeight="$eyebrow" letterSpacing={0.8} textTransform="uppercase" color="$neutralMuted">
-        {label}
-      </Text>
+    <YStack alignItems="center" gap={10}>
       <YStack
         role="button"
-        aria-label={value ? `${label}, ${t("imagePickerChangeImage")}` : `${label}, ${t("imagePickerPlaceholder")}`}
+        aria-label={`${label}, ${value ? t("imagePickerChangePhoto") : t("imagePickerAddPhoto")}`}
         aria-disabled={disabled}
         onPress={handlePress}
         pressStyle={disabled ? undefined : { opacity: 0.85 }}
         opacity={disabled ? 0.5 : 1}
-        width="100%"
-        aspectRatio={2}
-        borderRadius={16}
+        width={96}
+        height={96}
+        borderRadius={24}
         overflow="hidden"
         backgroundColor="$neutralCard"
-        borderWidth={value ? 1 : 1.5}
-        borderStyle={value ? "solid" : "dashed"}
-        borderColor="$neutralRaisedBorder"
+        borderWidth={value ? 0 : 1.5}
+        borderStyle="dashed"
+        borderColor="$neutralControl"
         alignItems="center"
         justifyContent="center"
-        gap={8}
       >
         {value ? (
-          <Image source={{ uri: value }} style={StyleSheet.absoluteFill} resizeMode="cover" />
+          <Image
+            source={{ uri: value }}
+            style={StyleSheet.absoluteFill}
+            resizeMode="cover"
+            accessibilityIgnoresInvertColors
+          />
         ) : loading ? (
-          <ActivityIndicator color={tint} />
+          <ActivityIndicator color={a.tint} />
         ) : (
-          <>
-            <ImagePlus size={28} color={tint} strokeWidth={2} />
-            <Text fontSize="$secondary" fontWeight="$secondary" color="$neutralMuted">
-              {t("imagePickerPlaceholder")}
-            </Text>
-          </>
+          <Camera size={24} color="#A7B1C6" strokeWidth={2} />
         )}
       </YStack>
-      <XStack gap={10} alignItems="center">
-        <PhotoAction label={t("imagePickerCamera")} icon={Camera} onPress={() => pick("camera")} accent={accent} disabled={busy} />
-        <PhotoAction label={t("imagePickerGallery")} icon={Images} onPress={() => pick("gallery")} accent={accent} disabled={busy} />
-        {value ? (
-          <TrashButton onPress={() => onChange(null)} label={t("imagePickerRemoveImage")} disabled={busy} />
-        ) : null}
-      </XStack>
+      {value ? (
+        <XStack alignItems="center" gap={10}>
+          <XStack
+            role="button"
+            aria-label={t("imagePickerChangePhoto")}
+            aria-disabled={busy}
+            onPress={busy ? undefined : chooseSource}
+            pressStyle={busy ? undefined : { opacity: 0.8 }}
+            opacity={busy ? 0.5 : 1}
+            height={44}
+            paddingHorizontal={18}
+            borderRadius="$pill"
+            backgroundColor={a.fill}
+            alignItems="center"
+            justifyContent="center"
+          >
+            <Text
+              fontSize="$button"
+              fontWeight="$button"
+              color={a.tint}
+              numberOfLines={1}
+            >
+              {t("imagePickerChangePhoto")}
+            </Text>
+          </XStack>
+          <TrashButton
+            onPress={() => onChange(null)}
+            label={t("imagePickerRemoveImage")}
+            disabled={busy}
+          />
+        </XStack>
+      ) : (
+        <Text
+          role="button"
+          aria-disabled={busy}
+          onPress={busy ? undefined : chooseSource}
+          fontSize={14}
+          fontWeight="$button"
+          color={a.tint}
+        >
+          {t("imagePickerAddPhoto")}
+        </Text>
+      )}
     </YStack>
   );
 }

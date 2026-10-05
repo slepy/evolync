@@ -442,6 +442,8 @@
   "imagePickerSelectSource": "Wybierz źródło zdjęcia",
   "imagePickerCamera": "Aparat",
   "imagePickerGallery": "Galeria",
+  "imagePickerAddPhoto": "Dodaj zdjęcie",
+  "imagePickerChangePhoto": "Zmień zdjęcie",
   "imagePickerPlaceholder": "Dotknij aby dodać zdjęcie",
 
   "syncOnline": "Online",
