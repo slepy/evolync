@@ -2,7 +2,8 @@ import { describe, it } from "node:test";
 import assert from "node:assert/strict";
 import { formatEventDates } from "../components/formatEventDates";
 
-(globalThis as { t?: unknown }).t = (key: string) => (key === "locale" ? "en" : key);
+let locale = "en";
+(globalThis as { t?: unknown }).t = (key: string) => (key === "locale" ? locale : key);
 
 describe("formatEventDates", () => {
   it("shows one day once", () => {
@@ -10,7 +11,10 @@ describe("formatEventDates", () => {
   });
 
   it("joins days of one month", () => {
-    assert.equal(formatEventDates("2025-11-20", "2025-11-24"), "20–Nov 24, 2025");
+    assert.equal(formatEventDates("2025-11-20", "2025-11-24"), "Nov 20–24, 2025");
+    locale = "pl";
+    assert.equal(formatEventDates("2025-11-20", "2025-11-24"), "20–24 lis 2025");
+    locale = "en";
   });
 
   it("keeps the year once within a year, twice across years", () => {
