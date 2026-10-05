@@ -37,6 +37,10 @@ export const danger = {
   text: "#FF8A8A",
   fill: "rgba(255,90,90,0.10)",
   border: "rgba(255,90,90,0.4)",
+  /** Destructive primary button (10E "Cancel event"): gradient and label. */
+  from: "#EF4444",
+  to: "#B91C1C",
+  buttonText: "#FFFFFF",
 } as const;
 
 // ============================================================================
