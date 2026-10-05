@@ -1,32 +1,48 @@
-import React, { useEffect, useState } from "react";
-import { Button, Sheet, Text, YStack } from "tamagui";
-import { addDays, addMonths, localToday, maxSeriesEnd } from "../types/helpers";
-import { DayField } from "./DayField";
+import { DateTimeField, FormSheet, ListChip, PrimaryButton } from "@/core/components";
+import React, { useEffect, useMemo, useState } from "react";
+import { Text, XStack, YStack } from "tamagui";
+import type { SeriesRule } from "../types/dto";
+import { addDays, addMonths, expandSeriesRules, localToday, maxSeriesEnd } from "../types/helpers";
+import { formatDay } from "./format";
 
 interface ExtendSeriesSheetProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  name: string;
   /** Current last day of the series ("YYYY-MM-DD"). */
   currentEnd: string;
+  /** Rules of the series, to count the trainings Extend adds. */
+  rules: SeriesRule[];
   onSubmit: (newEnd: string) => Promise<void>;
 }
 
-/** Picks a new Until for a series (up to 6 months past the current end). */
-export const ExtendSeriesSheet: React.FC<ExtendSeriesSheetProps> = ({ open, onOpenChange, currentEnd, onSubmit }) => {
+const formatShortDay = (day: string) => formatDay(day, { day: "numeric", month: "short", year: "numeric" });
+
+/** Extend series (11F): new Until up to 6 months past the current end, with the count it adds. */
+export const ExtendSeriesSheet: React.FC<ExtendSeriesSheetProps> = ({
+  open,
+  onOpenChange,
+  name,
+  currentEnd,
+  rules,
+  onSubmit,
+}) => {
   const today = localToday();
   const from = addDays(currentEnd, 1) > today ? addDays(currentEnd, 1) : today;
   const max = maxSeriesEnd(from);
-  const [day, setDay] = useState(() => addMonths(currentEnd, 1));
+  const [day, setDay] = useState(() => addMonths(currentEnd, 3));
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
     if (open) {
-      const proposed = addMonths(currentEnd, 1);
+      const proposed = addMonths(currentEnd, 3);
       setDay(proposed > max ? max : proposed < from ? from : proposed);
       setError(null);
     }
   }, [open, currentEnd, from, max]);
+
+  const added = useMemo(() => (day >= from ? expandSeriesRules(rules, from, day).length : 0), [rules, from, day]);
 
   const submit = async () => {
     try {
@@ -42,30 +58,46 @@ export const ExtendSeriesSheet: React.FC<ExtendSeriesSheetProps> = ({ open, onOp
   };
 
   return (
-    <Sheet modal open={open} onOpenChange={onOpenChange} snapPoints={[45]} dismissOnSnapToBottom zIndex={200}>
-      <Sheet.Overlay backgroundColor="rgba(0, 0, 0, 0.5)" opacity={0.5} zIndex={199} />
-      <Sheet.Frame padding="$4" backgroundColor="$background" borderTopLeftRadius="$6" borderTopRightRadius="$6" zIndex={200}>
-        <Sheet.Handle />
-        <YStack gap="$3">
-          <Text fontSize="$5" fontWeight="700" color="$textPrimary">
-            {t("trainingsExtendSeries")}
-          </Text>
-          <DayField label={t("trainingsExtendUntil")} value={day} min={from} max={max} onChange={setDay} disabled={saving} />
-          <Text fontSize="$2" color="$textMuted">
-            {t("trainingsUntilHint")}
-          </Text>
-          {error && (
-            <Text color="$imperialRed" fontSize="$3">
+    <FormSheet
+      open={open}
+      onOpenChange={onOpenChange}
+      title={t("trainingsExtendSeries")}
+      subtitle={t("trainingsExtendSubtitle", { name, date: formatShortDay(currentEnd) })}
+      footer={
+        <YStack gap={10}>
+          {error ? (
+            <Text fontSize={12.5} fontWeight="$secondary" color="$trashText" textAlign="center">
               {t(error)}
             </Text>
-          )}
-          <Button backgroundColor="$chineseGold" disabled={saving} onPress={submit}>
-            <Text color="$pearlWhite" fontWeight="600">
-              {t("trainingsExtendSubmit")}
-            </Text>
-          </Button>
+          ) : null}
+          <PrimaryButton label={t("trainingsExtendSubmit")} accent="trainings" onPress={submit} loading={saving} />
         </YStack>
-      </Sheet.Frame>
-    </Sheet>
+      }
+    >
+      <YStack gap={10}>
+        <XStack>
+          <DateTimeField
+            mode="date"
+            label={t("trainingsExtendUntil")}
+            value={day}
+            format={formatShortDay}
+            min={from}
+            max={max}
+            onChange={(next) => {
+              setDay(next);
+              setError(null);
+            }}
+            accent="trainings"
+            disabled={saving}
+          />
+        </XStack>
+        <XStack alignItems="center" gap={8} flexWrap="wrap">
+          <ListChip accent="trainings" label={t("trainingsExtendCount", { count: added })} />
+          <Text fontSize={12.5} fontWeight="$secondary" color="$neutralMuted">
+            {t("trainingsExtendLimitHint")}
+          </Text>
+        </XStack>
+      </YStack>
+    </FormSheet>
   );
 };

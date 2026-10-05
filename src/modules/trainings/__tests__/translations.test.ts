@@ -9,8 +9,9 @@ const ROOT = path.resolve(__dirname, "../../../..");
 const SOURCES = [
   "src/modules/trainings",
   "app/organization/trainings",
-  "app/school/[schoolId]/trainings",
-  "app/user/trainings.tsx",
+  "src/core/components/ChoiceList",
+  "src/core/components/PillGroup",
+  "src/core/components/DateTimeField",
   "app/user/dashboard.tsx",
   "src/modules/organization/components/Dashboard.tsx",
   "src/modules/dashboard/components/SchoolDashboard.tsx",

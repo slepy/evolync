@@ -1,22 +1,4 @@
 import type Training from "@/database/models/Training";
-import { timestampToDay } from "../types/helpers";
-
-export interface TrainingDaySection {
-  day: string; // "YYYY-MM-DD"
-  data: Training[];
-}
-
-/** Groups day/time-sorted trainings into one section per day, in order. */
-export const groupTrainingsByDay = (trainings: Training[]): TrainingDaySection[] => {
-  const sections: TrainingDaySection[] = [];
-  for (const training of trainings) {
-    const day = timestampToDay(training.date);
-    const last = sections.at(-1);
-    if (last && last.day === day) last.data.push(training);
-    else sections.push({ day, data: [training] });
-  }
-  return sections;
-};
 
 /** Active trainings within [fromDay, fromDay + days) — the dashboard badge. */
 export const countActiveWithinDays = (trainings: Training[], fromDay: string, days: number): number => {
