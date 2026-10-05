@@ -17,6 +17,7 @@ export * from "./PhotoField";
 export * from "./Calendar";
 export * from "./ChoiceList";
 export * from "./AudienceChoice";
+export * from "./ActionPill";
 export * from "./CurrencySheet";
 export * from "./PillGroup";
 export * from "./DateTimeField";

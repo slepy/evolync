@@ -1,5 +1,5 @@
+import { moduleAccents, neutral } from "@/core/theme/tokens";
 import { Check, Clock, X, type LucideIcon } from "lucide-react-native";
-import type { ColorTokens } from "tamagui";
 import {
   type EventParticipantStatus,
   EVENT_PARTICIPANT_STATUS,
@@ -15,35 +15,16 @@ export const PARTICIPANT_STATUS_CYCLE: EventParticipantStatus[] = [
   EVENT_PARTICIPANT_STATUS.PAID,
 ];
 
-/**
- * Status configuration for UI styling
- * Similar to attendance STATUS_CONFIG
- */
-export const PARTICIPANT_STATUS_CONFIG: Record<
+/** The status a tap moves a participant to (10D). */
+export const nextParticipantStatus = (status: EventParticipantStatus): EventParticipantStatus =>
+  PARTICIPANT_STATUS_CYCLE[(PARTICIPANT_STATUS_CYCLE.indexOf(status) + 1) % PARTICIPANT_STATUS_CYCLE.length];
+
+/** Icon, color and label key of a participant status (10C counters, 10D chips). */
+export const PARTICIPANT_STATUS_STYLE: Record<
   EventParticipantStatus,
-  {
-    icon: LucideIcon;
-    color: ColorTokens;
-    bgColor: ColorTokens;
-    label: string;
-  }
+  { icon: LucideIcon; tint: string; label: string }
 > = {
-  [EVENT_PARTICIPANT_STATUS.ABSENT]: {
-    icon: X,
-    color: "$textSecondary",
-    bgColor: "$fillSubtle",
-    label: "statusAbsent",
-  },
-  [EVENT_PARTICIPANT_STATUS.ATTENDING]: {
-    icon: Clock,
-    color: "$chineseGold",
-    bgColor: "$warningSurface",
-    label: "statusAttending",
-  },
-  [EVENT_PARTICIPANT_STATUS.PAID]: {
-    icon: Check,
-    color: "$jadeGreen",
-    bgColor: "$successSurface",
-    label: "statusPaid",
-  },
+  [EVENT_PARTICIPANT_STATUS.ABSENT]: { icon: X, tint: neutral.tint, label: "statusAbsent" },
+  [EVENT_PARTICIPANT_STATUS.ATTENDING]: { icon: Clock, tint: moduleAccents.events.from, label: "statusAttending" },
+  [EVENT_PARTICIPANT_STATUS.PAID]: { icon: Check, tint: moduleAccents.payments.tint, label: "statusPaid" },
 };
