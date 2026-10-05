@@ -18,6 +18,7 @@ export * from "./Calendar";
 export * from "./ChoiceList";
 export * from "./AudienceChoice";
 export * from "./ActionPill";
+export * from "./StatusSummary";
 export * from "./CurrencySheet";
 export * from "./PillGroup";
 export * from "./DateTimeField";

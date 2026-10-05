@@ -8,5 +8,5 @@ export * from "./eventFormState";
 export { EventDetailsScreen } from "./EventDetailsScreen";
 export { EventParticipantsScreen } from "./EventParticipantsScreen";
 export { EventCancelSheet, type EventSheetAction } from "./EventCancelSheet";
-export { ParticipantCountsCard } from "./ParticipantCountsCard";
+export { ParticipantSummary } from "./ParticipantSummary";
 export { formatEventDates } from "./formatEventDates";

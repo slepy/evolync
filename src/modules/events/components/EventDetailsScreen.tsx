@@ -5,7 +5,6 @@ import {
   ListIcon,
   ListRow,
   ListSection,
-  PrimaryButton,
   SubScreenPage,
   TrashButton,
   withAlpha,
@@ -15,7 +14,7 @@ import { EVENT_STATUS } from "@/database/models/Event";
 import { formatPrice } from "@/modules/core/utils/formatters";
 import { showError } from "@/modules/trainings/components/confirmAction";
 import { timestampToDay } from "@/modules/trainings/types/helpers";
-import { CalendarDays, MapPin, Pencil, RotateCcw, Users, XCircle } from "lucide-react-native";
+import { CalendarDays, MapPin, Pencil, RotateCcw, XCircle } from "lucide-react-native";
 import React, { useState } from "react";
 import { ActivityIndicator } from "react-native";
 import { Text, XStack, YStack } from "tamagui";
@@ -25,7 +24,7 @@ import { cancelEvent, deleteEvent, updateEvent } from "../services";
 import { EventCancelSheet, type EventSheetAction } from "./EventCancelSheet";
 import { eventDayCount } from "./eventFormState";
 import { formatEventDates } from "./formatEventDates";
-import { ParticipantCountsCard } from "./ParticipantCountsCard";
+import { ParticipantSummary } from "./ParticipantSummary";
 
 interface EventDetailsScreenProps {
   eventId: string;
@@ -40,7 +39,7 @@ const PAYMENTS = moduleAccents.payments;
 
 /**
  * Event details (10C): name with the day count, short note, date and
- * location rows, price, participant counters with Manage, Edit / Cancel
+ * location rows, price, the participants Status summary (the card opens Manage), Edit / Cancel
  * (Restore when cancelled); trash in the header. Cancel and a blocked
  * delete go through the 10E sheet.
  */
@@ -149,10 +148,7 @@ export const EventDetailsScreen: React.FC<EventDetailsScreenProps> = ({
         </YStack>
 
         <ListSection title={t("eventsParticipants")}>
-          <YStack gap={12}>
-            <ParticipantCountsCard counts={counts} />
-            <PrimaryButton label={t("eventsManage")} icon={Users} accent="events" onPress={onManageParticipants} />
-          </YStack>
+          <ParticipantSummary counts={counts} onManage={onManageParticipants} />
         </ListSection>
 
         <ListSection title={t("eventsActions")}>
