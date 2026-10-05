@@ -382,6 +382,18 @@
   "ordersUnknownProduct": "Nieznany produkt",
   "ordersUnknownVariant": "Nieznany wariant",
   "ordersCopiedToClipboard": "Lista produktów skopiowana do schowka",
+  "copy": "Kopiuj",
+  "ordersTabShoppingList": "Lista zakupów",
+  "ordersYourOrders": "Twoje zamówienia",
+  "ordersAllSchools": "Wszystkie szkoły",
+  "ordersInOrders_one": "w {{count}} zamówieniu",
+  "ordersInOrders_few": "w {{count}} zamówieniach",
+  "ordersInOrders_many": "w {{count}} zamówieniach",
+  "ordersInOrders_other": "w {{count}} zamówieniach",
+  "ordersItemsCount_one": "{{count}} produkt",
+  "ordersItemsCount_few": "{{count}} produkty",
+  "ordersItemsCount_many": "{{count}} produktów",
+  "ordersItemsCount_other": "{{count}} produktu",
 
   "unknownMember": "Nieznany członek",
 

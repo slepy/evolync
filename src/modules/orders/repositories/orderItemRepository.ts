@@ -71,4 +71,12 @@ export const OrderItemRepository = {
       .query(Q.where("order_id", orderId), Q.where("deleted_at", null))
       .observe();
   },
+
+  /** Items of several orders (list totals, shopping list); re-emits on quantity changes. */
+  observeByOrderIds(orderIds: string[]) {
+    const orderItemsCollection = database.get<OrderItem>("order_items");
+    return orderItemsCollection
+      .query(Q.where("order_id", Q.oneOf(orderIds)), Q.where("deleted_at", null))
+      .observeWithColumns(["quantity"]);
+  },
 };

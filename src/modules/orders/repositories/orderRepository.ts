@@ -106,6 +106,30 @@ export const OrderRepository = {
       .observe();
   },
 
+  /** Orders of the schools for a list; re-emits on status changes too. */
+  observeListBySchoolIds(schoolIds: string[]) {
+    return database
+      .get<Order>("orders")
+      .query(
+        Q.where("school_id", Q.oneOf(schoolIds)),
+        Q.where("deleted_at", null),
+        Q.sortBy("created_at", Q.desc)
+      )
+      .observeWithColumns(["status", "updated_at"]);
+  },
+
+  /** A member's orders for a list; re-emits on status changes too. */
+  observeListByMemberId(memberId: string) {
+    return database
+      .get<Order>("orders")
+      .query(
+        Q.where("school_member_id", memberId),
+        Q.where("deleted_at", null),
+        Q.sortBy("created_at", Q.desc)
+      )
+      .observeWithColumns(["status", "updated_at"]);
+  },
+
   observeCountBySchoolIds(schoolIds: string[], status: string) {
     const ordersCollection = database.get<Order>("orders");
     return ordersCollection

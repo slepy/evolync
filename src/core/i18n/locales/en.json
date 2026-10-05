@@ -380,6 +380,14 @@
   "ordersUnknownProduct": "Unknown Product",
   "ordersUnknownVariant": "Unknown Variant",
   "ordersCopiedToClipboard": "Products list copied to clipboard",
+  "copy": "Copy",
+  "ordersTabShoppingList": "Shopping list",
+  "ordersYourOrders": "Your orders",
+  "ordersAllSchools": "All schools",
+  "ordersInOrders_one": "in {{count}} order",
+  "ordersInOrders_other": "in {{count}} orders",
+  "ordersItemsCount_one": "{{count}} item",
+  "ordersItemsCount_other": "{{count}} items",
 
   "unknownMember": "Unknown Member",
 
