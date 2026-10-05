@@ -68,6 +68,18 @@ export const ProductRepository = {
       .observe();
   },
 
+  /** Like `observeByOrganizationId`, but also emits when a product is edited (list rows). */
+  observeListByOrganizationId(organizationId: string) {
+    const productsCollection = database.get<Product>("products");
+    return productsCollection
+      .query(
+        Q.where("organization_id", organizationId),
+        Q.where("deleted_at", null),
+        Q.sortBy("name", Q.asc)
+      )
+      .observeWithColumns(["name", "image_url", "updated_at"]);
+  },
+
   observeById(id: string) {
     const productsCollection = database.get<Product>("products");
     return productsCollection.findAndObserve(id);

@@ -2,5 +2,4 @@
 // Inventory Hooks
 // ============================================================================
 
-export * from './useCreateProduct';
-export * from './useEditProduct';
+export * from './useProducts';

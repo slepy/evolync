@@ -10,6 +10,8 @@ export interface ListRowProps {
   title: string;
   /** One muted line under the title (school, email, "3 of 12 paid"). */
   subtitle?: string;
+  /** Chips under the title (stock / price per currency); replaces the subtitle line. */
+  meta?: ReactNode;
   /** 13px icon in front of the subtitle (map pin, calendar…). */
   subtitleIcon?: LucideIcon;
   /** Left slot: `ListIcon`, `ListAvatar`, a belt ring… */
@@ -42,6 +44,7 @@ export function ListRow({
   title,
   subtitle,
   subtitleIcon: SubtitleIcon,
+  meta,
   leading,
   trailing,
   onPress,
@@ -95,6 +98,11 @@ export function ListRow({
               >
                 {subtitle}
               </Text>
+            </XStack>
+          ) : null}
+          {meta ? (
+            <XStack flexWrap="wrap" gap={6} marginTop={3}>
+              {meta}
             </XStack>
           ) : null}
         </YStack>

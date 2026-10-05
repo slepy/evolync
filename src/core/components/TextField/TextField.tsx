@@ -20,6 +20,9 @@ export interface TextFieldProps {
   onSubmitEditing?: () => void;
   returnKeyType?: TextInputProps["returnKeyType"];
   autoCapitalize?: TextInputProps["autoCapitalize"];
+  keyboardType?: TextInputProps["keyboardType"];
+  /** Grows from 56px to fit several lines (descriptions). */
+  multiline?: boolean;
 }
 
 /**
@@ -39,6 +42,8 @@ export function TextField({
   onSubmitEditing,
   returnKeyType,
   autoCapitalize,
+  keyboardType,
+  multiline,
 }: TextFieldProps) {
   const [focused, setFocused] = useState(false);
   const tint = resolveListAccent(accent).tint;
@@ -60,11 +65,16 @@ export function TextField({
         onSubmitEditing={onSubmitEditing}
         returnKeyType={returnKeyType}
         autoCapitalize={autoCapitalize}
+        keyboardType={keyboardType}
+        multiline={multiline}
         onFocus={() => setFocused(true)}
         onBlur={() => setFocused(false)}
         unstyled
-        height={56}
+        height={multiline ? undefined : 56}
+        minHeight={multiline ? 96 : undefined}
         paddingHorizontal={16}
+        paddingVertical={multiline ? 16 : undefined}
+        textAlignVertical={multiline ? "top" : undefined}
         borderRadius={16}
         backgroundColor="$neutralCard"
         borderWidth={focused || error ? 1.5 : 1}

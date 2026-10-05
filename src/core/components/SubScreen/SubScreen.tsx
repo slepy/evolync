@@ -2,6 +2,7 @@ import { neutral } from "@/core/theme/tokens";
 import { useRouter } from "expo-router";
 import { ChevronLeft } from "lucide-react-native";
 import type { ReactNode } from "react";
+import { KeyboardAvoidingView, Platform } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { ScrollView, Text, View, XStack, YStack } from "tamagui";
 import { SyncedPill } from "../SyncedPill/SyncedPill";
@@ -50,21 +51,39 @@ export function SubScreenHeader({ title, onBack, right }: SubScreenHeaderProps) 
 
 export interface SubScreenPageProps extends SubScreenHeaderProps {
   children: ReactNode;
+  /** Pinned under the scrolling content, above the keyboard (form screens: `PrimaryButton`). */
+  footer?: ReactNode;
 }
 
-/** Dark page with the sub-screen header and scrolling content, sections 24px apart. */
-export function SubScreenPage({ children, ...header }: SubScreenPageProps) {
+/**
+ * Dark page with the sub-screen header and scrolling content, sections 24px
+ * apart. With a `footer` it is a form screen (9B): the button stays visible.
+ */
+export function SubScreenPage({ children, footer, ...header }: SubScreenPageProps) {
   return (
     <YStack flex={1} backgroundColor="$neutralPage">
-      <SafeAreaView style={{ flex: 1 }} edges={["top"]}>
-        <YStack paddingHorizontal={20} paddingTop={12} paddingBottom={8}>
-          <SubScreenHeader {...header} />
-        </YStack>
-        <ScrollView flex={1} contentContainerStyle={{ paddingHorizontal: 20, paddingTop: 16, paddingBottom: 40 }}>
-          <YStack width="100%" maxWidth={500} alignSelf="center" gap={24}>
-            {children}
+      <SafeAreaView style={{ flex: 1 }} edges={footer ? ["top", "bottom"] : ["top"]}>
+        <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === "ios" ? "padding" : undefined}>
+          <YStack paddingHorizontal={20} paddingTop={12} paddingBottom={8}>
+            <SubScreenHeader {...header} />
           </YStack>
-        </ScrollView>
+          <ScrollView
+            flex={1}
+            keyboardShouldPersistTaps="handled"
+            contentContainerStyle={{ paddingHorizontal: 20, paddingTop: 16, paddingBottom: footer ? 24 : 40 }}
+          >
+            <YStack width="100%" maxWidth={500} alignSelf="center" gap={24}>
+              {children}
+            </YStack>
+          </ScrollView>
+          {footer ? (
+            <YStack paddingHorizontal={20} paddingTop={12} paddingBottom={12}>
+              <YStack width="100%" maxWidth={500} alignSelf="center">
+                {footer}
+              </YStack>
+            </YStack>
+          ) : null}
+        </KeyboardAvoidingView>
       </SafeAreaView>
     </YStack>
   );

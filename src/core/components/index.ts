@@ -13,3 +13,4 @@ export * from "./TrashButton";
 export * from "./TextField";
 export * from "./FormSheet";
 export * from "./SelectField";
+export * from "./PhotoField";

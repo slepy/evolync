@@ -1,5 +1,6 @@
 import {
   contextColors,
+  danger,
   moduleAccents,
   neutral,
   type ContextKey,
@@ -7,7 +8,7 @@ import {
 } from "@/core/theme/tokens";
 
 /** Module color, context color (Add new in a school / organization) or neutral chrome. */
-export type ListAccent = ModuleKey | ContextKey | "neutral";
+export type ListAccent = ModuleKey | ContextKey | "neutral" | "danger";
 
 export interface ResolvedListAccent {
   /** Text / icon color. */
@@ -32,6 +33,17 @@ export function withAlpha(hex: string, alpha: number): string {
 }
 
 export function resolveListAccent(accent: ListAccent): ResolvedListAccent {
+  if (accent === "danger") {
+    return {
+      tint: danger.text,
+      fill: withAlpha(neutral.alertDot, 0.14),
+      selectedFill: withAlpha(danger.text, 0.08),
+      from: danger.text,
+      to: danger.text,
+      onGradient: neutral.page,
+    };
+  }
+
   if (accent === "neutral") {
     return {
       tint: neutral.tint,

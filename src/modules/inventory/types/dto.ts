@@ -57,16 +57,16 @@ export interface UpdateProductVariantDto {
  * Used by both create and edit flows
  *
  * @property name - Product name (required, 1-255 chars)
- * @property description - Product description (optional, max 1000 chars)
- * @property imageUri - Local file URI for uploaded image (optional)
+ * @property description - Product description (optional, max 1000 chars; `null` clears it)
+ * @property imageUri - Local file URI or kept remote URL (optional; `null` removes the photo)
  * @property variants - Array of variant data (at least one required)
  *
  * Note: organization_id is obtained from user context (Zustand store)
  */
 export interface ProductDto {
   name: string;
-  description?: string;
-  imageUri?: string;
+  description?: string | null;
+  imageUri?: string | null;
   variants: ProductVariantDto[];
 }
 
