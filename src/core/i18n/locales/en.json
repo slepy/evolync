@@ -299,8 +299,6 @@
   "inventoryDeleteProductConfirmWithOrders": "Are you sure you want to delete this product? It will no longer appear in the catalog but will remain visible in existing orders. This product is referenced by {{count}} existing order item(s).",
   "inventoryYourProducts": "Your products",
   "inventoryEmpty": "No products yet. Tap Add new to add your first one.",
-  "inventoryInStockCount": "{{count}} in stock",
-  "inventoryLowStockCount": "Low stock · {{count}}",
   "inventoryRemoveVariant": "Remove variant",
   "inventoryProductNamePlaceholder": "e.g. Club T-shirt",
   "fieldPhoto": "Photo",

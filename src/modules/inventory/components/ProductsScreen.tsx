@@ -1,6 +1,5 @@
-import { ListCard, ListImage, ListRow, ListSection, SubScreenPage } from "@/core/components";
+import { ListCard, ListChip, ListImage, ListRow, ListSection, SubScreenPage } from "@/core/components";
 import { LoadingScreen } from "@/modules/core/components";
-import { formatPrice } from "@/modules/core/utils/formatters";
 import { useStore } from "@/store";
 import { useRouter } from "expo-router";
 import { Package } from "lucide-react-native";
@@ -10,31 +9,22 @@ import { useProducts } from "../hooks/useProducts";
 import type { ProductResponseDto } from "../types/dto";
 import { summarizeProductRow } from "./productRowSummary";
 
-/** "S · M · L · 24 in stock": the sizes, then stock; one-size products show only the stock. */
-const rowSubtitle = (product: ProductResponseDto): string => {
-  const s = summarizeProductRow(product.variants);
-  const stock =
-    s.stockStatus === "out"
-      ? t("statusOutOfStock")
-      : s.stockStatus === "low"
-        ? t("inventoryLowStockCount", { count: s.totalStock })
-        : t("inventoryInStockCount", { count: s.totalStock });
-  return s.sizes.length > 0 ? `${s.sizes.join(" · ")} · ${stock}` : stock;
-};
+const STOCK_ACCENT = { in: "payments", low: "students", out: "danger" } as const;
 
-const priceLabel = (product: ProductResponseDto): string =>
-  summarizeProductRow(product.variants)
-    .prices.map((p) =>
-      p.from
-        ? `${t("from")} ${formatPrice(p.price, p.currency)}`
-        : formatPrice(p.price, p.currency),
-    )
-    .join(" · ");
+/** One chip per currency: "24 / 120 PLN", colored by the stock in that currency. */
+const priceChips = (product: ProductResponseDto) =>
+  summarizeProductRow(product.variants).prices.map((p) => (
+    <ListChip
+      key={p.currency}
+      label={`${p.stock} / ${p.price} ${p.currency}`}
+      accent={STOCK_ACCENT[p.stockStatus]}
+    />
+  ));
 
 /**
  * Products list (9A): sub-screen header, "Your products" with Add new in the
- * Products pink, one row per product (photo or package icon, stock line,
- * lowest price on the right). A row opens edit (9C), Add new opens 9B.
+ * Products pink, one row per product (photo or package icon, a stock / price
+ * chip per currency). A row opens edit (9C), Add new opens 9B.
  */
 export const ProductsScreen: React.FC = () => {
   const router = useRouter();
@@ -59,20 +49,8 @@ export const ProductsScreen: React.FC = () => {
               <ListRow
                 key={product.id}
                 title={product.name}
-                subtitle={rowSubtitle(product)}
+                meta={priceChips(product)}
                 leading={<ListImage uri={product.imageUrl} icon={Package} accent="products" />}
-                trailing={
-                  <Text
-                    fontSize={14}
-                    fontWeight="$rowTitle"
-                    color="$neutralText"
-                    numberOfLines={1}
-                    flexShrink={0}
-                    maxWidth="45%"
-                  >
-                    {priceLabel(product)}
-                  </Text>
-                }
                 onPress={() =>
                   router.push(`/organization/inventory/${product.id}/edit`)
                 }

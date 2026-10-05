@@ -9,6 +9,9 @@ export interface PriceSummary {
   price: number;
   /** Several variants: shown as "from …". */
   from: boolean;
+  /** Stock of the variants in this currency; the chip of 9A is colored by it. */
+  stock: number;
+  stockStatus: StockStatus;
 }
 
 export interface ProductRowSummary {
@@ -39,19 +42,24 @@ export function stockStatusOf(totalStock: number): StockStatus {
  * have to share one, so amounts are never blended), stock across variants.
  */
 export function summarizeProductRow(variants: VariantLike[]): ProductRowSummary {
-  const byCurrency = new Map<string, number>();
+  const byCurrency = new Map<string, { price: number; stock: number }>();
   for (const v of variants) {
-    const lowest = byCurrency.get(v.currency);
-    byCurrency.set(v.currency, lowest === undefined ? v.price : Math.min(lowest, v.price));
+    const entry = byCurrency.get(v.currency);
+    byCurrency.set(v.currency, {
+      price: entry === undefined ? v.price : Math.min(entry.price, v.price),
+      stock: (entry?.stock ?? 0) + v.stockQuantity,
+    });
   }
 
   const totalStock = variants.reduce((sum, v) => sum + v.stockQuantity, 0);
 
   return {
-    prices: Array.from(byCurrency, ([currency, price]) => ({
+    prices: Array.from(byCurrency, ([currency, { price, stock }]) => ({
       currency,
       price,
       from: variants.length > 1,
+      stock,
+      stockStatus: stockStatusOf(stock),
     })),
     totalStock,
     stockStatus: stockStatusOf(totalStock),

@@ -24,7 +24,7 @@ describe("stockStatusOf", () => {
 describe("summarizeProductRow", () => {
   it("shows the single variant price without from", () => {
     const s = summarizeProductRow([{ name: "Standard", price: 120, currency: "PLN", stockQuantity: 8 }]);
-    assert.deepEqual(s.prices, [{ currency: "PLN", price: 120, from: false }]);
+    assert.deepEqual(s.prices, [{ currency: "PLN", price: 120, from: false, stock: 8, stockStatus: "in" }]);
     assert.equal(s.totalStock, 8);
     assert.equal(s.stockStatus, "in");
     assert.equal(s.variantCount, 1);
@@ -38,8 +38,8 @@ describe("summarizeProductRow", () => {
       { name: "XL", price: 30, currency: "EUR", stockQuantity: 0 },
     ]);
     assert.deepEqual(s.prices, [
-      { currency: "PLN", price: 120, from: true },
-      { currency: "EUR", price: 30, from: true },
+      { currency: "PLN", price: 120, from: true, stock: 3, stockStatus: "low" },
+      { currency: "EUR", price: 30, from: true, stock: 0, stockStatus: "out" },
     ]);
     assert.equal(s.totalStock, 3);
     assert.equal(s.stockStatus, "low");

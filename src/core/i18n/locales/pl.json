@@ -299,8 +299,6 @@
   "inventoryDeleteProductConfirmWithOrders": "Czy na pewno chcesz usunąć ten produkt? Zniknie z katalogu, ale pozostanie widoczny w istniejących zamówieniach. Ten produkt jest przywołany w {{count}} pozycjach istniejących zamówień.",
   "inventoryYourProducts": "Twoje produkty",
   "inventoryEmpty": "Nie masz jeszcze produktów. Dotknij Dodaj nowy, aby dodać pierwszy.",
-  "inventoryInStockCount": "{{count}} na stanie",
-  "inventoryLowStockCount": "Kończy się · {{count}}",
   "inventoryRemoveVariant": "Usuń wariant",
   "inventoryProductNamePlaceholder": "np. Koszulka klubowa",
   "fieldPhoto": "Zdjęcie",
