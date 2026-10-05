@@ -67,8 +67,8 @@ Canvas boards (local copies of the "Evolync Redesign Mockups" canvas, read from 
 
 ### Phase 1: Form state and shared audience choice
 
-- [ ] 1.1 Event form state with tests
-- [ ] 1.2 Shared AudienceChoice component
+- [x] 1.1 Event form state with tests — c0a0587
+- [x] 1.2 Shared AudienceChoice component — e200d95
 
 ### Phase 2: Screens 10A–10E
 
