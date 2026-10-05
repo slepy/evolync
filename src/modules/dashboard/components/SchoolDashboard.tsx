@@ -89,9 +89,8 @@ const SchoolDashboardComponent: React.FC<SchoolDashboardProps> = ({
     ];
   }, [organization, schools]);
 
+  // The sheet closes itself and never reports the active (current) school.
   const handleContextSelect = (option: ContextOption) => {
-    setSwitcherOpen(false);
-    if (option.id === schoolId) return;
     router.replace(
       (option.id === orgOptionId
         ? "/organization/dashboard"
