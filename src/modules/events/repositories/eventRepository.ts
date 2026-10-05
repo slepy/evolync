@@ -16,6 +16,14 @@ const activeFromClauses = (fromTimestamp: number) => [
   Q.sortBy("start_date", Q.asc),
 ];
 
+/** Not deleted, overlapping [from, to] (an event covers start_date..end_date). */
+const rangeClauses = (fromTimestamp: number, toTimestamp: number) => [
+  Q.where("deleted_at", null),
+  Q.where("start_date", Q.lte(toTimestamp)),
+  Q.where("end_date", Q.gte(fromTimestamp)),
+  Q.sortBy("start_date", Q.asc),
+];
+
 export const EventRepository = {
   async create(data: Partial<Event>): Promise<Event> {
     const collection = database.get<Event>("events");
@@ -220,6 +228,33 @@ export const EventRepository = {
             .query(
               Q.where("id", Q.oneOf(participants.map((p) => p.eventId))),
               ...activeFromClauses(fromTimestamp),
+            )
+            .observeWithColumns(NEXT_UP_COLUMNS),
+        ),
+      );
+  },
+
+  /** Events in the organization overlapping [fromTimestamp, toTimestamp] (cancelled included), for the calendar. */
+  observeInRangeByOrganization(organizationId: string, fromTimestamp: number, toTimestamp: number) {
+    return database
+      .get<Event>("events")
+      .query(Q.where("organization_id", organizationId), ...rangeClauses(fromTimestamp, toTimestamp))
+      .observeWithColumns(NEXT_UP_COLUMNS);
+  },
+
+  /** Events the member takes part in overlapping [fromTimestamp, toTimestamp] (cancelled included). */
+  observeInRangeForMember(schoolMemberId: string, fromTimestamp: number, toTimestamp: number) {
+    return database
+      .get<EventParticipant>("event_participants")
+      .query(Q.where("school_member_id", schoolMemberId), Q.where("deleted_at", null))
+      .observe()
+      .pipe(
+        switchMap((participants) =>
+          database
+            .get<Event>("events")
+            .query(
+              Q.where("id", Q.oneOf(participants.map((p) => p.eventId))),
+              ...rangeClauses(fromTimestamp, toTimestamp),
             )
             .observeWithColumns(NEXT_UP_COLUMNS),
         ),

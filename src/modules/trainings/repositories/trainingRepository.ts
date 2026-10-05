@@ -21,9 +21,11 @@ const LIST_COLUMNS = [
 
 const trainings = () => database.get<Training>("trainings");
 
-const upcomingClauses = (fromTimestamp: number) => [
+/** Not deleted, dated on/after `fromTimestamp` (and on/before `toTimestamp` when given). */
+const dateClauses = (fromTimestamp: number, toTimestamp?: number) => [
   Q.where("deleted_at", null),
   Q.where("date", Q.gte(fromTimestamp)),
+  ...(toTimestamp === undefined ? [] : [Q.where("date", Q.lte(toTimestamp))]),
   Q.sortBy("date", Q.asc),
   Q.sortBy("start_time", Q.asc),
 ];
@@ -90,7 +92,14 @@ export const TrainingRepository = {
   /** All upcoming trainings in the organization (incl. cancelled). */
   observeUpcomingByOrganization(organizationId: string, fromTimestamp: number) {
     return trainings()
-      .query(Q.where("organization_id", organizationId), ...upcomingClauses(fromTimestamp))
+      .query(Q.where("organization_id", organizationId), ...dateClauses(fromTimestamp))
+      .observeWithColumns(LIST_COLUMNS);
+  },
+
+  /** Trainings in the organization dated within [fromTimestamp, toTimestamp] (incl. cancelled), for the calendar. */
+  observeInRangeByOrganization(organizationId: string, fromTimestamp: number, toTimestamp: number) {
+    return trainings()
+      .query(Q.where("organization_id", organizationId), ...dateClauses(fromTimestamp, toTimestamp))
       .observeWithColumns(LIST_COLUMNS);
   },
 
@@ -100,39 +109,47 @@ export const TrainingRepository = {
    * trainings with at least one invitee who is a member of the school.
    */
   observeUpcomingForSchool(schoolId: string, organizationId: string, fromTimestamp: number) {
-    return database
-      .get<SchoolMember>("school_members")
-      .query(Q.where("school_id", schoolId), Q.where("deleted_at", null))
-      .observe()
-      .pipe(
-        switchMap((members) =>
-          database
-            .get<TrainingInvitee>("training_invitees")
-            .query(
-              Q.where("school_member_id", Q.oneOf(members.map((m) => m.id))),
-              Q.where("deleted_at", null),
-            )
-            .observe(),
-        ),
-        switchMap((invitees) =>
-          trainings()
-            .query(
-              Q.where("organization_id", organizationId),
-              Q.or(
-                Q.where("visibility", TRAINING_VISIBILITY.ORGANIZATION),
-                Q.and(
-                  Q.where("visibility", TRAINING_VISIBILITY.SCHOOL),
-                  Q.where("school_id", schoolId),
-                ),
-                Q.and(
-                  Q.where("visibility", TRAINING_VISIBILITY.WHITELIST),
-                  Q.where("id", Q.oneOf([...new Set(invitees.map((i) => i.trainingId))])),
-                ),
-              ),
-              ...upcomingClauses(fromTimestamp),
-            )
-            .observeWithColumns(LIST_COLUMNS),
-        ),
-      );
+    return observeForSchool(schoolId, organizationId, dateClauses(fromTimestamp));
+  },
+
+  /** Same audience as `observeUpcomingForSchool`, dated within [fromTimestamp, toTimestamp]. */
+  observeInRangeForSchool(schoolId: string, organizationId: string, fromTimestamp: number, toTimestamp: number) {
+    return observeForSchool(schoolId, organizationId, dateClauses(fromTimestamp, toTimestamp));
   },
 };
+
+const observeForSchool = (schoolId: string, organizationId: string, clauses: ReturnType<typeof dateClauses>) =>
+  database
+    .get<SchoolMember>("school_members")
+    .query(Q.where("school_id", schoolId), Q.where("deleted_at", null))
+    .observe()
+    .pipe(
+      switchMap((members) =>
+        database
+          .get<TrainingInvitee>("training_invitees")
+          .query(
+            Q.where("school_member_id", Q.oneOf(members.map((m) => m.id))),
+            Q.where("deleted_at", null),
+          )
+          .observe(),
+      ),
+      switchMap((invitees) =>
+        trainings()
+          .query(
+            Q.where("organization_id", organizationId),
+            Q.or(
+              Q.where("visibility", TRAINING_VISIBILITY.ORGANIZATION),
+              Q.and(
+                Q.where("visibility", TRAINING_VISIBILITY.SCHOOL),
+                Q.where("school_id", schoolId),
+              ),
+              Q.and(
+                Q.where("visibility", TRAINING_VISIBILITY.WHITELIST),
+                Q.where("id", Q.oneOf([...new Set(invitees.map((i) => i.trainingId))])),
+              ),
+            ),
+            ...clauses,
+          )
+          .observeWithColumns(LIST_COLUMNS),
+      ),
+    );

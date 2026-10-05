@@ -48,6 +48,8 @@ export interface EventFormHandle {
 interface EventFormProps {
   initialData?: Event;
   initialParticipantIds?: string[];
+  /** New event: "YYYY-MM-DD" filled in as start and end date (day picked in the calendar). */
+  initialStartDate?: string;
   schools?: Array<{ id: string; name: string }>;
   members?: Array<{ id: string; displayName: string; schoolName?: string }>;
   onSubmit: (data: CreateEventFormValues) => Promise<void>;
@@ -66,6 +68,7 @@ export const EventForm = forwardRef<EventFormHandle, EventFormProps>(
     {
       initialData,
       initialParticipantIds = [],
+      initialStartDate,
       schools = [],
       members = [],
       onSubmit,
@@ -104,8 +107,8 @@ export const EventForm = forwardRef<EventFormHandle, EventFormProps>(
             name: "",
             shortNote: undefined,
             address: undefined,
-            startDate: today.toISOString().split("T")[0],
-            endDate: today.toISOString().split("T")[0],
+            startDate: initialStartDate ?? today.toISOString().split("T")[0],
+            endDate: initialStartDate ?? today.toISOString().split("T")[0],
             price: 0,
             currency: DEFAULT_CURRENCY,
             visibility: EVENT_VISIBILITY.ORGANIZATION,
