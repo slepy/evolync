@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Change status</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+button,input,textarea{font-family:inherit}
+button{cursor:pointer}
+a{text-decoration:none}
+</style>
+</helmet>
+<div style="position: relative; width: 390px; height: 900px; box-sizing: border-box; overflow: hidden; background: #0B0E14; color: #F4F6FA; font-family: 'Manrope', sans-serif">
+
+<div style="opacity: 0.35; padding: 56px 20px 0; display: flex; flex-direction: column; gap: 16px">
+<div style="display: flex; align-items: center; gap: 12px"><span style="width: 44px; height: 44px; border-radius: 22px; border: 1px solid #2A3345; background: #131823"></span><span style="font-size: 22px; font-weight: 800">2 selected</span></div>
+<div style="display: flex; flex-direction: column; border-radius: 22px; background: #131823; border: 1px solid #232B3B">
+<div style="display: flex; align-items: center; gap: 12px; padding: 12px 16px"><span style="width: 44px; height: 44px; border-radius: 14px; background: rgba(148,163,184,0.16)"></span><span style="flex-grow: 1; font-size: 15px; font-weight: 800">Jan Zieliński</span><span style="width: 24px; height: 24px; border-radius: 8px; background: linear-gradient(135deg, #7C3AED 0%, #5B21B6 100%)"></span></div>
+<div style="height: 1px; background: #232B3B; margin: 0 16px"></div>
+<div style="display: flex; align-items: center; gap: 12px; padding: 12px 16px"><span style="width: 44px; height: 44px; border-radius: 14px; background: rgba(148,163,184,0.16)"></span><span style="flex-grow: 1; font-size: 15px; font-weight: 800">Ola Szymańska</span><span style="width: 24px; height: 24px; border-radius: 8px; background: linear-gradient(135deg, #7C3AED 0%, #5B21B6 100%)"></span></div>
+</div>
+</div>
+<div style="position: absolute; inset: 0; background: rgba(0,0,0,0.5)"></div>
+
+<div style="position: absolute; left: 0; right: 0; bottom: 0; display: flex; flex-direction: column; gap: 14px; padding: 12px 20px 32px; border-radius: 28px 28px 0 0; background: #1A2130; border-top: 1px solid #2A3345; box-shadow: 0 -12px 40px rgba(0,0,0,0.5)">
+<span style="align-self: center; width: 44px; height: 5px; border-radius: 3px; background: #3A4458"></span>
+<span style="display: flex; flex-direction: column; gap: 3px"><span style="font-size: 20px; font-weight: 800">Change status</span><span style="font-size: 13.5px; font-weight: 500; color: #A7B1C6">2 orders: Jan Zieliński, Ola Szymańska</span></span>
+
+<div role="radiogroup" aria-label="Status" style="display: flex; flex-direction: column; gap: 10px">
+<sc-for list="{{ options }}" as="o" hint-placeholder-count="5">
+<button role="radio" aria-checked="{{ o.on }}" onClick="{{ o.pick }}" style="{{ o.row }}">
+<sc-if value="{{ o.isOn }}" hint-placeholder-val="{{ false }}"><span style="width: 24px; height: 24px; border-radius: 12px; background: linear-gradient(135deg, #7C3AED 0%, #5B21B6 100%); color: #fff; display: flex; align-items: center; justify-content: center; flex-shrink: 0"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg></span></sc-if>
+<sc-if value="{{ o.isOff }}" hint-placeholder-val="{{ true }}"><span style="width: 24px; height: 24px; box-sizing: border-box; border-radius: 12px; border: 1.5px solid #3A4458; flex-shrink: 0"></span></sc-if>
+<span style="display: flex; flex-direction: column; gap: 2px; flex-grow: 1; min-width: 0"><span style="display: flex; align-items: center; gap: 8px; font-size: 15px; font-weight: 800"><span style="{{ o.dot }}"></span>{{ o.title }}</span><span style="font-size: 12.5px; font-weight: 500; color: #A7B1C6">{{ o.hint }}</span></span>
+</button>
+</sc-for>
+</div>
+
+<sc-if value="{{ showNotify }}" hint-placeholder-val="{{ true }}">
+
+</sc-if>
+
+
+</div>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":900}}'>
+class Component extends DCLogic {
+constructor(props) {
+super(props);
+this.state = { sel: 'ready', notify: true };
+}
+renderVals() {
+const { sel, notify } = this.state;
+const list = [
+{ k: 'placed', title: 'Placed', hint: 'Waiting for payment', tint: '#CBD5E1' },
+{ k: 'paid', title: 'Paid', hint: 'Payment received', tint: '#4ADE9F' },
+{ k: 'processing', title: 'Processing', hint: 'Ordered from the supplier · current', tint: '#FBBF24' },
+{ k: 'ready', title: 'Ready for pickup', hint: 'Waiting at the school', tint: '#8DB8FF' },
+{ k: 'completed', title: 'Completed', hint: 'Handed over to the student', tint: '#7D889F' }
+];
+const options = list.map((o) => {
+const on = o.k === sel;
+return {
+title: o.title,
+hint: o.hint,
+on: on ? 'true' : 'false',
+isOn: on,
+isOff: !on,
+pick: () => this.setState({ sel: o.k }),
+dot: 'width: 8px; height: 8px; border-radius: 4px; flex-shrink: 0; background: ' + o.tint,
+row: 'display: flex; align-items: center; gap: 12px; min-height: 56px; padding: 8px 14px; box-sizing: border-box; border-radius: 16px; color: #F4F6FA; text-align: left; ' + (on ? 'border: 1.5px solid #C4AEFF; background: rgba(196,174,255,0.08)' : 'border: 1px solid #2A3345; background: #131823')
+};
+});
+return {
+options,
+showNotify: sel === 'ready',
+notifyOn: notify ? 'true' : 'false',
+toggleNotify: () => this.setState({ notify: !notify }),
+switchTrack: 'width: 52px; height: 32px; padding: 3px; box-sizing: border-box; border-radius: 16px; border: 0; flex-shrink: 0; display: flex; ' + (notify ? 'justify-content: flex-end; background: linear-gradient(135deg, #7C3AED 0%, #5B21B6 100%)' : 'justify-content: flex-start; background: #3A4458'),
+switchKnob: 'width: 26px; height: 26px; border-radius: 13px; background: #fff'
+};
+}
+}
+</script>
+</body>
+</html>

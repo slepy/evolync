@@ -1,7 +1,6 @@
 export * from "./OrderCardUser";
 export * from "./OrderStatusBadge";
 export * from "./OrdersScreen";
-export * from "./OrderStatusChips";
 export * from "./orderAccess";
 export * from "./orderListState";
 export * from "./orderCart";

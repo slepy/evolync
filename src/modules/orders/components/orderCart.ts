@@ -32,20 +32,6 @@ export const applyCartQuantities = (
     cart,
   );
 
-/** Add product (12F): adds the picked quantities on top of what the order already has. */
-export const addToCart = (
-  cart: CartItem[],
-  variants: CartVariant[],
-  picks: Record<string, number>,
-  newId: () => string,
-): CartItem[] =>
-  variants.reduce((acc, variant) => {
-    const picked = picks[variant.variantId] ?? 0;
-    if (picked <= 0) return acc;
-    const current = acc.find((item) => item.variantId === variant.variantId)?.quantity ?? 0;
-    return setCartQuantity(acc, variant, current + picked, newId);
-  }, cart);
-
 export const cartItemCount = (cart: Array<{ quantity: number }>): number =>
   cart.reduce((sum, item) => sum + item.quantity, 0);
 

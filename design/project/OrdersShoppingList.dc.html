@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Shopping list</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+button,input,textarea{font-family:inherit}
+button{cursor:pointer}
+a{text-decoration:none}
+</style>
+</helmet>
+<div style="position: relative; width: 390px; height: 844px; box-sizing: border-box; overflow: hidden; background: radial-gradient(120% 30% at 50% -6%, rgba(245,158,11,0.14), rgba(0,0,0,0) 62%), #0B0E14; color: #F4F6FA; font-family: 'Manrope', sans-serif; padding: 56px 20px 0; display: flex; flex-direction: column; gap: 16px">
+
+<div style="display: flex; align-items: center; gap: 12px">
+<a href="Main.dc.html" aria-label="Back" style="width: 44px; height: 44px; border-radius: 22px; border: 1px solid #2A3345; background: #131823; color: #F4F6FA; display: flex; align-items: center; justify-content: center; flex-shrink: 0"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"></path></svg></a>
+<span style="display: flex; flex-direction: column; gap: 1px; flex-grow: 1; min-width: 0"><span style="font-size: 22px; font-weight: 800; letter-spacing: -0.3px">Orders</span></span>
+<span style="display: flex; align-items: center; gap: 7px; height: 30px; padding: 0 12px; border-radius: 15px; background: rgba(52,211,153,0.12); color: #4ADE9F; font-size: 12px; font-weight: 700"><span style="width: 7px; height: 7px; border-radius: 4px; background: #4ADE9F"></span>Synced</span>
+</div>
+
+<div role="tablist" aria-label="View" style="display: flex; gap: 4px; padding: 4px; border-radius: 24px; background: #131823; border: 1px solid #232B3B">
+<a href="OrdersOrg.dc.html" role="tab" aria-selected="false" style="flex: 1; display: flex; align-items: center; justify-content: center; gap: 8px; height: 40px; border-radius: 20px; color: #A7B1C6; font-size: 14px; font-weight: 800"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"></path><path d="M3 6h18"></path><path d="M16 10a4 4 0 0 1-8 0"></path></svg>Orders</a>
+<button role="tab" aria-selected="true" style="flex: 1; display: flex; align-items: center; justify-content: center; gap: 8px; height: 40px; border-radius: 20px; border: 0; background: rgba(196,174,255,0.16); color: #C4AEFF; font-size: 14px; font-weight: 800"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect width="8" height="4" x="8" y="2" rx="1"></rect><path d="M12 11h4M12 16h4M8 11h.01M8 16h.01"></path></svg>Shopping list</button>
+</div>
+
+<div role="group" aria-label="Orders to include" style="display: flex; gap: 8px">
+<button aria-pressed="true" style="flex-shrink: 0; display: flex; align-items: center; gap: 7px; height: 40px; padding: 0 10px 0 14px; border-radius: 20px; background: rgba(196,174,255,0.16); color: #C4AEFF; border: 1px solid #C4AEFF; font-size: 13.5px; font-weight: 800">To order<span style="min-width: 20px; height: 20px; padding: 0 6px; box-sizing: border-box; border-radius: 10px; background: #C4AEFF; color: #0B0E14; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 800">5</span></button>
+<button aria-pressed="false" style="flex-shrink: 0; display: flex; align-items: center; gap: 7px; height: 40px; padding: 0 10px 0 14px; border-radius: 20px; background: #0B0E14; color: #A7B1C6; border: 1px solid #2A3345; font-size: 13.5px; font-weight: 800"><span style="width: 7px; height: 7px; border-radius: 4px; background: #FBBF24"></span>Processing<span style="min-width: 20px; height: 20px; padding: 0 6px; box-sizing: border-box; border-radius: 10px; background: #232B3B; color: #CBD5E1; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 800">2</span></button>
+<button aria-pressed="false" style="flex-shrink: 0; display: flex; align-items: center; gap: 7px; height: 40px; padding: 0 10px 0 14px; border-radius: 20px; background: #0B0E14; color: #A7B1C6; border: 1px solid #2A3345; font-size: 13.5px; font-weight: 800"><span style="width: 7px; height: 7px; border-radius: 4px; background: #8DB8FF"></span>Ready<span style="min-width: 20px; height: 20px; padding: 0 6px; box-sizing: border-box; border-radius: 10px; background: #232B3B; color: #CBD5E1; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 800">2</span></button>
+</div>
+
+<div style="display: flex; flex-direction: column; gap: 12px; padding-top: 4px">
+<span style="display: flex; flex-direction: column; gap: 2px"><span style="font-size: 20px; font-weight: 800; letter-spacing: -0.2px">To order</span><span style="font-size: 13px; font-weight: 600; color: #A7B1C6">5 orders · 11 pcs · Placed and Paid</span></span>
+<div style="display: flex; flex-direction: column; border-radius: 22px; background: #131823; border: 1px solid #232B3B; overflow: hidden">
+<div style="display: flex; align-items: center; gap: 12px; padding: 12px 16px">
+<span style="width: 44px; height: 44px; border-radius: 14px; background: rgba(249,168,212,0.16); color: #F9A8D4; display: flex; align-items: center; justify-content: center; flex-shrink: 0"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m7.5 4.27 9 5.15"></path><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"></path><path d="m3.3 7 8.7 5 8.7-5"></path><path d="M12 22V12"></path></svg></span>
+<span style="display: flex; flex-direction: column; gap: 3px; flex-grow: 1; min-width: 0"><span style="font-size: 15px; font-weight: 800; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">Karate gi, white</span><span style="font-size: 12.5px; font-weight: 500; color: #A7B1C6; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">150 cm ×1 · 160 cm ×2 · 170 cm ×1</span></span>
+<span style="font-size: 14px; font-weight: 800; white-space: nowrap; flex-shrink: 0">4 pcs</span>
+</div>
+<div style="height: 1px; background: #232B3B; margin: 0 16px"></div>
+<div style="display: flex; align-items: center; gap: 12px; padding: 12px 16px">
+<span style="width: 44px; height: 44px; border-radius: 14px; background: rgba(249,168,212,0.16); color: #F9A8D4; display: flex; align-items: center; justify-content: center; flex-shrink: 0"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m7.5 4.27 9 5.15"></path><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"></path><path d="m3.3 7 8.7 5 8.7-5"></path><path d="M12 22V12"></path></svg></span>
+<span style="display: flex; flex-direction: column; gap: 3px; flex-grow: 1; min-width: 0"><span style="font-size: 15px; font-weight: 800; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">Sparring gloves</span><span style="font-size: 12.5px; font-weight: 500; color: #A7B1C6; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">S ×1 · M ×2</span></span>
+<span style="font-size: 14px; font-weight: 800; white-space: nowrap; flex-shrink: 0">3 pcs</span>
+</div>
+<div style="height: 1px; background: #232B3B; margin: 0 16px"></div>
+<div style="display: flex; align-items: center; gap: 12px; padding: 12px 16px">
+<span style="width: 44px; height: 44px; border-radius: 14px; background: rgba(249,168,212,0.16); color: #F9A8D4; display: flex; align-items: center; justify-content: center; flex-shrink: 0"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m7.5 4.27 9 5.15"></path><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"></path><path d="m3.3 7 8.7 5 8.7-5"></path><path d="M12 22V12"></path></svg></span>
+<span style="display: flex; flex-direction: column; gap: 3px; flex-grow: 1; min-width: 0"><span style="font-size: 15px; font-weight: 800; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">Club T-shirt</span><span style="font-size: 12.5px; font-weight: 500; color: #A7B1C6; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">Standard ×3</span></span>
+<span style="font-size: 14px; font-weight: 800; white-space: nowrap; flex-shrink: 0">3 pcs</span>
+</div>
+<div style="height: 1px; background: #232B3B; margin: 0 16px"></div>
+<div style="display: flex; align-items: center; gap: 12px; padding: 12px 16px">
+<span style="width: 44px; height: 44px; border-radius: 14px; background: rgba(249,168,212,0.16); color: #F9A8D4; display: flex; align-items: center; justify-content: center; flex-shrink: 0"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m7.5 4.27 9 5.15"></path><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"></path><path d="m3.3 7 8.7 5 8.7-5"></path><path d="M12 22V12"></path></svg></span>
+<span style="display: flex; flex-direction: column; gap: 3px; flex-grow: 1; min-width: 0"><span style="font-size: 15px; font-weight: 800; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">Shin guards</span><span style="font-size: 12.5px; font-weight: 500; color: #A7B1C6; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">M ×1</span></span>
+<span style="font-size: 14px; font-weight: 800; white-space: nowrap; flex-shrink: 0">1 pc</span>
+</div>
+</div>
+</div>
+
+<div style="position: absolute; left: 0; right: 0; bottom: 0; padding: 16px 20px 28px; background: linear-gradient(180deg, rgba(11,14,20,0) 0%, #0B0E14 38%)">
+<button style="width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px; height: 52px; border-radius: 26px; border: 0; background: linear-gradient(135deg, #7C3AED 0%, #5B21B6 100%); color: #fff; font-size: 15px; font-weight: 800"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg>Copy</button>
+</div>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

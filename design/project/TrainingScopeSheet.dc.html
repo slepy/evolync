@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Edit / delete scope: this only</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+button,input,textarea{font-family:inherit}
+button{cursor:pointer}
+a{text-decoration:none}
+</style>
+</helmet>
+<div style="position: relative; width: 390px; height: 844px; box-sizing: border-box; overflow: hidden; background: #0B0E14; color: #F4F6FA; font-family: 'Manrope', sans-serif">
+<div style="opacity: 0.35; padding: 56px 20px 0; display: flex; flex-direction: column; gap: 18px"><span style="font-size: 26px; font-weight: 800">Kids Judo</span><div style="height: 260px; border-radius: 22px; background: #131823; border: 1px solid #232B3B"></div></div><div style="position: absolute; inset: 0; background: rgba(0,0,0,0.5)"></div><div style="position: absolute; left: 0; right: 0; bottom: 0; display: flex; flex-direction: column; gap: 14px; padding: 12px 20px 32px; border-radius: 28px 28px 0 0; background: #1A2130; border-top: 1px solid #2A3345; box-shadow: 0 -12px 40px rgba(0,0,0,0.5)"><span style="align-self: center; width: 44px; height: 5px; border-radius: 3px; background: #3A4458"></span><span style="display: flex; flex-direction: column; gap: 3px"><span style="font-size: 20px; font-weight: 800">Edit recurring training</span><span style="font-size: 13.5px; font-weight: 500; color: #A7B1C6">Kids Judo is part of a weekly series.</span></span><button style="display: flex; align-items: center; gap: 12px; min-height: 56px; padding: 8px 14px; box-sizing: border-box; border-radius: 16px; border: 1.5px solid #5EEAD4; background: rgba(45,212,191,0.08); color: #F4F6FA; text-align: left"><span style="width: 24px; height: 24px; border-radius: 12px; background: linear-gradient(135deg, #2DD4BF 0%, #0F766E 100%); color: #04201D; display: flex; align-items: center; justify-content: center; flex-shrink: 0"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" ><path d="M20 6 9 17l-5-5"></path></svg></span><span style="display: flex; flex-direction: column; gap: 2px"><span style="font-size: 15px; font-weight: 800">This training only</span><span style="font-size: 12.5px; font-weight: 500; color: #A7B1C6">Wed, 26 Nov</span></span></button><button style="display: flex; align-items: center; gap: 12px; min-height: 56px; padding: 8px 14px; box-sizing: border-box; border-radius: 16px; border: 1px solid #2A3345; background: #131823; color: #F4F6FA; text-align: left"><span style="width: 24px; height: 24px; box-sizing: border-box; border-radius: 12px; border: 1.5px solid #3A4458; flex-shrink: 0"></span><span style="display: flex; flex-direction: column; gap: 2px"><span style="font-size: 15px; font-weight: 800">This and following</span><span style="font-size: 12.5px; font-weight: 500; color: #A7B1C6">From 26 Nov. Earlier trainings stay as they are.</span></span></button><button style="height: 52px; border-radius: 26px; border: 0; background: linear-gradient(135deg, #2DD4BF 0%, #0F766E 100%); color: #04201D; font-size: 15px; font-weight: 800">Continue</button><span style="font-size: 12.5px; font-weight: 500; line-height: 1.45; color: #7D889F">Past trainings are read-only. Delete uses the same choice.</span></div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

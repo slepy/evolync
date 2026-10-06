@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Add product</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+button,input,textarea{font-family:inherit}
+button{cursor:pointer}
+a{text-decoration:none}
+input::placeholder{color:#7D889F}
+</style>
+</helmet>
+<div style="position: relative; width: 390px; height: 844px; box-sizing: border-box; overflow: hidden; background: #0B0E14; color: #F4F6FA; font-family: 'Manrope', sans-serif">
+<div style="opacity: 0.35; padding: 56px 20px 0; display: flex; flex-direction: column; gap: 18px"><span style="font-size: 22px; font-weight: 800">New order</span><div style="height: 200px; border-radius: 22px; background: #131823; border: 1px solid #232B3B"></div></div>
+<div style="position: absolute; inset: 0; background: rgba(0,0,0,0.5)"></div>
+<div style="position: absolute; left: 0; right: 0; bottom: 0; top: 70px; display: flex; flex-direction: column; gap: 14px; padding: 12px 20px 28px; border-radius: 28px 28px 0 0; background: #1A2130; border-top: 1px solid #2A3345; box-shadow: 0 -12px 40px rgba(0,0,0,0.5)">
+<span style="align-self: center; width: 44px; height: 5px; border-radius: 3px; background: #3A4458; flex-shrink: 0"></span>
+<div style="display: flex; align-items: center; justify-content: space-between; flex-shrink: 0"><span style="display: flex; flex-direction: column; gap: 2px"><span style="font-size: 20px; font-weight: 800">Add product</span><span style="font-size: 13px; font-weight: 600; color: #A7B1C6">Tap a product to show its sizes</span></span><a href="OrderCreateFilled.dc.html" aria-label="Close" style="width: 44px; height: 44px; border-radius: 22px; background: #131823; border: 1px solid #2A3345; color: #F4F6FA; display: flex; align-items: center; justify-content: center; flex-shrink: 0"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"></path></svg></a></div>
+<label style="display: flex; align-items: center; gap: 10px; height: 48px; padding: 0 14px; box-sizing: border-box; border-radius: 16px; background: #131823; border: 1px solid #2A3345; color: #A7B1C6; flex-shrink: 0"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg><input aria-label="Search product" placeholder="Search product" style="flex-grow: 1; min-width: 0; border: 0; outline: 0; background: transparent; color: #F4F6FA; font-size: 15px; font-weight: 600"></label>
+<div style="flex-grow: 1; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; border-radius: 22px; background: #131823; border: 1px solid #232B3B">
+<sc-for list="{{ products }}" as="p" hint-placeholder-count="5">
+<sc-if value="{{ p.notFirst }}" hint-placeholder-val="{{ false }}"><div style="height: 1px; background: #232B3B; margin: 0 16px; flex-shrink: 0"></div></sc-if>
+<button aria-expanded="{{ p.expanded }}" onClick="{{ p.toggle }}" style="{{ p.headStyle }}">
+<span style="width: 44px; height: 44px; border-radius: 14px; background: rgba(249,168,212,0.16); color: #F9A8D4; display: flex; align-items: center; justify-content: center; flex-shrink: 0"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m7.5 4.27 9 5.15"></path><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"></path><path d="m3.3 7 8.7 5 8.7-5"></path><path d="M12 22V12"></path></svg></span>
+<span style="display: flex; flex-direction: column; gap: 3px; flex-grow: 1; min-width: 0"><span style="font-size: 15px; font-weight: 800; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">{{ p.name }}</span><span style="font-size: 12.5px; font-weight: 500; color: #A7B1C6; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">{{ p.meta }}</span></span>
+<sc-if value="{{ p.hasQty }}" hint-placeholder-val="{{ false }}"><span style="padding: 3px 9px; border-radius: 9px; background: rgba(196,174,255,0.16); color: #C4AEFF; font-size: 12.5px; font-weight: 800; white-space: nowrap; flex-shrink: 0">×{{ p.qty }}</span></sc-if>
+<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#A7B1C6" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="{{ p.caret }}"><path d="m6 9 6 6 6-6"></path></svg>
+</button>
+<sc-if value="{{ p.expanded }}" hint-placeholder-val="{{ false }}">
+<div style="display: flex; flex-direction: column; gap: 2px; padding: 0 12px 10px 16px; flex-shrink: 0">
+<sc-for list="{{ p.variants }}" as="v" hint-placeholder-count="3">
+<div style="{{ v.row }}">
+<span style="display: flex; flex-direction: column; gap: 2px; flex-grow: 1; min-width: 0"><span style="font-size: 14px; font-weight: 800">{{ v.name }}</span><span style="font-size: 12px; font-weight: 500; color: #A7B1C6; white-space: nowrap"><span>{{ v.price }} · </span><span style="{{ v.stockStyle }}">{{ v.stock }}</span></span></span>
+<button aria-label="{{ v.minusLabel }}" onClick="{{ v.minus }}" style="{{ v.minusStyle }}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path></svg></button>
+<span style="{{ v.qtyStyle }}">{{ v.qty }}</span>
+<button aria-label="{{ v.plusLabel }}" onClick="{{ v.plus }}" style="width: 44px; height: 44px; border-radius: 22px; border: 0; background: rgba(196,174,255,0.16); color: #C4AEFF; display: flex; align-items: center; justify-content: center; padding: 0; flex-shrink: 0"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5v14"></path></svg></button>
+</div>
+</sc-for>
+</div>
+</sc-if>
+</sc-for>
+</div>
+<div style="display: flex; flex-direction: column; gap: 10px; flex-shrink: 0">
+<span style="display: flex; align-items: center; justify-content: space-between; font-size: 14px; font-weight: 700; color: #A7B1C6"><span>{{ countLabel }}</span><span style="font-size: 16px; font-weight: 800; color: #F4F6FA">{{ totalLabel }}</span></span>
+<button style="{{ btnStyle }}">Add</button>
+</div>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+constructor(props) {
+super(props);
+this.state = { open: 'gi', q: { 'gi-160': 1 } };
+}
+renderVals() {
+const data = [
+{ id: 'gi', name: 'Karate gi, white', meta: 'From 110 PLN · 4 sizes', v: [['150 cm', 110, 4], ['160 cm', 120, 2], ['170 cm', 120, 0], ['180 cm', 130, 1]] },
+{ id: 'gloves', name: 'Sparring gloves', meta: '89 PLN · 3 sizes', v: [['S', 89, 3], ['M', 89, 5], ['L', 89, 0]] },
+{ id: 'tee', name: 'Club T-shirt', meta: '45 PLN', v: [['Standard', 45, 18]] },
+{ id: 'shin', name: 'Shin guards', meta: 'From 79 PLN · 2 sizes', v: [['M', 79, 6], ['L', 85, 3]] },
+{ id: 'bag', name: 'Sports bag', meta: 'From 150 PLN · 3 sizes', v: [['Small', 150, 4], ['Medium', 170, 2], ['Large', 190, 6]] }
+];
+const { open, q } = this.state;
+const set = (key, d) => this.setState({ q: { ...q, [key]: Math.max(0, (q[key] || 0) + d) } });
+let count = 0, total = 0;
+const products = data.map((p, i) => {
+const expanded = open === p.id;
+let pq = 0;
+const variants = p.v.map(([name, price, stock]) => {
+const key = p.id + '-' + name.replace(' cm', '');
+const n = q[key] || 0;
+pq += n; count += n; total += n * price;
+const on = n > 0;
+return {
+name, qty: n,
+price: price + ' PLN',
+stock: stock === 0 ? 'Out of stock' : stock + ' in stock',
+stockStyle: stock === 0 ? 'color: #FBBF24; font-weight: 700' : '',
+row: 'display: flex; align-items: center; gap: 6px; padding: 4px 4px 4px 12px; border-radius: 14px; ' + (on ? 'background: rgba(196,174,255,0.08)' : ''),
+qtyStyle: 'min-width: 24px; text-align: center; font-size: 16px; font-weight: 800; ' + (on ? 'color: #C4AEFF' : 'color: #7D889F'),
+minusStyle: 'width: 44px; height: 44px; border-radius: 22px; border: 1px solid #2A3345; background: #1A2130; color: #F4F6FA; display: flex; align-items: center; justify-content: center; padding: 0; flex-shrink: 0; ' + (on ? '' : 'opacity: 0.35'),
+minus: () => set(key, -1),
+plus: () => set(key, 1),
+minusLabel: 'Less ' + p.name + ' ' + name,
+plusLabel: 'More ' + p.name + ' ' + name
+};
+});
+return {
+notFirst: i > 0,
+name: p.name, meta: p.meta,
+expanded,
+hasQty: pq > 0, qty: pq,
+toggle: () => this.setState({ open: expanded ? null : p.id }),
+headStyle: 'display: flex; align-items: center; gap: 12px; width: 100%; padding: 12px 16px; border: 0; background: transparent; color: #F4F6FA; text-align: left; flex-shrink: 0',
+caret: 'flex-shrink: 0; transition: transform 0.15s; ' + (expanded ? 'transform: rotate(180deg)' : ''),
+variants
+};
+});
+return {
+products,
+countLabel: count === 0 ? 'Nothing picked yet' : (count === 1 ? '1 item' : count + ' items'),
+totalLabel: total + ' PLN',
+btnStyle: 'height: 52px; border-radius: 26px; border: 0; font-size: 15px; font-weight: 800; ' + (count > 0 ? 'background: linear-gradient(135deg, #7C3AED 0%, #5B21B6 100%); color: #fff' : 'background: #232B3B; color: #7D889F')
+};
+}
+}
+</script>
+</body>
+</html>

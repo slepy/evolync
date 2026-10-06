@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Notifications</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+button{font-family:inherit;cursor:pointer}
+a{text-decoration:none}
+</style>
+</helmet>
+<div style="position: relative; width: 390px; height: 844px; box-sizing: border-box; overflow: hidden; background: radial-gradient(120% 50% at 50% -8%, rgba(79,107,240,0.26), rgba(79,107,240,0) 62%), #0B0E14; color: #F4F6FA; font-family: 'Manrope', sans-serif">
+<div style="display: flex; flex-direction: column; gap: 22px; padding: 56px 20px 130px"><div style="display: flex; align-items: center; gap: 10px"><span style="flex-grow: 1; font-size: 28px; font-weight: 800; letter-spacing: -0.4px">Notifications</span><span style="display: flex; align-items: center; gap: 7px; height: 30px; padding: 0 12px; border-radius: 15px; background: rgba(52,211,153,0.12); color: #4ADE9F; font-size: 12px; font-weight: 700; flex-shrink: 0"><span style="width: 7px; height: 7px; border-radius: 4px; background: #4ADE9F"></span>Synced</span><button aria-label="Mark all as read" style="width: 44px; height: 44px; border-radius: 22px; border: 1px solid #2A3345; background: #131823; color: #F4F6FA; display: flex; align-items: center; justify-content: center; padding: 0; flex-shrink: 0"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 7 17l-5-5"></path><path d="m22 10-7.5 7.5L13 16"></path></svg></button></div><div style="display: flex; flex-direction: column; gap: 10px">
+<div style="display: flex; align-items: center; justify-content: space-between; padding: 0 4px"><span style="font-size: 12px; font-weight: 800; letter-spacing: 0.8px; color: #A7B1C6">TODAY</span><span style="padding: 3px 9px; border-radius: 9px; background: rgba(255,90,90,0.14); color: #FF8A8A; font-size: 12.5px; font-weight: 800">2 new</span></div>
+<div style="display: flex; flex-direction: column; border-radius: 22px; background: #131823; border: 1px solid #232B3B; overflow: hidden">
+<a href="#" style="display: flex; align-items: flex-start; gap: 14px; padding: 14px 16px; background: rgba(255,255,255,0.03); color: inherit">
+<span style="width: 48px; height: 48px; border-radius: 16px; background: rgba(74,222,159,0.16); color: #4ADE9F; display: flex; align-items: center; justify-content: center; flex-shrink: 0"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="14" x="2" y="5" rx="2"></rect><line x1="2" x2="22" y1="10" y2="10"></line></svg></span>
+<span style="display: flex; flex-direction: column; gap: 3px; flex-grow: 1; min-width: 0; padding-top: 2px">
+<span style="display: flex; align-items: center; gap: 8px"><span style="flex-grow: 1; font-size: 16px; font-weight: 800; color: #F4F6FA">New payment</span><span aria-label="Unread" style="width: 8px; height: 8px; border-radius: 4px; background: #FF5A5A; flex-shrink: 0"></span><span style="font-size: 12.5px; font-weight: 700; color: #A7B1C6; white-space: nowrap">2 h</span></span>
+<span style="font-size: 13.5px; font-weight: 500; line-height: 1.4; color: #A7B1C6">150,00 zł for 1–30 Nov</span>
+</span>
+</a><div style="height: 1px; background: #232B3B; margin: 0 16px"></div><a href="#" style="display: flex; align-items: flex-start; gap: 14px; padding: 14px 16px; background: rgba(255,255,255,0.03); color: inherit">
+<span style="width: 48px; height: 48px; border-radius: 16px; background: rgba(245,181,61,0.16); color: #F5B53D; display: flex; align-items: center; justify-content: center; flex-shrink: 0"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="4" rx="2"></rect><path d="M16 2v4M8 2v4M3 10h18"></path><path d="M12 14v4M10 16h4"></path></svg></span>
+<span style="display: flex; flex-direction: column; gap: 3px; flex-grow: 1; min-width: 0; padding-top: 2px">
+<span style="display: flex; align-items: center; gap: 8px"><span style="flex-grow: 1; font-size: 16px; font-weight: 800; color: #F4F6FA">Added to an event</span><span aria-label="Unread" style="width: 8px; height: 8px; border-radius: 4px; background: #FF5A5A; flex-shrink: 0"></span><span style="font-size: 12.5px; font-weight: 700; color: #A7B1C6; white-space: nowrap">5 h</span></span>
+<span style="font-size: 13.5px; font-weight: 500; line-height: 1.4; color: #A7B1C6">You’ve been added to Winter Camp on 20 Dec</span>
+</span>
+</a>
+</div>
+</div><div style="display: flex; flex-direction: column; gap: 10px">
+<div style="display: flex; align-items: center; justify-content: space-between; padding: 0 4px"><span style="font-size: 12px; font-weight: 800; letter-spacing: 0.8px; color: #A7B1C6">EARLIER</span></div>
+<div style="display: flex; flex-direction: column; border-radius: 22px; background: #131823; border: 1px solid #232B3B; overflow: hidden">
+<a href="#" style="display: flex; align-items: flex-start; gap: 14px; padding: 14px 16px;  color: inherit">
+<span style="width: 48px; height: 48px; border-radius: 16px; background: rgba(245,181,61,0.16); color: #F5B53D; display: flex; align-items: center; justify-content: center; flex-shrink: 0"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="4" rx="2"></rect><path d="M16 2v4M8 2v4M3 10h18"></path><path d="M12 14v4M10 16h4"></path></svg></span>
+<span style="display: flex; flex-direction: column; gap: 3px; flex-grow: 1; min-width: 0; padding-top: 2px">
+<span style="display: flex; align-items: center; gap: 8px"><span style="flex-grow: 1; font-size: 16px; font-weight: 700; color: #CBD5E1">Added to an event</span><span style="font-size: 12.5px; font-weight: 700; color: #A7B1C6; white-space: nowrap">3 Nov</span></span>
+<span style="font-size: 13.5px; font-weight: 500; line-height: 1.4; color: #A7B1C6">You’ve been added to Autumn Seminar on 15 Nov</span>
+</span>
+</a><div style="height: 1px; background: #232B3B; margin: 0 16px"></div><a href="#" style="display: flex; align-items: flex-start; gap: 14px; padding: 14px 16px;  color: inherit">
+<span style="width: 48px; height: 48px; border-radius: 16px; background: rgba(74,222,159,0.16); color: #4ADE9F; display: flex; align-items: center; justify-content: center; flex-shrink: 0"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="14" x="2" y="5" rx="2"></rect><line x1="2" x2="22" y1="10" y2="10"></line></svg></span>
+<span style="display: flex; flex-direction: column; gap: 3px; flex-grow: 1; min-width: 0; padding-top: 2px">
+<span style="display: flex; align-items: center; gap: 8px"><span style="flex-grow: 1; font-size: 16px; font-weight: 700; color: #CBD5E1">New payment</span><span style="font-size: 12.5px; font-weight: 700; color: #A7B1C6; white-space: nowrap">1 Oct</span></span>
+<span style="font-size: 13.5px; font-weight: 500; line-height: 1.4; color: #A7B1C6">150,00 zł for 1–31 Oct</span>
+</span>
+</a>
+</div>
+</div></div><nav style="position: absolute; left: 16px; right: 16px; bottom: 20px; height: 68px; border-radius: 34px; background: #1A2130; border: 1px solid #2A3345; box-shadow: 0 12px 32px rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: space-around; padding: 0 8px">
+<a href="#" style="position: relative; display: flex; flex-direction: column; align-items: center; gap: 3px; width: 56px; color: #A7B1C6; font-size: 11px; font-weight: 700"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>Home</a><a href="#" style="position: relative; display: flex; flex-direction: column; align-items: center; gap: 3px; width: 56px; color: #A7B1C6; font-size: 11px; font-weight: 700"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="1"></circle><path d="m9 20 3-6 3 6"></path><path d="m6 8 6 2 6-2"></path><path d="M12 10v4"></path></svg>Notebook</a><a href="#" aria-current="page" style="display: flex; align-items: center; gap: 8px; height: 50px; padding: 0 16px; border-radius: 25px; background: linear-gradient(135deg, #3F5AE0 0%, #2B3DB0 100%); color: #fff; font-size: 13px; font-weight: 800"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"></path></svg>Alerts</a><a href="#" style="position: relative; display: flex; flex-direction: column; align-items: center; gap: 3px; width: 56px; color: #A7B1C6; font-size: 11px; font-weight: 700"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>Profile</a>
+<a href="NotificationsSettings.dc.html" style="display: flex; flex-direction: column; align-items: center; gap: 3px; width: 56px; color: #A7B1C6; font-size: 11px; font-weight: 700; text-decoration: none"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>Settings</a>
+</nav>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

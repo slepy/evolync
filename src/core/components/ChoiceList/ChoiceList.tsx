@@ -9,8 +9,6 @@ export interface ChoiceOption<T extends string> {
   title: string;
   /** Muted line under the title ("All schools and members", the chosen school). */
   hint?: string;
-  /** Status dot in front of the title (12C order status). */
-  dot?: string;
 }
 
 export interface ChoiceListProps<T extends string> {
@@ -77,12 +75,9 @@ export function ChoiceList<T extends string>({
               <View width={24} height={24} borderRadius={12} borderWidth={1.5} borderColor="$neutralControl" flexShrink={0} />
             )}
             <YStack flex={1} minWidth={0} gap={2}>
-              <XStack alignItems="center" gap={8}>
-                {option.dot ? <View width={8} height={8} borderRadius={4} backgroundColor={option.dot} flexShrink={0} /> : null}
-                <Text flexShrink={1} fontSize={15} fontWeight="$rowTitle" color="$neutralText" numberOfLines={1}>
-                  {option.title}
-                </Text>
-              </XStack>
+              <Text fontSize={15} fontWeight="$rowTitle" color="$neutralText" numberOfLines={1}>
+                {option.title}
+              </Text>
               {option.hint ? (
                 <Text fontSize={12.5} fontWeight="$secondary" color="$neutralMuted" numberOfLines={1}>
                   {option.hint}

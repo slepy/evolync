@@ -126,8 +126,11 @@ Full markup with placeholders is in [components.md](components.md). Rendered exa
 | **Checkbox list** (`CheckList`) | 10B "SELECT MEMBERS" | Any number of rows: label + "N selected" chip, one list card, square checkbox on the right in the module accent |
 | **Select** (`SelectField` + sheet) | 12E / 12E1 / 12E2 "Student" | One answer from 5+ options or a list that grows (students, schools, products): a field that opens a sheet with search; tap a row to choose and close |
 | **Status summary** (`StatusSummary`) | 10C / 10D "Participants" | Counts of people by status (Paid / Attending / Absent): header, segmented bar, legend. Linked with "Manage ›" on a details screen, static on the list it summarizes |
+| **View switch** (`ViewSwitch`) | S section 8, 12A "Orders / Shopping list" | Two views of one screen: card track, two 40px tabs with icon + label, active tab in the module accent at 16% |
+| **Status filter** (`StatusFilter`) | S section 9, 12A status chips | Chips above a list, one per status: selected = status fill, border, label and filled count circle; unselected = page fill, muted label, status dot left, neutral count. Variant without counts |
+| **Status badge** (`StatusBadge`) | S section 10, 12A rows | Read-only mini badge on the right of a list row, under the amount: 6px dot + name in the status color on its fill |
 
-When a brief says "list", "tile", "header box" or "choice" / "radio" or "checklist" / "checkbox" or "select" / "dropdown" / "picker" or "status summary" / "counters", use these components unchanged and only swap the placeholders. Do not invent new radii, paddings or colors.
+When a brief says "list", "tile", "header box" or "choice" / "radio" or "checklist" / "checkbox" or "select" / "dropdown" / "picker" or "status summary" / "counters" or "switch" / "status filter" / "status badge", use these components unchanged and only swap the placeholders. Do not invent new radii, paddings or colors.
 
 ## Creating a board
 

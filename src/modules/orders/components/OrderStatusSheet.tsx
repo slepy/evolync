@@ -1,58 +1,51 @@
-import { ChoiceList, FormSheet, PrimaryButton } from "@/core/components";
-import React, { useEffect, useState } from "react";
+import { FormSheet, ListCard, ListCheck, ListRow, resolveListAccent } from "@/core/components";
+import React from "react";
+import { View } from "tamagui";
 import type { OrderStatus } from "../types";
 import { ORDER_STATUSES, ORDER_STATUS_STYLE } from "./orderListState";
 
 interface OrderStatusSheetProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  /** "Order: Jan Zieliński". */
-  subtitle?: string;
   value: OrderStatus;
-  /** The status saved on the order (its hint says "current"). */
-  current: OrderStatus;
-  onSave: (status: OrderStatus) => void;
+  onSelect: (status: OrderStatus) => void;
 }
 
-/** Change status (12C): radio rows with the status dot and what it means, Save. */
-export const OrderStatusSheet: React.FC<OrderStatusSheetProps> = ({ open, onOpenChange, subtitle, value, current, onSave }) => {
-  const [picked, setPicked] = useState<OrderStatus>(value);
+/** Status (12C): one row per status with its color dot; tap to choose and close. */
+export const OrderStatusSheet: React.FC<OrderStatusSheetProps> = ({ open, onOpenChange, value, onSelect }) => (
+  <FormSheet open={open} onOpenChange={onOpenChange} title={t("ordersChangeStatus")}>
+    <ListCard role="radiogroup" aria-label={t("ordersChangeStatus")}>
+      {ORDER_STATUSES.map((status) => {
+        const style = ORDER_STATUS_STYLE[status];
+        const selected = status === value;
+        return (
+          <ListRow
+            key={status}
+            size="md"
+            role="radio"
+            aria-checked={selected}
+            title={t(style.label)}
+            leading={<StatusDot status={status} />}
+            selected={selected}
+            accent="orders"
+            trailing={selected ? <ListCheck accent="orders" /> : undefined}
+            onPress={() => {
+              onSelect(status);
+              onOpenChange(false);
+            }}
+          />
+        );
+      })}
+    </ListCard>
+  </FormSheet>
+);
 
-  useEffect(() => {
-    if (open) setPicked(value);
-  }, [open, value]);
-
+/** 12px dot in the status color (status rows and the STATUS field). */
+export function StatusDot({ status }: { status: OrderStatus }) {
+  const a = resolveListAccent(ORDER_STATUS_STYLE[status].accent);
   return (
-    <FormSheet
-      open={open}
-      onOpenChange={onOpenChange}
-      title={t("ordersChangeStatus")}
-      subtitle={subtitle}
-      footer={
-        <PrimaryButton
-          label={t("save")}
-          accent="orders"
-          onPress={() => {
-            onSave(picked);
-            onOpenChange(false);
-          }}
-        />
-      }
-    >
-      <ChoiceList
-        accent="orders"
-        value={picked}
-        onChange={setPicked}
-        options={ORDER_STATUSES.map((status) => {
-          const style = ORDER_STATUS_STYLE[status];
-          return {
-            value: status,
-            title: t(style.title),
-            hint: status === current ? `${t(style.hint)} · ${t("ordersStatusCurrent")}` : t(style.hint),
-            dot: style.tint,
-          };
-        })}
-      />
-    </FormSheet>
+    <View width={36} height={36} borderRadius={12} backgroundColor={a.fill} alignItems="center" justifyContent="center" flexShrink={0}>
+      <View width={12} height={12} borderRadius={6} backgroundColor={a.tint} />
+    </View>
   );
-};
+}

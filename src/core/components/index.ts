@@ -22,5 +22,7 @@ export * from "./ActionPill";
 export * from "./StatusSummary";
 export * from "./CurrencySheet";
 export * from "./PillGroup";
-export * from "./TabSwitch";
 export * from "./DateTimeField";
+export * from "./ViewSwitch";
+export * from "./StatusFilter";
+export * from "./StatusBadge";
