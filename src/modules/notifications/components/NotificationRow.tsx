@@ -23,7 +23,7 @@ export function NotificationRow({ title, body, time, unread, icon, accent, onPre
   return (
     <XStack
       role="button"
-      aria-label={`${title}. ${body}. ${time}`}
+      aria-label={[title, body, time, unread ? t("notificationsUnread") : null].filter(Boolean).join(". ")}
       onPress={onPress}
       pressStyle={{ opacity: 0.85 }}
       alignItems="flex-start"
