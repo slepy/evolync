@@ -1,5 +1,5 @@
 import { ChevronRight, type LucideIcon } from "lucide-react-native";
-import React from "react";
+import React, { type ReactNode } from "react";
 import { Text, View, XStack, YStack } from "tamagui";
 import { resolveListAccent, type ListAccent } from "../List/accent";
 import { statusSummaryBar } from "./statusSummaryBar";
@@ -27,6 +27,8 @@ export interface StatusSummaryProps {
   /** "Manage" — shown with a chevron in the accent tint on the linked variant. */
   actionLabel?: string;
   accent?: ListAccent;
+  /** Under the legend, after a divider (14B "Amounts"). */
+  children?: ReactNode;
 }
 
 /**
@@ -35,7 +37,15 @@ export interface StatusSummaryProps {
  * on a details screen ("Manage ›", whole card pressable), static above the
  * list it summarizes.
  */
-export function StatusSummary({ title, subtitle, items, onPress, actionLabel, accent = "neutral" }: StatusSummaryProps) {
+export function StatusSummary({
+  title,
+  subtitle,
+  items,
+  onPress,
+  actionLabel,
+  accent = "neutral",
+  children,
+}: StatusSummaryProps) {
   const tint = resolveListAccent(accent).tint;
   const segments = statusSummaryBar(items);
 
@@ -100,6 +110,13 @@ export function StatusSummary({ title, subtitle, items, onPress, actionLabel, ac
           </XStack>
         ))}
       </XStack>
+
+      {children ? (
+        <>
+          <View height={1} backgroundColor="$neutralCardBorder" />
+          {children}
+        </>
+      ) : null}
     </YStack>
   );
 }

@@ -26,3 +26,4 @@ export * from "./DateTimeField";
 export * from "./ViewSwitch";
 export * from "./StatusFilter";
 export * from "./StatusBadge";
+export * from "./StatusButton";
