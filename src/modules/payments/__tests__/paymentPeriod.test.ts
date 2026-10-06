@@ -7,6 +7,7 @@ import {
   dateLocaleTag,
   describePeriod,
   formatAmount,
+  formatPeriodDay,
   formatPeriodRange,
   isCurrentPeriod,
   localDayKey,
@@ -36,6 +37,12 @@ describe("formatPeriodRange", () => {
     assert.equal(formatPeriodRange("2026-10-01", "2026-10-31", en, false), "1 – 31 Oct");
     assert.equal(formatPeriodRange("2026-09-28", "2026-10-04", en), "28 Sep – 4 Oct 2026");
     assert.equal(formatPeriodRange("2025-12-29", "2026-01-02", en, false), "29 Dec 2025 – 2 Jan 2026");
+  });
+});
+
+describe("formatPeriodDay", () => {
+  it("writes one day-first date", () => {
+    assert.equal(formatPeriodDay("2026-07-14", en), "14 Jul 2026");
   });
 });
 

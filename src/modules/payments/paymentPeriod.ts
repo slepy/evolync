@@ -47,6 +47,16 @@ const fmt = (day: DayKey, locale: string, options: Intl.DateTimeFormatOptions) =
 
 const capitalize = (text: string): string => text.charAt(0).toLocaleUpperCase() + text.slice(1);
 
+/** Three-letter month; en-GB would write "Sept", the boards use "Sep". */
+const monthShort = (day: DayKey, locale: string): string =>
+  fmt(day, locale === "en-GB" ? "en-US" : locale, { month: "short" }).replace(/\.$/, "");
+
+/** "14 Jul 2026" (14D1 START / END fields). */
+export const formatPeriodDay = (day: DayKey, locale: string): string => {
+  const { y, d } = parts(day);
+  return `${d} ${monthShort(day, locale)} ${y}`;
+};
+
 /**
  * Day-first range: "1 – 31 Oct", "29 Sep – 5 Oct", with `withYear`
  * "14 – 27 Jul 2026"; across years always "29 Dec 2025 – 2 Jan 2026".
@@ -54,9 +64,7 @@ const capitalize = (text: string): string => text.charAt(0).toLocaleUpperCase() 
 export function formatPeriodRange(start: DayKey, end: DayKey, locale: string, withYear = true): string {
   const s = parts(start);
   const e = parts(end);
-  // en-GB abbreviates September as "Sept"; the boards use the three-letter "Sep".
-  const monthLocale = locale === "en-GB" ? "en-US" : locale;
-  const month = (day: DayKey) => fmt(day, monthLocale, { month: "short" }).replace(/\.$/, "");
+  const month = (day: DayKey) => monthShort(day, locale);
   if (s.y !== e.y) return `${s.d} ${month(start)} ${s.y} – ${e.d} ${month(end)} ${e.y}`;
   const year = withYear ? ` ${e.y}` : "";
   if (s.m === e.m) return `${s.d} – ${e.d} ${month(end)}${year}`;
