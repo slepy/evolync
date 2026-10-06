@@ -22,6 +22,8 @@ export interface ChoiceListProps<T extends string> {
   accent?: ListAccent;
   error?: string;
   disabled?: boolean;
+  /** Fill of the unselected rows: "card" (default) on the page, "page" inside a card (17A Language). */
+  surface?: "card" | "page";
 }
 
 /**
@@ -37,6 +39,7 @@ export function ChoiceList<T extends string>({
   accent = "neutral",
   error,
   disabled,
+  surface = "card",
 }: ChoiceListProps<T>) {
   const a = resolveListAccent(accent);
 
@@ -66,7 +69,7 @@ export function ChoiceList<T extends string>({
             borderRadius={16}
             borderWidth={selected ? 1.5 : 1}
             borderColor={selected ? a.tint : "$neutralRaisedBorder"}
-            backgroundColor={selected ? a.selectedFill : "$neutralCard"}
+            backgroundColor={selected ? a.selectedFill : surface === "page" ? "$neutralPage" : "$neutralCard"}
           >
             {selected ? (
               <View width={24} height={24} borderRadius={12} overflow="hidden" alignItems="center" justifyContent="center" flexShrink={0}>
