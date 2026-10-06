@@ -91,4 +91,4 @@ PR: #28
 ### Phase 4: Review feedback — follow the boards
 
 - [x] 4.1 Rebuild 12A–12F on the board copies — 79a6466
-- [x] 4.2 Shared pieces, CLAUDE.md, full gate — PENDING
+- [x] 4.2 Shared pieces, CLAUDE.md, full gate — c8f51c2
