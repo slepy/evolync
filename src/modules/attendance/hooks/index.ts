@@ -5,3 +5,4 @@ export {
   useStudentAttendance,
   type StudentAttendanceItem,
 } from "./useStudentAttendance";
+export { useAttendanceSessionList, type SessionListEntry } from "./useAttendanceSessionList";

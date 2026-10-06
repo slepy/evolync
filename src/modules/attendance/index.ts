@@ -7,6 +7,7 @@ export {
   TrainingSessionCard,
   AttendanceListItem,
   AttendanceStats,
+  AttendanceSessionsScreen,
 } from "./components";
 
 // Constants
