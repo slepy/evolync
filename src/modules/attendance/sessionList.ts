@@ -20,6 +20,12 @@ export const dateLocaleTag = (language: string): string => (language === "pl" ? 
 
 const capitalize = (text: string): string => text.charAt(0).toLocaleUpperCase() + text.slice(1);
 
+/** "30 Sep": day-first, three-letter English month (en-GB would write "Sept"). */
+const dayMonthShort = (date: Date, locale: string): string =>
+  `${date.getDate()} ${date
+    .toLocaleDateString(locale === "en-GB" ? "en-US" : locale, { month: "short" })
+    .replace(/\.$/, "")}`;
+
 const monthKey = (date: Date): string => `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`;
 
 /** Present and total count per session id from the school's attendance records. */
@@ -64,14 +70,10 @@ export const formatSessionTitle = (date: Date, locale: string): string =>
 
 /** "Thu, 2 Oct" (13B header). */
 export const formatSessionShort = (date: Date, locale: string): string =>
-  `${capitalize(date.toLocaleDateString(locale, { weekday: "short" }))}, ${date.toLocaleDateString(locale, {
-    day: "numeric",
-    month: "short",
-  })}`;
+  `${capitalize(date.toLocaleDateString(locale, { weekday: "short" }))}, ${dayMonthShort(date, locale)}`;
 
 /** "4 Oct" (13C header after "Today, "). */
-export const formatDayMonthShort = (date: Date, locale: string): string =>
-  date.toLocaleDateString(locale, { day: "numeric", month: "short" });
+export const formatDayMonthShort = dayMonthShort;
 
 /** Counts of each status in an edited list (13B / 13C summary). */
 export function countStatuses(items: ReadonlyArray<{ status: AttendanceStatus }>): Record<AttendanceStatus, number> {

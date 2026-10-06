@@ -71,6 +71,7 @@ describe("session date labels", () => {
     assert.equal(formatSessionTitle(day(2026, 10, 2), en), "Friday, 2 October");
     assert.equal(formatSessionShort(day(2026, 10, 2), en), "Fri, 2 Oct");
     assert.equal(formatSessionMonth(day(2026, 10, 2), en), "October 2026");
+    assert.equal(formatSessionShort(day(2026, 9, 30), en), "Wed, 30 Sep");
   });
 
   it("capitalizes the Polish weekday", () => {
