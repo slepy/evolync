@@ -49,19 +49,19 @@ Source boards: `design/project/NotesNotebook.dc.html` (T1), `NotesList.dc.html` 
 
 ### Phase 1: Shared components
 
-- [ ] 1.1 Tokens and accent label
-- [ ] 1.2 TagChip, ChipFilter, DashedButton
-- [ ] 1.3 EmptyState, PrimaryButton, TrashButton, FormSheet props
+- [x] 1.1 Tokens and accent label — 665adbb
+- [x] 1.2 TagChip, ChipFilter, DashedButton — 3236085
+- [x] 1.3 EmptyState, PrimaryButton, TrashButton, FormSheet props — 20305f8
 
 ### Phase 2: Notes data and logic
 
-- [ ] 2.1 Pure note logic with tests
-- [ ] 2.2 Repositories, services and hooks
+- [x] 2.1 Pure note logic with tests — c4ba112
+- [x] 2.2 Repositories, services and hooks — 3617831
 
 ### Phase 3: Screens
 
-- [ ] 3.1 Tags sheet T5
-- [ ] 3.2 Notes list T2 / T2F / T2E
-- [ ] 3.3 New note T3 and note T4 / T4A
-- [ ] 3.4 Notebook tab T1 and routes
-- [ ] 3.5 Translations and CLAUDE.md
+- [x] 3.1 Tags sheet T5 — f088f5b
+- [x] 3.2 Notes list T2 / T2F / T2E — 7434166
+- [x] 3.3 New note T3 and note T4 / T4A — 042824d
+- [x] 3.4 Notebook tab T1 and routes — 14cf82a
+- [x] 3.5 Translations and CLAUDE.md — 48a1806
