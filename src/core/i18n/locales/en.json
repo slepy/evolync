@@ -963,5 +963,16 @@
   "calendarEventDay": "Day {{index}}/{{count}}",
   "calendarAddEventHint": "One or more days: camp, seminar, exam",
   "calendarAddTrainingHint": "One-off or recurring class",
-  "calendarAddStartDateHint": "The selected day is filled in as the start date."
+  "calendarAddStartDateHint": "The selected day is filled in as the start date.",
+  "authSignIn": "Sign in",
+  "authSignUp": "Sign up",
+  "authNoAccount": "No account yet?",
+  "authSignInSubtitle": "Sign in to your schools and notes",
+  "authForgotPassword": "Forgot password?",
+  "authWrongCredentials": "Wrong email or password",
+  "authWrongCredentialsHint": "Check both and try again. Signing in needs an internet connection the first time.",
+  "authLogoLabel": "Evolync logo",
+  "showPassword": "Show password",
+  "hidePassword": "Hide password",
+  "dismiss": "Dismiss"
 }

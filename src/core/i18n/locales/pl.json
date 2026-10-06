@@ -992,5 +992,16 @@
   "calendarEventDay": "Dzień {{index}}/{{count}}",
   "calendarAddEventHint": "Jeden lub kilka dni: obóz, seminarium, egzamin",
   "calendarAddTrainingHint": "Jednorazowe lub cykliczne zajęcia",
-  "calendarAddStartDateHint": "Wybrany dzień zostanie wpisany jako data rozpoczęcia."
+  "calendarAddStartDateHint": "Wybrany dzień zostanie wpisany jako data rozpoczęcia.",
+  "authSignIn": "Zaloguj się",
+  "authSignUp": "Zarejestruj się",
+  "authNoAccount": "Nie masz konta?",
+  "authSignInSubtitle": "Zaloguj się do swoich szkół i notatek",
+  "authForgotPassword": "Nie pamiętasz hasła?",
+  "authWrongCredentials": "Zły e-mail lub hasło",
+  "authWrongCredentialsHint": "Sprawdź oba pola i spróbuj ponownie. Pierwsze logowanie wymaga połączenia z internetem.",
+  "authLogoLabel": "Logo Evolync",
+  "showPassword": "Pokaż hasło",
+  "hidePassword": "Ukryj hasło",
+  "dismiss": "Zamknij"
 }
