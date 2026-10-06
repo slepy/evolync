@@ -1,6 +1,6 @@
 import {
   ActionPill,
-  ListAvatar,
+  MemberAvatar,
   ListCard,
   ListChip,
   ListIcon,
@@ -33,7 +33,7 @@ import { localToday, parseJsonArray, timestampToDay } from "../types/helpers";
 import { audienceLabel } from "./audienceLabel";
 import { confirmAction, showError } from "./confirmAction";
 import { ExtendSeriesSheet } from "./ExtendSeriesSheet";
-import { formatDay, memberInitials } from "./format";
+import { formatDay } from "./format";
 import { seriesRulesSummary } from "./trainingFormState";
 import { TrainingScopeSheet, type TrainingScopeAction } from "./TrainingScopeSheet";
 
@@ -234,7 +234,7 @@ export const TrainingDetailsScreen: React.FC<TrainingDetailsScreenProps> = ({
                   key={member.id}
                   size="md"
                   title={member.name}
-                  leading={<ListAvatar initials={memberInitials(member.name)} uri={member.avatarUrl} />}
+                  leading={<MemberAvatar name={member.name} uri={member.avatarUrl} rankId={member.rankId} />}
                 />
               ))}
             </ListCard>

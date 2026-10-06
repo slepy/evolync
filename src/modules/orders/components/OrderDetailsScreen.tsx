@@ -1,12 +1,11 @@
 import {
-  ListAvatar,
+  MemberAvatar,
   ListCard,
   ListRow,
   PrimaryButton,
   StatusBadge,
   SubScreenPage,
   TrashButton,
-  memberInitials,
   resolveListAccent,
 } from "@/core/components";
 import { neutral } from "@/core/theme/tokens";
@@ -155,7 +154,7 @@ export const OrderDetailsScreen: React.FC<OrderDetailsScreenProps> = ({ scope, o
           <ListRow
             title={memberName}
             subtitle={member?.email && member.email !== memberName ? member.email : undefined}
-            leading={<ListAvatar size={48} initials={memberInitials(memberName)} uri={member?.avatarUrl} />}
+            leading={<MemberAvatar size={48} name={memberName} uri={member?.avatarUrl} rankId={member?.currentRankId} />}
           />
         ) : null}
         <XStack

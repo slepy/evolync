@@ -31,6 +31,7 @@ export const useAudienceOptions = (organizationId: string | undefined) => {
             displayName: m.displayName || m.email || t("unknown"),
             schoolName: schoolNames.get(m.schoolId),
             avatarUrl: m.avatarUrl,
+            rankId: m.currentRankId,
           })),
         ),
       error: (err) => console.error("[useAudienceOptions] Members load error:", err),

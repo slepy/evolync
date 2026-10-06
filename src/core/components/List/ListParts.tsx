@@ -61,47 +61,78 @@ export function ListImage({
   );
 }
 
-/** Neutral avatar: the person's photo, otherwise initials (people belong to no module). */
+export type ListAvatarSize = 64 | 48 | 44 | 36;
+
+const AVATAR_RADIUS: Record<ListAvatarSize, number | "$rowIcon"> = { 64: 20, 48: "$rowIcon", 44: 14, 36: 12 };
+
+/** Side of the rotated square that draws the rank corner (16A: 26px on a 44px avatar, 16E: 38px on 64px). */
+export const rankCornerSize = (size: ListAvatarSize): number => Math.round(size * 0.59);
+
+/**
+ * Neutral avatar: the person's photo, otherwise initials (people belong to no
+ * module). With `rankColor` the top-right corner is cut in the belt color (16A).
+ */
 export function ListAvatar({
   initials,
   uri,
   size = 44,
+  rankColor,
+  dimmed,
 }: {
   initials: string;
   /** Profile photo; shown instead of the initials when set. */
   uri?: string | null;
-  size?: 48 | 44 | 36;
+  size?: ListAvatarSize;
+  /** Belt color of the member's rank; no corner without a rank. */
+  rankColor?: string | null;
+  /** Archived member: the avatar fades. */
+  dimmed?: boolean;
 }) {
-  if (uri) {
-    return (
-      <View
-        width={size}
-        height={size}
-        borderRadius={size === 48 ? "$rowIcon" : size === 44 ? 14 : 12}
-        overflow="hidden"
-        backgroundColor="$neutralTintFill"
-        flexShrink={0}
-      >
-        <Image source={{ uri }} style={StyleSheet.absoluteFill} resizeMode="cover" accessibilityIgnoresInvertColors />
-      </View>
-    );
-  }
+  const corner = rankCornerSize(size);
 
   return (
     <View
       width={size}
       height={size}
-      borderRadius={size === 48 ? "$rowIcon" : size === 44 ? 14 : 12}
+      borderRadius={AVATAR_RADIUS[size]}
+      overflow="hidden"
       backgroundColor="$neutralTintFill"
       alignItems="center"
       justifyContent="center"
+      opacity={dimmed ? 0.55 : 1}
       flexShrink={0}
     >
-      <Text fontSize={size === 36 ? 13 : 14} fontWeight="$button" color="$neutralTint">
-        {initials}
-      </Text>
+      {uri ? (
+        <Image source={{ uri }} style={StyleSheet.absoluteFill} resizeMode="cover" accessibilityIgnoresInvertColors />
+      ) : (
+        <Text fontSize={size === 64 ? 20 : size === 36 ? 13 : 14} fontWeight="$button" color="$neutralTint">
+          {initials}
+        </Text>
+      )}
+      {rankColor ? (
+        <View
+          position="absolute"
+          top={-corner / 2}
+          right={-corner / 2}
+          width={corner}
+          height={corner}
+          rotate="45deg"
+          backgroundColor={rankColor}
+          // A black belt would vanish on the dark page: outline it like the board does.
+          borderWidth={isDarkColor(rankColor) ? 1 : 0}
+          borderColor="$neutralControl"
+        />
+      ) : null}
     </View>
   );
+}
+
+/** True for colors too dark to see on the page (black belt). */
+function isDarkColor(color: string): boolean {
+  const hex = color.replace("#", "");
+  if (!/^[0-9a-fA-F]{6}$/.test(hex)) return false;
+  const [r, g, b] = [0, 2, 4].map((i) => parseInt(hex.slice(i, i + 2), 16));
+  return 0.299 * r! + 0.587 * g! + 0.114 * b! < 48;
 }
 
 // ============================================================================

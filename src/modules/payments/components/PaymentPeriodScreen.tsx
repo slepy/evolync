@@ -1,6 +1,6 @@
 import {
   CurrencySheet,
-  ListAvatar,
+  MemberAvatar,
   ListCard,
   ListChip,
   ListEmpty,
@@ -10,7 +10,6 @@ import {
   StatusButton,
   StatusSummary,
   SubScreenPage,
-  memberInitials,
   ratePercent,
 } from "@/core/components";
 import PaymentCycle from "@/database/models/PaymentCycle";
@@ -199,7 +198,7 @@ export const PaymentPeriodScreen: React.FC<PaymentPeriodScreenProps> = ({ school
                   subtitle={item.status === "paid" ? `${amount} · ${t(METHOD_LABEL[item.method])}` : amount}
                   aria-label={t("paymentsEditPayment", { name })}
                   onPress={isSaving ? undefined : () => openEdit(item)}
-                  leading={<ListAvatar initials={memberInitials(name)} uri={item.member.avatarUrl} />}
+                  leading={<MemberAvatar name={name} uri={item.member.avatarUrl} rankId={item.member.currentRankId} />}
                   trailing={
                     <StatusButton
                       icon={style.icon}
@@ -230,6 +229,7 @@ export const PaymentPeriodScreen: React.FC<PaymentPeriodScreenProps> = ({ school
             onOpenChange={(open) => setSheet(open ? "edit" : null)}
             name={editedItem.member.displayName || t("unknownMember")}
             avatarUrl={editedItem.member.avatarUrl}
+            rankId={editedItem.member.currentRankId}
             subtitle={`${periodTitle} · ${t(PAYMENT_STATUS_STYLE[editedItem.status].label)}`}
             draft={editing.draft}
             onChange={(draft) => setEditing({ ...editing, draft })}

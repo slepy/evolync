@@ -23,5 +23,3 @@ export const formatMonth = (year: number, month: number): string =>
 export const WEEKDAYS_MONDAY_FIRST = [1, 2, 3, 4, 5, 6, 0] as const;
 
 export const weekdayShort = (weekday: number): string => t(`trainingsWeekdayShort${weekday}`);
-
-export { memberInitials } from "@/core/components/AudienceChoice/initials";
