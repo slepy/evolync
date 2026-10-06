@@ -13,10 +13,12 @@ interface TagSheetProps {
   onOpenChange: (open: boolean) => void;
   /** Tag to edit (7C); without it the sheet creates a new tag (7B). */
   tag?: Tag | null;
+  /** Called with the new tag after Create (the note's tags sheet selects it). */
+  onCreated?: (tag: Tag) => void;
 }
 
 /** Bottom sheet that adds a tag (Create) or renames / deletes one (Save, trash). */
-export const TagSheet: React.FC<TagSheetProps> = ({ open, onOpenChange, tag }) => {
+export const TagSheet: React.FC<TagSheetProps> = ({ open, onOpenChange, tag, onCreated }) => {
   const user = useStore((s) => s.user);
   const [name, setName] = useState("");
   const [isSaving, setIsSaving] = useState(false);
@@ -36,7 +38,8 @@ export const TagSheet: React.FC<TagSheetProps> = ({ open, onOpenChange, tag }) =
       if (tag) {
         await updateTag(tag.id, { name: trimmed });
       } else if (user) {
-        await createTag({ userId: user.id, name: trimmed, color: moduleAccents.tags.tint });
+        const created = await createTag({ userId: user.id, name: trimmed, color: moduleAccents.tags.tint });
+        onCreated?.(created);
       }
       onOpenChange(false);
     } catch (err) {

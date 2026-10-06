@@ -1,146 +1,83 @@
-import { PrimaryButton, TextField } from "@/core/components";
-import { moduleAccents } from "@/core/theme/tokens";
-import { useStore } from "@/store";
-import { Plus } from "lucide-react-native";
+import { ActionPill, FormSheet, ListCard, ListCheckbox, ListChip, ListIcon, ListRow, resolveListAccent } from "@/core/components";
+import type Tag from "@/database/models/Tag";
+import { Plus, Tag as TagIcon } from "lucide-react-native";
 import React, { useState } from "react";
-import { Button, Sheet, Text, XStack, YStack } from "tamagui";
+import { ScrollView } from "react-native";
+import { Text, XStack, YStack } from "tamagui";
 import { useTags } from "../hooks";
-import { createTag } from "../services";
-import type { TaggableType } from "../types";
-import { FilterChip } from "@/modules/core/components";
+import { TagSheet } from "./TagSheet";
+
+const rose = resolveListAccent("tags");
 
 interface TagPickerSheetProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  taggableType: TaggableType;
   selectedTagIds: string[];
   onToggleTag: (tagId: string) => void;
 }
 
-export const TagPickerSheet: React.FC<TagPickerSheetProps> = ({
-  open,
-  onOpenChange,
-  selectedTagIds,
-  onToggleTag,
-}) => {
-  const { user } = useStore();
+/**
+ * Tags sheet (T5): "N selected" chip, one checkbox row per tag in Tags rose,
+ * Add new under the list. Add new opens the tag create sheet (7B) and selects
+ * the tag it creates.
+ */
+export const TagPickerSheet: React.FC<TagPickerSheetProps> = ({ open, onOpenChange, selectedTagIds, onToggleTag }) => {
   const { tags } = useTags();
+  const [createOpen, setCreateOpen] = useState(false);
+  const count = selectedTagIds.length;
 
-  const [showCreateForm, setShowCreateForm] = useState(false);
-  const [newTagName, setNewTagName] = useState("");
-  const [isSaving, setIsSaving] = useState(false);
-
-  const handleCreateTag = async () => {
-    if (!newTagName.trim() || !user) return;
-    try {
-      setIsSaving(true);
-      const tag = await createTag({
-        userId: user.id,
-        name: newTagName.trim(),
-        color: moduleAccents.tags.tint,
-      });
-      onToggleTag(tag.id);
-      setNewTagName("");
-      setShowCreateForm(false);
-    } catch (err) {
-      console.error("[TagPickerSheet] createTag:", err);
-    } finally {
-      setIsSaving(false);
-    }
+  const openCreate = () => {
+    onOpenChange(false);
+    setCreateOpen(true);
   };
 
-  const handleCancel = () => {
-    setShowCreateForm(false);
-    setNewTagName("");
+  const handleCreated = (tag: Tag) => {
+    if (!selectedTagIds.includes(tag.id)) onToggleTag(tag.id);
   };
 
   return (
-    <Sheet
-      modal
-      open={open}
-      onOpenChange={onOpenChange}
-      snapPoints={[55]}
-      dismissOnSnapToBottom
-      zIndex={99}
-    >
-      <Sheet.Overlay
-        backgroundColor="rgba(0,0,0,0.5)"
-        opacity={0.5}
-        zIndex={98}
-      />
-      <Sheet.Frame
-        padding="$4"
-        backgroundColor="$background"
-        borderTopLeftRadius="$6"
-        borderTopRightRadius="$6"
-        zIndex={99}
+    <>
+      <FormSheet
+        open={open}
+        onOpenChange={onOpenChange}
+        title={t("tagsPicker")}
+        badge={count > 0 ? <ListChip label={t("selectedCount", { count })} accent="tags" /> : undefined}
+        footer={
+          <XStack>
+            <ActionPill label={t("addNew")} icon={Plus} tint={rose.label} fill={rose.fill} onPress={openCreate} />
+          </XStack>
+        }
       >
-        <Sheet.Handle />
-        <YStack gap="$3" paddingTop="$2">
-          <Text fontSize="$6" fontWeight="700" color="$textPrimary">
-            {t("tagsPicker")}
-          </Text>
-
-          {tags.length > 0 && (
-            <XStack flexWrap="wrap" gap="$2">
-              {tags.map((tag) => (
-                <FilterChip
-                  key={tag.id}
-                  label={tag.name}
-                  color={tag.color}
-                  onPress={() => onToggleTag(tag.id)}
-                  active={selectedTagIds.includes(tag.id)}
-                  onRemove={
-                    selectedTagIds.includes(tag.id)
-                      ? () => onToggleTag(tag.id)
-                      : undefined
-                  }
-                />
-              ))}
-            </XStack>
-          )}
-
-          {showCreateForm ? (
-            <YStack gap="$3">
-              <TextField
-                label={t("fieldName")}
-                value={newTagName}
-                onChangeText={setNewTagName}
-                placeholder={t("tagsNewTagName")}
-                accent="tags"
-                maxLength={30}
-                autoFocus
-                returnKeyType="done"
-                onSubmitEditing={handleCreateTag}
-              />
-              <XStack gap="$2" alignItems="center">
-                <Button size="$4" variant="outlined" borderRadius={26} height={52} onPress={handleCancel}>
-                  {t("cancel")}
-                </Button>
-                <YStack flex={1}>
-                  <PrimaryButton
-                    label={t("create")}
-                    accent="tags"
-                    onPress={handleCreateTag}
-                    disabled={!newTagName.trim()}
-                    loading={isSaving}
+        {tags.length > 0 ? (
+          <ScrollView style={{ maxHeight: 420 }} keyboardShouldPersistTaps="handled">
+            <ListCard aria-label={t("tagsPicker")}>
+              {tags.map((tag) => {
+                const checked = selectedTagIds.includes(tag.id);
+                return (
+                  <ListRow
+                    key={tag.id}
+                    size="md"
+                    title={tag.name}
+                    role="checkbox"
+                    aria-checked={checked}
+                    leading={<ListIcon icon={TagIcon} accent="tags" size={36} />}
+                    trailing={<ListCheckbox checked={checked} accent="tags" />}
+                    onPress={() => onToggleTag(tag.id)}
                   />
-                </YStack>
-              </XStack>
-            </YStack>
-          ) : (
-            <Button
-              size="$3"
-              variant="outlined"
-              icon={<Plus size={16} pointerEvents="none" />}
-              onPress={() => setShowCreateForm(true)}
-              alignSelf="flex-start"
-            >
-              {t("tagsCreateNew")}
-            </Button>
-          )}
-        </YStack>
-      </Sheet.Frame>
-    </Sheet>
+                );
+              })}
+            </ListCard>
+          </ScrollView>
+        ) : (
+          <YStack padding={20} borderRadius="$card" borderWidth={1} borderColor="$neutralCardBorder" backgroundColor="$neutralCard">
+            <Text fontSize="$secondary" fontWeight="$secondary" color="$neutralMuted" textAlign="center">
+              {t("tagsEmpty")}
+            </Text>
+          </YStack>
+        )}
+      </FormSheet>
+
+      <TagSheet open={createOpen} onOpenChange={setCreateOpen} onCreated={handleCreated} />
+    </>
   );
 };
