@@ -74,11 +74,11 @@ Boards in `design/project/` (canvas sections "Attendance — sessions list, mark
 
 ### Phase 2: Screens
 
-- [ ] 2.1 Attendance 13A sessions list
-- [ ] 2.2 Attendance 13B session details and 13C new session
-- [ ] 2.3 Payments 14A billing periods
-- [ ] 2.4 Payments 14B / 14B1 period details and 14C edit payment sheet
-- [ ] 2.5 Payments 14D / 14D1 new period
+- [x] 2.1 Attendance 13A sessions list — 6f08ac2
+- [x] 2.2 Attendance 13B session details and 13C new session — deb86ab
+- [x] 2.3 Payments 14A billing periods — 1061475
+- [x] 2.4 Payments 14B / 14B1 period details and 14C edit payment sheet — 5e4d3e5
+- [x] 2.5 Payments 14D / 14D1 new period — 48eab0b
 
 ### Phase 3: Cleanup and gate
 
