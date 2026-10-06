@@ -1,12 +1,11 @@
 import {
   FormSheet,
-  ListAvatar,
+  MemberAvatar,
   ListCard,
   ListCheck,
   ListRow,
   SearchField,
   matchesSearch,
-  memberInitials,
 } from "@/core/components";
 import React, { useEffect, useMemo, useState } from "react";
 import { ScrollView } from "react-native";
@@ -17,6 +16,7 @@ export interface StudentOption {
   name: string;
   email?: string;
   avatarUrl?: string;
+  rankId?: string;
 }
 
 interface StudentSelectSheetProps {
@@ -64,7 +64,7 @@ export const StudentSelectSheet: React.FC<StudentSelectSheetProps> = ({ open, on
                   role="option"
                   title={student.name}
                   subtitle={student.email}
-                  leading={<ListAvatar initials={memberInitials(student.name)} uri={student.avatarUrl} />}
+                  leading={<MemberAvatar name={student.name} uri={student.avatarUrl} rankId={student.rankId} />}
                   selected={selected}
                   accent="orders"
                   trailing={selected ? <ListCheck accent="orders" /> : undefined}

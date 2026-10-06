@@ -1,5 +1,5 @@
 import {
-  ListAvatar,
+  MemberAvatar,
   ListCard,
   ListEmpty,
   ListRow,
@@ -7,7 +7,6 @@ import {
   StatusButton,
   StatusSummary,
   SubScreenPage,
-  memberInitials,
   ratePercent,
 } from "@/core/components";
 import { DEFAULT_ATTENDANCE_STATUS, STATUS_CYCLE, type AttendanceStatus } from "@/database/models/AttendanceRecord";
@@ -117,7 +116,7 @@ function AttendanceSessionBody({
                   size="md"
                   title={name}
                   subtitle={row.member.email}
-                  leading={<ListAvatar initials={memberInitials(name)} uri={row.member.avatarUrl} />}
+                  leading={<MemberAvatar name={name} uri={row.member.avatarUrl} rankId={row.member.currentRankId} />}
                   trailing={
                     <StatusButton
                       icon={style.icon}

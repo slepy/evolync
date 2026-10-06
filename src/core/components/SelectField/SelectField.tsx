@@ -22,6 +22,8 @@ export interface SelectFieldProps {
    * "right": the picker replaces the current view (e.g. the color step of a sheet).
    */
   chevron?: "down" | "right";
+  /** Inside a `FormCard`: page fill instead of the card fill (15A, 16E RANK). */
+  inset?: boolean;
 }
 
 /**
@@ -37,6 +39,7 @@ export function SelectField({
   open,
   accent = "neutral",
   chevron = "down",
+  inset,
 }: SelectFieldProps) {
   const tint = resolveListAccent(accent).tint;
   const Chevron = chevron === "right" ? ChevronRight : open ? ChevronUp : ChevronDown;
@@ -59,7 +62,7 @@ export function SelectField({
         paddingLeft={leading ? 10 : 16}
         paddingRight={12}
         borderRadius={16}
-        backgroundColor="$neutralCard"
+        backgroundColor={inset ? "$neutralPage" : "$neutralCard"}
         borderWidth={open ? 1.5 : 1}
         borderColor={open ? tint : "$neutralRaisedBorder"}
       >

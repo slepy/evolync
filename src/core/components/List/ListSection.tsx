@@ -1,6 +1,6 @@
 import { Plus, type LucideIcon } from "lucide-react-native";
 import type { ReactNode } from "react";
-import { Text, XStack, YStack } from "tamagui";
+import { Text, View, XStack, YStack } from "tamagui";
 import { resolveListAccent, type ListAccent } from "./accent";
 import { ListChip } from "./ListParts";
 
@@ -25,6 +25,8 @@ export interface ListSectionProps {
   accent?: ListAccent;
   /** Pill button on the right of the header. */
   action?: ListSectionAction;
+  /** 44px round icon button in front of the pill (16A: new invite code). */
+  iconAction?: ListSectionAction & { icon: LucideIcon };
   /** Chip on the right of the header ("3 selected", "86%"). */
   chip?: string;
   /** Usually a `ListCard`; anything between header and card (search, summary) goes here too. */
@@ -38,6 +40,7 @@ export function ListSection({
   variant = "section",
   accent = "neutral",
   action,
+  iconAction,
   chip,
   children,
 }: ListSectionProps) {
@@ -62,11 +65,38 @@ export function ListSection({
             {title}
           </Text>
         )}
-        {action ? <SectionActionPill action={action} accent={accent} /> : null}
+        {action || iconAction ? (
+          <XStack alignItems="center" gap={8} flexShrink={0}>
+            {iconAction ? <SectionIconButton action={iconAction} accent={accent} /> : null}
+            {action ? <SectionActionPill action={action} accent={accent} /> : null}
+          </XStack>
+        ) : null}
         {chip ? <ListChip label={chip} accent={accent} /> : null}
       </XStack>
       {children}
     </YStack>
+  );
+}
+
+function SectionIconButton({ action, accent }: { action: ListSectionAction & { icon: LucideIcon }; accent: ListAccent }) {
+  const a = resolveListAccent(accent);
+  const Icon = action.icon;
+
+  return (
+    <View
+      role="button"
+      aria-label={action.label}
+      onPress={action.onPress}
+      pressStyle={{ opacity: 0.8 }}
+      width={44}
+      height={44}
+      borderRadius={22}
+      backgroundColor={a.fill}
+      alignItems="center"
+      justifyContent="center"
+    >
+      <Icon size={20} color={a.tint} strokeWidth={2.2} />
+    </View>
   );
 }
 

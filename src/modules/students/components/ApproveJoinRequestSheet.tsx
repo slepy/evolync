@@ -13,24 +13,24 @@ import { EventRepository } from "@/modules/events/repositories/eventRepository";
 import { EventParticipantRepository } from "@/modules/events/repositories/eventParticipantRepository";
 import { approveJoinRequest } from "../services";
 import {
-  BaseCard,
-  CardInfo,
-  SubmitComponent,
-  Thumbnail,
-} from "@/modules/core/components";
+  ChoiceList,
+  FormSheet,
+  ListAvatar,
+  ListCard,
+  ListCheck,
+  ListCheckbox,
+  ListEmpty,
+  ListIcon,
+  ListRow,
+  ListSection,
+  MemberAvatar,
+  PrimaryButton,
+  memberInitials,
+} from "@/core/components";
 import React, { useCallback, useEffect, useState } from "react";
 import { ActivityIndicator, Alert, ScrollView } from "react-native";
-import {
-  Button,
-  Sheet,
-  Separator,
-  Text,
-  XStack,
-  YStack,
-  useTheme,
-} from "tamagui";
-import { Calendar, CalendarDays, Check } from "lucide-react-native";
-import { StudentCard } from "./StudentCard";
+import { YStack } from "tamagui";
+import { CalendarDays, Wallet } from "lucide-react-native";
 
 // ============================================================================
 // Types
@@ -86,7 +86,6 @@ export const ApproveJoinRequestSheet: React.FC<
     if (!open) return;
     loadData();
   }, [open]);
-  const theme = useTheme();
   const loadData = async () => {
     setLoading(true);
     try {
@@ -301,287 +300,125 @@ export const ApproveJoinRequestSheet: React.FC<
 
   // ── Render ────────────────────────────────────────────────────────────────
 
+  const name = request.displayName || request.email || t("unknownMember");
+  const shortDate = (date: Date | number) => new Date(date).toLocaleDateString();
+
   return (
-    <Sheet
-      modal
+    <FormSheet
       open={open}
       onOpenChange={onOpenChange}
-      snapPoints={[85]}
-      dismissOnSnapToBottom
-      zIndex={200}
+      fill
+      leading={<ListAvatar initials={memberInitials(name)} uri={request.avatarUrl} />}
+      title={t("approveJoinRequestTitle")}
+      subtitle={[name, request.email ?? request.phoneNumber].filter(Boolean).join(" · ")}
+      footer={
+        <PrimaryButton
+          label={t("joinRequestApprove")}
+          accent="students"
+          onPress={handleSubmit}
+          loading={submitting}
+          disabled={loading}
+        />
+      }
     >
-      <Sheet.Overlay
-        backgroundColor="rgba(0,0,0,0.5)"
-        opacity={0.5}
-        zIndex={199}
-      />
-      <Sheet.Frame
-        backgroundColor="$background"
-        borderTopLeftRadius="$6"
-        borderTopRightRadius="$6"
-        zIndex={200}
-        flex={1}
-      >
-        <Sheet.Handle />
+      {loading ? (
+        <YStack flex={1} justifyContent="center" alignItems="center">
+          <ActivityIndicator />
+        </YStack>
+      ) : (
+        <ScrollView style={{ flex: 1 }} contentContainerStyle={{ gap: 20, paddingBottom: 8 }}>
+          <ChoiceList
+            title={t("approveJoinRequestStudentType")}
+            accent="students"
+            value={mode}
+            onChange={handleModeChange}
+            options={[
+              { value: "new", title: t("approveJoinRequestNewStudent") },
+              { value: "existing", title: t("approveJoinRequestExistingStudent") },
+            ]}
+          />
 
-        {loading ? (
-          <YStack flex={1} justifyContent="center" alignItems="center">
-            <ActivityIndicator />
-          </YStack>
-        ) : (
-          <YStack flex={1}>
-            <ScrollView
-              style={{ flex: 1 }}
-              contentContainerStyle={{ padding: 16, paddingBottom: 16 }}
-            >
-              {/* Header */}
-              <YStack marginBottom="$4">
-                <Text fontSize="$6" fontWeight="700" color="$textPrimary">
-                  {t("approveJoinRequestTitle")}
-                </Text>
-                <BaseCard onPress={() => {}} marginHorizontal="unset">
-                  <XStack
-                    gap="$3"
-                    alignItems="center"
-                    justifyContent="space-between"
-                  >
-                    <Thumbnail imageUrl={request.avatarUrl} />
-                    <CardInfo
-                      displayName={request.displayName}
-                      subtitle={request.email ?? request.phoneNumber ?? ""}
+          {mode === "existing" ? (
+            <ListSection variant="label" title={t("approveJoinRequestSelectExisting")}>
+              {existingMembers.length === 0 ? (
+                <ListEmpty text={t("approveJoinRequestNoOfflineStudents")} />
+              ) : (
+                <ListCard role="radiogroup">
+                  {existingMembers.map((member) => {
+                    const memberName = member.displayName || member.email || t("unknownMember");
+                    const selected = selectedMemberId === member.id;
+                    return (
+                      <ListRow
+                        key={member.id}
+                        size="md"
+                        role="radio"
+                        aria-checked={selected}
+                        title={memberName}
+                        subtitle={member.email ?? member.phoneNumber ?? undefined}
+                        leading={<MemberAvatar name={memberName} uri={member.avatarUrl} rankId={member.currentRankId} />}
+                        trailing={selected ? <ListCheck accent="students" /> : undefined}
+                        selected={selected}
+                        accent="students"
+                        onPress={() => handleMemberSelect(member.id)}
+                      />
+                    );
+                  })}
+                </ListCard>
+              )}
+            </ListSection>
+          ) : null}
+
+          {activeCycles.length > 0 ? (
+            <ListSection variant="label" title={t("approveJoinRequestPaymentCycles")}>
+              <ListCard role="group">
+                {activeCycles.map(({ cycle, alreadyMember }) => {
+                  const checked = selectedCycleIds.has(cycle.id);
+                  return (
+                    <ListRow
+                      key={cycle.id}
+                      size="md"
+                      role="checkbox"
+                      aria-checked={checked}
+                      title={`${shortDate(cycle.periodStart)} – ${shortDate(cycle.periodEnd)}`}
+                      subtitle={alreadyMember ? t("approveJoinRequestAlreadyInCycle") : undefined}
+                      leading={<ListIcon icon={Wallet} accent="payments" size={44} />}
+                      trailing={<ListCheckbox checked={checked} accent="students" />}
+                      onPress={alreadyMember ? undefined : () => toggleCycle(cycle.id)}
                     />
-                  </XStack>
-                </BaseCard>
-              </YStack>
+                  );
+                })}
+              </ListCard>
+            </ListSection>
+          ) : null}
 
-              {/* Mode selection */}
-              <Text
-                fontSize="$4"
-                fontWeight="600"
-                color="$textPrimary"
-                marginBottom="$2"
-              >
-                {t("approveJoinRequestStudentType")}
-              </Text>
-              <XStack gap="$2" marginBottom="$4">
-                <ModeButton
-                  label={t("approveJoinRequestNewStudent")}
-                  selected={mode === "new"}
-                  onPress={() => handleModeChange("new")}
-                />
-                <ModeButton
-                  label={t("approveJoinRequestExistingStudent")}
-                  selected={mode === "existing"}
-                  onPress={() => handleModeChange("existing")}
-                />
-              </XStack>
-
-              {/* Existing member picker */}
-              {mode === "existing" && (
-                <YStack marginBottom="$4">
-                  <Text fontSize="$3" color="$textBody" marginBottom="$2">
-                    {t("approveJoinRequestSelectExisting")}
-                  </Text>
-                  {existingMembers.length === 0 ? (
-                    <Text fontSize="$3" color="$textBody">
-                      {t("approveJoinRequestNoOfflineStudents")}
-                    </Text>
-                  ) : (
-                    <YStack gap="$1">
-                      {existingMembers.map((member) => (
-                        <BaseCard
-                          key={member.id}
-                          onPress={() => handleMemberSelect(member.id)}
-                          borderColor={
-                            selectedMemberId === member.id
-                              ? "$jadeGreen"
-                              : undefined
-                          }
-                          marginHorizontal="unset"
-                        >
-                          <XStack
-                            gap="$3"
-                            alignItems="center"
-                            justifyContent="space-between"
-                          >
-                            <Thumbnail imageUrl={member.avatarUrl} size={40} />
-                            <CardInfo
-                              displayName={member.displayName ?? ""}
-                              subtitle={
-                                member.email ?? member.phoneNumber ?? ""
-                              }
-                            />
-
-                            {selectedMemberId === member.id && (
-                              <Check size={20} color={theme.jadeGreen?.val} />
-                            )}
-                          </XStack>
-                        </BaseCard>
-                      ))}
-                    </YStack>
-                  )}
-                </YStack>
-              )}
-
-              {/* Active payment cycles */}
-              {activeCycles.length > 0 && (
-                <>
-                  <Separator marginVertical="$3" />
-                  <Text
-                    fontSize="$4"
-                    fontWeight="600"
-                    color="$textPrimary"
-                    marginBottom="$2"
-                  >
-                    {t("approveJoinRequestPaymentCycles")}
-                  </Text>
-                  <YStack gap="$1">
-                    {activeCycles.map(({ cycle, alreadyMember }) => {
-                      const isChecked = selectedCycleIds.has(cycle.id);
-                      const start = new Date(
-                        cycle.periodStart,
-                      ).toLocaleDateString();
-                      const end = new Date(
-                        cycle.periodEnd,
-                      ).toLocaleDateString();
-                      return (
-                        <BaseCard
-                          key={cycle.id}
-                          onPress={() =>
-                            !alreadyMember && toggleCycle(cycle.id)
-                          }
-                          borderColor={
-                            isChecked ? "$jadeGreen" : "$borderColor"
-                          }
-                          marginHorizontal="unset"
-                        >
-                          <XStack
-                            gap="$3"
-                            alignItems="center"
-                            justifyContent="space-between"
-                          >
-                            <Thumbnail
-                              backgroundColor="$successSurface"
-                              borderColor="$jadeGreen"
-                              icon={<Calendar />}
-                            />
-                            <YStack flex={1} pointerEvents="none">
-                              <Text
-                                fontSize="$4"
-                                fontWeight="600"
-                                color="$textPrimary"
-                              >
-                                {start} – {end}
-                              </Text>
-                              {alreadyMember && (
-                                <Text fontSize="$2" color="$jadeGreen">
-                                  {t("approveJoinRequestAlreadyInCycle")}
-                                </Text>
-                              )}
-                            </YStack>
-                            {isChecked && (
-                              <Check size={20} color={theme.jadeGreen?.val} />
-                            )}
-                          </XStack>
-                        </BaseCard>
-                      );
-                    })}
-                  </YStack>
-                </>
-              )}
-
-              {/* Upcoming events */}
-              {upcomingEvents.length > 0 && (
-                <>
-                  <Separator marginVertical="$3" />
-                  <Text
-                    fontSize="$4"
-                    fontWeight="600"
-                    color="$textPrimary"
-                    marginBottom="$2"
-                  >
-                    {t("approveJoinRequestUpcomingEvents")}
-                  </Text>
-                  <YStack gap="$1">
-                    {upcomingEvents.map(({ event, alreadyParticipant }) => {
-                      const isChecked = selectedEventIds.has(event.id);
-                      const date = new Date(
-                        event.startDate,
-                      ).toLocaleDateString();
-                      return (
-                        <BaseCard
-                          key={event.id}
-                          onPress={() =>
-                            !alreadyParticipant && toggleEvent(event.id)
-                          }
-                          borderColor={isChecked ? "$jadeGreen" : undefined}
-                          marginHorizontal="unset"
-                        >
-                          <XStack
-                            gap="$3"
-                            alignItems="center"
-                            justifyContent="space-between"
-                          >
-                            <Thumbnail
-                              backgroundColor="$warningSurface"
-                              borderColor="$chineseGold"
-                              icon={<CalendarDays />}
-                            />
-                            <CardInfo
-                              displayName={event.name}
-                              subtitle={date}
-                            />
-                            {alreadyParticipant && (
-                              <Text fontSize="$2" color="$jadeGreen">
-                                {t("approveJoinRequestAlreadyInEvent")}
-                              </Text>
-                            )}
-                            {isChecked && (
-                              <Check size={20} color={theme.jadeGreen?.val} />
-                            )}
-                          </XStack>
-                        </BaseCard>
-                      );
-                    })}
-                  </YStack>
-                </>
-              )}
-            </ScrollView>
-            <SubmitComponent
-              onPress={handleSubmit}
-              isLoading={submitting}
-              title={t("joinRequestApprove")}
-            />
-          </YStack>
-        )}
-      </Sheet.Frame>
-    </Sheet>
+          {upcomingEvents.length > 0 ? (
+            <ListSection variant="label" title={t("approveJoinRequestUpcomingEvents")}>
+              <ListCard role="group">
+                {upcomingEvents.map(({ event, alreadyParticipant }) => {
+                  const checked = selectedEventIds.has(event.id);
+                  return (
+                    <ListRow
+                      key={event.id}
+                      size="md"
+                      role="checkbox"
+                      aria-checked={checked}
+                      title={event.name}
+                      subtitle={
+                        alreadyParticipant
+                          ? `${shortDate(event.startDate)} · ${t("approveJoinRequestAlreadyInEvent")}`
+                          : shortDate(event.startDate)
+                      }
+                      leading={<ListIcon icon={CalendarDays} accent="events" size={44} />}
+                      trailing={<ListCheckbox checked={checked} accent="students" />}
+                      onPress={alreadyParticipant ? undefined : () => toggleEvent(event.id)}
+                    />
+                  );
+                })}
+              </ListCard>
+            </ListSection>
+          ) : null}
+        </ScrollView>
+      )}
+    </FormSheet>
   );
 };
-
-// ============================================================================
-// ModeButton (internal)
-// ============================================================================
-
-interface ModeButtonProps {
-  label: string;
-  selected: boolean;
-  onPress: () => void;
-}
-
-const ModeButton: React.FC<ModeButtonProps> = ({
-  label,
-  selected,
-  onPress,
-}) => (
-  <Button
-    flex={1}
-    size="$3"
-    backgroundColor={selected ? "$blueFill" : "$fillMuted"}
-    color={selected ? "$pearlWhite" : "$textPrimary"}
-    fontWeight={selected ? "700" : "400"}
-    onPress={onPress}
-  >
-    {label}
-  </Button>
-);

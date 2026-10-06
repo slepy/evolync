@@ -1,6 +1,8 @@
 import { database } from "@/database";
 import GradingRank from "@/database/models/GradingRank";
 import { Q } from "@nozbe/watermelondb";
+import type { Observable } from "rxjs";
+import { map } from "rxjs/operators";
 import { v4 as uuidv4 } from "uuid";
 
 export const GradingRankRepository = {
@@ -63,6 +65,15 @@ export const GradingRankRepository = {
         record.deletedAt = new Date();
       });
     });
+  },
+
+  /** One rank, live; emits null when it is missing or soft-deleted. */
+  observeById(id: string): Observable<GradingRank | null> {
+    const collection = database.get<GradingRank>("organization_gradings");
+    return collection
+      .query(Q.where("id", id), Q.where("deleted_at", null))
+      .observeWithColumns(["color", "name"])
+      .pipe(map((ranks) => ranks[0] ?? null));
   },
 
   observeByOrganizationId(organizationId: string) {

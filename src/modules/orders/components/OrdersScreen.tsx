@@ -1,5 +1,5 @@
 import {
-  ListAvatar,
+  MemberAvatar,
   ListCard,
   ListImage,
   ListRow,
@@ -9,7 +9,6 @@ import {
   StatusFilter,
   SubScreenPage,
   ViewSwitch,
-  memberInitials,
 } from "@/core/components";
 import { LoadingScreen } from "@/modules/core/components";
 import * as Clipboard from "expo-clipboard";
@@ -224,7 +223,7 @@ function OrderRow({ scope, entry, onPress }: { scope: OrdersScope; entry: OrderL
     <ListRow
       title={entry.memberName}
       subtitle={[t("ordersItemsCount", { count: entry.itemCount }), formatOrderDay(entry.createdAt)].join(" · ")}
-      leading={<ListAvatar size={48} initials={memberInitials(entry.memberName)} uri={entry.memberAvatarUrl} />}
+      leading={<MemberAvatar size={48} name={entry.memberName} uri={entry.memberAvatarUrl} rankId={entry.memberRankId} />}
       trailing={statusChip}
       onPress={onPress}
     />

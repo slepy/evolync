@@ -28,6 +28,8 @@ export interface ListRowProps {
   size?: ListRowSize;
   /** Selected sheet row: 8% accent background. */
   selected?: boolean;
+  /** Destructive action row (16G Archive): title in the trash red. */
+  danger?: boolean;
   accent?: ListAccent;
   /** Content shown under the row while `expanded` (12F sizes + quantity). */
   children?: ReactNode;
@@ -53,6 +55,7 @@ export function ListRow({
   onPress,
   size = "lg",
   selected,
+  danger,
   accent = "neutral",
   children,
   expanded,
@@ -86,7 +89,7 @@ export function ListRow({
               flexShrink={1}
               fontSize={lg ? "$rowTitle" : 15}
               fontWeight="$rowTitle"
-              color="$neutralText"
+              color={danger ? "$trashText" : "$neutralText"}
               numberOfLines={1}
             >
               {title}
