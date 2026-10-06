@@ -15,7 +15,7 @@ export interface TabPageProps {
   context?: ContextKey;
   /** Floating bottom nav (`MainNav`); the content keeps room for it. */
   nav?: ReactNode;
-  /** Space between the sections (N1: 22, 17A: 16). */
+  /** Space between the sections (N1: 22, 17A: 16); the first one is always 22px under the title. */
   gap?: number;
   children: ReactNode;
 }
@@ -48,7 +48,7 @@ export function TabPage({ title, actions, context, nav, gap = 22, children }: Ta
         </XStack>
         <ScrollView
           flex={1}
-          contentContainerStyle={{ paddingHorizontal: 20, paddingTop: gap, paddingBottom: nav ? navSpace : 40 }}
+          contentContainerStyle={{ paddingHorizontal: 20, paddingTop: 22, paddingBottom: nav ? navSpace : 40 }}
         >
           <YStack width="100%" maxWidth={500} alignSelf="center" gap={gap}>
             {children}

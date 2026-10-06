@@ -1,6 +1,7 @@
+import { SecondaryButton, SettingsCard, ToggleRow } from "@/core/components";
+import { Bell } from "lucide-react-native";
 import React, { useCallback, useEffect, useState } from "react";
 import { AppState, Linking } from "react-native";
-import { Button, Switch, Text, XStack, YStack } from "tamagui";
 import {
   getPushPermission,
   getPushPreference,
@@ -10,9 +11,11 @@ import {
 import type { PushPermission } from "../utils";
 
 /**
- * Settings row: one global "Push notifications" switch. Reflects both the
- * user's choice and the OS permission; re-checks when the app returns to the
- * foreground (the user may have changed OS settings).
+ * Notifications card of the Settings tab (17A / 17B): one "Push
+ * notifications" switch for this device. Reflects both the user's choice and
+ * the OS permission; when the OS blocks it the hint turns red and "Open device
+ * settings" appears. Re-checks when the app returns to the foreground (the
+ * user may have changed OS settings).
  */
 export function PushNotificationsSetting() {
   const supported = isPushSupported();
@@ -35,7 +38,7 @@ export function PushNotificationsSetting() {
     return () => subscription.remove();
   }, [supported, refresh]);
 
-  const blocked = permission === "denied";
+  const blocked = supported && permission === "denied";
   const checked = supported && preference !== false && permission === "granted";
 
   const handleChange = async (enabled: boolean) => {
@@ -43,40 +46,33 @@ export function PushNotificationsSetting() {
     try {
       await setPushNotificationsEnabled(enabled);
       await refresh();
+    } catch (err) {
+      console.error("[PushNotificationsSetting] change:", err);
     } finally {
       setBusy(false);
     }
   };
 
   return (
-    <YStack gap="$2">
-      <XStack justifyContent="space-between" alignItems="center" gap="$3">
-        <YStack flex={1} gap="$1">
-          <Text fontSize="$5" fontWeight="bold">
-            {t("notificationsPushSetting")}
-          </Text>
-          <Text fontSize="$3" color="$gray11">
-            {!supported
-              ? t("notificationsPushUnsupported")
-              : blocked
-                ? t("notificationsPushBlocked")
-                : t("notificationsPushSettingHint")}
-          </Text>
-        </YStack>
-        <Switch
-          checked={checked}
-          onCheckedChange={handleChange}
-          disabled={!supported || blocked || busy}
-          accessibilityLabel={t("notificationsPushSetting")}
-        >
-          <Switch.Thumb animation="quick" />
-        </Switch>
-      </XStack>
-      {supported && blocked && (
-        <Button size="$3" variant="outlined" alignSelf="flex-start" onPress={() => Linking.openSettings()}>
-          {t("notificationsPushOpenSettings")}
-        </Button>
-      )}
-    </YStack>
+    <SettingsCard icon={Bell} title={t("notificationsTitle")} subtitle={t("notificationsPushDeviceOnly")}>
+      <ToggleRow
+        title={t("notificationsPushSetting")}
+        hint={
+          !supported
+            ? t("notificationsPushUnsupported")
+            : blocked
+              ? t("notificationsPushBlocked")
+              : t("notificationsPushSettingHint")
+        }
+        hintTone={blocked ? "danger" : "muted"}
+        label={t("notificationsPushSetting")}
+        checked={checked}
+        onChange={handleChange}
+        disabled={!supported || blocked || busy}
+      />
+      {blocked ? (
+        <SecondaryButton size="sm" label={t("notificationsPushOpenSettings")} onPress={() => Linking.openSettings()} />
+      ) : null}
+    </SettingsCard>
   );
 }
