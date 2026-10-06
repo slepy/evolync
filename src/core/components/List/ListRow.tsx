@@ -8,6 +8,8 @@ export type ListRowSize = "lg" | "md";
 
 export interface ListRowProps {
   title: string;
+  /** Small tag right after the title (14A "CURRENT"). */
+  badge?: ReactNode;
   /** One muted line under the title (school, email, "3 of 12 paid"). */
   subtitle?: string;
   /** Chips under the title (stock / price per currency); replaces the subtitle line. */
@@ -42,6 +44,7 @@ export interface ListRowProps {
  */
 export function ListRow({
   title,
+  badge,
   subtitle,
   subtitleIcon: SubtitleIcon,
   meta,
@@ -78,14 +81,18 @@ export function ListRow({
         {leading}
 
         <YStack flex={1} minWidth={0} gap={lg ? 3 : 2}>
-          <Text
-            fontSize={lg ? "$rowTitle" : 15}
-            fontWeight="$rowTitle"
-            color="$neutralText"
-            numberOfLines={1}
-          >
-            {title}
-          </Text>
+          <XStack alignItems="center" gap={8}>
+            <Text
+              flexShrink={1}
+              fontSize={lg ? "$rowTitle" : 15}
+              fontWeight="$rowTitle"
+              color="$neutralText"
+              numberOfLines={1}
+            >
+              {title}
+            </Text>
+            {badge}
+          </XStack>
           {subtitle ? (
             <XStack alignItems="center" gap={5}>
               {SubtitleIcon ? <SubtitleIcon size={13} color={neutral.muted} strokeWidth={2} /> : null}

@@ -1,7 +1,7 @@
-import { ListAvatar, ListCard, ListRow, PrimaryButton, SubScreenPage, memberInitials, withAlpha } from "@/core/components";
+import { ListAvatar, ListCard, ListRow, PrimaryButton, StatusButton, SubScreenPage, memberInitials, withAlpha } from "@/core/components";
 import React from "react";
 import { ActivityIndicator } from "react-native";
-import { Text, XStack, YStack } from "tamagui";
+import { Text, YStack } from "tamagui";
 import { nextParticipantStatus, PARTICIPANT_STATUS_STYLE } from "../constants";
 import { useEvent } from "../hooks/useEvent";
 import { useEventParticipants } from "../hooks/useEventParticipants";
@@ -80,7 +80,7 @@ export const EventParticipantsScreen: React.FC<EventParticipantsScreenProps> = (
                 subtitle={item.member.email}
                 leading={<ListAvatar initials={memberInitials(name)} uri={item.member.avatarUrl} />}
                 trailing={
-                  <StatusButton
+                  <ParticipantStatusButton
                     status={item.status}
                     disabled={isSaving}
                     onPress={() => toggleStatus(item.participant.id, nextParticipantStatus(item.status))}
@@ -95,8 +95,8 @@ export const EventParticipantsScreen: React.FC<EventParticipantsScreenProps> = (
   );
 };
 
-/** 44px round status button, icon only (Paid wallet, Attending check, Absent x); a tap moves to the next status. */
-function StatusButton({
+/** Status button of a participant (Paid wallet, Attending check, Absent x); a tap moves to the next status. */
+function ParticipantStatusButton({
   status,
   disabled,
   onPress,
@@ -105,22 +105,14 @@ function StatusButton({
   disabled?: boolean;
   onPress: () => void;
 }) {
-  const { icon: Icon, tint, label } = PARTICIPANT_STATUS_STYLE[status];
+  const { icon, tint, label } = PARTICIPANT_STATUS_STYLE[status];
   return (
-    <XStack
-      role="button"
-      aria-label={t("eventsChangeStatus", { status: t(label) })}
-      onPress={disabled ? undefined : onPress}
-      pressStyle={{ opacity: 0.8 }}
-      width={44}
-      height={44}
-      borderRadius={22}
-      backgroundColor={withAlpha(tint, 0.16)}
-      alignItems="center"
-      justifyContent="center"
-      flexShrink={0}
-    >
-      <Icon size={18} color={tint} strokeWidth={2.6} />
-    </XStack>
+    <StatusButton
+      icon={icon}
+      color={{ tint, fill: withAlpha(tint, 0.16) }}
+      label={t("eventsChangeStatus", { status: t(label) })}
+      disabled={disabled}
+      onPress={onPress}
+    />
   );
 }

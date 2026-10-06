@@ -1,5 +1,6 @@
-import { Check, Clock, X, type LucideIcon } from "lucide-react-native";
+import { Check, Clock, CreditCard, X, type LucideIcon } from "lucide-react-native";
 import type { ColorTokens } from "tamagui";
+import { neutral, success, warning } from "@/core/theme/tokens";
 import {
   type PaymentStatus,
   PaymentStatus as PaymentStatusEnum,
@@ -39,3 +40,45 @@ export const STATUS_CYCLE: PaymentStatus[] = [
   PaymentStatusEnum.PAID,
   PaymentStatusEnum.CANCELLED,
 ];
+
+/** Order of statuses in the 14B Status summary legend and the Amounts rows. */
+export const PAYMENT_SUMMARY_ORDER: PaymentStatus[] = [
+  PaymentStatusEnum.PAID,
+  PaymentStatusEnum.PENDING,
+  PaymentStatusEnum.CANCELLED,
+];
+
+/**
+ * Icon, colors and labels of a payment status on the redesigned screens
+ * (14B summary, status buttons, Amounts): Paid card (green), Pending clock
+ * (amber), Cancelled x (neutral; its bar segment darker, for contrast).
+ */
+export const PAYMENT_STATUS_STYLE: Record<
+  PaymentStatus,
+  { icon: LucideIcon; tint: string; fill: string; barColor: string; label: string; amountsLabel: string }
+> = {
+  [PaymentStatusEnum.PAID]: {
+    icon: CreditCard,
+    tint: success.text,
+    fill: success.fill,
+    barColor: success.text,
+    label: "statusPaid",
+    amountsLabel: "paymentsAmountsCollected",
+  },
+  [PaymentStatusEnum.PENDING]: {
+    icon: Clock,
+    tint: warning.text,
+    fill: warning.fill,
+    barColor: warning.text,
+    label: "statusPending",
+    amountsLabel: "paymentsAmountsPending",
+  },
+  [PaymentStatusEnum.CANCELLED]: {
+    icon: X,
+    tint: neutral.tint,
+    fill: neutral.tintFill,
+    barColor: neutral.control,
+    label: "statusCancelled",
+    amountsLabel: "paymentsAmountsCancelled",
+  },
+};

@@ -9,6 +9,8 @@ export interface FormSheetProps {
   title: string;
   /** Muted line under the title (6B: the selected day). */
   subtitle?: string;
+  /** In front of the title, e.g. the member's avatar (14C). */
+  leading?: ReactNode;
   /** Next to the close button, e.g. a `TrashButton` when editing. */
   headerAction?: ReactNode;
   /** Fields. */
@@ -26,7 +28,17 @@ export interface FormSheetProps {
  * Standard bottom sheet with a small form (7B / 8B): raised fill, radius 28
  * on top, handle, title with a 44px close button, fields, primary button.
  */
-export function FormSheet({ open, onOpenChange, title, subtitle, headerAction, children, footer, fill }: FormSheetProps) {
+export function FormSheet({
+  open,
+  onOpenChange,
+  title,
+  subtitle,
+  leading,
+  headerAction,
+  children,
+  footer,
+  fill,
+}: FormSheetProps) {
   return (
     <Sheet
       modal
@@ -49,7 +61,8 @@ export function FormSheet({ open, onOpenChange, title, subtitle, headerAction, c
       >
         <Sheet.Handle backgroundColor="$neutralControl" />
         <YStack gap={fill ? 14 : 20} paddingTop={12} flex={fill ? 1 : undefined}>
-          <XStack alignItems="center" gap={10}>
+          <XStack alignItems="center" gap={leading ? 12 : 10}>
+            {leading}
             <YStack flex={1} minWidth={0} gap={2}>
               <Text fontSize="$section" fontWeight="$section" letterSpacing={-0.2} color="$neutralText" numberOfLines={1}>
                 {title}

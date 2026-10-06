@@ -3,12 +3,14 @@ import {
   danger,
   moduleAccents,
   neutral,
+  success,
+  warning,
   type ContextKey,
   type ModuleKey,
 } from "@/core/theme/tokens";
 
-/** Module color, context color (Add new in a school / organization) or neutral chrome. */
-export type ListAccent = ModuleKey | ContextKey | "neutral" | "danger";
+/** Module color, context color (Add new in a school / organization), neutral chrome or a status color. */
+export type ListAccent = ModuleKey | ContextKey | "neutral" | "danger" | "success" | "warning";
 
 export interface ResolvedListAccent {
   /** Text / icon color. */
@@ -40,6 +42,18 @@ export function resolveListAccent(accent: ListAccent): ResolvedListAccent {
       selectedFill: withAlpha(danger.text, 0.08),
       from: danger.text,
       to: danger.text,
+      onGradient: neutral.page,
+    };
+  }
+
+  if (accent === "success" || accent === "warning") {
+    const c = accent === "success" ? success : warning;
+    return {
+      tint: c.text,
+      fill: c.fill,
+      selectedFill: withAlpha(c.text, 0.08),
+      from: c.text,
+      to: c.text,
       onGradient: neutral.page,
     };
   }

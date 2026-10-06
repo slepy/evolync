@@ -43,9 +43,16 @@ export const danger = {
   buttonText: "#FFFFFF",
 } as const;
 
-/** Warning text, e.g. "Out of stock" in the 12F size rows. */
+/** Warning text, e.g. "Out of stock" in the 12F size rows; Pending / Excused status and a 50–79% rate chip. */
 export const warning = {
   text: "#FBBF24",
+  fill: "rgba(251,191,36,0.16)",
+} as const;
+
+/** Positive status (Paid, Present) and a rate chip of 80% or more (13A / 14A). */
+export const success = {
+  text: "#4ADE9F",
+  fill: "rgba(52,211,153,0.14)",
 } as const;
 
 // ============================================================================
