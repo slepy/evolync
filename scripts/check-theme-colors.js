@@ -92,7 +92,7 @@ function knownColorNames() {
     names.add(match[1]);
   }
   // Redesign tokens read from src/core/theme/tokens.ts (`neutralCard: neutral.card`).
-  for (const match of source.matchAll(/^\s{2,4}([A-Za-z0-9]+):\s*(?:neutral|danger)\.[A-Za-z]+,/gm)) {
+  for (const match of source.matchAll(/^\s{2,4}([A-Za-z0-9]+):\s*(?:neutral|danger|warning)\.[A-Za-z]+,/gm)) {
     names.add(match[1]);
   }
   // Generated per module ($studentsTint, …) and per context ($schoolLabel, …).

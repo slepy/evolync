@@ -14,16 +14,18 @@ export interface FormCardProps {
   subtitle?: string;
   /** Fields. */
   children: ReactNode;
+  /** Space between the header and the fields (17A settings cards: 14). */
+  gap?: number;
 }
 
 /**
- * Group of form fields in one card (15A School settings): 40px icon square,
- * 18/800 title with a muted line, then the fields 16px apart.
+ * Group of form fields in one card (15A School settings, 17A account
+ * settings): 40px icon square, 18/800 title with a muted line, then the fields.
  */
-export function FormCard({ icon, accent, title, subtitle, children }: FormCardProps) {
+export function FormCard({ icon, accent, title, subtitle, children, gap = 16 }: FormCardProps) {
   return (
     <YStack
-      gap={16}
+      gap={gap}
       paddingVertical={18}
       paddingHorizontal={16}
       borderRadius="$card"

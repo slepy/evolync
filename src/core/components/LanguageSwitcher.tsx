@@ -1,68 +1,32 @@
 import React from "react";
-import { View, Text, YStack, Button, XStack } from "tamagui";
+import { Globe } from "lucide-react-native";
 import { useTranslation } from "@/core/hooks/useTranslation";
 import { changeLanguage, getAvailableLanguages } from "@/core/i18n/config";
+import { ChoiceList } from "./ChoiceList";
+import { FormCard } from "./FormCard";
 
-interface LanguageSwitcherProps {
-  variant?: "buttons" | "list";
-}
+type LanguageCode = "en" | "pl";
 
 /**
- * Language switcher component
- * Allows users to change the application language
- *
- * @param variant - Display variant: 'buttons' for horizontal buttons, 'list' for vertical list
+ * Language card of the Settings tab (17A): one radio row per language, each
+ * in its own language. Changes the app right away.
  */
-export const LanguageSwitcher: React.FC<LanguageSwitcherProps> = ({
-  variant = "buttons",
-}) => {
+export const LanguageSwitcher: React.FC = () => {
   const { t, language } = useTranslation();
   const languages = getAvailableLanguages();
 
-  const handleLanguageChange = async (langCode: string) => {
-    await changeLanguage(langCode as "en" | "pl");
-  };
-
-  if (variant === "list") {
-    return (
-      <YStack gap="$2">
-        <Text fontSize="$5" fontWeight="bold">
-          {t("settingsLanguage")}
-        </Text>
-        {languages.map((lang) => {
-          const isActive = language === lang.code;
-          return (
-            <Button
-              key={lang.code}
-              onPress={() => handleLanguageChange(lang.code)}
-              variant="outlined"
-              color={isActive ? "$pink11" : undefined}
-              backgroundColor={isActive ? "$pink3" : undefined}
-            >
-              {lang.label}
-            </Button>
-          );
-        })}
-      </YStack>
-    );
-  }
-
   return (
-    <XStack gap="$2" justifyContent="center" alignItems="center">
-      {languages.map((lang) => {
-        const isActive = language === lang.code;
-        return (
-          <Button
-            key={lang.code}
-            onPress={() => handleLanguageChange(lang.code)}
-            size="$3"
-            color={isActive ? "$pink11" : undefined}
-            backgroundColor={isActive ? "$pink3" : undefined}
-          >
-            {lang.label}
-          </Button>
-        );
-      })}
-    </XStack>
+    <FormCard icon={Globe} accent="neutral" gap={14} title={t("settingsLanguage")} subtitle={t("settingsLanguageHint")}>
+      <ChoiceList<LanguageCode>
+        options={languages.map((lang) => ({ value: lang.code as LanguageCode, title: lang.label }))}
+        value={language as LanguageCode}
+        onChange={(code) => {
+          changeLanguage(code).catch(console.error);
+        }}
+        label={t("settingsLanguage")}
+        accent="light"
+        surface="page"
+      />
+    </FormCard>
   );
 };

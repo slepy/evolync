@@ -33,4 +33,13 @@ describe("resolveListAccent", () => {
     assert.equal(a.tint, neutral.tint);
     assert.equal(a.fill, neutral.tintFill);
   });
+
+  it("gives the light accent a white gradient with a dark label", () => {
+    const a = resolveListAccent("light");
+    assert.equal(a.tint, neutral.text);
+    assert.equal(a.from, neutral.text);
+    assert.equal(a.to, neutral.tint);
+    assert.equal(a.onGradient, neutral.page);
+    assert.equal(a.selectedFill, neutral.lightSelectedFill);
+  });
 });

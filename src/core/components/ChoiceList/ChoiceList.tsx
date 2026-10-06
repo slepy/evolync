@@ -16,12 +16,16 @@ export interface ChoiceOption<T extends string> {
 export interface ChoiceListProps<T extends string> {
   /** Group title above the rows ("Who is it for?"). */
   title?: string;
+  /** Accessible name of the group when it has no visible title (17A: the card title). */
+  label?: string;
   options: ChoiceOption<T>[];
   value: T | undefined;
   onChange: (value: T) => void;
   accent?: ListAccent;
   error?: string;
   disabled?: boolean;
+  /** Fill of the unselected rows: "card" (default) on the page, "page" inside a card (17A Language). */
+  surface?: "card" | "page";
 }
 
 /**
@@ -31,17 +35,19 @@ export interface ChoiceListProps<T extends string> {
  */
 export function ChoiceList<T extends string>({
   title,
+  label,
   options,
   value,
   onChange,
   accent = "neutral",
   error,
   disabled,
+  surface = "card",
 }: ChoiceListProps<T>) {
   const a = resolveListAccent(accent);
 
   return (
-    <YStack gap={10} role="radiogroup" aria-label={title}>
+    <YStack gap={10} role="radiogroup" aria-label={title ?? label}>
       {title ? (
         <Text fontSize={18} fontWeight="$section" color="$neutralText">
           {title}
@@ -66,7 +72,7 @@ export function ChoiceList<T extends string>({
             borderRadius={16}
             borderWidth={selected ? 1.5 : 1}
             borderColor={selected ? a.tint : "$neutralRaisedBorder"}
-            backgroundColor={selected ? a.selectedFill : "$neutralCard"}
+            backgroundColor={selected ? a.selectedFill : surface === "page" ? "$neutralPage" : "$neutralCard"}
           >
             {selected ? (
               <View width={24} height={24} borderRadius={12} overflow="hidden" alignItems="center" justifyContent="center" flexShrink={0}>

@@ -124,14 +124,11 @@ await changeLanguage('en');
 ```typescript
 import { LanguageSwitcher } from '@/core/i18n';
 
+// The Language card of the Settings tab (17A): English / Polski radio rows.
 function SettingsScreen() {
   return (
     <View>
-      {/* Horizontal buttons */}
-      <LanguageSwitcher variant="buttons" />
-
-      {/* Vertical list */}
-      <LanguageSwitcher variant="list" />
+      <LanguageSwitcher />
     </View>
   );
 }

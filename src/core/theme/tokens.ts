@@ -30,6 +30,10 @@ export const neutral = {
   alertDot: "#FF5A5A",
   /** Floating bottom nav shadow. */
   shadow: "rgba(0,0,0,0.5)",
+  /** Unread notification row (N1): 3% white over the card. */
+  unreadRow: "rgba(255,255,255,0.03)",
+  /** Light selection (17A radio, push switch, N5 "Turn on"): 6% of the text color. */
+  lightSelectedFill: "rgba(244,246,250,0.06)",
 } as const;
 
 /** Destructive (trash) button: red in every context, never neutral gray. */
@@ -47,6 +51,9 @@ export const danger = {
 export const warning = {
   text: "#FBBF24",
   fill: "rgba(251,191,36,0.16)",
+  /** Notice banner on top of a screen (N3 "This item is no longer available."). */
+  noticeFill: "rgba(251,191,36,0.10)",
+  noticeBorder: "rgba(251,191,36,0.4)",
 } as const;
 
 /** Positive status (Paid, Present) and a rate chip of 80% or more (13A / 14A). */
