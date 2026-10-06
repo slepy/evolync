@@ -1,1 +1,1 @@
-export { NotesModeCard } from "./NotesModeCard";
+export { NotebookScreen } from "./NotebookScreen";
