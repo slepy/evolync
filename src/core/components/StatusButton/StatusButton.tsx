@@ -25,7 +25,15 @@ export function StatusButton({ icon: Icon, color, label, onPress, disabled }: St
       role="button"
       aria-label={label}
       aria-disabled={disabled}
-      onPress={disabled ? undefined : onPress}
+      onPress={
+        disabled
+          ? undefined
+          : (event) => {
+              // The row around it may be pressable too (14B opens Edit payment); on web the click would bubble.
+              event?.stopPropagation?.();
+              onPress();
+            }
+      }
       pressStyle={disabled ? undefined : { opacity: 0.8 }}
       width={44}
       height={44}
