@@ -1,7 +1,7 @@
 import type Tag from "@/database/models/Tag";
 import type Taggable from "@/database/models/Taggable";
 import type TechniqueNoteDocument from "@/database/models/TechniqueNoteDocument";
-import { TagRepository, TaggableRepository } from "@/modules/tags/repositories";
+import { TagRepository, TaggableRepository } from "@/modules/tags";
 import { useStore } from "@/store";
 import { useEffect, useState } from "react";
 import { combineLatest } from "rxjs";

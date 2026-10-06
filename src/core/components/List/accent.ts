@@ -106,7 +106,7 @@ export function resolveListAccent(accent: ListAccent): ResolvedListAccent {
   const m = moduleAccents[accent as ModuleKey];
   return {
     tint: m.tint,
-    label: m.label ?? m.tint,
+    label: m.label,
     fill: m.fill,
     selectedFill: withAlpha(m.tint, 0.08),
     from: m.from,

@@ -3,7 +3,7 @@ import { X } from "lucide-react-native";
 import { Text, View, XStack } from "tamagui";
 
 const rose = moduleAccents.tags;
-const ROSE_TEXT = rose.label ?? rose.tint;
+const ROSE_TEXT = rose.label;
 
 export interface TagChipProps {
   label: string;
