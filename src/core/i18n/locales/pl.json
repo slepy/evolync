@@ -1003,5 +1003,15 @@
   "authLogoLabel": "Logo Evolync",
   "showPassword": "Pokaż hasło",
   "hidePassword": "Ukryj hasło",
-  "dismiss": "Zamknij"
+  "dismiss": "Zamknij",
+  "authHaveAccount": "Masz już konto?",
+  "authAccountTypeTitle": "Jak będziesz korzystać z Evolync?",
+  "authAccountTypeDescription": "Wybierz jedno. Instruktor może później trenować także w innych szkołach.",
+  "authAccountTypeOrganization": "Prowadzę szkołę",
+  "authAccountTypeOrganizationDescription": "Utwórz organizację z pierwszą szkołą. Zarządzasz uczniami, płatnościami, zamówieniami i treningami.",
+  "authAccountTypeStudent": "Trenuję w szkole",
+  "authAccountTypeStudentDescription": "Sprawdzaj płatności, zamawiaj sprzęt i prowadź prywatne notatki technik. Do szkoły dołączasz kodem od instruktora.",
+  "authRoleInstructor": "Instruktor",
+  "authRoleOwner": "Właściciel",
+  "authRoleStudent": "Uczeń"
 }

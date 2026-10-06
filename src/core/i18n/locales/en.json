@@ -974,5 +974,15 @@
   "authLogoLabel": "Evolync logo",
   "showPassword": "Show password",
   "hidePassword": "Hide password",
-  "dismiss": "Dismiss"
+  "dismiss": "Dismiss",
+  "authHaveAccount": "Already have an account?",
+  "authAccountTypeTitle": "How will you use Evolync?",
+  "authAccountTypeDescription": "Pick one. An instructor can still train in other schools later.",
+  "authAccountTypeOrganization": "I run a school",
+  "authAccountTypeOrganizationDescription": "Create an organization with your first school. You manage students, payments, orders and trainings.",
+  "authAccountTypeStudent": "I train in a school",
+  "authAccountTypeStudentDescription": "See your payments, order gear and keep private technique notes. You join your school with a code from your instructor.",
+  "authRoleInstructor": "Instructor",
+  "authRoleOwner": "Owner",
+  "authRoleStudent": "Student"
 }
