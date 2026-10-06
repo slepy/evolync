@@ -29,6 +29,7 @@ export const ThemeSwitcher: React.FC = () => {
         }))}
         value={preference}
         onChange={setPreference}
+        label={t("settingsAppearance")}
         accent="light"
         surface="page"
       />

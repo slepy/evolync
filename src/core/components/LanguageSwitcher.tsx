@@ -23,6 +23,7 @@ export const LanguageSwitcher: React.FC = () => {
         onChange={(code) => {
           changeLanguage(code).catch(console.error);
         }}
+        label={t("settingsLanguage")}
         accent="light"
         surface="page"
       />

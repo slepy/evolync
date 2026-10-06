@@ -16,6 +16,8 @@ export interface ChoiceOption<T extends string> {
 export interface ChoiceListProps<T extends string> {
   /** Group title above the rows ("Who is it for?"). */
   title?: string;
+  /** Accessible name of the group when it has no visible title (17A: the card title). */
+  label?: string;
   options: ChoiceOption<T>[];
   value: T | undefined;
   onChange: (value: T) => void;
@@ -33,6 +35,7 @@ export interface ChoiceListProps<T extends string> {
  */
 export function ChoiceList<T extends string>({
   title,
+  label,
   options,
   value,
   onChange,
@@ -44,7 +47,7 @@ export function ChoiceList<T extends string>({
   const a = resolveListAccent(accent);
 
   return (
-    <YStack gap={10} role="radiogroup" aria-label={title}>
+    <YStack gap={10} role="radiogroup" aria-label={title ?? label}>
       {title ? (
         <Text fontSize={18} fontWeight="$section" color="$neutralText">
           {title}
