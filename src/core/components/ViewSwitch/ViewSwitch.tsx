@@ -1,5 +1,5 @@
 import type { LucideIcon } from "lucide-react-native";
-import { Text, XStack } from "tamagui";
+import { Text, View, XStack } from "tamagui";
 import { neutral } from "@/core/theme/tokens";
 import { resolveListAccent, type ListAccent } from "../List/accent";
 
@@ -7,6 +7,8 @@ export interface ViewSwitchItem {
   icon: LucideIcon;
   label: string;
   onPress: () => void;
+  /** Red count after the label (16A Requests); hidden at 0. */
+  badge?: number;
 }
 
 export interface ViewSwitchProps {
@@ -41,7 +43,7 @@ export function ViewSwitch({ accent, first, second, active, ...aria }: ViewSwitc
       borderColor="$neutralCardBorder"
       backgroundColor="$neutralCard"
     >
-      {tabs.map(({ key, item: { icon: Icon, label, onPress } }) => {
+      {tabs.map(({ key, item: { icon: Icon, label, onPress, badge } }) => {
         const on = key === active;
         return (
           <XStack
@@ -62,6 +64,21 @@ export function ViewSwitch({ accent, first, second, active, ...aria }: ViewSwitc
             <Text fontSize={14} fontWeight="$button" color={on ? a.tint : "$neutralMuted"} numberOfLines={1}>
               {label}
             </Text>
+            {badge ? (
+              <View
+                minWidth={20}
+                height={20}
+                paddingHorizontal={6}
+                borderRadius={10}
+                backgroundColor="$alertDot"
+                alignItems="center"
+                justifyContent="center"
+              >
+                <Text fontSize={12} fontWeight="$button" color="$neutralText">
+                  {badge}
+                </Text>
+              </View>
+            ) : null}
           </XStack>
         );
       })}

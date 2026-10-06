@@ -5,6 +5,6 @@ export { StudentPaymentRow } from "./StudentPaymentRow";
 export { StudentAttendanceHistoryItem } from "./StudentAttendanceHistoryItem";
 export { SelectableMemberCard } from "./SelectableMemberCard";
 export { StudentEventCard } from "./StudentEventCard";
-export { JoinRequestCard } from "./JoinRequestCard";
-export { JoinRequestsTab } from "./JoinRequestsTab";
 export { ApproveJoinRequestSheet } from "./ApproveJoinRequestSheet";
+export { StudentsScreen, type StudentsTab } from "./StudentsScreen";
+export { InviteCodeCard } from "./InviteCodeCard";
