@@ -12,6 +12,7 @@ export { usePaymentCycles } from "./hooks/usePaymentCycles";
 export { usePaymentRecords } from "./hooks/usePaymentRecords";
 
 // Components
+export { PaymentPeriodsScreen } from "./components/PaymentPeriodsScreen";
 export { PaymentCycleCard } from "./components/PaymentCycleCard";
 export { PaymentCycleStats } from "./components/PaymentCycleStats";
 export { PaymentRecordRow } from "./components/PaymentRecordRow";
