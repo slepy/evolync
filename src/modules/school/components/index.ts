@@ -1,5 +1,4 @@
 export { SchoolCard } from './SchoolCard';
 export { CreateSchoolForm } from './CreateSchoolForm';
-export { SchoolSettingsForm } from './SchoolSettingsForm';
-export type { SchoolSettingsFormHandle } from './SchoolSettingsForm';
+export { SchoolSettingsScreen, type SchoolSettingsValues } from './SchoolSettingsScreen';
 export { default as ActiveInvites } from './ActiveInvites';
