@@ -404,6 +404,7 @@
   "ordersDecrease": "Mniej: {{name}}",
   "ordersIncrease": "Więcej: {{name}}",
   "copy": "Kopiuj",
+  "search": "Szukaj",
   "ordersTabShoppingList": "Lista zakupów",
   "ordersToOrder": "Do zamówienia",
   "ordersToOrderStatuses": "Złożone i opłacone",

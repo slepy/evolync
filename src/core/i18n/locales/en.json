@@ -400,6 +400,7 @@
   "ordersDecrease": "Fewer {{name}}",
   "ordersIncrease": "More {{name}}",
   "copy": "Copy",
+  "search": "Search",
   "ordersTabShoppingList": "Shopping list",
   "ordersToOrder": "To order",
   "ordersToOrderStatuses": "Placed and Paid",
