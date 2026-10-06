@@ -45,6 +45,8 @@ Source boards: `design/project/NotesNotebook.dc.html` (T1), `NotesList.dc.html` 
 
 ## Progress
 
+PR: #33
+
 > Convention: `- [ ]` pending, `- [x]` done. Append ` — <commit sha>` when a step lands. Do not rename step titles.
 
 ### Phase 1: Shared components
@@ -65,3 +67,5 @@ Source boards: `design/project/NotesNotebook.dc.html` (T1), `NotesList.dc.html` 
 - [x] 3.3 New note T3 and note T4 / T4A — 042824d
 - [x] 3.4 Notebook tab T1 and routes — 14cf82a
 - [x] 3.5 Translations and CLAUDE.md — 48a1806
+
+Review fixes (om-auto-review-pr): tags barrel imports, Zod title validation, required accent `label` — 72c28f3
