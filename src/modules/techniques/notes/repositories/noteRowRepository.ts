@@ -77,6 +77,6 @@ export const NoteRowRepository = {
         Q.where("deleted_at", null),
         Q.sortBy("order_index", Q.asc)
       )
-      .observe();
+      .observeWithColumns(["person_1_text", "person_2_text", "direction", "order_index"]);
   },
 };
