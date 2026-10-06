@@ -1000,5 +1000,18 @@
   "passwordRuleLength": "8+ characters",
   "passwordRuleSymbol": "Symbol {{symbols}}",
   "passwordRuleMet": "met",
-  "passwordRuleMissing": "missing"
+  "passwordRuleMissing": "missing",
+  "authForgotPasswordTitle": "Forgot password",
+  "authForgotPasswordHeading": "We’ll email you a code",
+  "authForgotPasswordDescription": "Enter the email you signed up with. You type the code in the next step, no link to open.",
+  "authSend": "Send",
+  "authRememberedIt": "Remembered it?",
+  "authNewPasswordTitle": "New password",
+  "authCheckInbox": "Check your inbox",
+  "authCodeSentTo": "We sent a code to",
+  "authCodeFromEmail": "Code from email",
+  "authCodeHint": "{{min}}–{{max}} digits. Not there? Check spam.",
+  "authSendNewCode": "Send a new code",
+  "authPasswordChanged": "Password changed",
+  "authPasswordChangedHint": "Sign in with your new password. Other devices stay signed in until their session ends."
 }

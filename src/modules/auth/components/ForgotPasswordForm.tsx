@@ -1,60 +1,79 @@
-import { EmailInput, SubmitButton } from "@/modules/core/components";
+import { AlertBanner, AuthIntro, AuthPage, AuthPrompt, PrimaryButton, TextField } from "@/core/components";
+import { neutral } from "@/core/theme/tokens";
+import type { AuthError } from "@/store";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Mail } from "lucide-react-native";
 import React from "react";
-import { useForm } from "react-hook-form";
-import { YStack } from "tamagui";
-import {
-  forgotPasswordSchema,
-  type ForgotPasswordFormValues,
-} from "../validation/forgotPasswordSchema";
-
-// ============================================================================
-// Types
-// ============================================================================
+import { Controller, useForm } from "react-hook-form";
+import { View } from "tamagui";
+import { forgotPasswordSchema, type ForgotPasswordFormValues } from "../validation/forgotPasswordSchema";
+import { AUTH_BUTTON_COLORS } from "./LoginForm";
 
 interface ForgotPasswordFormProps {
   onSubmit: (email: string) => Promise<void>;
+  onSignIn: () => void;
   isLoading: boolean;
+  error?: AuthError | null;
+  onDismissError?: () => void;
 }
 
-// ============================================================================
-// ForgotPasswordForm Component
-// ============================================================================
-
-export const ForgotPasswordForm: React.FC<ForgotPasswordFormProps> = ({
-  onSubmit,
-  isLoading,
-}) => {
+/**
+ * Forgot password screen (board): mail icon, "We’ll email you a code",
+ * EMAIL, Send; "Remembered it? Sign in" at the bottom.
+ */
+export const ForgotPasswordForm: React.FC<ForgotPasswordFormProps> = ({ onSubmit, onSignIn, isLoading, error, onDismissError }) => {
   const {
     control,
     handleSubmit,
-    formState: { errors, isValid },
+    formState: { errors },
   } = useForm<ForgotPasswordFormValues>({
     resolver: zodResolver(forgotPasswordSchema),
     mode: "onChange",
     defaultValues: { email: "" },
   });
 
-  const handleFormSubmit = handleSubmit(async (data) => {
-    await onSubmit(data.email);
-  });
+  const handleSend = handleSubmit((data) => onSubmit(data.email));
 
   return (
-    <YStack gap="$3">
-      <EmailInput
-        control={control}
-        name="email"
-        label={t("email")}
-        error={errors.email?.message}
-        disabled={isLoading}
+    <AuthPage
+      title={t("authForgotPasswordTitle")}
+      onBack={onSignIn}
+      bottom={<AuthPrompt text={t("authRememberedIt")} action={t("authSignIn")} onPress={onSignIn} />}
+    >
+      <AuthIntro
+        icon={
+          <View width={56} height={56} borderRadius={18} backgroundColor="$neutralTintFill" alignItems="center" justifyContent="center">
+            <Mail size={26} color={neutral.tint} strokeWidth={2} />
+          </View>
+        }
+        title={t("authForgotPasswordHeading")}
+        description={t("authForgotPasswordDescription")}
       />
 
-      <SubmitButton
-        onPress={handleFormSubmit}
-        isLoading={isLoading}
-        disabled={!isValid || isLoading}
-        title={t("sendResetLink")}
+      {error ? <AlertBanner title={t("errorPasswordResetFailed")} message={error.message} onDismiss={onDismissError} /> : null}
+
+      <Controller
+        control={control}
+        name="email"
+        render={({ field }) => (
+          <TextField
+            size="large"
+            label={t("email")}
+            value={field.value}
+            onChangeText={(v) => field.onChange(v.trim())}
+            error={errors.email?.message}
+            disabled={isLoading}
+            autoCapitalize="none"
+            keyboardType="email-address"
+            autoComplete="email"
+            textContentType="emailAddress"
+            returnKeyType="send"
+            onSubmitEditing={handleSend}
+          />
+        )}
       />
-    </YStack>
+
+      <PrimaryButton label={t("authSend")} colors={AUTH_BUTTON_COLORS} onPress={handleSend} loading={isLoading} />
+    </AuthPage>
   );
 };

@@ -66,6 +66,8 @@ export const warning = {
 export const success = {
   text: "#4ADE9F",
   fill: "rgba(52,211,153,0.14)",
+  /** Soft halo around the "Password changed" check. */
+  halo: "rgba(52,211,153,0.06)",
 } as const;
 
 // ============================================================================

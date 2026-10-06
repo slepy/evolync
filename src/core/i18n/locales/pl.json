@@ -1029,5 +1029,18 @@
   "passwordRuleLength": "8+ znaków",
   "passwordRuleSymbol": "Symbol {{symbols}}",
   "passwordRuleMet": "spełnione",
-  "passwordRuleMissing": "brakuje"
+  "passwordRuleMissing": "brakuje",
+  "authForgotPasswordTitle": "Nie pamiętam hasła",
+  "authForgotPasswordHeading": "Wyślemy Ci kod e-mailem",
+  "authForgotPasswordDescription": "Wpisz e-mail podany przy rejestracji. Kod wpiszesz w następnym kroku, bez otwierania linku.",
+  "authSend": "Wyślij",
+  "authRememberedIt": "Pamiętasz hasło?",
+  "authNewPasswordTitle": "Nowe hasło",
+  "authCheckInbox": "Sprawdź skrzynkę",
+  "authCodeSentTo": "Wysłaliśmy kod na adres",
+  "authCodeFromEmail": "Kod z e-maila",
+  "authCodeHint": "{{min}}–{{max}} cyfr. Nie ma? Sprawdź spam.",
+  "authSendNewCode": "Wyślij nowy kod",
+  "authPasswordChanged": "Hasło zmienione",
+  "authPasswordChangedHint": "Zaloguj się nowym hasłem. Inne urządzenia pozostaną zalogowane do końca swojej sesji."
 }
