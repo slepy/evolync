@@ -20,6 +20,8 @@ Rebuild the Orders module screens on the shared design components (boards 12A–
 
 The design artifact (`claude.ai/artifact/5GM35Pr9XwTRWQAez7pCWx`) is not shared with this session (Docs read → access denied). The layout follows the board names (12A Orders: status chips with counts · 12B Shopping list: products like the orders list, Copy · 12C status · 12D details · 12E / 12E1 / 12E2 new order with the Student select sheet · 12F Add product: tap to expand sizes, set quantity, Add) and the `design-mockups` skill (list, select field, sub-screen and form rules). Exact copy and spacing may differ from the boards.
 
+**Update (review feedback, 2026-10-06):** the first pass did not follow the boards. Phase 4 rebuilds every screen from the local canvas copies of the boards (`OrdersOrg`, `OrdersShoppingList`, `OrdersStatusSheet`, `OrderDetails`, `OrderProductPicker`, `OrderVariantSheet`, `OrderCreate`, `OrderCreateFilled`, `OrderStudentSelect` `.dc.html`, last edited 2026-10-04).
+
 ## Scope
 
 - Shared: `ListAvatar` gets an optional photo (`uri`) and falls back to initials; existing people rows (event participants, training details, audience member list) pass the member photo.
@@ -53,6 +55,11 @@ The design artifact (`claude.ai/artifact/5GM35Pr9XwTRWQAez7pCWx`) is not shared 
 - 3.1 Remove old orders UI and unused translation keys; add new keys (en + pl).
 - 3.2 Update CLAUDE.md shared-components line; full validation gate.
 
+### Phase 4: Review feedback — follow the boards
+
+- 4.1 Rebuild 12A–12F on the board copies (rows, chips, tab bar, shopping list, status sheet, details, new order, picker, sizes sheet)
+- 4.2 Shared pieces for it (`TabSwitch`, `ChoiceList` dot, `SelectField` value hint / hint, `FormSheet` title leading, status color tokens), CLAUDE.md, full gate
+
 ## Risks
 
 - Design boards not readable in this session — layout is an interpretation of the board titles and the design-mockups rules; review against the canvas.
@@ -80,3 +87,8 @@ PR: #28
 
 - [x] 3.1 Remove old orders UI and unused translation keys; add new keys (en + pl) — fa71e03
 - [x] 3.2 Update CLAUDE.md shared-components line; full validation gate — a0b8914
+
+### Phase 4: Review feedback — follow the boards
+
+- [x] 4.1 Rebuild 12A–12F on the board copies — 79a6466
+- [x] 4.2 Shared pieces, CLAUDE.md, full gate — PENDING
