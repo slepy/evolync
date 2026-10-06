@@ -1,6 +1,6 @@
 export {
   NotificationBell,
-  NotificationCard,
+  NotificationRow,
   NotificationsScreen,
   NotificationResponseHandler,
   PushNotificationsSetting,
