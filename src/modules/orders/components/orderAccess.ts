@@ -23,6 +23,3 @@ export const canChangeOrderStatus = (scope: OrdersScope): boolean => scope !== "
 
 /** New order (12E) asks for the student only when staff creates it. */
 export const choosesStudent = (scope: OrdersScope): boolean => scope !== "student";
-
-/** Organization rows name the school (orders of every school are listed together). */
-export const showsSchoolName = (scope: OrdersScope): boolean => scope === "organization";

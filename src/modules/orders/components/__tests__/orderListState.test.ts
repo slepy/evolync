@@ -3,8 +3,11 @@ import assert from "node:assert/strict";
 import {
   buildShoppingList,
   countOrdersByStatus,
+  countShoppingChips,
   filterOrdersByStatus,
+  filterShoppingOrders,
   shoppingListText,
+  shoppingVariantsLine,
   type ShoppingListSource,
 } from "@/modules/orders/components/orderListState";
 
@@ -34,17 +37,32 @@ describe("filterOrdersByStatus", () => {
   });
 });
 
+describe("shopping chips", () => {
+  const orders = [
+    { id: 1, status: "placed" as const },
+    { id: 2, status: "paid" as const },
+    { id: 3, status: "processing" as const },
+    { id: 4, status: "completed" as const },
+  ];
+  it("To order covers Placed and Paid", () => {
+    assert.deepEqual(filterShoppingOrders(orders, "to_order").map((o) => o.id), [1, 2]);
+  });
+  it("counts every chip, completed orders in none", () => {
+    assert.deepEqual(countShoppingChips(orders), { to_order: 2, processing: 1, ready_for_pickup: 0 });
+  });
+});
+
 describe("buildShoppingList", () => {
-  it("sums quantities per variant and counts orders once", () => {
+  it("groups sizes under the product and sums quantities", () => {
     const list = buildShoppingList([
-      { items: [item("v1", 2), item("v1", 1)] },
-      { items: [item("v1", 3), item("v2", 1, "Belt", "Standard")] },
+      { items: [item("v170", 1, "Gi", "170 cm"), item("v150", 1, "Gi", "150 cm")] },
+      { items: [item("v170", 2, "Gi", "170 cm"), item("v1", 3, "Belt", "Standard")] },
     ]);
     assert.deepEqual(
-      list.map((l) => [l.variantId, l.totalQuantity, l.orderCount]),
+      list.map((p) => [p.productName, p.totalQuantity, shoppingVariantsLine(p)]),
       [
-        ["v2", 1, 1],
-        ["v1", 6, 2],
+        ["Belt", 3, "Standard ×3"],
+        ["Gi", 4, "150 cm ×1 · 170 cm ×3"],
       ],
     );
   });

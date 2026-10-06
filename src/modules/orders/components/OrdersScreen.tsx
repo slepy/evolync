@@ -1,10 +1,10 @@
 import {
   ListAvatar,
   ListCard,
-  ListChip,
   ListImage,
   ListRow,
   ListSection,
+  PrimaryButton,
   StatusBadge,
   StatusFilter,
   SubScreenPage,
@@ -13,22 +13,26 @@ import {
 } from "@/core/components";
 import { LoadingScreen } from "@/modules/core/components";
 import * as Clipboard from "expo-clipboard";
-import { ClipboardList, Copy, ShoppingBag } from "lucide-react-native";
+import { ClipboardList, Copy, Package, ShoppingBag } from "lucide-react-native";
 import React, { useMemo, useState } from "react";
 import { Alert } from "react-native";
 import { Text, YStack } from "tamagui";
 import type { OrderListEntry } from "../hooks/useOrdersList";
-import { canAddOrder, showsSchoolName, type OrdersScope } from "./orderAccess";
+import { canAddOrder, type OrdersScope } from "./orderAccess";
 import { formatOrderDay, formatOrderTotals } from "./orderFormat";
 import {
   ORDER_STATUSES,
   ORDER_STATUS_STYLE,
+  SHOPPING_CHIPS,
   buildShoppingList,
   countOrdersByStatus,
+  countShoppingChips,
   filterOrdersByStatus,
-  isStandardVariant,
+  filterShoppingOrders,
   shoppingListText,
+  shoppingVariantsLine,
   type OrderStatusChip,
+  type ShoppingChip,
 } from "./orderListState";
 
 type OrdersTab = "orders" | "shopping";
@@ -46,10 +50,11 @@ interface OrdersScreenProps {
 }
 
 /**
- * Orders (12A) and Shopping list (12B). Status chips with counts filter both
- * tabs; staff rows show the member (photo or initials), the student's rows
- * the ordered product. The shopping list sums the products of the filtered
- * orders and copies them as text.
+ * Orders (12A) and Shopping list (12B). Status chips with counts filter the
+ * orders; staff rows show the member (photo or initials), the student's rows
+ * the ordered product. The shopping list has its own chips (To order =
+ * Placed + Paid, Processing, Ready), lists the products of those orders with
+ * their sizes and copies them as text.
  */
 export const OrdersScreen: React.FC<OrdersScreenProps> = ({
   scope,
@@ -62,10 +67,14 @@ export const OrdersScreen: React.FC<OrdersScreenProps> = ({
 }) => {
   const [tab, setTab] = useState<OrdersTab>("orders");
   const [status, setStatus] = useState<OrderStatusChip>("all");
+  const [shoppingChip, setShoppingChip] = useState<ShoppingChip>("to_order");
 
   const counts = useMemo(() => countOrdersByStatus(entries), [entries]);
   const filtered = useMemo(() => filterOrdersByStatus(entries, status), [entries, status]);
-  const shoppingList = useMemo(() => buildShoppingList(filtered), [filtered]);
+  const shoppingCounts = useMemo(() => countShoppingChips(entries), [entries]);
+  const shoppingOrders = useMemo(() => filterShoppingOrders(entries, shoppingChip), [entries, shoppingChip]);
+  const shoppingList = useMemo(() => buildShoppingList(shoppingOrders), [shoppingOrders]);
+  const shoppingPieces = shoppingList.reduce((sum, product) => sum + product.totalQuantity, 0);
   const student = scope === "student";
   const tabs = student ? null : (
     <ViewSwitch
@@ -76,15 +85,12 @@ export const OrdersScreen: React.FC<OrdersScreenProps> = ({
       second={{
         icon: ClipboardList,
         label: t("ordersTabShoppingList"),
-        onPress: () => {
-          setTab("shopping");
-          // The shopping list is what has to be bought: products of placed orders by default.
-          if (status === "all") setStatus("placed");
-        },
+        onPress: () => setTab("shopping"),
       }}
     />
   );
-  const statusChips: OrderStatusChip[] = tab === "orders" ? ["all", ...ORDER_STATUSES] : ORDER_STATUSES;
+  const shoppingChipLabel = (chip: ShoppingChip) =>
+    chip === "to_order" ? t("ordersToOrder") : t(ORDER_STATUS_STYLE[chip].label);
 
   const handleCopy = async () => {
     await Clipboard.setStringAsync(shoppingListText(shoppingList));
@@ -94,20 +100,43 @@ export const OrdersScreen: React.FC<OrdersScreenProps> = ({
   if (isLoading) return <LoadingScreen />;
 
   return (
-    <SubScreenPage title={t("ordersTitle")} subtitle={subtitle}>
+    <SubScreenPage
+      title={t("ordersTitle")}
+      subtitle={subtitle}
+      footer={
+        tab === "shopping" && shoppingList.length > 0 ? (
+          <PrimaryButton label={t("copy")} icon={Copy} accent="orders" onPress={handleCopy} />
+        ) : undefined
+      }
+    >
       {tabs}
-      <StatusFilter
-        aria-label={t("status")}
-        accent="orders"
-        value={status}
-        onChange={setStatus}
-        options={statusChips.map((chip) => ({
-          value: chip,
-          label: chip === "all" ? t("ordersFilterAll") : t(ORDER_STATUS_STYLE[chip].label),
-          color: chip === "all" ? undefined : ORDER_STATUS_STYLE[chip].accent,
-          count: counts[chip],
-        }))}
-      />
+      {tab === "orders" ? (
+        <StatusFilter
+          aria-label={t("status")}
+          accent="orders"
+          value={status}
+          onChange={setStatus}
+          options={(["all", ...ORDER_STATUSES] as OrderStatusChip[]).map((chip) => ({
+            value: chip,
+            label: chip === "all" ? t("ordersFilterAll") : t(ORDER_STATUS_STYLE[chip].label),
+            color: chip === "all" ? undefined : ORDER_STATUS_STYLE[chip].accent,
+            count: counts[chip],
+          }))}
+        />
+      ) : (
+        <StatusFilter
+          aria-label={t("status")}
+          accent="orders"
+          value={shoppingChip}
+          onChange={setShoppingChip}
+          options={SHOPPING_CHIPS.map((chip) => ({
+            value: chip,
+            label: shoppingChipLabel(chip),
+            color: chip === "to_order" ? undefined : ORDER_STATUS_STYLE[chip].accent,
+            count: shoppingCounts[chip],
+          }))}
+        />
+      )}
 
       {error ? (
         <Text fontSize={13} fontWeight="$secondary" color="$trashText">
@@ -133,24 +162,30 @@ export const OrdersScreen: React.FC<OrdersScreenProps> = ({
         </ListSection>
       ) : (
         <ListSection
-          title={t("ordersTabShoppingList")}
+          title={shoppingChipLabel(shoppingChip)}
+          subtitle={[
+            t("ordersCount", { count: shoppingOrders.length }),
+            t("piecesCount", { count: shoppingPieces }),
+            shoppingChip === "to_order" ? t("ordersToOrderStatuses") : null,
+          ]
+            .filter(Boolean)
+            .join(" · ")}
           accent="orders"
-          action={shoppingList.length > 0 ? { label: t("copy"), icon: Copy, onPress: handleCopy } : undefined}
         >
           {shoppingList.length > 0 ? (
             <ListCard aria-label={t("ordersTabShoppingList")}>
-              {shoppingList.map((item) => (
+              {shoppingList.map((product) => (
                 <ListRow
-                  key={item.variantId}
-                  title={item.productName}
-                  subtitle={[
-                    isStandardVariant(item.variantName) ? null : item.variantName,
-                    t("ordersInOrders", { count: item.orderCount }),
-                  ]
-                    .filter(Boolean)
-                    .join(" · ")}
-                  leading={<ListImage uri={item.imageUrl} icon={ShoppingBag} accent="orders" />}
-                  trailing={<ListChip label={`×${item.totalQuantity}`} accent="orders" />}
+                  key={product.productId}
+                  size="md"
+                  title={product.productName}
+                  subtitle={shoppingVariantsLine(product)}
+                  leading={<ListImage uri={product.imageUrl} icon={Package} accent="products" size={44} />}
+                  trailing={
+                    <Text fontSize={14} fontWeight="$rowTitle" color="$neutralText" flexShrink={0}>
+                      {t("piecesCount", { count: product.totalQuantity })}
+                    </Text>
+                  }
                 />
               ))}
             </ListCard>
@@ -188,13 +223,7 @@ function OrderRow({ scope, entry, onPress }: { scope: OrdersScope; entry: OrderL
   return (
     <ListRow
       title={entry.memberName}
-      subtitle={[
-        showsSchoolName(scope) ? entry.schoolName : null,
-        t("ordersItemsCount", { count: entry.itemCount }),
-        formatOrderDay(entry.createdAt),
-      ]
-        .filter(Boolean)
-        .join(" · ")}
+      subtitle={[t("ordersItemsCount", { count: entry.itemCount }), formatOrderDay(entry.createdAt)].join(" · ")}
       leading={<ListAvatar size={48} initials={memberInitials(entry.memberName)} uri={entry.memberAvatarUrl} />}
       trailing={statusChip}
       onPress={onPress}

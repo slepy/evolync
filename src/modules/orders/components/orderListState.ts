@@ -12,13 +12,13 @@ export const ORDER_STATUSES: OrderStatus[] = [
 
 export type OrderStatusChip = OrderStatus | "all";
 
-/** Translation key and chip color of every status. */
-export const ORDER_STATUS_STYLE: Record<OrderStatus, { label: string; accent: ModuleKey | "neutral" }> = {
-  placed: { label: "statusPlaced", accent: "neutral" },
-  paid: { label: "statusPaid", accent: "payments" },
-  processing: { label: "statusProcessing", accent: "events" },
-  ready_for_pickup: { label: "statusReadyForPickup", accent: "orders" },
-  completed: { label: "statusCompleted", accent: "trainings" },
+/** Translation keys (label, 12C hint) and chip color of every status. */
+export const ORDER_STATUS_STYLE: Record<OrderStatus, { label: string; hint: string; accent: ModuleKey | "neutral" }> = {
+  placed: { label: "statusPlaced", hint: "ordersStatusHintPlaced", accent: "neutral" },
+  paid: { label: "statusPaid", hint: "ordersStatusHintPaid", accent: "payments" },
+  processing: { label: "statusProcessing", hint: "ordersStatusHintProcessing", accent: "events" },
+  ready_for_pickup: { label: "statusReadyForPickup", hint: "ordersStatusHintReady", accent: "orders" },
+  completed: { label: "statusCompleted", hint: "ordersStatusHintCompleted", accent: "trainings" },
 };
 
 /** Counts for the status chips: every status plus "all". */
@@ -47,54 +47,83 @@ export interface ShoppingListSource {
   quantity: number;
 }
 
-export interface ShoppingListItem {
+export interface ShoppingListVariant {
   variantId: string;
-  productId: string;
-  productName: string;
   variantName: string;
-  imageUrl: string | null;
-  totalQuantity: number;
-  /** Orders the variant appears in. */
-  orderCount: number;
+  quantity: number;
 }
 
-/** Sums the ordered items per variant, sorted by product then variant name. */
-export const buildShoppingList = (orders: Array<{ items: ShoppingListSource[] }>): ShoppingListItem[] => {
-  const byVariant = new Map<string, ShoppingListItem>();
+/** One product of the shopping list (12B): its sizes with quantities and the total. */
+export interface ShoppingListProduct {
+  productId: string;
+  productName: string;
+  imageUrl: string | null;
+  totalQuantity: number;
+  variants: ShoppingListVariant[];
+}
+
+/** Chips of the shopping list: what still has to be bought, then the orders in progress. */
+export type ShoppingChip = "to_order" | typeof OrderStatus.PROCESSING | typeof OrderStatus.READY_FOR_PICKUP;
+
+export const SHOPPING_CHIPS: ShoppingChip[] = ["to_order", OrderStatus.PROCESSING, OrderStatus.READY_FOR_PICKUP];
+
+/** "To order" covers the orders nobody has bought yet. */
+export const TO_ORDER_STATUSES: OrderStatus[] = [OrderStatus.PLACED, OrderStatus.PAID];
+
+const chipStatuses = (chip: ShoppingChip): OrderStatus[] => (chip === "to_order" ? TO_ORDER_STATUSES : [chip]);
+
+export const filterShoppingOrders = <T extends { status: OrderStatus }>(orders: T[], chip: ShoppingChip): T[] =>
+  orders.filter((o) => chipStatuses(chip).includes(o.status));
+
+export const countShoppingChips = (orders: Array<{ status: OrderStatus }>): Record<ShoppingChip, number> => {
+  const counts = {} as Record<ShoppingChip, number>;
+  for (const chip of SHOPPING_CHIPS) counts[chip] = filterShoppingOrders(orders, chip).length;
+  return counts;
+};
+
+const byName = (a: string, b: string) => a.localeCompare(b, undefined, { numeric: true });
+
+/** Sums the ordered items per product and size, products and sizes sorted by name. */
+export const buildShoppingList = (orders: Array<{ items: ShoppingListSource[] }>): ShoppingListProduct[] => {
+  const byProduct = new Map<string, ShoppingListProduct>();
   for (const order of orders) {
-    const seen = new Set<string>();
     for (const item of order.items) {
-      const existing = byVariant.get(item.variantId);
-      if (existing) {
-        existing.totalQuantity += item.quantity;
-        if (!seen.has(item.variantId)) existing.orderCount += 1;
-      } else {
-        byVariant.set(item.variantId, {
-          variantId: item.variantId,
+      let product = byProduct.get(item.productId);
+      if (!product) {
+        product = {
           productId: item.productId,
           productName: item.productName,
-          variantName: item.variantName,
           imageUrl: item.imageUrl,
-          totalQuantity: item.quantity,
-          orderCount: 1,
-        });
+          totalQuantity: 0,
+          variants: [],
+        };
+        byProduct.set(item.productId, product);
       }
-      seen.add(item.variantId);
+      product.totalQuantity += item.quantity;
+      const variant = product.variants.find((v) => v.variantId === item.variantId);
+      if (variant) variant.quantity += item.quantity;
+      else product.variants.push({ variantId: item.variantId, variantName: item.variantName, quantity: item.quantity });
     }
   }
-  return [...byVariant.values()].sort(
-    (a, b) => a.productName.localeCompare(b.productName) || a.variantName.localeCompare(b.variantName),
-  );
+  const products = [...byProduct.values()];
+  for (const product of products) product.variants.sort((a, b) => byName(a.variantName, b.variantName));
+  return products.sort((a, b) => byName(a.productName, b.productName));
 };
+
+/** Row subtitle: "150 cm ×1 · 160 cm ×2". */
+export const shoppingVariantsLine = (product: ShoppingListProduct): string =>
+  product.variants.map((v) => `${v.variantName} ×${v.quantity}`).join(" · ");
 
 /** The "Standard" variant of a single-size product is not named. */
 export const isStandardVariant = (variantName: string): boolean => variantName.trim().toLowerCase() === "standard";
 
-/** Copy text: one "Product (size) - 3x" line per variant. */
-export const shoppingListText = (items: ShoppingListItem[]): string =>
-  items
-    .map((item) => {
-      const size = isStandardVariant(item.variantName) ? "" : ` (${item.variantName})`;
-      return `${item.productName}${size} - ${item.totalQuantity}x`;
-    })
+/** Copy text: one "Product (size) - 3x" line per size. */
+export const shoppingListText = (products: ShoppingListProduct[]): string =>
+  products
+    .flatMap((product) =>
+      product.variants.map((v) => {
+        const size = isStandardVariant(v.variantName) ? "" : ` (${v.variantName})`;
+        return `${product.productName}${size} - ${v.quantity}x`;
+      }),
+    )
     .join("\n");

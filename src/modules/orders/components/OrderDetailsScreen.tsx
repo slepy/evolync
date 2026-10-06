@@ -186,6 +186,7 @@ export const OrderDetailsScreen: React.FC<OrderDetailsScreenProps> = ({ scope, o
       <OrderStatusSheet
         open={sheet === "status"}
         onOpenChange={(open) => setSheet(open ? "status" : null)}
+        subtitle={memberName}
         value={currentStatus}
         onSelect={setStatus}
       />

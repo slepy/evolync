@@ -6,7 +6,6 @@ import {
   canDeleteOrder,
   canEditOrder,
   choosesStudent,
-  showsSchoolName,
 } from "@/modules/orders/components/orderAccess";
 import { ORDER_STATUSES } from "@/modules/orders/components/orderListState";
 
@@ -38,11 +37,5 @@ describe("orderAccess", () => {
     assert.equal(canChangeOrderStatus("organization"), true);
     assert.equal(choosesStudent("student"), false);
     assert.equal(choosesStudent("school"), true);
-  });
-
-  it("names the school only in the organization list", () => {
-    assert.equal(showsSchoolName("organization"), true);
-    assert.equal(showsSchoolName("school"), false);
-    assert.equal(showsSchoolName("student"), false);
   });
 });
