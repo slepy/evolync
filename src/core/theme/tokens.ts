@@ -18,6 +18,8 @@ export const neutral = {
   raisedBorder: "#2A3345",
   text: "#F4F6FA",
   muted: "#A7B1C6",
+  /** Label of an unselected filter chip (T2 tag filter). */
+  soft: "#DCE2EE",
   /** Field placeholder and hint text. */
   placeholder: "#7D889F",
   /** Empty checkbox / radio ring, Absent bar segment. */
@@ -171,6 +173,8 @@ export interface ModuleAccent {
   to: string;
   /** Text on the primary button (dark on light accents, ≥ 4.5:1). */
   buttonText: string;
+  /** Lighter text on the 16% fill when the tint is too dark there (Tags chips, T2–T5). */
+  label?: string;
 }
 
 export const moduleAccents: Record<ModuleKey, ModuleAccent> = {
@@ -236,6 +240,7 @@ export const moduleAccents: Record<ModuleKey, ModuleAccent> = {
     from: "#FB7185",
     to: "#E11D48",
     buttonText: "#FFFFFF",
+    label: "#FDA4AF",
   },
   notebook: {
     tint: "#67E8F9",
