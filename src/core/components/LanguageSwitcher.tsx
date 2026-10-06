@@ -3,7 +3,7 @@ import { Globe } from "lucide-react-native";
 import { useTranslation } from "@/core/hooks/useTranslation";
 import { changeLanguage, getAvailableLanguages } from "@/core/i18n/config";
 import { ChoiceList } from "./ChoiceList";
-import { SettingsCard } from "./SettingsCard";
+import { FormCard } from "./FormCard";
 
 type LanguageCode = "en" | "pl";
 
@@ -16,7 +16,7 @@ export const LanguageSwitcher: React.FC = () => {
   const languages = getAvailableLanguages();
 
   return (
-    <SettingsCard icon={Globe} title={t("settingsLanguage")} subtitle={t("settingsLanguageHint")}>
+    <FormCard icon={Globe} accent="neutral" gap={14} title={t("settingsLanguage")} subtitle={t("settingsLanguageHint")}>
       <ChoiceList<LanguageCode>
         options={languages.map((lang) => ({ value: lang.code as LanguageCode, title: lang.label }))}
         value={language as LanguageCode}
@@ -26,6 +26,6 @@ export const LanguageSwitcher: React.FC = () => {
         accent="light"
         surface="page"
       />
-    </SettingsCard>
+    </FormCard>
   );
 };

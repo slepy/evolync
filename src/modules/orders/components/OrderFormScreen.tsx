@@ -1,4 +1,4 @@
-import { ListAvatar, PrimaryButton, SelectField, SubScreenPage, memberInitials } from "@/core/components";
+import { MemberAvatar, PrimaryButton, SelectField, SubScreenPage } from "@/core/components";
 import { useProducts } from "@/modules/inventory/hooks";
 import React, { useState } from "react";
 import { Text, YStack } from "tamagui";
@@ -78,7 +78,7 @@ export const OrderFormScreen: React.FC<OrderFormScreenProps> = ({ scope, schoolI
           placeholder={t("ordersChooseStudent")}
           leading={
             student ? (
-              <ListAvatar size={36} initials={memberInitials(student.name)} uri={student.avatarUrl} />
+              <MemberAvatar size={36} name={student.name} uri={student.avatarUrl} rankId={student.rankId} />
             ) : undefined
           }
           accent="orders"

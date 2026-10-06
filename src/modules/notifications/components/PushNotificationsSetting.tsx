@@ -1,4 +1,4 @@
-import { SecondaryButton, SettingsCard, ToggleRow } from "@/core/components";
+import { FormCard, SecondaryButton, ToggleRow } from "@/core/components";
 import { Bell } from "lucide-react-native";
 import React, { useCallback, useEffect, useState } from "react";
 import { AppState, Linking } from "react-native";
@@ -54,7 +54,7 @@ export function PushNotificationsSetting() {
   };
 
   return (
-    <SettingsCard icon={Bell} title={t("notificationsTitle")} subtitle={t("notificationsPushDeviceOnly")}>
+    <FormCard icon={Bell} accent="neutral" gap={14} title={t("notificationsTitle")} subtitle={t("notificationsPushDeviceOnly")}>
       <ToggleRow
         title={t("notificationsPushSetting")}
         hint={
@@ -73,6 +73,6 @@ export function PushNotificationsSetting() {
       {blocked ? (
         <SecondaryButton size="sm" label={t("notificationsPushOpenSettings")} onPress={() => Linking.openSettings()} />
       ) : null}
-    </SettingsCard>
+    </FormCard>
   );
 }

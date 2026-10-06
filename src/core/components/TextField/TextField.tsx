@@ -1,7 +1,8 @@
 import { neutral } from "@/core/theme/tokens";
+import type { LucideIcon } from "lucide-react-native";
 import { useState } from "react";
 import type { TextInputProps } from "react-native";
-import { Input, Text, YStack } from "tamagui";
+import { Input, Text, XStack, YStack } from "tamagui";
 import { resolveListAccent, type ListAccent } from "../List/accent";
 
 export interface TextFieldProps {
@@ -23,6 +24,10 @@ export interface TextFieldProps {
   keyboardType?: TextInputProps["keyboardType"];
   /** Grows from 56px to fit several lines (descriptions). */
   multiline?: boolean;
+  /** Muted 18px icon in front of the value (15A ADDRESS: map pin). */
+  icon?: LucideIcon;
+  /** Inside a `FormCard`: page fill instead of the card fill (15A, 16E RANK). */
+  inset?: boolean;
 }
 
 /**
@@ -44,6 +49,8 @@ export function TextField({
   autoCapitalize,
   keyboardType,
   multiline,
+  icon: Icon,
+  inset,
 }: TextFieldProps) {
   const [focused, setFocused] = useState(false);
   const tint = resolveListAccent(accent).tint;
@@ -54,35 +61,46 @@ export function TextField({
       <Text fontSize={12} fontWeight="$eyebrow" letterSpacing={0.8} textTransform="uppercase" color="$neutralMuted">
         {label}
       </Text>
-      <Input
-        aria-label={label}
-        value={value}
-        onChangeText={onChangeText}
-        placeholder={placeholder}
-        placeholderTextColor={neutral.placeholder}
-        autoFocus={autoFocus}
-        maxLength={maxLength}
-        onSubmitEditing={onSubmitEditing}
-        returnKeyType={returnKeyType}
-        autoCapitalize={autoCapitalize}
-        keyboardType={keyboardType}
-        multiline={multiline}
-        onFocus={() => setFocused(true)}
-        onBlur={() => setFocused(false)}
-        unstyled
+      <XStack
+        alignItems={multiline ? "flex-start" : "center"}
+        gap={10}
         height={multiline ? undefined : 56}
         minHeight={multiline ? 96 : undefined}
-        paddingHorizontal={16}
-        paddingVertical={multiline ? 16 : undefined}
-        textAlignVertical={multiline ? "top" : undefined}
+        paddingLeft={16}
+        paddingRight={Icon ? 16 : 0}
         borderRadius={16}
-        backgroundColor="$neutralCard"
+        backgroundColor={inset ? "$neutralPage" : "$neutralCard"}
         borderWidth={focused || error ? 1.5 : 1}
         borderColor={error ? "$trashText" : focused ? tint : "$neutralRaisedBorder"}
-        color="$neutralText"
-        fontSize={15}
-        fontWeight="600"
-      />
+      >
+        {Icon ? <Icon size={18} color={neutral.muted} strokeWidth={2} /> : null}
+        <Input
+          flex={1}
+          aria-label={label}
+          value={value}
+          onChangeText={onChangeText}
+          placeholder={placeholder}
+          placeholderTextColor={neutral.placeholder}
+          autoFocus={autoFocus}
+          maxLength={maxLength}
+          onSubmitEditing={onSubmitEditing}
+          returnKeyType={returnKeyType}
+          autoCapitalize={autoCapitalize}
+          keyboardType={keyboardType}
+          multiline={multiline}
+          onFocus={() => setFocused(true)}
+          onBlur={() => setFocused(false)}
+          unstyled
+          height={multiline ? undefined : 54}
+          minHeight={multiline ? 94 : undefined}
+          paddingRight={Icon ? 0 : 16}
+          paddingVertical={multiline ? 16 : undefined}
+          textAlignVertical={multiline ? "top" : undefined}
+          color="$neutralText"
+          fontSize={15}
+          fontWeight="600"
+        />
+      </XStack>
       {note ? (
         <Text fontSize={12.5} fontWeight="$secondary" color={error ? "$trashText" : "$neutralMuted"}>
           {note}

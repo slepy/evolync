@@ -1,4 +1,4 @@
-import { ListAvatar, ListCard, ListRow, PrimaryButton, StatusButton, SubScreenPage, memberInitials, withAlpha } from "@/core/components";
+import { ListCard, ListRow, MemberAvatar, PrimaryButton, StatusButton, SubScreenPage, withAlpha } from "@/core/components";
 import React from "react";
 import { ActivityIndicator } from "react-native";
 import { Text, YStack } from "tamagui";
@@ -78,7 +78,7 @@ export const EventParticipantsScreen: React.FC<EventParticipantsScreenProps> = (
                 size="md"
                 title={name}
                 subtitle={item.member.email}
-                leading={<ListAvatar initials={memberInitials(name)} uri={item.member.avatarUrl} />}
+                leading={<MemberAvatar name={name} uri={item.member.avatarUrl} rankId={item.member.currentRankId} />}
                 trailing={
                   <ParticipantStatusButton
                     status={item.status}

@@ -3,7 +3,7 @@ import { Sun } from "lucide-react-native";
 import { useTranslation } from "@/core/hooks/useTranslation";
 import { useThemePreference, type ThemePreference } from "@/core/theme";
 import { ChoiceList } from "./ChoiceList";
-import { SettingsCard } from "./SettingsCard";
+import { FormCard } from "./FormCard";
 
 const THEME_OPTIONS = [
   { value: "system", labelKey: "themeSystem", hintKey: "themeSystemHint" },
@@ -20,7 +20,7 @@ export const ThemeSwitcher: React.FC = () => {
   const { preference, setPreference } = useThemePreference();
 
   return (
-    <SettingsCard icon={Sun} title={t("settingsAppearance")} subtitle={t("settingsAppearanceHint")}>
+    <FormCard icon={Sun} accent="neutral" gap={14} title={t("settingsAppearance")} subtitle={t("settingsAppearanceHint")}>
       <ChoiceList<ThemePreference>
         options={THEME_OPTIONS.map((option) => ({
           value: option.value,
@@ -32,6 +32,6 @@ export const ThemeSwitcher: React.FC = () => {
         accent="light"
         surface="page"
       />
-    </SettingsCard>
+    </FormCard>
   );
 };
