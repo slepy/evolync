@@ -63,8 +63,8 @@ Local copies of the canvas boards (`NotificationsOrg / Student / Empty / Unavail
 
 ### Phase 1: Shared components and pure logic
 
-- [ ] 1.1 Shared: TabPage, IconButton, Notice, EmptyState, SettingsCard, Toggle, ChoiceList light accent
-- [ ] 1.2 Notifications grouping + time labels with tests; row style map
+- [x] 1.1 Shared: TabPage, IconButton, Notice, EmptyState, SettingsCard, Toggle, ChoiceList light accent — fb1a5ca
+- [x] 1.2 Notifications grouping + time labels with tests; row style map — 448e9ca
 
 ### Phase 2: Screens
 
