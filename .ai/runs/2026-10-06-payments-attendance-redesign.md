@@ -68,9 +68,9 @@ Boards in `design/project/` (canvas sections "Attendance — sessions list, mark
 
 ### Phase 1: Shared components and pure logic
 
-- [ ] 1.1 Shared: StatusButton, ListRow badge, StatusSummary children, FormSheet leading, rateAccent
-- [ ] 1.2 Attendance status style and session-list logic with tests
-- [ ] 1.3 Payments status style and period logic with tests
+- [x] 1.1 Shared: StatusButton, ListRow badge, StatusSummary children, FormSheet leading, rateAccent — 458d9b8
+- [x] 1.2 Attendance status style and session-list logic with tests — e9eb1d6
+- [x] 1.3 Payments status style and period logic with tests — b7dae4f
 
 ### Phase 2: Screens
 
