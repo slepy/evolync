@@ -1,11 +1,10 @@
 export { StudentFormScreen } from "./StudentFormScreen";
-export { StudentCard, StatusBadge } from "./StudentCard";
-export { StudentInfoCard } from "./StudentInfoCard";
 export { StudentPaymentRow } from "./StudentPaymentRow";
 export { StudentAttendanceHistoryItem } from "./StudentAttendanceHistoryItem";
-export { SelectableMemberCard } from "./SelectableMemberCard";
 export { StudentEventCard } from "./StudentEventCard";
 export { ApproveJoinRequestSheet } from "./ApproveJoinRequestSheet";
 export { StudentsScreen, type StudentsTab } from "./StudentsScreen";
 export { InviteCodeCard } from "./InviteCodeCard";
 export { InviteCreateScreen } from "./InviteCreateScreen";
+export { StudentDetailsScreen } from "./StudentDetailsScreen";
+export { StudentActionsSheet, StudentRankSheet } from "./StudentSheets";

@@ -12,7 +12,7 @@ import {
   memberInitials,
   withAlpha,
 } from "@/core/components";
-import { danger, moduleAccents, neutral, warning } from "@/core/theme/tokens";
+import { danger, moduleAccents } from "@/core/theme/tokens";
 import type SchoolJoinRequest from "@/database/models/SchoolJoinRequest";
 import { LoadingScreen } from "@/modules/core/components/LoadingScreen";
 import * as Clipboard from "expo-clipboard";
@@ -26,6 +26,7 @@ import { rejectJoinRequest } from "../services";
 import { latestInvite, requestAge, studentStatusPill, visibleStudents } from "../studentList";
 import { ApproveJoinRequestSheet } from "./ApproveJoinRequestSheet";
 import { InviteCodeCard } from "./InviteCodeCard";
+import { STUDENT_PILL_COLOR } from "./studentStatusStyle";
 
 export type StudentsTab = "students" | "requests";
 
@@ -41,11 +42,6 @@ const localeTag = () => (t("locale") === "pl" ? "pl-PL" : "en-GB");
 const shortDate = (date: Date | number) =>
   new Date(date).toLocaleDateString(localeTag(), { day: "numeric", month: "short" });
 
-const PILL_COLOR = {
-  neutral: { tint: neutral.tint, fill: neutral.tintFill },
-  warning: { tint: warning.text, fill: warning.fill },
-  muted: { tint: neutral.placeholder, fill: withAlpha(neutral.tint, 0.1) },
-} as const;
 
 /** "2 h ago", "Yesterday", "3 Oct" */
 const requestAgeLabel = (sentAt: Date, now: Date): string => {
@@ -165,7 +161,7 @@ export const StudentsScreen: React.FC<StudentsScreenProps> = ({
                         title={name}
                         subtitle={student.email ?? student.phoneNumber ?? undefined}
                         leading={<MemberAvatar name={name} uri={student.avatarUrl} rankId={student.currentRankId} />}
-                        trailing={pill ? <StatusBadge label={t(pill.label)} color={PILL_COLOR[pill.tone]} /> : undefined}
+                        trailing={pill ? <StatusBadge label={t(pill.label)} color={STUDENT_PILL_COLOR[pill.tone]} /> : undefined}
                         onPress={() => onStudentPress(student.id)}
                       />
                     );
