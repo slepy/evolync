@@ -35,6 +35,12 @@ export const OrderFormScreen: React.FC<OrderFormScreenProps> = ({ scope, schoolI
   const [studentId, setStudentId] = useState<string | undefined>(staff ? undefined : memberId);
   const [cart, setCart] = useState<CartItem[]>([]);
   const [sheet, setSheet] = useState<"student" | "product" | null>(null);
+  const [focusProductId, setFocusProductId] = useState<string | null>(null);
+
+  const openProducts = (productId: string | null) => {
+    setFocusProductId(productId);
+    setSheet("product");
+  };
 
   const student = students.find((s) => s.id === studentId);
   const canCreate = !!schoolId && !!studentId && cart.length > 0;
@@ -84,7 +90,10 @@ export const OrderFormScreen: React.FC<OrderFormScreenProps> = ({ scope, schoolI
       <OrderProductsSection
         cart={cart}
         onChange={setCart}
-        onAddProduct={() => setSheet("product")}
+        onAddProduct={() => openProducts(null)}
+        onEditProduct={openProducts}
+        showUnitPrice
+        hint={t("ordersProductsHint")}
         emptyText={t("ordersAddProductsHint")}
       />
 
@@ -103,6 +112,7 @@ export const OrderFormScreen: React.FC<OrderFormScreenProps> = ({ scope, schoolI
         products={products}
         cart={cart}
         onAdd={setCart}
+        focusProductId={focusProductId}
       />
     </SubScreenPage>
   );

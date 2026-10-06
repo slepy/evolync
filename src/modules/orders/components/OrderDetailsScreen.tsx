@@ -3,17 +3,18 @@ import {
   ListCard,
   ListRow,
   PrimaryButton,
-  SelectField,
   StatusBadge,
   SubScreenPage,
   TrashButton,
   memberInitials,
+  resolveListAccent,
 } from "@/core/components";
+import { neutral } from "@/core/theme/tokens";
 import { LoadingScreen } from "@/modules/core/components";
 import { confirmDelete } from "@/modules/core/utils/confirmDelete";
 import { useProducts } from "@/modules/inventory/hooks";
 import React, { useEffect, useState } from "react";
-import { Text, YStack } from "tamagui";
+import { Text, XStack, YStack } from "tamagui";
 import { useOrderDetails, type OrderItemDetails } from "../hooks/useOrderDetails";
 import { useOrganizationIdOfSchool } from "../hooks/useOrganizationIdOfSchool";
 import type { OrderStatus } from "../types";
@@ -24,7 +25,7 @@ import { diffCart, hasCartChanges } from "./orderCart";
 import { formatOrderDateTime } from "./orderFormat";
 import { ORDER_STATUS_STYLE } from "./orderListState";
 import { OrderProductsSection } from "./OrderProductsSection";
-import { OrderStatusSheet, StatusDot } from "./OrderStatusSheet";
+import { OrderStatusSheet } from "./OrderStatusSheet";
 
 interface OrderDetailsScreenProps {
   scope: OrdersScope;
@@ -49,10 +50,12 @@ const toCart = (items: OrderItemDetails[]): CartItem[] =>
   }));
 
 /**
- * Order details (12D). Staff (organization / school) see the member, change
- * the status (12C) and the products in every status; the student sees their
- * own order and changes or deletes it only while it is placed. Save appears
- * after a change.
+ * Order details (12D). One card with the member, the Status row ("Change"
+ * opens 12C) and Created / Updated; then the products (tap one to change its
+ * size or quantity, trash removes it) with a Total per currency. Staff
+ * (organization / school) change the status and the products in every status;
+ * the student sees their own order and changes or deletes it only while it is
+ * placed. Save appears after a change.
  */
 export const OrderDetailsScreen: React.FC<OrderDetailsScreenProps> = ({ scope, orderId, memberId, onDone }) => {
   const { orderDetails, isLoading, isUpdating, error, updateStatus, updateItems, deleteOrder } =
@@ -63,6 +66,12 @@ export const OrderDetailsScreen: React.FC<OrderDetailsScreenProps> = ({ scope, o
   const [cart, setCart] = useState<CartItem[] | null>(null);
   const [status, setStatus] = useState<OrderStatus | null>(null);
   const [sheet, setSheet] = useState<"status" | "product" | null>(null);
+  const [focusProductId, setFocusProductId] = useState<string | null>(null);
+
+  const openProducts = (productId: string | null) => {
+    setFocusProductId(productId);
+    setSheet("product");
+  };
 
   useEffect(() => {
     if (orderDetails && cart === null) setCart(toCart(orderDetails.items));
@@ -112,11 +121,11 @@ export const OrderDetailsScreen: React.FC<OrderDetailsScreenProps> = ({ scope, o
     });
 
   const statusStyle = ORDER_STATUS_STYLE[currentStatus];
+  const changeStatus = canChangeOrderStatus(scope);
 
   return (
     <SubScreenPage
       title={t("ordersDetailsTitle")}
-      subtitle={formatOrderDateTime(order.createdAt)}
       right={
         canDeleteOrder(scope, order.status) ? (
           <TrashButton label={t("ordersDeleteTitle")} onPress={handleDelete} disabled={isUpdating} />
@@ -141,40 +150,47 @@ export const OrderDetailsScreen: React.FC<OrderDetailsScreenProps> = ({ scope, o
         ) : undefined
       }
     >
-      {scope !== "student" ? (
-        <ListCard>
+      <ListCard>
+        {scope !== "student" ? (
           <ListRow
             title={memberName}
             subtitle={member?.email && member.email !== memberName ? member.email : undefined}
             leading={<ListAvatar size={48} initials={memberInitials(memberName)} uri={member?.avatarUrl} />}
           />
-        </ListCard>
-      ) : null}
-
-      {canChangeOrderStatus(scope) ? (
-        <SelectField
-          label={t("status")}
-          value={t(statusStyle.label)}
-          leading={<StatusDot status={currentStatus} />}
-          accent="orders"
-          open={sheet === "status"}
-          onPress={() => setSheet("status")}
-        />
-      ) : (
-        <ListCard>
-          <ListRow
-            size="md"
-            title={t("status")}
-            leading={<StatusDot status={currentStatus} />}
-            trailing={<StatusBadge label={t(statusStyle.label)} color={statusStyle.accent} />}
-          />
-        </ListCard>
-      )}
+        ) : null}
+        <XStack
+          role={changeStatus ? "button" : undefined}
+          aria-label={changeStatus ? t("ordersChangeStatusNow", { status: t(statusStyle.label) }) : undefined}
+          onPress={changeStatus ? () => setSheet("status") : undefined}
+          pressStyle={changeStatus ? { opacity: 0.85 } : undefined}
+          alignItems="center"
+          gap={12}
+          minHeight={56}
+          paddingVertical={8}
+          paddingHorizontal={16}
+        >
+          <Text flex={1} fontSize={14} fontWeight="$button" color="$neutralMuted">
+            {t("status")}
+          </Text>
+          <StatusBadge size="md" label={t(statusStyle.label)} color={statusStyle.accent} />
+          {changeStatus ? (
+            <Text fontSize={14} fontWeight="$rowTitle" color={resolveListAccent("orders").tint}>
+              {t("change")}
+            </Text>
+          ) : null}
+        </XStack>
+        <XStack gap={12} paddingTop={12} paddingBottom={14} paddingHorizontal={16}>
+          <OrderDate label={t("created")} date={order.createdAt} />
+          <OrderDate label={t("updated")} date={order.updatedAt} />
+        </XStack>
+      </ListCard>
 
       <OrderProductsSection
         cart={cart}
         onChange={editable ? setCart : undefined}
-        onAddProduct={editable ? () => setSheet("product") : undefined}
+        onAddProduct={editable ? () => openProducts(null) : undefined}
+        onEditProduct={editable ? openProducts : undefined}
+        hint={t("ordersProductsEditHint")}
       />
 
       {!editable ? (
@@ -196,7 +212,21 @@ export const OrderDetailsScreen: React.FC<OrderDetailsScreenProps> = ({ scope, o
         products={products}
         cart={cart}
         onAdd={setCart}
+        focusProductId={focusProductId}
       />
     </SubScreenPage>
   );
 };
+
+function OrderDate({ label, date }: { label: string; date: Date }) {
+  return (
+    <YStack flex={1} gap={2}>
+      <Text fontSize={12} fontWeight="$button" color={neutral.placeholder}>
+        {label}
+      </Text>
+      <Text fontSize={14} fontWeight="$button" color="$neutralText">
+        {formatOrderDateTime(date)}
+      </Text>
+    </YStack>
+  );
+}

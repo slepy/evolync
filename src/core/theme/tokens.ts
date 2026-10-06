@@ -43,6 +43,11 @@ export const danger = {
   buttonText: "#FFFFFF",
 } as const;
 
+/** Warning text, e.g. "Out of stock" in the 12F size rows. */
+export const warning = {
+  text: "#FBBF24",
+} as const;
+
 // ============================================================================
 // Context colors — tint only the header box, the Home pill, the context
 // switcher and the page glow. Never used for module tiles.

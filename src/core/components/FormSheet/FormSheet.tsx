@@ -15,19 +15,25 @@ export interface FormSheetProps {
   children: ReactNode;
   /** Under the fields, usually a `PrimaryButton`. */
   footer?: ReactNode;
+  /**
+   * Tall sheet (12F Add product): nearly full height, the children fill the
+   * space between the header and the footer (put a scroll view in them).
+   */
+  fill?: boolean;
 }
 
 /**
  * Standard bottom sheet with a small form (7B / 8B): raised fill, radius 28
  * on top, handle, title with a 44px close button, fields, primary button.
  */
-export function FormSheet({ open, onOpenChange, title, subtitle, headerAction, children, footer }: FormSheetProps) {
+export function FormSheet({ open, onOpenChange, title, subtitle, headerAction, children, footer, fill }: FormSheetProps) {
   return (
     <Sheet
       modal
       open={open}
       onOpenChange={onOpenChange}
-      snapPointsMode="fit"
+      snapPointsMode={fill ? "percent" : "fit"}
+      snapPoints={fill ? [92] : undefined}
       dismissOnSnapToBottom
       moveOnKeyboardChange
       zIndex={200_000}
@@ -39,10 +45,10 @@ export function FormSheet({ open, onOpenChange, title, subtitle, headerAction, c
         borderTopRightRadius="$header"
         paddingHorizontal={20}
         paddingTop={10}
-        paddingBottom={36}
+        paddingBottom={fill ? 28 : 36}
       >
         <Sheet.Handle backgroundColor="$neutralControl" />
-        <YStack gap={20} paddingTop={12}>
+        <YStack gap={fill ? 14 : 20} paddingTop={12} flex={fill ? 1 : undefined}>
           <XStack alignItems="center" gap={10}>
             <YStack flex={1} minWidth={0} gap={2}>
               <Text fontSize="$section" fontWeight="$section" letterSpacing={-0.2} color="$neutralText" numberOfLines={1}>
@@ -73,7 +79,13 @@ export function FormSheet({ open, onOpenChange, title, subtitle, headerAction, c
               <X size={20} color={neutral.text} strokeWidth={2.2} />
             </View>
           </XStack>
-          {children}
+          {fill ? (
+            <YStack flex={1} minHeight={0} gap={14}>
+              {children}
+            </YStack>
+          ) : (
+            children
+          )}
           {footer}
         </YStack>
       </Sheet.Frame>
