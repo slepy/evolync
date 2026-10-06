@@ -52,6 +52,10 @@ Local copies of the canvas boards (`NotificationsOrg / Student / Empty / Unavail
 - 3.1 Remove unused UI / translation keys; en + pl complete; CLAUDE.md shared-components line.
 - 3.2 Full validation gate.
 
+## Notes
+
+- After merging main (#31, which added `FormCard` for 15A), the planned `SettingsCard` was folded into `FormCard` (`accent="neutral"`, new `gap` prop) instead of shipping a duplicate.
+
 ## Risks
 
 - Copy for the student push prompt rows and the student empty-state text is not on a board; derived from N2 (payments, added to an event).
