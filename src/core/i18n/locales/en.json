@@ -494,7 +494,6 @@
 
   "syncOnline": "Online",
   "syncOffline": "Offline",
-  "syncSyncing": "Syncing...",
   "syncJustNow": "Just now",
   "syncMinutesAgo": "{{minutes}}m ago",
   "syncHoursAgo": "{{hours}}h ago",

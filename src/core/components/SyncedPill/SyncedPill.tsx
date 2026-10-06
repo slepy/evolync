@@ -1,6 +1,12 @@
 import { danger, neutral } from "@/core/theme/tokens";
 import { useStore } from "@/store";
-import { AlertTriangle, Check, CloudOff, RefreshCw, type LucideIcon } from "lucide-react-native";
+import {
+  AlertTriangle,
+  Check,
+  CloudOff,
+  RefreshCw,
+  type LucideIcon,
+} from "lucide-react-native";
 import { Text, XStack } from "tamagui";
 import { resolveSyncPillStatus, type SyncPillStatus } from "./syncPillStatus";
 
@@ -12,7 +18,7 @@ export interface SyncedPillViewProps {
 
 const LABEL_KEY: Record<SyncPillStatus, string> = {
   synced: "syncSynced",
-  syncing: "syncSyncing",
+  syncing: "syncSynced",
   offline: "syncOffline",
   error: "syncFailed",
 };
@@ -31,10 +37,25 @@ const ICON: Record<SyncPillStatus, LucideIcon> = {
  */
 export function SyncedPillView({ status, onPress }: SyncedPillViewProps) {
   const label = t(LABEL_KEY[status]);
-  const fg = status === "synced" ? "$synced" : status === "error" ? "$trashText" : "$neutralMuted";
-  const iconColor = status === "synced" ? neutral.synced : status === "error" ? danger.text : neutral.muted;
+  const fg =
+    status === "synced"
+      ? "$synced"
+      : status === "error"
+        ? "$trashText"
+        : "$neutralMuted";
+  const iconColor =
+    status === "synced"
+      ? neutral.synced
+      : status === "error"
+        ? danger.text
+        : neutral.muted;
   const Icon = ICON[status];
-  const bg = status === "synced" ? "$syncedFill" : status === "error" ? "$trashFill" : "$neutralRaised";
+  const bg =
+    status === "synced"
+      ? "$syncedFill"
+      : status === "error"
+        ? "$trashFill"
+        : "$neutralRaised";
   const pressable = onPress && status !== "syncing";
 
   return (
@@ -52,7 +73,11 @@ export function SyncedPillView({ status, onPress }: SyncedPillViewProps) {
       borderRadius={15}
       backgroundColor={bg}
     >
-      <Icon size={14} color={iconColor} strokeWidth={status === "synced" ? 3 : 2.4} />
+      <Icon
+        size={14}
+        color={iconColor}
+        strokeWidth={status === "synced" ? 3 : 2.4}
+      />
       <Text fontSize={12} fontWeight="700" color={fg} numberOfLines={1}>
         {label}
       </Text>

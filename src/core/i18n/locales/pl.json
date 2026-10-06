@@ -512,7 +512,6 @@
 
   "syncOnline": "Online",
   "syncOffline": "Offline",
-  "syncSyncing": "Synchronizacja...",
   "syncJustNow": "Przed chwilą",
   "syncMinutesAgo": "{{minutes}} min temu",
   "syncHoursAgo": "{{hours}}h temu",
