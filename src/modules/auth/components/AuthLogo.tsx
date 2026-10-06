@@ -21,7 +21,7 @@ export const AuthLogo: React.FC<{ subtitle: string }> = ({ subtitle }) => (
     >
       <View flex={1} borderRadius={20} overflow="hidden" alignItems="center" justifyContent="center">
         <LinearGradient colors={[...brand.logo]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={StyleSheet.absoluteFill} />
-        <Text fontSize={36} fontWeight="$section" color={brand.logoText}>
+        <Text position="relative" zIndex={1} fontSize={36} fontWeight="$section" color={brand.logoText}>
           E
         </Text>
       </View>

@@ -2,7 +2,7 @@ import { supabase } from '@/config/supabase';
 import { ResetPasswordForm } from '@/modules/auth/components/ResetPasswordForm';
 import { useAuth } from '@/modules/auth/hooks/useAuth';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 // ============================================================================
 // ResetPasswordScreen Component — new password board
@@ -19,6 +19,11 @@ export default function ResetPasswordScreen() {
   const { email: emailParam } = useLocalSearchParams<{ email?: string }>();
   const email = emailParam ?? '';
   const { isLoading, error, verifyRecoveryOtp, updatePassword, clearError } = useAuth();
+
+  // The auth error lives in the global store: drop one left over from sign in.
+  useEffect(() => {
+    clearError();
+  }, []);
 
   // verifyOtp consumes the code (single use) and opens a recovery session.
   // If updatePassword then fails (weak/same password, network), a retry

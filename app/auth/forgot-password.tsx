@@ -1,7 +1,7 @@
 import { ForgotPasswordForm } from '@/modules/auth/components/ForgotPasswordForm';
 import { useAuth } from '@/modules/auth/hooks/useAuth';
 import { useRouter } from 'expo-router';
-import React from 'react';
+import React, { useEffect } from 'react';
 
 // ============================================================================
 // ForgotPasswordScreen Component — forgot password board
@@ -10,6 +10,11 @@ import React from 'react';
 export default function ForgotPasswordScreen() {
   const router = useRouter();
   const { isLoading, error, sendPasswordResetEmail, clearError } = useAuth();
+
+  // The auth error lives in the global store: drop one left over from sign in.
+  useEffect(() => {
+    clearError();
+  }, []);
 
   const handleSubmit = async (email: string) => {
     clearError();

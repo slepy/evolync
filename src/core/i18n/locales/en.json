@@ -131,7 +131,7 @@
   "errorInvalidOAuthCallback": "Invalid OAuth callback. Try again.",
   "errorGoogleLoginFailed": "Failed to login with Google. Try again.",
   "errorLoginError": "An error occurred during login. Try again.",
-  "errorPasswordResetFailed": "Failed to send reset link. Try again.",
+  "errorPasswordResetFailed": "Couldn’t send the code. Try again.",
   "errorPasswordUpdateFailed": "Failed to update password. Try again.",
   "errorWeakPassword": "Password is too weak. Choose a stronger password.",
   "errorSamePassword": "New password must be different from your current password.",

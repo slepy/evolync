@@ -133,7 +133,7 @@
   "errorInvalidOAuthCallback": "Nieprawidłowy callback OAuth. Spróbuj ponownie.",
   "errorGoogleLoginFailed": "Nie udało się zalogować przez Google. Spróbuj ponownie.",
   "errorLoginError": "Wystąpił błąd podczas logowania. Spróbuj ponownie.",
-  "errorPasswordResetFailed": "Nie udało się wysłać linku resetującego. Spróbuj ponownie.",
+  "errorPasswordResetFailed": "Nie udało się wysłać kodu. Spróbuj ponownie.",
   "errorPasswordUpdateFailed": "Nie udało się zaktualizować hasła. Spróbuj ponownie.",
   "errorWeakPassword": "Hasło jest zbyt słabe. Wybierz silniejsze hasło.",
   "errorSamePassword": "Nowe hasło musi różnić się od obecnego hasła.",
