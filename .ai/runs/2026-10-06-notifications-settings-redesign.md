@@ -63,6 +63,8 @@ Local copies of the canvas boards (`NotificationsOrg / Student / Empty / Unavail
 
 ## Progress
 
+PR: #32
+
 > Convention: `- [ ]` pending, `- [x]` done. Append ` — <commit sha>` when a step lands. Do not rename step titles.
 
 ### Phase 1: Shared components and pure logic
