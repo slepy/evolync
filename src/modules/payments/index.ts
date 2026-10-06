@@ -15,9 +15,7 @@ export { usePaymentRecords } from "./hooks/usePaymentRecords";
 export { PaymentPeriodsScreen } from "./components/PaymentPeriodsScreen";
 export { PaymentPeriodScreen } from "./components/PaymentPeriodScreen";
 export { PaymentPeriodFormScreen } from "./components/PaymentPeriodFormScreen";
-export { PaymentCycleCard } from "./components/PaymentCycleCard";
 export { PaymentCycleStats } from "./components/PaymentCycleStats";
-export { PaymentRecordRow } from "./components/PaymentRecordRow";
 
 // Types
 export type { CreatePaymentCycleDto } from "./types/dto";
