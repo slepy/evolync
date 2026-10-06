@@ -4,18 +4,20 @@ export { NoteDocumentRepository, NoteRowRepository } from "./repositories";
 
 // ============================================================================
 // Services
-export {
-  createNoteDocument,
-  updateNoteDocument,
-  deleteNoteDocument,
-  addNoteRow,
-  updateNoteRow,
-  deleteNoteRow,
-} from "./services";
+export { createNote, saveNote, deleteNoteDocument, type NoteInput } from "./services";
 
 // ============================================================================
 // Hooks
-export { useNoteDocuments, useNoteRows } from "./hooks";
+export { useNoteList, useNoteDocument, useNoteRows } from "./hooks";
+
+// ============================================================================
+// Components
+export { NotesListScreen, NoteCreateScreen, NoteDetailsScreen } from "./components";
+
+// ============================================================================
+// Logic
+export { ALL_TAGS, filterNotes, formatNoteDate, tagsByNote, type NoteListItem, type NoteTag } from "./noteList";
+export { leaderOf, toggleDirection, planRowChanges, isNoteChanged, normalizeDraft, type EditableRow, type NoteDraft } from "./noteRows";
 
 // ============================================================================
 // Types
