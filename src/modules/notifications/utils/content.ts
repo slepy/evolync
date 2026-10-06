@@ -1,4 +1,5 @@
-import { formatDateRange, formatPrice } from "@/modules/core/utils/formatters";
+import { formatPrice } from "@/modules/core/utils/formatters";
+import type { Locale } from "date-fns";
 import {
   NOTIFICATION_TYPE,
   type EventAssignedPayload,
@@ -9,6 +10,7 @@ import {
   type OrderCreatedPayload,
   type PaymentCreatedPayload,
 } from "../types";
+import { inboxDateLocale, shortDay, shortDayRange } from "./inbox";
 
 type Translate = (key: string, options?: Record<string, unknown>) => string;
 
@@ -24,12 +26,15 @@ const text = (value: unknown, fallback: string): string =>
   typeof value === "string" && value.trim() ? value : fallback;
 
 /**
- * Localized title/body for a notification, rendered from its stored payload.
+ * Localized title/body for a notification, rendered from its stored payload
+ * (N1 / N2: "Michał Kaczmarek · 3 items", "150,00 zł for 1–30 Nov").
  * Missing payload fields degrade to generic wording rather than "undefined".
  */
 export function getNotificationContent(
   notification: Pick<NotificationTarget, "type" | "payload">,
   translate: Translate = t,
+  now: Date = new Date(),
+  locale: Locale = inboxDateLocale(translate("locale")),
 ): NotificationContent {
   const payload = notification.payload ?? {};
   const someone = translate("notificationSomeone");
@@ -83,7 +88,7 @@ export function getNotificationContent(
         title: translate("notificationPaymentCreatedTitle"),
         body: translate("notificationPaymentCreatedBody", {
           amount: Number.isFinite(amount) ? formatPrice(amount, text(p.currency, "PLN")) : "",
-          period: start && end ? formatDateRange(start, end) : "",
+          period: start && end ? shortDayRange(start, end, now, locale) : "",
         }).trim(),
       };
     }
@@ -95,7 +100,7 @@ export function getNotificationContent(
         title: translate("notificationEventAssignedTitle"),
         body: translate("notificationEventAssignedBody", {
           eventName: text(p.eventName, translate("notificationAnEvent")),
-          startDate: start ? formatDateRange(start, start) : "",
+          startDate: start ? shortDay(start, now, locale) : "",
         }),
       };
     }

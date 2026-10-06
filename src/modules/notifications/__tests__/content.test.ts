@@ -1,10 +1,14 @@
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
-import { getNotificationContent } from "../utils/content";
+import { enUS } from "date-fns/locale";
+import { getNotificationContent as render } from "../utils/content";
 
 /** Echoes the key and its params so assertions can check both. */
 const translate = (key: string, params?: Record<string, unknown>) =>
   params ? `${key}${JSON.stringify(params)}` : key;
+
+const NOW = new Date(2026, 10, 15, 12, 0);
+const getNotificationContent = (n: Parameters<typeof render>[0], tr: typeof translate) => render(n, tr, NOW, enUS);
 
 describe("getNotificationContent", () => {
   it("N1 includes the item count only when items are known", () => {
@@ -49,7 +53,7 @@ describe("getNotificationContent", () => {
     const params = JSON.parse(content.body.replace("notificationPaymentCreatedBody", ""));
     assert.match(params.amount, /150/);
     assert.match(params.amount, /PLN/);
-    assert.equal(params.period, "1 - 31 October 2026");
+    assert.equal(params.period, "1–31 Oct");
   });
 
   it("N5 formats the event start date without a timezone shift", () => {
@@ -59,7 +63,7 @@ describe("getNotificationContent", () => {
     );
     assert.equal(
       content.body,
-      'notificationEventAssignedBody{"eventName":"Winter Cup","startDate":"1 December 2026"}',
+      'notificationEventAssignedBody{"eventName":"Winter Cup","startDate":"1 Dec"}',
     );
   });
 
