@@ -68,11 +68,11 @@ Local copies of the canvas boards (`NotificationsOrg / Student / Empty / Unavail
 
 ### Phase 2: Screens
 
-- [ ] 2.1 N1–N4 inbox
-- [ ] 2.2 N5 push prompt sheet
-- [ ] 2.3 17A / 17B Settings tab
+- [x] 2.1 N1–N4 inbox — 0e0458b
+- [x] 2.2 N5 push prompt sheet — 1644055
+- [x] 2.3 17A / 17B Settings tab — 56b8de6
 
 ### Phase 3: Cleanup and gate
 
-- [ ] 3.1 Remove unused UI and translation keys; CLAUDE.md
-- [ ] 3.2 Full validation gate
+- [x] 3.1 Remove unused UI and translation keys; CLAUDE.md — 1178f02
+- [x] 3.2 Full validation gate — 1178f02 (typecheck, check:theme, npm test 276/276)
