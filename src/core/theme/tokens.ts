@@ -41,6 +41,19 @@ export const danger = {
   from: "#EF4444",
   to: "#B91C1C",
   buttonText: "#FFFFFF",
+  /** Message line of an error alert (sign in "Wrong email or password"). */
+  soft: "#E6C3C3",
+} as const;
+
+/**
+ * Evolync brand: the "E" logo and the orange glow of the screens that belong
+ * to no context yet (sign in, sign up, password reset).
+ */
+export const brand = {
+  logo: ["#DC2626", "#EA580C", "#F59E0B"],
+  logoText: "#FFFFFF",
+  logoShadow: "rgba(234,88,12,0.35)",
+  glow: "rgba(234,88,12,0.20)",
 } as const;
 
 /** Warning text, e.g. "Out of stock" in the 12F size rows; Pending / Excused status and a 50–79% rate chip. */
