@@ -92,7 +92,7 @@
   "passwordMinLength": "Password must be at least {{count}} characters",
   "passwordMaxLength": "Password can be at most {{count}} characters",
   "passwordComplexity": "Password must contain uppercase, lowercase, digit, and special character (@$!%*?&)",
-  "passwordsMustMatch": "Passwords must match",
+  "passwordsMustMatch": "Passwords don’t match",
   "fullNameRequired": "Full name is required (min 2 characters)",
   "nameTooShort": "Name must be at least 2 characters",
   "nameTooLong": "Name can be at most {{count}} characters",
@@ -989,5 +989,16 @@
   "authYourAccount": "Your account",
   "authOrganizationSection": "Organization",
   "authFirstSchool": "First school",
-  "authFirstSchoolHint": "You can add more schools later."
+  "authFirstSchoolHint": "You can add more schools later.",
+  "authNewAccount": "New account",
+  "authFullNameOptional": "Full name (optional)",
+  "authPhoneOptional": "Phone (optional)",
+  "phonePrefixSearch": "Search country code",
+  "authNextSchoolCode": "Next: your school code",
+  "authNextSchoolCodeHint": "After you sign up, enter the code from your instructor. You get access once they approve your request.",
+  "passwordRules": "Password rules",
+  "passwordRuleLength": "8+ characters",
+  "passwordRuleSymbol": "Symbol {{symbols}}",
+  "passwordRuleMet": "met",
+  "passwordRuleMissing": "missing"
 }

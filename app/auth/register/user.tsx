@@ -1,65 +1,7 @@
-import { YStack, Text, ScrollView } from "tamagui";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { KeyboardAvoidingView, Platform } from "react-native";
-import { AppLogo } from "@/modules/core/components";
-import { RegisterForm, LoginPrompt } from "@/modules/auth/components";
-import { useRouter } from "expo-router";
+import { RegisterForm } from '@/modules/auth/components/RegisterForm';
+import React from 'react';
 
-export default function RegisterScreen() {
-  const router = useRouter();
-
-  const handleNavigateToLogin = () => {
-    router.push("/auth/login" as any);
-  };
-
-  return (
-    <SafeAreaView style={{ flex: 1 }}>
-      <KeyboardAvoidingView
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
-        style={{ flex: 1 }}
-      >
-        <ScrollView
-          contentContainerStyle={{
-            flexGrow: 1,
-            justifyContent: "center",
-            padding: 24,
-          }}
-          keyboardShouldPersistTaps="handled"
-        >
-          <YStack
-            flex={1}
-            justifyContent="center"
-            width="100%"
-            maxWidth={420}
-            alignSelf="center"
-          >
-            <AppLogo />
-
-            <YStack gap="$2" marginBottom="$4">
-              <Text
-                fontSize="$8"
-                fontWeight="700"
-                color="$textPrimary"
-                textAlign="center"
-              >
-                {t("joinAsPractitioner")}
-              </Text>
-              <Text
-                fontSize="$5"
-                fontWeight="500"
-                color="$textMuted"
-                textAlign="center"
-              >
-                {t("joinAsPractitionerDescription")}
-              </Text>
-            </YStack>
-
-            <RegisterForm />
-
-            <LoginPrompt onNavigate={handleNavigateToLogin} />
-          </YStack>
-        </ScrollView>
-      </KeyboardAvoidingView>
-    </SafeAreaView>
-  );
+/** New student account; joining a school with a code comes next. */
+export default function RegisterUserScreen() {
+  return <RegisterForm />;
 }

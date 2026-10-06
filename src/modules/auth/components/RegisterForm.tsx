@@ -1,22 +1,62 @@
-import { EmailInput, ErrorBanner, PasswordInput, PhoneInput, SubmitButton, TextInput } from '@/modules/core/components';
+import { AlertBanner, AuthPage, AuthPrompt, PrimaryButton, TextField } from '@/core/components';
+import { contextColors } from '@/core/theme/tokens';
 import { zodResolver } from '@hookform/resolvers/zod';
-import React from 'react';
-import { useForm } from 'react-hook-form';
-import { YStack } from 'tamagui';
+import { useRouter } from 'expo-router';
+import { Ticket } from 'lucide-react-native';
+import React, { useState } from 'react';
+import { Controller, useForm } from 'react-hook-form';
+import { Text, View, XStack, YStack } from 'tamagui';
 import { useRegister } from '../hooks/useRegister';
 import type { RegisterRequest } from '../types/registerDto';
-import {
-  registerSchema,
-  type RegisterFormValues,
-} from '../validation/registerSchema';
+import { registerSchema, type RegisterFormValues } from '../validation/registerSchema';
+import { PasswordFields } from './PasswordFields';
+import { PhoneField } from './PhoneField';
 
+const student = contextColors.student;
+
+/** Student button gradient of the board: the first two stops of the student context. */
+const STUDENT_BUTTON_COLORS = { from: student.gradient[0].color, to: student.gradient[1].color, text: student.fg };
+
+/** "Next: your school code" card: what happens after the account exists. */
+const NextStepCard: React.FC = () => (
+  <XStack
+    alignItems="flex-start"
+    gap={12}
+    paddingVertical={14}
+    paddingHorizontal={16}
+    borderRadius="$card"
+    backgroundColor="$neutralCard"
+    borderWidth={1}
+    borderColor="$neutralCardBorder"
+  >
+    <View width={36} height={36} borderRadius={12} backgroundColor={student.fill} alignItems="center" justifyContent="center" flexShrink={0}>
+      <Ticket size={18} color={student.label} strokeWidth={2} />
+    </View>
+    <YStack flex={1} gap={3}>
+      <Text fontSize={14} fontWeight="$button" color="$neutralText">
+        {t('authNextSchoolCode')}
+      </Text>
+      <Text fontSize={13} lineHeight={19} fontWeight="$secondary" color="$neutralMuted">
+        {t('authNextSchoolCodeHint')}
+      </Text>
+    </YStack>
+  </XStack>
+);
+
+/**
+ * New account screen (sign up → "I train in a school" board): optional name,
+ * email, optional phone with prefix, password + rules, confirm, next-step
+ * card, blue Create pinned at the bottom. Joining a school comes next.
+ */
 export const RegisterForm: React.FC = () => {
+  const router = useRouter();
   const { register: registerUser, isLoading, error: apiError } = useRegister();
+  const [errorDismissed, setErrorDismissed] = useState(false);
 
   const {
     control,
     handleSubmit,
-    formState: { errors, isValid },
+    formState: { errors },
   } = useForm<RegisterFormValues>({
     resolver: zodResolver(registerSchema),
     mode: 'onChange',
@@ -29,91 +69,95 @@ export const RegisterForm: React.FC = () => {
     },
   });
 
-  const onSubmit = async (data: RegisterFormValues) => {
-    const { confirmPassword, phone, ...registerData } = data;
+  const onSubmit = handleSubmit(async (data) => {
+    setErrorDismissed(false);
+    const phoneNumber = data.phone && data.phone.number ? `${data.phone.prefix}${data.phone.number}` : undefined;
 
-    // Build phone_number string if number was provided
-    const phoneNumber =
-      phone && phone.number ? `${phone.prefix}${phone.number}` : undefined;
-
-    const finalData: RegisterRequest = {
-      email: registerData.email,
-      password: registerData.password,
-      ...(registerData.full_name ? { full_name: registerData.full_name } : {}),
+    const request: RegisterRequest = {
+      email: data.email,
+      password: data.password,
+      ...(data.full_name ? { full_name: data.full_name } : {}),
       ...(phoneNumber ? { phone_number: phoneNumber } : {}),
     };
 
-    await registerUser(finalData);
-  };
-
-  const clearError = () => {
-    // Error is managed by the hook, will be cleared on next attempt
-  };
+    await registerUser(request);
+  });
 
   return (
-    <YStack gap="$3">
-      {/* API Error Banner */}
-      {apiError && (
-        <ErrorBanner
-          title={t('errorUnknown')}
-          message={apiError}
-          onDismiss={clearError}
-        />
-      )}
+    <AuthPage
+      title={t('authNewAccount')}
+      footer={<PrimaryButton label={t('create')} colors={STUDENT_BUTTON_COLORS} onPress={onSubmit} loading={isLoading} />}
+    >
+      {apiError && !errorDismissed ? (
+        <AlertBanner title={t(apiError)} onDismiss={() => setErrorDismissed(true)} />
+      ) : null}
 
-      {/* Full Name (Optional) */}
-      <TextInput
+      <Controller
         control={control}
         name="full_name"
-        label={t('fullName')}
-        placeholder={t('fullNamePlaceholder')}
-        error={errors.full_name?.message}
-        disabled={isLoading}
+        render={({ field }) => (
+          <TextField
+            size="large"
+            accent="student"
+            label={t('authFullNameOptional')}
+            value={field.value ?? ''}
+            onChangeText={field.onChange}
+            placeholder={t('fullNamePlaceholder')}
+            error={errors.full_name?.message}
+            disabled={isLoading}
+            autoCapitalize="words"
+            autoComplete="name"
+            textContentType="name"
+          />
+        )}
       />
-
-      {/* Email */}
-      <EmailInput
+      <Controller
         control={control}
         name="email"
-        label={t('email')}
-        error={errors.email?.message}
-        disabled={isLoading}
+        render={({ field }) => (
+          <TextField
+            size="large"
+            accent="student"
+            label={t('email')}
+            value={field.value}
+            onChangeText={(v) => field.onChange(v.trim())}
+            error={errors.email?.message}
+            disabled={isLoading}
+            autoCapitalize="none"
+            keyboardType="email-address"
+            autoComplete="email"
+            textContentType="emailAddress"
+          />
+        )}
       />
-
-      {/* Phone Number (Optional) */}
-      <PhoneInput
+      <Controller
         control={control}
         name="phone"
-        label={t('phoneNumber')}
-        error={errors.phone?.message as string | undefined}
-        disabled={isLoading}
+        render={({ field }) => (
+          <PhoneField
+            accent="student"
+            label={t('authPhoneOptional')}
+            value={field.value ?? { prefix: '+48', number: '' }}
+            onChange={field.onChange}
+            error={errors.phone?.message as string | undefined}
+            disabled={isLoading}
+          />
+        )}
       />
-
-      {/* Password */}
-      <PasswordInput
+      <PasswordFields
         control={control}
-        name="password"
-        label={t('password')}
-        error={errors.password?.message}
+        errors={errors}
+        password="password"
+        confirm="confirmPassword"
+        passwordLabel={t('password')}
+        confirmLabel={t('confirmPassword')}
+        accent="student"
         disabled={isLoading}
       />
 
-      {/* Confirm Password */}
-      <PasswordInput
-        control={control}
-        name="confirmPassword"
-        label={t('confirmPassword')}
-        error={errors.confirmPassword?.message}
-        disabled={isLoading}
-      />
+      <NextStepCard />
 
-      {/* Submit Button */}
-      <SubmitButton
-        onPress={handleSubmit(onSubmit)}
-        isLoading={isLoading}
-        disabled={!isValid || isLoading}
-        title={t('createAccount')}
-      />
-    </YStack>
+      <AuthPrompt text={t('authHaveAccount')} action={t('authSignIn')} onPress={() => router.replace('/auth/login' as any)} />
+    </AuthPage>
   );
 };

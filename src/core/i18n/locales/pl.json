@@ -94,7 +94,7 @@
   "passwordMinLength": "Hasło musi mieć co najmniej {{count}} znaków",
   "passwordMaxLength": "Hasło może mieć maksymalnie {{count}} znaków",
   "passwordComplexity": "Hasło musi zawierać dużą i małą literę, cyfrę oraz znak specjalny (@$!%*?&)",
-  "passwordsMustMatch": "Hasła muszą być identyczne",
+  "passwordsMustMatch": "Hasła się różnią",
   "fullNameRequired": "Imię i nazwisko jest wymagane (min 2 znaki)",
   "nameTooShort": "Nazwa musi mieć co najmniej 2 znaki",
   "nameTooLong": "Nazwa może mieć maksymalnie {{count}} znaków",
@@ -1018,5 +1018,16 @@
   "authYourAccount": "Twoje konto",
   "authOrganizationSection": "Organizacja",
   "authFirstSchool": "Pierwsza szkoła",
-  "authFirstSchoolHint": "Kolejne szkoły dodasz później."
+  "authFirstSchoolHint": "Kolejne szkoły dodasz później.",
+  "authNewAccount": "Nowe konto",
+  "authFullNameOptional": "Imię i nazwisko (opcjonalnie)",
+  "authPhoneOptional": "Telefon (opcjonalnie)",
+  "phonePrefixSearch": "Szukaj kierunkowego",
+  "authNextSchoolCode": "Dalej: kod szkoły",
+  "authNextSchoolCodeHint": "Po rejestracji wpisz kod od instruktora. Dostęp dostaniesz, gdy zatwierdzi Twoją prośbę.",
+  "passwordRules": "Zasady hasła",
+  "passwordRuleLength": "8+ znaków",
+  "passwordRuleSymbol": "Symbol {{symbols}}",
+  "passwordRuleMet": "spełnione",
+  "passwordRuleMissing": "brakuje"
 }
