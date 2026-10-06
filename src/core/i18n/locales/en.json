@@ -984,5 +984,10 @@
   "authAccountTypeStudentDescription": "See your payments, order gear and keep private technique notes. You join your school with a code from your instructor.",
   "authRoleInstructor": "Instructor",
   "authRoleOwner": "Owner",
-  "authRoleStudent": "Student"
+  "authRoleStudent": "Student",
+  "authNewOrganization": "New organization",
+  "authYourAccount": "Your account",
+  "authOrganizationSection": "Organization",
+  "authFirstSchool": "First school",
+  "authFirstSchoolHint": "You can add more schools later."
 }

@@ -1013,5 +1013,10 @@
   "authAccountTypeStudentDescription": "Sprawdzaj płatności, zamawiaj sprzęt i prowadź prywatne notatki technik. Do szkoły dołączasz kodem od instruktora.",
   "authRoleInstructor": "Instruktor",
   "authRoleOwner": "Właściciel",
-  "authRoleStudent": "Uczeń"
+  "authRoleStudent": "Uczeń",
+  "authNewOrganization": "Nowa organizacja",
+  "authYourAccount": "Twoje konto",
+  "authOrganizationSection": "Organizacja",
+  "authFirstSchool": "Pierwsza szkoła",
+  "authFirstSchoolHint": "Kolejne szkoły dodasz później."
 }

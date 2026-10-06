@@ -1,22 +1,34 @@
-import { EmailInput, ErrorBanner, PasswordInput, SubmitButton, TextInput } from '@/modules/core/components';
+import { AlertBanner, AuthPage, AuthPrompt, PrimaryButton, TextField } from '@/core/components';
 import { zodResolver } from '@hookform/resolvers/zod';
-import React from 'react';
-import { useForm } from 'react-hook-form';
-import { YStack } from 'tamagui';
+import { useRouter } from 'expo-router';
+import React, { useState } from 'react';
+import { Controller, useForm } from 'react-hook-form';
+import { Text } from 'tamagui';
 import { useRegisterInstructor } from '../hooks/useRegisterInstructor';
 import type { RegisterInstructorRequest } from '../types/registerDto';
-import {
-  registerInstructorSchema,
-  type RegisterInstructorFormValues,
-} from '../validation/registerSchema';
+import { registerInstructorSchema, type RegisterInstructorFormValues } from '../validation/registerSchema';
+import { PasswordFields } from './PasswordFields';
 
+const SectionTitle: React.FC<{ children: string }> = ({ children }) => (
+  <Text fontSize={18} fontWeight="$section" color="$neutralText" marginTop={6}>
+    {children}
+  </Text>
+);
+
+/**
+ * New organization screen (sign up → "I run a school" board): "Your account"
+ * (name, email, password + rules, confirm) and "Organization" (name, first
+ * school), amber Create pinned at the bottom.
+ */
 export const RegisterInstructorForm: React.FC = () => {
+  const router = useRouter();
   const { register, isLoading, error: apiError } = useRegisterInstructor();
+  const [errorDismissed, setErrorDismissed] = useState(false);
 
   const {
     control,
     handleSubmit,
-    formState: { errors, isValid },
+    formState: { errors },
   } = useForm<RegisterInstructorFormValues>({
     resolver: zodResolver(registerInstructorSchema),
     mode: 'onChange',
@@ -30,91 +42,107 @@ export const RegisterInstructorForm: React.FC = () => {
     },
   });
 
-  const onSubmit = async (data: RegisterInstructorFormValues) => {
-    // Remove confirmPassword before sending to API
+  const onSubmit = handleSubmit(async (data) => {
+    setErrorDismissed(false);
     const { confirmPassword, ...requestData } = data;
     await register(requestData as RegisterInstructorRequest);
-  };
-
-  const clearError = () => {
-    // Error is managed by the hook, will be cleared on next attempt
-  };
+  });
 
   return (
-    <YStack gap="$3">
-      {/* API Error Banner */}
-      {apiError && (
-        <ErrorBanner
-          title={t('errorUnknown')}
-          message={apiError}
-          onDismiss={clearError}
-        />
-      )}
+    <AuthPage
+      title={t('authNewOrganization')}
+      footer={<PrimaryButton label={t('create')} accent="organization" onPress={onSubmit} loading={isLoading} />}
+    >
+      {apiError && !errorDismissed ? (
+        <AlertBanner title={apiError} onDismiss={() => setErrorDismissed(true)} />
+      ) : null}
 
-      {/* Full Name */}
-      <TextInput
+      <SectionTitle>{t('authYourAccount')}</SectionTitle>
+      <Controller
         control={control}
         name="full_name"
-        label={t('fullName')}
-        placeholder={t('fullNamePlaceholder')}
-        error={errors.full_name?.message}
-        disabled={isLoading}
+        render={({ field }) => (
+          <TextField
+            size="large"
+            accent="organization"
+            label={t('fullName')}
+            value={field.value}
+            onChangeText={field.onChange}
+            placeholder={t('fullNamePlaceholder')}
+            error={errors.full_name?.message}
+            disabled={isLoading}
+            autoCapitalize="words"
+            autoComplete="name"
+            textContentType="name"
+          />
+        )}
       />
-
-      {/* Email */}
-      <EmailInput
+      <Controller
         control={control}
         name="email"
-        label={t('email')}
-        error={errors.email?.message}
-        disabled={isLoading}
+        render={({ field }) => (
+          <TextField
+            size="large"
+            accent="organization"
+            label={t('email')}
+            value={field.value}
+            onChangeText={(v) => field.onChange(v.trim())}
+            error={errors.email?.message}
+            disabled={isLoading}
+            autoCapitalize="none"
+            keyboardType="email-address"
+            autoComplete="email"
+            textContentType="emailAddress"
+          />
+        )}
       />
-
-      {/* Password */}
-      <PasswordInput
+      <PasswordFields
         control={control}
-        name="password"
-        label={t('password')}
-        error={errors.password?.message}
+        errors={errors}
+        password="password"
+        confirm="confirmPassword"
+        passwordLabel={t('password')}
+        confirmLabel={t('confirmPassword')}
+        accent="organization"
         disabled={isLoading}
       />
 
-      {/* Confirm Password */}
-      <PasswordInput
-        control={control}
-        name="confirmPassword"
-        label={t('confirmPassword')}
-        error={errors.confirmPassword?.message}
-        disabled={isLoading}
-      />
-
-      {/* Organization Name */}
-      <TextInput
+      <SectionTitle>{t('authOrganizationSection')}</SectionTitle>
+      <Controller
         control={control}
         name="organization_name"
-        label={t('organizationName')}
-        placeholder={t('organizationName')}
-        error={errors.organization_name?.message}
-        disabled={isLoading}
+        render={({ field }) => (
+          <TextField
+            size="large"
+            accent="organization"
+            label={t('organizationName')}
+            value={field.value}
+            onChangeText={field.onChange}
+            error={errors.organization_name?.message}
+            disabled={isLoading}
+            autoCapitalize="words"
+          />
+        )}
       />
-
-      {/* School Name */}
-      <TextInput
+      <Controller
         control={control}
         name="school_name"
-        label={t('firstSchoolName')}
-        placeholder={t('firstSchoolName')}
-        error={errors.school_name?.message}
-        disabled={isLoading}
+        render={({ field }) => (
+          <TextField
+            size="large"
+            accent="organization"
+            label={t('authFirstSchool')}
+            value={field.value}
+            onChangeText={field.onChange}
+            hint={t('authFirstSchoolHint')}
+            error={errors.school_name?.message}
+            disabled={isLoading}
+            autoCapitalize="words"
+          />
+        )}
       />
 
-      {/* Submit Button */}
-      <SubmitButton
-        onPress={handleSubmit(onSubmit)}
-        isLoading={isLoading}
-        disabled={!isValid || isLoading}
-        title={t('createAccount')}
-      />
-    </YStack>
+      <AuthPrompt text={t('authHaveAccount')} action={t('authSignIn')} onPress={() => router.replace('/auth/login' as any)} />
+    </AuthPage>
   );
 };

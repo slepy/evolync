@@ -1,6 +1,6 @@
 import { withAlpha } from "@/core/components";
 import { contextColors } from "@/core/theme/tokens";
-import { Building, User, type LucideIcon } from "lucide-react-native";
+import { Building2, User, type LucideIcon } from "lucide-react-native";
 import React from "react";
 import { Text, View, XStack, YStack } from "tamagui";
 
@@ -15,7 +15,7 @@ interface AccountTypeOptionProps {
 }
 
 const ICONS: Record<AccountTypeOptionProps["type"], LucideIcon> = {
-  organization: Building,
+  organization: Building2,
   student: User,
 };
 
