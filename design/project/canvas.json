@@ -1,0 +1,865 @@
+{
+  "v": 3,
+  "attachments": {},
+  "boards": {
+    "AttendanceCreate.dc.html": {
+      "h": 1170,
+      "is_interactive": true,
+      "title": "13C · New session (today): everyone present, Create",
+      "w": 390,
+      "x": 946,
+      "y": 14008
+    },
+    "AttendanceDetails.dc.html": {
+      "h": 1170,
+      "is_interactive": true,
+      "title": "13B · Session details: status summary, tap to mark, Save after a change",
+      "w": 390,
+      "x": 476,
+      "y": 14008
+    },
+    "AttendanceList.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "title": "13A · Attendance: sessions by month, rate chip",
+      "w": 390,
+      "x": 6,
+      "y": 14008
+    },
+    "AuthForgotPassword.dc.html": {
+      "h": 844,
+      "title": "A5 · Forgot password: email, Send (code, no link)",
+      "w": 390,
+      "x": 2356,
+      "y": 20168
+    },
+    "AuthLogin.dc.html": {
+      "h": 844,
+      "title": "A1 · Sign in: email + password, Forgot password",
+      "w": 390,
+      "x": 6,
+      "y": 20168
+    },
+    "AuthLoginError.dc.html": {
+      "h": 900,
+      "title": "A1E · Sign in error: banner + red password field",
+      "w": 390,
+      "x": 476,
+      "y": 20168
+    },
+    "AuthRegisterOrganization.dc.html": {
+      "h": 1080,
+      "title": "A3 · New organization: account + organization, live password rules, amber Create",
+      "w": 390,
+      "x": 1416,
+      "y": 20168
+    },
+    "AuthRegisterStudent.dc.html": {
+      "h": 1100,
+      "title": "A4 · New student account: optional name/phone, next step school code, blue Create",
+      "w": 390,
+      "x": 1886,
+      "y": 20168
+    },
+    "AuthRegisterType.dc.html": {
+      "h": 844,
+      "title": "A2 · Sign up: I run a school (amber) / I train in a school (blue)",
+      "w": 390,
+      "x": 946,
+      "y": 20168
+    },
+    "AuthResetDone.dc.html": {
+      "h": 844,
+      "title": "A7 · Password changed: Sign in",
+      "w": 390,
+      "x": 3296,
+      "y": 20168
+    },
+    "AuthResetPassword.dc.html": {
+      "h": 890,
+      "title": "A6 · New password: code from email + new password, Save",
+      "w": 390,
+      "x": 2826,
+      "y": 20168
+    },
+    "Calendar.dc.html": {
+      "h": 1120,
+      "is_interactive": true,
+      "title": "6 · Calendar (events + trainings)",
+      "w": 390,
+      "x": 6,
+      "y": 6638
+    },
+    "CalendarAddSheet.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "title": "6B · Add new: Event or Training (list in a sheet)",
+      "w": 390,
+      "x": 946,
+      "y": 6638
+    },
+    "CalendarSchool.dc.html": {
+      "h": 1120,
+      "is_interactive": true,
+      "title": "6A · Calendar in a school (school trainings, red Add new)",
+      "w": 390,
+      "x": 476,
+      "y": 6638
+    },
+    "ColorRules.dc.html": {
+      "h": 1409,
+      "title": "0 · Color and label rules",
+      "w": 880,
+      "x": 3337,
+      "y": 0
+    },
+    "EventCancelSheet.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "title": "10E · Cancel / delete confirmation (sheet)",
+      "w": 390,
+      "x": 1886,
+      "y": 10758
+    },
+    "EventCreate.dc.html": {
+      "h": 1010,
+      "is_interactive": true,
+      "title": "10A · New event (start from the selected day)",
+      "w": 390,
+      "x": 6,
+      "y": 10758
+    },
+    "EventDetails.dc.html": {
+      "h": 960,
+      "is_interactive": true,
+      "title": "10C · Event details (progress bar, Manage in the card)",
+      "w": 390,
+      "x": 946,
+      "y": 10758
+    },
+    "EventEdit.dc.html": {
+      "h": 1500,
+      "is_interactive": true,
+      "title": "10B · Edit event (Selected members, Save visible after a change)",
+      "w": 390,
+      "x": 476,
+      "y": 10758
+    },
+    "EventParticipants.dc.html": {
+      "h": 860,
+      "is_interactive": true,
+      "title": "10D · Participants (progress bar summary, Save after a change)",
+      "w": 390,
+      "x": 1416,
+      "y": 10758
+    },
+    "GradingAddSheet.dc.html": {
+      "h": 844,
+      "title": "8B · Add rank: bottom sheet",
+      "w": 390,
+      "x": 476,
+      "y": 3338
+    },
+    "GradingColorPicker.dc.html": {
+      "h": 844,
+      "title": "8D · Color picker (opens from COLOR field)",
+      "w": 390,
+      "x": 1416,
+      "y": 3338
+    },
+    "GradingEditSheet.dc.html": {
+      "h": 844,
+      "title": "8C · Edit / delete rank: bottom sheet",
+      "w": 390,
+      "x": 946,
+      "y": 3338
+    },
+    "GradingList.dc.html": {
+      "h": 844,
+      "title": "8A · Grading ranks list",
+      "w": 390,
+      "x": 6,
+      "y": 3338
+    },
+    "Main.dc.html": {
+      "h": 1500,
+      "is_interactive": true,
+      "title": "1A · Organization (tile grid)",
+      "w": 390,
+      "x": 0,
+      "y": 0
+    },
+    "MainC.dc.html": {
+      "h": 1600,
+      "is_interactive": true,
+      "title": "1C · Organization (next-up tile, 2 items)",
+      "w": 390,
+      "x": 2397,
+      "y": 0
+    },
+    "NoSchool.dc.html": {
+      "h": 844,
+      "title": "5 · Student without a school",
+      "w": 390,
+      "x": 1880,
+      "y": 0
+    },
+    "NoteCreate.dc.html": {
+      "h": 844,
+      "title": "T3 · New note: title, tags, one empty row, Create",
+      "w": 390,
+      "x": 1886,
+      "y": 24330
+    },
+    "NoteDetails.dc.html": {
+      "h": 1120,
+      "title": "T4 · Note: rows Person 1 / Person 2, arrow = who leads, no changes",
+      "w": 390,
+      "x": 2356,
+      "y": 24330
+    },
+    "NoteDetailsEdited.dc.html": {
+      "h": 1340,
+      "title": "T4A · Note after a change: row added, Save in notebook cyan",
+      "w": 390,
+      "x": 2826,
+      "y": 24330
+    },
+    "NoteTagsSheet.dc.html": {
+      "h": 844,
+      "title": "T5 · Tags (sheet): checkbox list, Add new",
+      "w": 390,
+      "x": 3296,
+      "y": 24330
+    },
+    "NotesEmpty.dc.html": {
+      "h": 844,
+      "title": "T2E · No notes yet",
+      "w": 390,
+      "x": 1416,
+      "y": 24330
+    },
+    "NotesList.dc.html": {
+      "h": 990,
+      "title": "T2 · Descriptive notes: search, tag filter, notes with tags",
+      "w": 390,
+      "x": 476,
+      "y": 24330
+    },
+    "NotesListFiltered.dc.html": {
+      "h": 844,
+      "title": "T2F · Descriptive notes filtered by a tag",
+      "w": 390,
+      "x": 946,
+      "y": 24330
+    },
+    "NotesNotebook.dc.html": {
+      "h": 628,
+      "title": "T1 · Notebook (nav tab): ways to write, tags",
+      "w": 390,
+      "x": 6,
+      "y": 24330
+    },
+    "NotificationsEmpty.dc.html": {
+      "h": 844,
+      "title": "N4 · No notifications yet",
+      "w": 390,
+      "x": 1416,
+      "y": 21600
+    },
+    "NotificationsOrg.dc.html": {
+      "h": 980,
+      "title": "N1 · Notifications (owner): grouped by day, module colors, unread dot, Mark all as read",
+      "w": 390,
+      "x": 6,
+      "y": 21600
+    },
+    "NotificationsPushPrompt.dc.html": {
+      "h": 844,
+      "title": "N5 · Push prompt on first dashboard visit (sheet): Turn on / Not now",
+      "w": 390,
+      "x": 1886,
+      "y": 21600
+    },
+    "NotificationsSettings.dc.html": {
+      "h": 1050,
+      "title": "17A · Settings (nav tab): push switch (on), language, appearance, join another school",
+      "w": 390,
+      "x": 6,
+      "y": 22910
+    },
+    "NotificationsSettingsBlocked.dc.html": {
+      "h": 1110,
+      "title": "17B · Settings (nav tab): push blocked in the OS, Open device settings",
+      "w": 390,
+      "x": 476,
+      "y": 22910
+    },
+    "NotificationsStudent.dc.html": {
+      "h": 844,
+      "title": "N2 · Notifications (student): payments, added to an event",
+      "w": 390,
+      "x": 476,
+      "y": 21600
+    },
+    "NotificationsUnavailable.dc.html": {
+      "h": 960,
+      "title": "N3 · Tapped item no longer available (notice on top)",
+      "w": 390,
+      "x": 946,
+      "y": 21600
+    },
+    "OrderCreate.dc.html": {
+      "h": 640,
+      "is_interactive": true,
+      "title": "12E · New order: Student select (empty)",
+      "w": 390,
+      "x": 1886,
+      "y": 12678
+    },
+    "OrderCreateFilled.dc.html": {
+      "h": 860,
+      "title": "12E2 · New order: student chosen, products, Create",
+      "w": 390,
+      "x": 2826,
+      "y": 12678
+    },
+    "OrderDetails.dc.html": {
+      "h": 920,
+      "title": "12D · Order details (status, products with remove, totals per currency)",
+      "w": 390,
+      "x": 1416,
+      "y": 12678
+    },
+    "OrderProductPicker.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "title": "12F · Add product: tap to expand sizes, set quantity, Add",
+      "w": 390,
+      "x": 3296,
+      "y": 12678
+    },
+    "OrderStudentSelect.dc.html": {
+      "h": 844,
+      "title": "12E1 · Student select sheet (search, tap to choose)",
+      "w": 390,
+      "x": 2356,
+      "y": 12678
+    },
+    "OrdersOrg.dc.html": {
+      "h": 1060,
+      "is_interactive": true,
+      "title": "12A · Orders (organization): status chips with counts",
+      "w": 390,
+      "x": 6,
+      "y": 12678
+    },
+    "OrdersShoppingList.dc.html": {
+      "h": 844,
+      "title": "12B · Shopping list: products like the orders list, Copy",
+      "w": 390,
+      "x": 476,
+      "y": 12678
+    },
+    "OrdersStatusSheet.dc.html": {
+      "h": 900,
+      "is_interactive": true,
+      "title": "12C · Change status for selected orders (sheet)",
+      "w": 390,
+      "x": 946,
+      "y": 12678
+    },
+    "PaymentCreate.dc.html": {
+      "h": 700,
+      "is_interactive": true,
+      "title": "14D · New period: This month / week / year / Custom",
+      "w": 390,
+      "x": 1886,
+      "y": 15508
+    },
+    "PaymentCreateCustom.dc.html": {
+      "h": 700,
+      "title": "14D1 · New period: Custom dates",
+      "w": 390,
+      "x": 2356,
+      "y": 15508
+    },
+    "PaymentDetails.dc.html": {
+      "h": 1196,
+      "is_interactive": true,
+      "title": "14B · Period details: Amounts collapsed, tap to mark, Save after a change",
+      "w": 390,
+      "x": 476,
+      "y": 15508
+    },
+    "PaymentDetailsAmounts.dc.html": {
+      "h": 1289,
+      "is_interactive": true,
+      "title": "14B1 · Period details: Amounts expanded (collected / pending / cancelled)",
+      "w": 390,
+      "x": 946,
+      "y": 15508
+    },
+    "PaymentEditSheet.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "title": "14C · Edit payment (sheet): amount, currency, method",
+      "w": 390,
+      "x": 1416,
+      "y": 15508
+    },
+    "PaymentsList.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "title": "14A · Payments: billing periods, paid count chip",
+      "w": 390,
+      "x": 6,
+      "y": 15508
+    },
+    "ProductCreate.dc.html": {
+      "h": 900,
+      "title": "9B · New product (single variant)",
+      "w": 390,
+      "x": 476,
+      "y": 4678
+    },
+    "ProductEdit.dc.html": {
+      "h": 1560,
+      "title": "9C · Edit product (multiple variants)",
+      "w": 390,
+      "x": 946,
+      "y": 4678
+    },
+    "ProductsList.dc.html": {
+      "h": 844,
+      "title": "9A · Products list",
+      "w": 390,
+      "x": 6,
+      "y": 4678
+    },
+    "School.dc.html": {
+      "h": 890,
+      "is_interactive": true,
+      "title": "2A · School (tile grid)",
+      "w": 390,
+      "x": 470,
+      "y": 0
+    },
+    "SchoolSettings.dc.html": {
+      "h": 844,
+      "title": "15A · School settings (no changes, no Save)",
+      "w": 390,
+      "x": 6,
+      "y": 17208
+    },
+    "SchoolSettingsEdited.dc.html": {
+      "h": 844,
+      "title": "15B · School settings after a change (Save in school red)",
+      "w": 390,
+      "x": 476,
+      "y": 17208
+    },
+    "Student.dc.html": {
+      "h": 1200,
+      "title": "4 · Student in a school",
+      "w": 390,
+      "x": 1410,
+      "y": 0
+    },
+    "StudentActionsSheet.dc.html": {
+      "h": 844,
+      "title": "16G · More actions sheet: Edit (no account only), Archive",
+      "w": 390,
+      "x": 4236,
+      "y": 18508
+    },
+    "StudentCreate.dc.html": {
+      "h": 760,
+      "title": "16C · New student: name, email, phone (no app account)",
+      "w": 390,
+      "x": 946,
+      "y": 18508
+    },
+    "StudentDetails.dc.html": {
+      "h": 1240,
+      "is_interactive": true,
+      "title": "16E · Student details: Payments tab, rank field, tap to mark, Save after a change",
+      "w": 390,
+      "x": 1886,
+      "y": 18508
+    },
+    "StudentDetailsAttendance.dc.html": {
+      "h": 1240,
+      "is_interactive": true,
+      "title": "16E1 · Student details: Attendance tab",
+      "w": 390,
+      "x": 2356,
+      "y": 18508
+    },
+    "StudentDetailsEvents.dc.html": {
+      "h": 1060,
+      "is_interactive": true,
+      "title": "16E3 · Student details: Events tab",
+      "w": 390,
+      "x": 3296,
+      "y": 18508
+    },
+    "StudentDetailsOrders.dc.html": {
+      "h": 940,
+      "is_interactive": true,
+      "title": "16E2 · Student details: Orders tab",
+      "w": 390,
+      "x": 2826,
+      "y": 18508
+    },
+    "StudentInviteCreate.dc.html": {
+      "h": 705,
+      "is_interactive": true,
+      "title": "16D · New invite code: how it works, valid for 1 / 7 / 30 days",
+      "w": 390,
+      "x": 1416,
+      "y": 18508
+    },
+    "StudentRankSheet.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "title": "16F · Rank select sheet (grading icon, No rank)",
+      "w": 390,
+      "x": 3766,
+      "y": 18508
+    },
+    "StudentsList.dc.html": {
+      "h": 940,
+      "is_interactive": true,
+      "title": "16A · Students: invite code, search, belt ring, status pill",
+      "w": 390,
+      "x": 6,
+      "y": 18508
+    },
+    "StudentsRequests.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "title": "16B · Join requests: approve / reject in the row",
+      "w": 390,
+      "x": 476,
+      "y": 18508
+    },
+    "Styleguide.dc.html": {
+      "h": 3100,
+      "title": "S · Styleguide (list, tile, header box, choice, checklist, status summary, select)",
+      "w": 1330,
+      "x": 4297,
+      "y": 0
+    },
+    "Switcher.dc.html": {
+      "h": 860,
+      "title": "3 · Context switcher",
+      "w": 390,
+      "x": 940,
+      "y": 0
+    },
+    "TagsAddSheet.dc.html": {
+      "h": 844,
+      "title": "7B · Add tag: bottom sheet",
+      "w": 390,
+      "x": 476,
+      "y": 1998
+    },
+    "TagsEditSheet.dc.html": {
+      "h": 844,
+      "title": "7C · Edit / delete tag: bottom sheet",
+      "w": 390,
+      "x": 946,
+      "y": 1998
+    },
+    "TagsList.dc.html": {
+      "h": 844,
+      "title": "7A · Tags list",
+      "w": 390,
+      "x": 6,
+      "y": 1998
+    },
+    "TechniqueNotebook.dc.html": {
+      "h": 211,
+      "title": "Shared · Technique notebook section",
+      "w": 360,
+      "x": 1410,
+      "y": 1320
+    },
+    "TrainingCreate.dc.html": {
+      "h": 2100,
+      "is_interactive": true,
+      "title": "11B · New training: Recurring (weekly or monthly rules)",
+      "w": 390,
+      "x": 476,
+      "y": 8208
+    },
+    "TrainingCreateSingle.dc.html": {
+      "h": 1080,
+      "is_interactive": true,
+      "title": "11A · New training: Single (one day, from the calendar)",
+      "w": 390,
+      "x": 6,
+      "y": 8208
+    },
+    "TrainingDetails.dc.html": {
+      "h": 900,
+      "is_interactive": true,
+      "title": "11D · Training details (occurrence of a series)",
+      "w": 390,
+      "x": 1416,
+      "y": 8208
+    },
+    "TrainingEdit.dc.html": {
+      "h": 2100,
+      "is_interactive": true,
+      "title": "11C · Edit this and following (new series from 26 Nov)",
+      "w": 390,
+      "x": 946,
+      "y": 8208
+    },
+    "TrainingExtendSheet.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "title": "11F · Extend series (sheet)",
+      "w": 390,
+      "x": 2356,
+      "y": 8208
+    },
+    "TrainingScopeSheet.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "title": "11E · This training only / This and following (sheet)",
+      "w": 390,
+      "x": 1886,
+      "y": 8208
+    }
+  },
+  "createdOnFiles": {
+    "at": "2026-10-03T12:00:00Z",
+    "v": 1
+  },
+  "designSystems": [],
+  "launch": {
+    "view": "canvas"
+  },
+  "notes": {
+    "t1": {
+      "kind": "title1",
+      "maxW": 2800,
+      "text": "Evolync — one dashboard per context",
+      "w": 240,
+      "x": 0,
+      "y": -260
+    },
+    "t10": {
+      "kind": "title1",
+      "maxW": 3200,
+      "text": "Attendance — sessions list, mark who is present (school)",
+      "w": 240,
+      "x": 6,
+      "y": 13798
+    },
+    "t11": {
+      "kind": "title1",
+      "maxW": 3200,
+      "text": "Payments — billing periods, mark who paid, edit amount (school)",
+      "w": 240,
+      "x": 6,
+      "y": 15298
+    },
+    "t12": {
+      "kind": "title1",
+      "maxW": 3200,
+      "text": "School settings — name, address, payment defaults (owner only)",
+      "w": 240,
+      "x": 6,
+      "y": 16998
+    },
+    "t13": {
+      "kind": "title1",
+      "maxW": 3200,
+      "text": "Students — list, invite code, join requests (school)",
+      "w": 240,
+      "x": 6,
+      "y": 18298
+    },
+    "t14": {
+      "kind": "title1",
+      "maxW": 3800,
+      "text": "Auth — sign in, sign up (organization / student), password reset with a code",
+      "w": 240,
+      "x": 6,
+      "y": 19958
+    },
+    "t15": {
+      "kind": "title1",
+      "maxW": 3300,
+      "text": "Notifications — inbox (owner / student), empty, push prompt",
+      "w": 240,
+      "x": 6,
+      "y": 21390
+    },
+    "t16": {
+      "kind": "title1",
+      "maxW": 3200,
+      "text": "Settings — account settings, a tab in the bottom nav (every role)",
+      "w": 240,
+      "x": 6,
+      "y": 22700
+    },
+    "t17": {
+      "kind": "title1",
+      "maxW": 3800,
+      "text": "Technique notebook — descriptive notes (list, tag filter, Person 1 / Person 2 rows, tags sheet); tags in one color (rose)",
+      "w": 240,
+      "x": 6,
+      "y": 24120
+    },
+    "t3": {
+      "kind": "title1",
+      "maxW": 2800,
+      "text": "Tags — list and adding a tag (same for instructor and student)",
+      "w": 240,
+      "x": 6,
+      "y": 1808
+    },
+    "t4": {
+      "kind": "title1",
+      "maxW": 2800,
+      "text": "Grading — ranks list, add / edit / delete, color picker",
+      "w": 240,
+      "x": 6,
+      "y": 3132
+    },
+    "t5": {
+      "kind": "title1",
+      "maxW": 2800,
+      "text": "Products — list, add and edit (organization inventory)",
+      "w": 240,
+      "x": 6,
+      "y": 4470
+    },
+    "t6": {
+      "kind": "title1",
+      "maxW": 3200,
+      "text": "Events — add / edit / manage (opened from the calendar)",
+      "w": 240,
+      "x": 6,
+      "y": 10548
+    },
+    "t7": {
+      "kind": "title1",
+      "maxW": 3200,
+      "text": "Calendar — events and trainings in one place (entry from the hero)",
+      "w": 240,
+      "x": 6,
+      "y": 6428
+    },
+    "t8": {
+      "kind": "title1",
+      "maxW": 3200,
+      "text": "Trainings — single / recurring (weekly or monthly), details, this or following, extend",
+      "w": 240,
+      "x": 6,
+      "y": 7998
+    },
+    "t9": {
+      "kind": "title1",
+      "maxW": 3200,
+      "text": "Orders — list, shopping list, status, details, new order, add product",
+      "w": 240,
+      "x": 6,
+      "y": 12468
+    }
+  },
+  "order": [
+    "Main.dc.html",
+    "School.dc.html",
+    "Switcher.dc.html",
+    "Student.dc.html",
+    "NoSchool.dc.html",
+    "MainC.dc.html",
+    "TechniqueNotebook.dc.html",
+    "TagsList.dc.html",
+    "TagsAddSheet.dc.html",
+    "TagsEditSheet.dc.html",
+    "GradingList.dc.html",
+    "GradingAddSheet.dc.html",
+    "GradingEditSheet.dc.html",
+    "GradingColorPicker.dc.html",
+    "ProductsList.dc.html",
+    "ProductCreate.dc.html",
+    "ProductEdit.dc.html",
+    "Calendar.dc.html",
+    "CalendarSchool.dc.html",
+    "CalendarAddSheet.dc.html",
+    "TrainingCreateSingle.dc.html",
+    "TrainingCreate.dc.html",
+    "TrainingEdit.dc.html",
+    "TrainingDetails.dc.html",
+    "TrainingScopeSheet.dc.html",
+    "TrainingExtendSheet.dc.html",
+    "EventCreate.dc.html",
+    "EventEdit.dc.html",
+    "EventDetails.dc.html",
+    "EventParticipants.dc.html",
+    "EventCancelSheet.dc.html",
+    "OrdersOrg.dc.html",
+    "OrdersShoppingList.dc.html",
+    "OrdersStatusSheet.dc.html",
+    "OrderDetails.dc.html",
+    "OrderCreate.dc.html",
+    "OrderStudentSelect.dc.html",
+    "OrderCreateFilled.dc.html",
+    "OrderProductPicker.dc.html",
+    "AttendanceList.dc.html",
+    "AttendanceDetails.dc.html",
+    "AttendanceCreate.dc.html",
+    "PaymentsList.dc.html",
+    "PaymentDetails.dc.html",
+    "PaymentDetailsAmounts.dc.html",
+    "PaymentEditSheet.dc.html",
+    "PaymentCreate.dc.html",
+    "PaymentCreateCustom.dc.html",
+    "SchoolSettings.dc.html",
+    "SchoolSettingsEdited.dc.html",
+    "StudentsList.dc.html",
+    "StudentsRequests.dc.html",
+    "StudentCreate.dc.html",
+    "StudentInviteCreate.dc.html",
+    "StudentDetails.dc.html",
+    "StudentDetailsAttendance.dc.html",
+    "StudentDetailsOrders.dc.html",
+    "StudentDetailsEvents.dc.html",
+    "StudentRankSheet.dc.html",
+    "StudentActionsSheet.dc.html",
+    "AuthLogin.dc.html",
+    "AuthLoginError.dc.html",
+    "AuthRegisterType.dc.html",
+    "AuthRegisterOrganization.dc.html",
+    "AuthRegisterStudent.dc.html",
+    "AuthForgotPassword.dc.html",
+    "AuthResetPassword.dc.html",
+    "AuthResetDone.dc.html",
+    "NotificationsOrg.dc.html",
+    "NotificationsStudent.dc.html",
+    "NotificationsUnavailable.dc.html",
+    "NotificationsEmpty.dc.html",
+    "NotificationsPushPrompt.dc.html",
+    "NotificationsSettings.dc.html",
+    "NotificationsSettingsBlocked.dc.html",
+    "NotesNotebook.dc.html",
+    "NotesList.dc.html",
+    "NotesListFiltered.dc.html",
+    "NotesEmpty.dc.html",
+    "NoteCreate.dc.html",
+    "NoteDetails.dc.html",
+    "NoteDetailsEdited.dc.html",
+    "NoteTagsSheet.dc.html",
+    "ColorRules.dc.html",
+    "Styleguide.dc.html"
+  ],
+  "pages": [],
+  "title": "Evolync Redesign Mockups"
+}

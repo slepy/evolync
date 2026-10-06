@@ -234,7 +234,7 @@ export const TrainingDetailsScreen: React.FC<TrainingDetailsScreenProps> = ({
                   key={member.id}
                   size="md"
                   title={member.name}
-                  leading={<ListAvatar initials={memberInitials(member.name)} />}
+                  leading={<ListAvatar initials={memberInitials(member.name)} uri={member.avatarUrl} />}
                 />
               ))}
             </ListCard>

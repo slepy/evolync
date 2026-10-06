@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>New order</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+button,input,textarea{font-family:inherit}
+button{cursor:pointer}
+a{text-decoration:none}
+input::placeholder{color:#7D889F}
+</style>
+</helmet>
+<div style="position: relative; width: 390px; height: 640px; box-sizing: border-box; overflow: hidden; background: radial-gradient(120% 30% at 50% -6%, rgba(245,158,11,0.14), rgba(0,0,0,0) 62%), #0B0E14; color: #F4F6FA; font-family: 'Manrope', sans-serif">
+<div style="display: flex; align-items: center; gap: 12px; padding: 56px 20px 0"><a href="OrdersOrg.dc.html" aria-label="Back" style="width: 44px; height: 44px; border-radius: 22px; border: 1px solid #2A3345; background: #131823; color: #F4F6FA; display: flex; align-items: center; justify-content: center; flex-shrink: 0"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"></path></svg></a><span style="font-size: 22px; font-weight: 800; letter-spacing: -0.3px">New order</span><span style="margin-left: auto; display: flex; align-items: center; gap: 7px; height: 30px; padding: 0 12px; border-radius: 15px; background: rgba(52,211,153,0.12); color: #4ADE9F; font-size: 12px; font-weight: 700"><span style="width: 7px; height: 7px; border-radius: 4px; background: #4ADE9F"></span>Synced</span></div>
+<div style="display: flex; flex-direction: column; gap: 24px; padding: 22px 20px 40px">
+
+<div style="display: flex; flex-direction: column; gap: 8px"><span style="font-size: 12px; font-weight: 800; letter-spacing: 0.8px; color: #A7B1C6">STUDENT</span><a href="OrderStudentSelect.dc.html" aria-haspopup="dialog" aria-label="Student, not chosen" style="display: flex; align-items: center; gap: 12px; width: 100%; min-height: 56px; padding: 8px 12px 8px 16px; box-sizing: border-box; border-radius: 16px; background: #131823; color: #F4F6FA; text-align: left; border: 1px solid #2A3345"><span style="flex-grow: 1; font-size: 15px; font-weight: 600; color: #7D889F">Choose a student</span><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#A7B1C6" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0"><path d="m6 9 6 6 6-6"></path></svg></a><span style="font-size: 12.5px; font-weight: 500; color: #7D889F">Active students from all schools. The order goes to the student’s school.</span></div>
+
+<div style="display: flex; flex-direction: column; gap: 12px">
+<span style="display: flex; flex-direction: column; gap: 2px"><span style="font-size: 18px; font-weight: 800">Products</span><span style="font-size: 13px; font-weight: 600; color: #A7B1C6">No products yet</span></span>
+<div style="display: flex; align-items: center; gap: 12px; padding: 18px 16px; border-radius: 20px; background: #131823; border: 1px dashed #2A3345; color: #A7B1C6; font-size: 14px; font-weight: 600">Pick a student first, then add products.</div>
+</div>
+
+</div>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":640}}'>
+class Component extends DCLogic {
+renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

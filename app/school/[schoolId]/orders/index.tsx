@@ -1,38 +1,21 @@
-import { OrdersListScreen, useOrders } from "@/modules/orders";
-import type { OrderWithDetails } from "@/modules/orders/types/dto";
+import { OrdersScreen, useOrdersList } from "@/modules/orders";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import React from "react";
 
-/**
- * School Orders Screen
- *
- * Route: /school/[schoolId]/orders
- *
- * Displays orders for a specific school using the shared OrdersListScreen component.
- */
+/** Orders of one school (12A / 12B) with Add new. Route: /school/[schoolId]/orders */
 export default function SchoolOrdersScreen() {
   const { schoolId } = useLocalSearchParams<{ schoolId: string }>();
   const router = useRouter();
-
-  const { orders, isLoading, error } = useOrders(schoolId);
-
-  const getOrderPath = (order: OrderWithDetails) =>
-    `/school/${schoolId}/orders/${order.orderId}`;
-
-  const handleCreateOrder = () => {
-    router.push(`/school/${schoolId}/orders/create`);
-  };
+  const { entries, isLoading, error } = useOrdersList({ scope: "school", schoolId });
 
   return (
-    <OrdersListScreen
-      orders={orders}
+    <OrdersScreen
+      scope="school"
+      entries={entries}
       isLoading={isLoading}
       error={error}
-      showCreateFab={true}
-      onCreateOrder={handleCreateOrder}
-      getOrderPath={getOrderPath}
-      onBack={() => router.back()}
-      routerPush={(path) => router.push(path as never)}
+      onAdd={() => router.push(`/school/${schoolId}/orders/create`)}
+      onOrderPress={(entry) => router.push(`/school/${schoolId}/orders/${entry.orderId}`)}
     />
   );
 }

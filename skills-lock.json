@@ -47,7 +47,7 @@
       "source": "open-mercato/skills",
       "sourceType": "github",
       "skillPath": "skills/om-auto-fix-pr/SKILL.md",
-      "computedHash": "ae300145aff6146f47fcffadf954fec5f739191aafeeeeceeeab92998ff1be4d"
+      "computedHash": "8842bdfab12a0a7a53ef65b7ffe678ccafa25f5287c90ace8fa1012d54bb5039"
     },
     "om-auto-implement-spec": {
       "source": "open-mercato/skills",

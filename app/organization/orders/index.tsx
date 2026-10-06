@@ -1,37 +1,24 @@
-import { OrdersListScreen, useOrganizationOrders } from "@/modules/orders";
-import type { OrderWithDetails } from "@/modules/orders/types/dto";
+import { OrdersScreen, useOrdersList } from "@/modules/orders";
+import { useRequireOrganizationOwner } from "@/modules/organization/hooks/useRequireOrganizationOwner";
 import { useStore } from "@/store";
 import { useRouter } from "expo-router";
 import React from "react";
-import { useRequireOrganizationOwner } from "@/modules/organization/hooks/useRequireOrganizationOwner";
 
-/**
- * Organization Orders Screen
- *
- * Route: /organization/orders
- *
- * Displays orders from all schools in the organization using the shared
- * OrdersListScreen component.
- */
+/** Orders of every school (12A / 12B), no Add new. Route: /organization/orders */
 export default function OrganizationOrdersScreen() {
   useRequireOrganizationOwner();
   const router = useRouter();
   const { organization } = useStore();
-
-  const { orders, isLoading, error } = useOrganizationOrders(organization?.id);
-
-  const getOrderPath = (order: OrderWithDetails) =>
-    `/school/${order.schoolId}/orders/${order.orderId}`;
+  const { entries, isLoading, error } = useOrdersList({ scope: "organization", organizationId: organization?.id });
 
   return (
-    <OrdersListScreen
-      orders={orders}
+    <OrdersScreen
+      scope="organization"
+      subtitle={t("ordersAllSchools")}
+      entries={entries}
       isLoading={isLoading}
       error={error}
-      showCreateFab={false}
-      getOrderPath={getOrderPath}
-      onBack={() => router.back()}
-      routerPush={(path) => router.push(path as never)}
+      onOrderPress={(entry) => router.push(`/organization/orders/${entry.orderId}` as never)}
     />
   );
 }

@@ -1,90 +1,34 @@
-import { useRouter } from "expo-router";
-import { ShoppingCart } from "lucide-react-native";
-import { Platform, ScrollView, View } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { Spinner, Text, YStack, useTheme } from "tamagui";
-import { Header, HeaderTitle } from "@/modules/core/components";
-import { OptionsSheet } from "@/modules/core/components/OptionsSheet";
-import { OrderCardUser, useMemberOrders } from "@/modules/orders";
+import { SubScreenPage } from "@/core/components";
+import { OrdersScreen, useOrdersList } from "@/modules/orders";
 import { useStore } from "@/store";
+import { useRouter } from "expo-router";
+import React from "react";
+import { Text } from "tamagui";
 
-/**
- * User Orders Screen
- *
- * Route: /user/orders
- *
- * Displays the current user's orders as a simple list of OrderCards.
- * Read-only — no create/edit functionality.
- */
+/** The student's own orders (12A) with Add new. Route: /user/orders */
 export default function UserOrdersScreen() {
   const router = useRouter();
-  const theme = useTheme();
-  const schoolMembership = useStore((state) => state.getActiveMembership());
-  const insets = useSafeAreaInsets();
+  const membership = useStore((state) => state.getActiveMembership());
+  const { entries, isLoading, error } = useOrdersList({ scope: "student", memberId: membership?.memberId });
 
-  const { orders, isLoading } = useMemberOrders(schoolMembership?.memberId);
-
-  if (!schoolMembership) {
+  if (!membership) {
     return (
-      <View style={{ flex: 1, paddingTop: insets.top }}>
-        <Header onBack={() => router.back()} centerContent={<HeaderTitle text={t("ordersTitle")} />} />
-        <YStack flex={1} padding="$6" alignItems="center" justifyContent="center">
-          <Text fontSize="$5" color="$gray11" textAlign="center">{t("pendingMembershipInfo")}</Text>
-        </YStack>
-      </View>
+      <SubScreenPage title={t("ordersTitle")}>
+        <Text fontSize={15} fontWeight="$secondary" color="$neutralMuted" textAlign="center">
+          {t("pendingMembershipInfo")}
+        </Text>
+      </SubScreenPage>
     );
   }
 
   return (
-    <View style={{ flex: 1, paddingTop: insets.top }}>
-      <Header
-        onBack={() => router.back()}
-        centerContent={<HeaderTitle text={t("ordersTitle")} />}
-      />
-
-      {isLoading ? (
-        <YStack flex={1} alignItems="center" justifyContent="center">
-          <Spinner size="large" />
-        </YStack>
-      ) : orders.length === 0 ? (
-        <YStack
-          flex={1}
-          padding="$6"
-          gap="$2"
-          alignItems="center"
-          justifyContent="center"
-        >
-          <ShoppingCart size={48} color={theme.textMuted?.val} />
-          <Text fontSize="$5" color="$textMuted" textAlign="center">
-            {t("emptyNoOrders")}
-          </Text>
-        </YStack>
-      ) : (
-        <ScrollView>
-          <YStack gap="$2" paddingVertical="$3">
-            {orders.map((item) => (
-              <OrderCardUser
-                key={item.order.id}
-                displayName={
-                  item.itemCount === 1
-                    ? (item.productName ?? "")
-                    : `${item.itemCount} ${t("items")}`
-                }
-                status={item.order.status}
-                totalsByCurrency={item.totalsByCurrency}
-                createdAt={item.order.createdAt}
-                onPress={() =>
-                  router.push(`/user/orders/${item.order.id}` as never)
-                }
-              />
-            ))}
-          </YStack>
-        </ScrollView>
-      )}
-      <OptionsSheet
-        fab={{ bottom: Platform.OS === "ios" ? 90 : 80, right: 20 }}
-        action={() => router.push("/user/orders/create" as never)}
-      />
-    </View>
+    <OrdersScreen
+      scope="student"
+      entries={entries}
+      isLoading={isLoading}
+      error={error}
+      onAdd={() => router.push("/user/orders/create" as never)}
+      onOrderPress={(entry) => router.push(`/user/orders/${entry.orderId}` as never)}
+    />
   );
 }

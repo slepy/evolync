@@ -1,0 +1,223 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Calendar</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+button{font-family:inherit;cursor:pointer}
+a{text-decoration:none}
+</style>
+</helmet>
+<div style="position: relative; width: 390px; height: 1120px; box-sizing: border-box; overflow: hidden; background: radial-gradient(120% 30% at 50% -6%, rgba(245,158,11,0.18), rgba(0,0,0,0) 62%), #0B0E14; color: #F4F6FA; font-family: 'Manrope', sans-serif; padding: 56px 20px 0; display: flex; flex-direction: column; gap: 16px">
+
+<div style="display: flex; align-items: center; gap: 12px">
+<a href="MainC.dc.html" aria-label="Back" style="width: 44px; height: 44px; border-radius: 22px; background: #131823; border: 1px solid #2A3345; color: #F4F6FA; display: flex; align-items: center; justify-content: center; flex-shrink: 0"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"></path></svg></a>
+<span style="display: flex; flex-direction: column; gap: 1px; flex-grow: 1; min-width: 0"><h1 style="margin: 0; font-size: 26px; line-height: 1.1; font-weight: 800; letter-spacing: -0.5px">Calendar</h1><span style="font-size: 12.5px; font-weight: 700; color: #A7B1C6">{{ scopeLabel }}</span></span>
+<span style="display: flex; align-items: center; gap: 7px; height: 30px; padding: 0 12px; border-radius: 15px; background: rgba(52,211,153,0.12); color: #4ADE9F; font-size: 12px; font-weight: 700"><span style="width: 7px; height: 7px; border-radius: 4px; background: #4ADE9F"></span>Synced</span>
+</div>
+
+<div role="group" aria-label="Show" style="display: flex; gap: 8px">
+<button aria-pressed="{{ fAll.on }}" onClick="{{ fAll.pick }}" style="{{ fAll.style }}">All</button>
+<button aria-pressed="{{ fEv.on }}" onClick="{{ fEv.pick }}" style="{{ fEv.style }}"><span style="width: 7px; height: 7px; border-radius: 4px; background: #FBBF24"></span>Events</button>
+<button aria-pressed="{{ fTr.on }}" onClick="{{ fTr.pick }}" style="{{ fTr.style }}"><span style="width: 7px; height: 7px; border-radius: 2px; background: #5EEAD4"></span>Trainings</button>
+</div>
+
+<div style="display: flex; flex-direction: column; gap: 8px; padding: 14px 10px 10px; border-radius: 24px; background: #131823; border: 1px solid #232B3B">
+<div style="display: flex; align-items: center; justify-content: space-between; padding: 0 4px 6px">
+<button aria-label="Previous month" onClick="{{ prevMonth }}" style="width: 44px; height: 44px; border-radius: 22px; border: 0; background: rgba(148,163,184,0.12); color: #F4F6FA; display: flex; align-items: center; justify-content: center; padding: 0"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"></path></svg></button>
+<span style="font-size: 18px; font-weight: 800">{{ monthLabel }}</span>
+<button aria-label="Next month" onClick="{{ nextMonth }}" style="width: 44px; height: 44px; border-radius: 22px; border: 0; background: rgba(148,163,184,0.12); color: #F4F6FA; display: flex; align-items: center; justify-content: center; padding: 0"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"></path></svg></button>
+</div>
+<div style="display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); text-align: center; font-size: 11px; font-weight: 800; letter-spacing: 0.5px; color: #8793AB">
+<span>MON</span><span>TUE</span><span>WED</span><span>THU</span><span>FRI</span><span>SAT</span><span>SUN</span>
+</div>
+<div style="display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 4px 0">
+<sc-for list="{{ cells }}" as="c" hint-placeholder-count="35">
+<sc-if value="{{ c.blank }}" hint-placeholder-val="{{ false }}"><span style="height: 62px"></span></sc-if>
+<sc-if value="{{ c.isDay }}" hint-placeholder-val="{{ true }}">
+<button aria-label="{{ c.label }}" onClick="{{ c.pick }}" style="height: 62px; border: 0; background: transparent; color: #F4F6FA; padding: 0; display: flex; flex-direction: column; align-items: stretch; justify-content: flex-start; gap: 3px">
+<span style="display: flex; align-items: center; justify-content: center"><span style="{{ c.numStyle }}">{{ c.day }}</span></span>
+<span style="{{ c.lane0 }}"></span>
+<span style="{{ c.lane1 }}"></span>
+<span style="display: flex; align-items: center; justify-content: center; gap: 3px; height: 6px">
+<sc-if value="{{ c.hasEvent }}" hint-placeholder-val="{{ false }}"><span style="width: 6px; height: 6px; border-radius: 3px; background: #FBBF24"></span></sc-if>
+<sc-if value="{{ c.hasTraining }}" hint-placeholder-val="{{ false }}"><span style="width: 6px; height: 6px; border-radius: 1.5px; background: #5EEAD4"></span></sc-if>
+</span>
+</button>
+</sc-if>
+</sc-for>
+</div>
+</div>
+
+<div style="display: flex; flex-direction: column; gap: 12px">
+<div style="display: flex; align-items: center; justify-content: space-between">
+<span style="display: flex; flex-direction: column; gap: 2px"><span style="font-size: 19px; font-weight: 800; letter-spacing: -0.2px">{{ selectedLabel }}</span><span style="font-size: 13px; font-weight: 600; color: #A7B1C6">{{ countLabel }}</span></span>
+<a href="CalendarAddSheet.dc.html" aria-label="Add new event or training on this day" style="display: flex; align-items: center; gap: 6px; height: 44px; padding: 0 18px 0 14px; border-radius: 22px; background: rgba(245,158,11,0.16); color: #FBBF24; font-size: 14px; font-weight: 800"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5v14"></path></svg>Add new</a>
+</div>
+<sc-if value="{{ isEmpty }}" hint-placeholder-val="{{ false }}">
+<div style="display: flex; align-items: center; gap: 12px; padding: 18px 16px; border-radius: 20px; background: #131823; border: 1px dashed #2A3345; color: #A7B1C6; font-size: 14px; font-weight: 600">Nothing planned on this day.</div>
+</sc-if>
+<sc-if value="{{ hasItems }}" hint-placeholder-val="{{ true }}">
+<div style="display: flex; flex-direction: column; border-radius: 22px; background: #1A2130; border: 1px solid #2A3345">
+<sc-for list="{{ items }}" as="it" hint-placeholder-count="3">
+<sc-if value="{{ it.notFirst }}" hint-placeholder-val="{{ false }}"><div style="height: 1px; background: #2A3345; margin: 0 16px"></div></sc-if>
+<a href="{{ it.href }}" style="display: flex; align-items: center; gap: 14px; padding: 14px 16px; color: inherit">
+<span style="{{ it.tile }}">
+<sc-if value="{{ it.isEvent }}" hint-placeholder-val="{{ false }}"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="4" rx="2"></rect><path d="M16 2v4M8 2v4M3 10h18M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01"></path></svg></sc-if>
+<sc-if value="{{ it.isTraining }}" hint-placeholder-val="{{ true }}"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m17 2 4 4-4 4"></path><path d="M3 11v-1a4 4 0 0 1 4-4h14"></path><path d="m7 22-4-4 4-4"></path><path d="M21 13v1a4 4 0 0 1-4 4H3"></path></svg></sc-if>
+</span>
+<span style="display: flex; flex-direction: column; gap: 3px; flex-grow: 1; min-width: 0"><span style="display: flex; align-items: center; gap: 8px; min-width: 0"><span style="{{ it.titleStyle }}">{{ it.title }}</span><sc-if value="{{ it.hasBadge }}" hint-placeholder-val="{{ false }}"><span style="{{ it.badgeStyle }}">{{ it.badge }}</span></sc-if></span><span style="font-size: 13px; font-weight: 500; color: #A7B1C6; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">{{ it.meta }}</span></span>
+</a>
+</sc-for>
+</div>
+</sc-if>
+</div>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":1120}}'>
+class Component extends DCLogic {
+constructor(props) {
+super(props);
+this.state = { year: 2025, month: 10, sel: 22, filter: 'all' };
+}
+renderVals() {
+const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+const DAYS = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+const LANE_COLORS = ['#FBBF24', '#D97706'];
+const CTX_TINT = '#FBBF24';
+const CTX_GRAD = 'linear-gradient(135deg, #FBBF24 0%, #D97706 100%)';
+const CTX_FG = '#1B1203';
+const SCHOOL = null;
+const { year, month, sel, filter } = this.state;
+const today = { y: 2025, m: 10, d: 14 };
+const showEv = filter !== 'trainings';
+const showTr = filter !== 'events';
+// events: start and end day (same day = single-day)
+const events = [
+{ y: 2025, m: 10, s: 15, e: 15, title: 'Autumn Belt Exam', place: 'ul. Marymoncka 34' },
+{ y: 2025, m: 10, s: 20, e: 24, title: 'Winter Camp', place: 'Zakopane, Hotel Tatry' },
+{ y: 2025, m: 10, s: 22, e: 22, title: 'Seminar with Sensei Tanaka', place: 'Warszawa Mokotów' },
+{ y: 2025, m: 10, s: 23, e: 26, title: 'Regional Tournament', place: 'Kraków, Hala Wisły' },
+{ y: 2025, m: 10, s: 29, e: 29, title: 'Open day', place: 'Warszawa Mokotów' }
+];
+// trainings: weekly series per school, plus one single training; one cancelled occurrence
+const weekly = [
+{ wd: 1, start: '18:00', end: '19:30', title: 'Kids Judo', school: 'Warszawa Mokotów' },
+{ wd: 3, start: '18:00', end: '19:30', title: 'Kids Judo', school: 'Warszawa Mokotów' },
+{ wd: 2, start: '19:00', end: '20:30', title: 'Adults Judo', school: 'Warszawa Ochota' },
+{ wd: 4, start: '19:00', end: '20:30', title: 'Adults Judo', school: 'Warszawa Ochota' },
+{ wd: 5, start: '18:00', end: '19:30', title: 'Competition team', school: 'Warszawa Mokotów' },
+{ wd: 6, start: '10:00', end: '11:30', title: 'Open mat', school: 'Warszawa Ochota' }
+];
+const singles = [{ y: 2025, m: 10, d: 16, start: '11:00', end: '13:00', title: 'Kata workshop', school: 'Warszawa Ochota' }];
+const cancelled = { '2025-10-21-Competition team': true };
+const inMonth = events.filter((e) => e.y === year && e.m === month);
+const multi = inMonth.filter((e) => e.e > e.s).sort((a, b) => a.s - b.s);
+const lanes = [[], []];
+multi.forEach((e) => {
+let l = lanes.findIndex((arr) => arr.every((o) => o.e < e.s || o.s > e.e));
+if (l === -1) l = lanes.length - 1;
+lanes[l].push(e);
+e.lane = l;
+});
+const trainingsFor = (d) => {
+const wd = new Date(year, month, d).getDay();
+const list = weekly.filter((t) => t.wd === wd).map((t) => ({ ...t, series: true }))
+.concat(singles.filter((t) => t.y === year && t.m === month && t.d === d).map((t) => ({ ...t, series: false })));
+return list.filter((t) => !SCHOOL || t.school === SCHOOL)
+.map((t) => ({ kind: 'training', ...t, cancelled: !!cancelled[year + '-' + month + '-' + d + '-' + t.title] }));
+};
+const itemsFor = (d) => {
+const ev = showEv ? inMonth.filter((e) => e.s <= d && d <= e.e).map((e) => ({ kind: 'event', ...e })) : [];
+const tr = showTr ? trainingsFor(d) : [];
+return ev.concat(tr);
+};
+const daysInMonth = new Date(year, month + 1, 0).getDate();
+const offset = (new Date(year, month, 1).getDay() + 6) % 7;
+const cells = [];
+for (let i = 0; i < offset; i++) cells.push({ blank: true, isDay: false });
+for (let d = 1; d <= daysInMonth; d++) {
+const its = itemsFor(d);
+const isSel = d === sel;
+const isToday = year === today.y && month === today.m && d === today.d;
+const numStyle = 'width: 30px; height: 30px; box-sizing: border-box; border-radius: 15px; display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 800; ' + (isSel ? 'background: ' + CTX_GRAD + '; color: ' + CTX_FG + ';' : (isToday ? 'border: 1.5px solid ' + CTX_TINT + '; color: ' + CTX_TINT + ';' : 'color: #F4F6FA;'));
+const laneStyle = (l) => {
+const e = showEv && multi.find((x) => x.lane === l && x.s <= d && d <= x.e);
+if (!e) return 'height: 5px';
+// round only at the real start / end; square where the bar continues over a week edge
+const left = d === e.s ? 'margin-left: 6px; border-top-left-radius: 3px; border-bottom-left-radius: 3px;' : '';
+const right = d === e.e ? 'margin-right: 6px; border-top-right-radius: 3px; border-bottom-right-radius: 3px;' : '';
+return 'height: 5px; background: ' + LANE_COLORS[l] + '; ' + left + right;
+};
+cells.push({
+blank: false, isDay: true, day: d, numStyle,
+label: its.length + ' items on ' + d + ' ' + MONTHS[month],
+lane0: laneStyle(0), lane1: laneStyle(1),
+hasEvent: its.some((x) => x.kind === 'event' && x.s === x.e),
+hasTraining: its.some((x) => x.kind === 'training' && !x.cancelled),
+pick: () => this.setState({ sel: d })
+});
+}
+const fmt = (n) => n + ' ' + MONTHS[month].slice(0, 3);
+const chipCss = (bg, fg) => 'flex-shrink: 0; padding: 2px 8px; border-radius: 8px; background: ' + bg + '; color: ' + fg + '; font-size: 11px; font-weight: 800; white-space: nowrap';
+const selItems = itemsFor(sel)
+.sort((a, b) => (a.kind === b.kind ? (a.start || '').localeCompare(b.start || '') : (a.kind === 'event' ? -1 : 1)))
+.map((x, i) => {
+const isEvent = x.kind === 'event';
+const isMulti = isEvent && x.e > x.s;
+let badge = '', badgeStyle = '';
+if (isMulti) { badge = 'Day ' + (sel - x.s + 1) + '/' + (x.e - x.s + 1); badgeStyle = chipCss('rgba(251,191,36,0.16)', '#FBBF24'); }
+if (!isEvent && x.series) { badge = '↻ Weekly'; badgeStyle = chipCss('rgba(45,212,191,0.16)', '#5EEAD4'); }
+if (!isEvent && x.cancelled) { badge = 'Cancelled'; badgeStyle = chipCss('rgba(255,90,90,0.14)', '#FF8A8A'); }
+return {
+title: x.title,
+isEvent, isTraining: !isEvent,
+hasBadge: badge !== '', badge, badgeStyle,
+href: isEvent ? 'EventDetails.dc.html' : 'TrainingDetails.dc.html',
+notFirst: i > 0,
+titleStyle: 'font-size: 16px; font-weight: 800; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0' + (x.cancelled ? '; text-decoration: line-through; color: #7D889F' : ''),
+meta: isEvent ? (isMulti ? fmt(x.s) + ' – ' + fmt(x.e) + ' · ' + x.place : 'Event · ' + x.place) : x.start + '–' + x.end + ' · ' + x.school,
+tile: 'width: 48px; height: 48px; border-radius: 16px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; ' + (isEvent ? 'background: rgba(251,191,36,0.16); color: #FBBF24' : 'background: rgba(45,212,191,0.16); color: #5EEAD4') + (x.cancelled ? '; opacity: 0.5' : '')
+};
+});
+const wdSel = DAYS[new Date(year, month, sel).getDay()];
+const shift = (n) => {
+const dt = new Date(year, month + n, 1);
+this.setState({ year: dt.getFullYear(), month: dt.getMonth(), sel: 1 });
+};
+const fchip = (key, tint, fill) => {
+const on = filter === key;
+return {
+on: on ? 'true' : 'false',
+pick: () => this.setState({ filter: key }),
+style: 'flex: 1; display: flex; align-items: center; justify-content: center; gap: 7px; height: 40px; border-radius: 20px; font-size: 13.5px; font-weight: 800; padding: 0; ' + (on ? 'background: ' + fill + '; color: ' + tint + '; border: 1px solid ' + tint : 'background: #0B0E14; color: #A7B1C6; border: 1px solid #2A3345')
+};
+};
+return {
+scopeLabel: SCHOOL ? SCHOOL + ' · events and trainings' : 'All schools · events and trainings',
+fAll: fchip('all', '#F4F6FA', 'rgba(244,246,250,0.10)'),
+fEv: fchip('events', '#FBBF24', 'rgba(251,191,36,0.14)'),
+fTr: fchip('trainings', '#5EEAD4', 'rgba(45,212,191,0.14)'),
+monthLabel: MONTHS[month] + ' ' + year,
+prevMonth: () => shift(-1),
+nextMonth: () => shift(1),
+cells,
+items: selItems,
+isEmpty: selItems.length === 0,
+hasItems: selItems.length > 0,
+selectedLabel: wdSel + ', ' + sel + ' ' + MONTHS[month].slice(0, 3),
+countLabel: selItems.length === 0 ? 'Nothing planned' : (selItems.length === 1 ? '1 item' : selItems.length + ' items')
+};
+}
+}
+</script>
+</body>
+</html>

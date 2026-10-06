@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Context switcher</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+button{font-family:inherit;cursor:pointer}
+</style>
+</helmet>
+<div style="position: relative; width: 390px; height: 860px; box-sizing: border-box; overflow: hidden; background: radial-gradient(120% 50% at 50% -8%, rgba(245,158,11,0.22), rgba(245,158,11,0) 62%), #0B0E14; color: #F4F6FA; font-family: 'Manrope', sans-serif; padding: 56px 20px 0; display: flex; flex-direction: column; gap: 24px">
+
+<div style="display: flex; align-items: center; justify-content: space-between">
+<div style="display: flex; align-items: center; gap: 10px; height: 52px; padding: 0 12px 0 6px; border-radius: 26px; background: #131823; border: 1px solid #2A3345">
+<span style="width: 40px; height: 40px; border-radius: 14px; background: linear-gradient(135deg, #FBBF24 0%, #D97706 100%)"></span>
+<span style="display: flex; flex-direction: column; gap: 1px"><span style="font-size: 10.5px; font-weight: 800; letter-spacing: 0.9px; color: #FBBF24">ORGANIZATION</span><span style="font-size: 15px; font-weight: 800">Dragon Gate Academy</span></span>
+<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#A7B1C6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m7 15 5 5 5-5"/><path d="m7 9 5-5 5 5"/></svg>
+</div>
+<span style="height: 30px; width: 84px; border-radius: 15px; background: rgba(52,211,153,0.12)"></span>
+</div>
+<div style="height: 220px; border-radius: 28px; background: linear-gradient(135deg, #FBBF24 0%, #F59E0B 45%, #D97706 100%)"></div>
+<div style="height: 200px; border-radius: 22px; background: #131823; border: 1px solid #232B3B"></div>
+
+<div style="position: absolute; inset: 0; background: rgba(5,7,11,0.76)"></div>
+
+<div style="position: absolute; left: 0; right: 0; bottom: 0; display: flex; flex-direction: column; gap: 20px; box-sizing: border-box; padding: 12px 20px 32px; border-radius: 30px 30px 0 0; background: #131823; border-top: 1px solid #2A3345">
+<span style="align-self: center; width: 40px; height: 5px; border-radius: 3px; background: #3A4560"></span>
+<div style="display: flex; flex-direction: column; gap: 4px">
+<span style="font-size: 22px; font-weight: 800; letter-spacing: -0.3px">Switch context</span>
+<span style="font-size: 14px; font-weight: 500; color: #A7B1C6">Manage your own organization or train as a student.</span>
+</div>
+
+<div style="display: flex; flex-direction: column; gap: 10px">
+<span style="font-size: 11px; font-weight: 800; letter-spacing: 1px; color: #8590A8">MANAGE</span>
+<div style="display: flex; flex-direction: column; border-radius: 22px; background: #1A2130; border: 1px solid #2A3345">
+<a href="#" style="display: flex; align-items: center; gap: 14px; padding: 16px; text-decoration: none; color: inherit">
+<span style="width: 48px; height: 48px; border-radius: 16px; background: linear-gradient(135deg, #FBBF24 0%, #D97706 100%); color: #1B1203; display: flex; align-items: center; justify-content: center; flex-shrink: 0"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"/><path d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"/><path d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2"/><path d="M10 6h4M10 10h4M10 14h4M10 18h4"/></svg></span>
+<span style="display: flex; flex-direction: column; gap: 3px; flex-grow: 1; min-width: 0"><span style="font-size: 16px; font-weight: 800">Dragon Gate Academy</span><span style="font-size: 13px; font-weight: 500; color: #A7B1C6">Organization · 3 schools</span></span>
+<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#FBBF24" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/></svg>
+</a>
+</div>
+</div>
+
+<div style="display: flex; flex-direction: column; gap: 10px">
+<span style="font-size: 11px; font-weight: 800; letter-spacing: 1px; color: #8590A8">TRAIN AS STUDENT</span>
+<div style="display: flex; flex-direction: column; border-radius: 22px; background: #1A2130; border: 1px solid #2A3345">
+<a href="#" style="display: flex; align-items: center; gap: 14px; padding: 16px; text-decoration: none; color: inherit">
+<span style="width: 48px; height: 48px; border-radius: 16px; background: linear-gradient(135deg, #3F5AE0 0%, #17205E 100%); color: #fff; display: flex; align-items: center; justify-content: center; flex-shrink: 0"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"/><path d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"/><path d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2"/><path d="M10 6h4M10 10h4M10 14h4M10 18h4"/></svg></span>
+<span style="display: flex; flex-direction: column; gap: 3px; flex-grow: 1; min-width: 0"><span style="font-size: 16px; font-weight: 800">Tiger Claw Kung Fu</span><span style="font-size: 13px; font-weight: 500; color: #A7B1C6">Student · Poznań</span></span>
+</a>
+<div style="height: 1px; background: #2A3345; margin: 0 16px"></div>
+<a href="#" style="display: flex; align-items: center; gap: 14px; padding: 16px; text-decoration: none; color: inherit">
+<span style="width: 48px; height: 48px; border-radius: 16px; background: linear-gradient(135deg, #3F5AE0 0%, #17205E 100%); color: #fff; display: flex; align-items: center; justify-content: center; flex-shrink: 0"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"/><path d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"/><path d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2"/><path d="M10 6h4M10 10h4M10 14h4M10 18h4"/></svg></span>
+<span style="display: flex; flex-direction: column; gap: 3px; flex-grow: 1; min-width: 0"><span style="font-size: 16px; font-weight: 800">Shaolin Kraków</span><span style="font-size: 13px; font-weight: 500; color: #A7B1C6">Student · Kraków</span></span>
+</a>
+<div style="height: 1px; background: #2A3345; margin: 0 16px"></div>
+<a href="#" style="display: flex; align-items: center; gap: 14px; padding: 16px; text-decoration: none; color: inherit">
+<span style="width: 48px; height: 48px; border-radius: 16px; background: rgba(148,163,184,0.16); color: #CBD5E1; display: flex; align-items: center; justify-content: center; flex-shrink: 0"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5v14"/></svg></span>
+<span style="display: flex; flex-direction: column; gap: 3px; flex-grow: 1; min-width: 0"><span style="font-size: 16px; font-weight: 800">Join another school</span><span style="font-size: 13px; font-weight: 500; color: #A7B1C6">Enter a code from your instructor</span></span>
+</a>
+</div>
+</div>
+
+</div>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":860}}'>
+class Component extends DCLogic {
+renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

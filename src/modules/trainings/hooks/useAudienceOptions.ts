@@ -30,6 +30,7 @@ export const useAudienceOptions = (organizationId: string | undefined) => {
             id: m.id,
             displayName: m.displayName || m.email || t("unknown"),
             schoolName: schoolNames.get(m.schoolId),
+            avatarUrl: m.avatarUrl,
           })),
         ),
       error: (err) => console.error("[useAudienceOptions] Members load error:", err),

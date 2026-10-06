@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Orders (organization)</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+button,input,textarea{font-family:inherit}
+button{cursor:pointer}
+a{text-decoration:none}
+input::placeholder{color:#7D889F}
+</style>
+</helmet>
+<div style="position: relative; width: 390px; height: 1060px; box-sizing: border-box; overflow: hidden; background: radial-gradient(120% 30% at 50% -6%, rgba(245,158,11,0.14), rgba(0,0,0,0) 62%), #0B0E14; color: #F4F6FA; font-family: 'Manrope', sans-serif; padding: 56px 0 0; display: flex; flex-direction: column; gap: 16px">
+
+<div style="display: flex; align-items: center; gap: 12px; padding: 0 20px">
+<a href="Main.dc.html" aria-label="Back" style="width: 44px; height: 44px; border-radius: 22px; border: 1px solid #2A3345; background: #131823; color: #F4F6FA; display: flex; align-items: center; justify-content: center; flex-shrink: 0"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"></path></svg></a>
+<span style="display: flex; flex-direction: column; gap: 1px; flex-grow: 1; min-width: 0"><span style="font-size: 22px; font-weight: 800; letter-spacing: -0.3px">Orders</span></span>
+<span style="display: flex; align-items: center; gap: 7px; height: 30px; padding: 0 12px; border-radius: 15px; background: rgba(52,211,153,0.12); color: #4ADE9F; font-size: 12px; font-weight: 700"><span style="width: 7px; height: 7px; border-radius: 4px; background: #4ADE9F"></span>Synced</span>
+</div>
+
+<div role="tablist" aria-label="View" style="display: flex; gap: 4px; margin: 0 20px; padding: 4px; border-radius: 24px; background: #131823; border: 1px solid #232B3B">
+<button role="tab" aria-selected="true" style="flex: 1; display: flex; align-items: center; justify-content: center; gap: 8px; height: 40px; border-radius: 20px; border: 0; background: rgba(196,174,255,0.16); color: #C4AEFF; font-size: 14px; font-weight: 800"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"></path><path d="M3 6h18"></path><path d="M16 10a4 4 0 0 1-8 0"></path></svg>Orders</button>
+<a href="OrdersShoppingList.dc.html" role="tab" aria-selected="false" style="flex: 1; display: flex; align-items: center; justify-content: center; gap: 8px; height: 40px; border-radius: 20px; color: #A7B1C6; font-size: 14px; font-weight: 800"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect width="8" height="4" x="8" y="2" rx="1"></rect><path d="M12 11h4M12 16h4M8 11h.01M8 16h.01"></path></svg>Shopping list</a>
+</div>
+
+
+
+<div role="group" aria-label="Status" style="display: flex; gap: 8px; padding: 0 20px; overflow: hidden">
+<sc-for list="{{ chips }}" as="c" hint-placeholder-count="6">
+<button aria-pressed="{{ c.on }}" onClick="{{ c.pick }}" style="{{ c.style }}"><span style="{{ c.dot }}"></span>{{ c.label }}<span style="{{ c.countStyle }}">{{ c.count }}</span></button>
+</sc-for>
+</div>
+
+<div style="display: flex; flex-direction: column; gap: 12px; padding: 4px 20px 0">
+<div style="display: flex; align-items: center; justify-content: space-between">
+<span style="display: flex; flex-direction: column; gap: 2px"><span style="font-size: 20px; font-weight: 800; letter-spacing: -0.2px">{{ listTitle }}</span><span style="font-size: 13px; font-weight: 600; color: #A7B1C6"><br></span></span>
+<span style="display: flex; align-items: center; gap: 8px; flex-shrink: 0"><a href="OrderCreate.dc.html" style="display: flex; align-items: center; gap: 6px; height: 44px; padding: 0 16px 0 12px; border-radius: 22px; background: rgba(196,174,255,0.16); color: #C4AEFF; font-size: 14px; font-weight: 800"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5v14"></path></svg>Add new</a></span>
+</div>
+<div style="display: flex; flex-direction: column; border-radius: 22px; background: #131823; border: 1px solid #232B3B; overflow: hidden">
+<sc-for list="{{ rows }}" as="r" hint-placeholder-count="6">
+<sc-if value="{{ r.notFirst }}" hint-placeholder-val="{{ false }}"><div style="height: 1px; background: #232B3B; margin: 0 16px"></div></sc-if>
+<a href="OrderDetails.dc.html" style="display: flex; align-items: center; gap: 12px; padding: 12px 16px; color: inherit">
+<span style="width: 44px; height: 44px; border-radius: 14px; background: rgba(148,163,184,0.16); color: #CBD5E1; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 800; flex-shrink: 0">{{ r.initials }}</span>
+<span style="display: flex; flex-direction: column; gap: 3px; flex-grow: 1; min-width: 0"><span style="font-size: 15px; font-weight: 800; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">{{ r.name }}</span><span style="font-size: 12.5px; font-weight: 500; color: #A7B1C6; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">{{ r.meta }}</span></span>
+<span style="display: flex; flex-direction: column; align-items: flex-end; gap: 5px; flex-shrink: 0"><span style="display: flex; flex-direction: column; align-items: flex-end; gap: 1px"><sc-for list="{{ r.totals }}" as="t" hint-placeholder-count="1"><span style="font-size: 14px; font-weight: 800; white-space: nowrap">{{ t.text }}</span></sc-for></span><span style="{{ r.pill }}"><span style="{{ r.dot }}"></span>{{ r.status }}</span></span>
+</a>
+</sc-for>
+<sc-if value="{{ isEmpty }}" hint-placeholder-val="{{ false }}"><div style="padding: 20px 16px; color: #A7B1C6; font-size: 14px; font-weight: 600">No orders with this status.</div></sc-if>
+</div>
+</div>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":1060}}'>
+class Component extends DCLogic {
+constructor(props) {
+super(props);
+this.state = { filter: 'open' };
+}
+renderVals() {
+const S = {
+placed: { label: 'Placed', tint: '#CBD5E1', fill: 'rgba(148,163,184,0.16)' },
+paid: { label: 'Paid', tint: '#4ADE9F', fill: 'rgba(52,211,153,0.14)' },
+processing: { label: 'Processing', tint: '#FBBF24', fill: 'rgba(251,191,36,0.16)' },
+ready: { label: 'Ready', tint: '#8DB8FF', fill: 'rgba(141,184,255,0.16)' },
+completed: { label: 'Completed', tint: '#7D889F', fill: 'rgba(148,163,184,0.10)' }
+};
+const orders = [
+{ name: 'Anna Kowalska', items: 3, date: '14 Nov', sums: { PLN: 385 }, st: 'placed' },
+{ name: 'Marek Nowak', items: 1, date: '13 Nov', sums: { PLN: 120 }, st: 'placed' },
+{ name: 'Zofia Wiśniewska', items: 2, date: '12 Nov', sums: { PLN: 209 }, st: 'paid' },
+{ name: 'Piotr Lewandowski', items: 4, date: '11 Nov', sums: { PLN: 470, EUR: 19 }, st: 'paid' },
+{ name: 'Katarzyna Dąbrowska', items: 1, date: '10 Nov', sums: { PLN: 45 }, st: 'placed' },
+{ name: 'Jan Zieliński', items: 4, date: '8 Nov', sums: { PLN: 240, EUR: 35, USD: 40 }, st: 'processing' },
+{ name: 'Ola Szymańska', items: 1, date: '7 Nov', sums: { PLN: 89 }, st: 'processing' },
+{ name: 'Tomasz Wójcik', items: 3, date: '5 Nov', sums: { PLN: 304 }, st: 'ready' },
+{ name: 'Ewa Kamińska', items: 2, date: '3 Nov', sums: { EUR: 54 }, st: 'ready' },
+{ name: 'Michał Kaczmarek', items: 1, date: '28 Oct', sums: { PLN: 120 }, st: 'completed' },
+{ name: 'Urszula Mazur', items: 2, date: '24 Oct', sums: { PLN: 168 }, st: 'completed' }
+];
+const { filter } = this.state;
+const isOpen = (o) => o.st !== 'completed';
+const match = (o) => (filter === 'open' ? isOpen(o) : o.st === filter);
+const list = orders.filter(match);
+const CUR = ['PLN', 'EUR', 'USD'];
+const fmt = (n) => String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+const totalsOf = (sums) => CUR.filter((c) => sums[c]).map((c) => fmt(sums[c]) + ' ' + c);
+const sumAll = {};
+list.forEach((o) => Object.keys(o.sums).forEach((c) => { sumAll[c] = (sumAll[c] || 0) + o.sums[c]; }));
+const keys = ['open', 'placed', 'paid', 'processing', 'ready', 'completed'];
+const chips = keys.map((k) => {
+const on = filter === k;
+const cfg = k === 'open' ? { label: 'Open', tint: '#C4AEFF', fill: 'rgba(196,174,255,0.16)' } : S[k];
+const count = orders.filter((o) => (k === 'open' ? isOpen(o) : o.st === k)).length;
+return {
+on: on ? 'true' : 'false',
+label: cfg.label,
+count,
+pick: () => this.setState({ filter: k }),
+dot: k === 'open' ? 'display: none' : 'width: 7px; height: 7px; border-radius: 4px; background: ' + cfg.tint,
+countStyle: 'min-width: 20px; height: 20px; padding: 0 6px; box-sizing: border-box; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 800; ' + (on ? 'background: ' + cfg.tint + '; color: #0B0E14' : 'background: #232B3B; color: #CBD5E1'),
+style: 'flex-shrink: 0; display: flex; align-items: center; gap: 7px; height: 40px; padding: 0 10px 0 14px; border-radius: 20px; font-size: 13.5px; font-weight: 800; white-space: nowrap; ' + (on ? 'background: ' + cfg.fill + '; color: ' + cfg.tint + '; border: 1px solid ' + cfg.tint : 'background: #0B0E14; color: #A7B1C6; border: 1px solid #2A3345')
+};
+});
+const titleMap = { open: '', placed: 'Placed', paid: 'Paid', processing: 'Processing', ready: 'Ready for pickup', completed: 'Completed' };
+const rows = list.map((o, i) => {
+const s = S[o.st];
+return {
+notFirst: i > 0,
+initials: o.name.split(' ').map((p) => p[0]).join(''),
+name: o.name,
+meta: o.items + (o.items === 1 ? ' item' : ' items') + ' · ' + o.date,
+totals: totalsOf(o.sums).map((text) => ({ text })),
+status: s.label,
+pill: 'display: flex; align-items: center; gap: 5px; padding: 3px 8px; border-radius: 9px; background: ' + s.fill + '; color: ' + s.tint + '; font-size: 11.5px; font-weight: 800; white-space: nowrap',
+dot: 'width: 6px; height: 6px; border-radius: 3px; background: ' + s.tint
+};
+});
+return {
+chips,
+rows,
+isEmpty: rows.length === 0,
+listTitle: titleMap[filter],
+listMeta: list.length + (list.length === 1 ? ' order · ' : ' orders · ') + totalsOf(sumAll).join(' + ')
+};
+}
+}
+</script>
+</body>
+</html>

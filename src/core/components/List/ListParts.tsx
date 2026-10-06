@@ -61,8 +61,32 @@ export function ListImage({
   );
 }
 
-/** Neutral avatar with initials: people belong to no module. */
-export function ListAvatar({ initials, size = 44 }: { initials: string; size?: 48 | 44 | 36 }) {
+/** Neutral avatar: the person's photo, otherwise initials (people belong to no module). */
+export function ListAvatar({
+  initials,
+  uri,
+  size = 44,
+}: {
+  initials: string;
+  /** Profile photo; shown instead of the initials when set. */
+  uri?: string | null;
+  size?: 48 | 44 | 36;
+}) {
+  if (uri) {
+    return (
+      <View
+        width={size}
+        height={size}
+        borderRadius={size === 48 ? "$rowIcon" : size === 44 ? 14 : 12}
+        overflow="hidden"
+        backgroundColor="$neutralTintFill"
+        flexShrink={0}
+      >
+        <Image source={{ uri }} style={StyleSheet.absoluteFill} resizeMode="cover" accessibilityIgnoresInvertColors />
+      </View>
+    );
+  }
+
   return (
     <View
       width={size}
