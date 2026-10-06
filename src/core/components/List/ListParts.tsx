@@ -8,7 +8,7 @@ import { resolveListAccent, type ListAccent } from "./accent";
 // Leading slot
 // ============================================================================
 
-/** Module-tinted icon square: 48px in "lg" rows, 44px in "md" rows. */
+/** Module-tinted icon square: 48px in "lg" rows, 44px in "md" rows, 32px in front of a toggle row (14B "Amounts"). */
 export function ListIcon({
   icon: Icon,
   accent = "neutral",
@@ -16,20 +16,20 @@ export function ListIcon({
 }: {
   icon: LucideIcon;
   accent?: ListAccent;
-  size?: 48 | 44 | 36;
+  size?: 48 | 44 | 36 | 32;
 }) {
   const a = resolveListAccent(accent);
   return (
     <View
       width={size}
       height={size}
-      borderRadius={size === 48 ? "$rowIcon" : size === 44 ? 14 : 12}
+      borderRadius={size === 48 ? "$rowIcon" : size === 44 ? 14 : size === 36 ? 12 : 10}
       backgroundColor={a.fill}
       alignItems="center"
       justifyContent="center"
       flexShrink={0}
     >
-      <Icon size={size === 36 ? 18 : 22} color={a.tint} strokeWidth={2} />
+      <Icon size={size === 32 ? 16 : size === 36 ? 18 : 22} color={a.tint} strokeWidth={2} />
     </View>
   );
 }

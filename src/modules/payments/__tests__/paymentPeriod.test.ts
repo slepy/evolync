@@ -11,6 +11,7 @@ import {
   isCurrentPeriod,
   localDayKey,
   nextPaymentStatus,
+  parseAmount,
   periodKind,
   periodPresetRange,
   storedDayKey,
@@ -118,5 +119,17 @@ describe("nextPaymentStatus", () => {
     assert.equal(nextPaymentStatus("pending"), "paid");
     assert.equal(nextPaymentStatus("paid"), "cancelled");
     assert.equal(nextPaymentStatus("cancelled"), "pending");
+  });
+});
+
+describe("parseAmount", () => {
+  it("accepts whole and decimal amounts with a dot or comma", () => {
+    assert.equal(parseAmount("120"), 120);
+    assert.equal(parseAmount(" 120,5 "), 120.5);
+    assert.equal(parseAmount("0"), 0);
+  });
+
+  it("rejects empty, negative, non-numeric and over-precise values", () => {
+    for (const text of ["", "-5", "abc", "1.234", "1e3"]) assert.equal(parseAmount(text), null, text);
   });
 });

@@ -92,6 +92,13 @@ export function periodPresetRange(preset: Exclude<PeriodPreset, "custom">, today
 export const formatAmount = (amount: number): string =>
   Number.isInteger(amount) ? String(amount) : amount.toFixed(2);
 
+/** "120", "120,50" → 120 / 120.5 (at most 2 decimals); empty, negative or not a number → null. */
+export const parseAmount = (text: string): number | null => {
+  const trimmed = text.trim().replace(",", ".");
+  if (!/^\d+(\.\d{1,2})?$/.test(trimmed)) return null;
+  return Number(trimmed);
+};
+
 export interface CurrencyAmount {
   currency: string;
   amount: number;
