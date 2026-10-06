@@ -64,6 +64,8 @@ Boards in `design/project/` (canvas sections "Attendance — sessions list, mark
 
 ## Progress
 
+PR: #29
+
 > Convention: `- [ ]` pending, `- [x]` done. Append ` — <commit sha>` when a step lands. Do not rename step titles.
 
 ### Phase 1: Shared components and pure logic
@@ -82,5 +84,5 @@ Boards in `design/project/` (canvas sections "Attendance — sessions list, mark
 
 ### Phase 3: Cleanup and gate
 
-- [ ] 3.1 Remove old module UI and unused translation keys
-- [ ] 3.2 CLAUDE.md shared-components line and full validation gate
+- [x] 3.1 Remove old module UI and unused translation keys — 50ad60f
+- [x] 3.2 CLAUDE.md shared-components line and full validation gate — 66502e5
