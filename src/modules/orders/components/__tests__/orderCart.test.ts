@@ -1,6 +1,7 @@
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
 import {
+  addToCart,
   applyCartQuantities,
   cartItemCount,
   cartTotals,
@@ -73,5 +74,12 @@ describe("diffCart", () => {
   it("reports no change for the same cart", () => {
     assert.equal(hasCartChanges(original, [line("x", "a2", 1), line("y", "a3", 2)]), false);
     assert.equal(hasCartChanges(original, [line("x", "a2", 1)]), true);
+  });
+});
+
+describe("addToCart", () => {
+  it("adds picked quantities to existing lines and creates new ones", () => {
+    const cart = addToCart([line("x", "a2", 1)], [variant("a2"), variant("a3"), variant("a4")], { a2: 2, a3: 1, a4: 0 }, () => "n");
+    assert.deepEqual(cart.map((c) => [c.id, c.variantId, c.quantity]), [["x", "a2", 3], ["n", "a3", 1]]);
   });
 });

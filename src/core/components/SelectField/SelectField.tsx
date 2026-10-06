@@ -10,6 +10,10 @@ export interface SelectFieldProps {
   /** Chosen value; empty shows the placeholder. */
   value?: string;
   placeholder?: string;
+  /** Muted second line under a chosen value (12E2: the student's school). */
+  valueHint?: string;
+  /** Muted note under the field. */
+  hint?: string;
   /** Optional 36px avatar / swatch in front of the value. */
   leading?: ReactNode;
   /** Opens the picker. */
@@ -32,6 +36,8 @@ export function SelectField({
   label,
   value,
   placeholder,
+  valueHint,
+  hint,
   leading,
   onPress,
   open,
@@ -64,17 +70,28 @@ export function SelectField({
         borderColor={open ? tint : "$neutralRaisedBorder"}
       >
         {leading}
-        <Text
-          flex={1}
-          fontSize={15}
-          fontWeight={value ? "$rowTitle" : "600"}
-          color={value ? "$neutralText" : neutral.placeholder}
-          numberOfLines={1}
-        >
-          {value || placeholder}
-        </Text>
+        <YStack flex={1} minWidth={0} gap={2}>
+          <Text
+            fontSize={15}
+            fontWeight={value ? "$rowTitle" : "600"}
+            color={value ? "$neutralText" : neutral.placeholder}
+            numberOfLines={1}
+          >
+            {value || placeholder}
+          </Text>
+          {value && valueHint ? (
+            <Text fontSize={12.5} fontWeight="$secondary" color="$neutralMuted" numberOfLines={1}>
+              {valueHint}
+            </Text>
+          ) : null}
+        </YStack>
         <Chevron size={20} color={open ? tint : neutral.muted} strokeWidth={2.2} />
       </XStack>
+      {hint ? (
+        <Text fontSize={12.5} fontWeight="$secondary" color={neutral.placeholder}>
+          {hint}
+        </Text>
+      ) : null}
     </YStack>
   );
 }

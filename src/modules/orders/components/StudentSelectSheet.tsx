@@ -27,10 +27,7 @@ interface StudentSelectSheetProps {
   onSelect: (studentId: string) => void;
 }
 
-/** Above this many students the sheet shows the search (select sheet rule). */
-const SEARCH_FROM = 8;
-
-/** Student select sheet (12E1): search, rows with photo or initials and email; tap to choose and close. */
+/** Student (12E1): active students, search, rows with photo or initials and email; tap to choose and close. */
 export const StudentSelectSheet: React.FC<StudentSelectSheetProps> = ({ open, onOpenChange, students, value, onSelect }) => {
   const [query, setQuery] = useState("");
 
@@ -44,10 +41,13 @@ export const StudentSelectSheet: React.FC<StudentSelectSheetProps> = ({ open, on
   );
 
   return (
-    <FormSheet open={open} onOpenChange={onOpenChange} title={t("ordersStudent")}>
-      {students.length > SEARCH_FROM ? (
-        <SearchField value={query} onChangeText={setQuery} placeholder={t("ordersSearchStudents")} accent="orders" />
-      ) : null}
+    <FormSheet
+      open={open}
+      onOpenChange={onOpenChange}
+      title={t("ordersStudent")}
+      subtitle={t("ordersActiveStudents", { count: students.length })}
+    >
+      <SearchField value={query} onChangeText={setQuery} placeholder={t("ordersSearchStudent")} accent="orders" />
       {visible.length === 0 ? (
         <Text fontSize={13} fontWeight="$secondary" color="$neutralMuted" textAlign="center">
           {students.length === 0 ? t("emptyNoMembersAvailable") : t("ordersNoStudentsFound")}
@@ -68,6 +68,7 @@ export const StudentSelectSheet: React.FC<StudentSelectSheetProps> = ({ open, on
                   selected={selected}
                   accent="orders"
                   trailing={selected ? <ListCheck accent="orders" /> : undefined}
+                  aria-selected={selected}
                   onPress={() => {
                     onSelect(student.id);
                     onOpenChange(false);

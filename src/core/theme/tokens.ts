@@ -32,6 +32,15 @@ export const neutral = {
   shadow: "rgba(0,0,0,0.5)",
 } as const;
 
+/** Order status colors (12A chips and pills, 12C status sheet): dot / text and pill fill. */
+export const orderStatusColors = {
+  placed: { tint: "#CBD5E1", fill: "rgba(148,163,184,0.16)" },
+  paid: { tint: "#4ADE9F", fill: "rgba(52,211,153,0.14)" },
+  processing: { tint: "#FBBF24", fill: "rgba(251,191,36,0.16)" },
+  ready_for_pickup: { tint: "#8DB8FF", fill: "rgba(141,184,255,0.16)" },
+  completed: { tint: "#7D889F", fill: "rgba(148,163,184,0.10)" },
+} as const;
+
 /** Destructive (trash) button: red in every context, never neutral gray. */
 export const danger = {
   text: "#FF8A8A",

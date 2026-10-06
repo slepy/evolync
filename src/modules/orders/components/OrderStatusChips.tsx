@@ -1,65 +1,70 @@
-import { withAlpha, resolveListAccent } from "@/core/components";
+import { neutral } from "@/core/theme/tokens";
 import React from "react";
 import { ScrollView } from "react-native";
-import { Text, XStack } from "tamagui";
-import { ORDER_STATUSES, ORDER_STATUS_STYLE, type OrderStatusChip } from "./orderListState";
+import { Text, View, XStack } from "tamagui";
 
-interface OrderStatusChipsProps {
-  value: OrderStatusChip;
-  counts: Record<OrderStatusChip, number>;
-  onChange: (value: OrderStatusChip) => void;
-  /** Hide "All" (shopping list: products of one status). */
-  showAll?: boolean;
+export interface StatusChip<K extends string> {
+  key: K;
+  label: string;
+  count: number;
+  tint: string;
+  fill: string;
+  /** Status dot in front of the label ("Open" / "To order" have none). */
+  dot?: boolean;
 }
 
-/** Status chips with counts (12A): one pill per status, the chosen one tinted in its status color. */
-export const OrderStatusChips: React.FC<OrderStatusChipsProps> = ({ value, counts, onChange, showAll = true }) => {
-  const chips: OrderStatusChip[] = showAll ? ["all", ...ORDER_STATUSES] : ORDER_STATUSES;
+interface OrderStatusChipsProps<K extends string> {
+  chips: StatusChip<K>[];
+  value: K;
+  onChange: (value: K) => void;
+  "aria-label": string;
+}
 
+/**
+ * Status chips with counts (12A / 12B): 40px pills, dot + label + count
+ * bubble. The chosen chip has a 1px tint border, tint fill and a solid
+ * count bubble; the others sit on the page fill.
+ */
+export function OrderStatusChips<K extends string>({ chips, value, onChange, ...aria }: OrderStatusChipsProps<K>) {
   return (
-    <ScrollView
-      horizontal
-      showsHorizontalScrollIndicator={false}
-      style={{ flexGrow: 0, marginHorizontal: -20 }}
-      contentContainerStyle={{ paddingHorizontal: 20, gap: 8 }}
-    >
-      <XStack role="radiogroup" aria-label={t("status")} gap={8}>
+    <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ flexGrow: 0 }}>
+      <XStack role="radiogroup" aria-label={aria["aria-label"]} gap={8}>
         {chips.map((chip) => {
-          const selected = chip === value;
-          const a = resolveListAccent(chip === "all" ? "orders" : ORDER_STATUS_STYLE[chip].accent);
-          const label = chip === "all" ? t("ordersFilterAll") : t(ORDER_STATUS_STYLE[chip].label);
+          const on = chip.key === value;
           return (
             <XStack
-              key={chip}
+              key={chip.key}
               role="radio"
-              aria-checked={selected}
-              aria-label={`${label}, ${counts[chip]}`}
-              onPress={() => onChange(chip)}
+              aria-checked={on}
+              aria-label={`${chip.label}, ${chip.count}`}
+              onPress={() => onChange(chip.key)}
               pressStyle={{ opacity: 0.85 }}
+              flexShrink={0}
               alignItems="center"
-              gap={8}
+              gap={7}
               height={40}
               paddingLeft={14}
-              paddingRight={8}
+              paddingRight={10}
               borderRadius={20}
               borderWidth={1}
-              borderColor={selected ? withAlpha(a.tint, 0.5) : "$neutralRaisedBorder"}
-              backgroundColor={selected ? a.fill : "$neutralCard"}
+              borderColor={on ? chip.tint : "$neutralRaisedBorder"}
+              backgroundColor={on ? chip.fill : "$neutralPage"}
             >
-              <Text fontSize={13.5} fontWeight="$button" color={selected ? a.tint : "$neutralMuted"} numberOfLines={1}>
-                {label}
+              {chip.dot ? <View width={7} height={7} borderRadius={4} backgroundColor={chip.tint} /> : null}
+              <Text fontSize={13.5} fontWeight="$button" color={on ? chip.tint : "$neutralMuted"} numberOfLines={1}>
+                {chip.label}
               </Text>
               <XStack
-                minWidth={24}
-                height={24}
-                paddingHorizontal={7}
-                borderRadius={12}
+                minWidth={20}
+                height={20}
+                paddingHorizontal={6}
+                borderRadius={10}
                 alignItems="center"
                 justifyContent="center"
-                backgroundColor={selected ? a.fill : "$neutralTintFill"}
+                backgroundColor={on ? chip.tint : "$neutralCardBorder"}
               >
-                <Text fontSize={12} fontWeight="$button" color={selected ? a.tint : "$neutralTint"}>
-                  {counts[chip]}
+                <Text fontSize={12} fontWeight="$button" color={on ? neutral.page : neutral.tint}>
+                  {chip.count}
                 </Text>
               </XStack>
             </XStack>
@@ -68,4 +73,25 @@ export const OrderStatusChips: React.FC<OrderStatusChipsProps> = ({ value, count
       </XStack>
     </ScrollView>
   );
-};
+}
+
+/** Status pill of a row / the details card: dot + label in the status color. */
+export function OrderStatusPill({ label, tint, fill, size = "sm" }: { label: string; tint: string; fill: string; size?: "sm" | "md" }) {
+  const md = size === "md";
+  return (
+    <XStack
+      alignItems="center"
+      gap={md ? 6 : 5}
+      paddingVertical={md ? 5 : 3}
+      paddingHorizontal={md ? 10 : 8}
+      borderRadius={md ? 10 : 9}
+      backgroundColor={fill}
+      flexShrink={0}
+    >
+      <View width={md ? 7 : 6} height={md ? 7 : 6} borderRadius={4} backgroundColor={tint} />
+      <Text fontSize={md ? 13 : 11.5} fontWeight="$button" color={tint} numberOfLines={1}>
+        {label}
+      </Text>
+    </XStack>
+  );
+}

@@ -6,7 +6,7 @@ import { useCreateOrder } from "../hooks/useCreateOrder";
 import { useOrganizationIdOfSchool } from "../hooks/useOrganizationIdOfSchool";
 import { useSchoolStudents } from "../hooks/useSchoolStudents";
 import type { CartItem } from "../types/dto";
-import { AddProductSheet } from "./AddProductSheet";
+import { AddProductSheet, ProductSizesSheet } from "./AddProductSheet";
 import { choosesStudent, type OrdersScope } from "./orderAccess";
 import { toOrderItemDto } from "./orderCart";
 import { OrderProductsSection } from "./OrderProductsSection";
@@ -21,9 +21,10 @@ interface OrderFormScreenProps {
 }
 
 /**
- * New order (12E): the school picks the STUDENT (12E1 sheet, 12E2 chosen),
- * the student orders for themselves; products come from Add product (12F).
- * Create is active once there is a student and at least one product.
+ * New order (12E / 12E2): the school picks the STUDENT (12E1 sheet) before
+ * adding products; the student orders for themselves. Products come from
+ * Add new (12F); a tapped product opens its sizes, the trash removes it.
+ * Create is pinned at the bottom.
  */
 export const OrderFormScreen: React.FC<OrderFormScreenProps> = ({ scope, schoolId, memberId, onCreated }) => {
   const staff = choosesStudent(scope);
@@ -34,10 +35,11 @@ export const OrderFormScreen: React.FC<OrderFormScreenProps> = ({ scope, schoolI
 
   const [studentId, setStudentId] = useState<string | undefined>(staff ? undefined : memberId);
   const [cart, setCart] = useState<CartItem[]>([]);
-  const [sheet, setSheet] = useState<"student" | "product" | null>(null);
+  const [sheet, setSheet] = useState<"student" | "add" | { productId: string } | null>(null);
 
   const student = students.find((s) => s.id === studentId);
   const canCreate = !!schoolId && !!studentId && cart.length > 0;
+  const sizesProduct = typeof sheet === "object" && sheet ? products.find((p) => p.id === sheet.productId) ?? null : null;
 
   const handleCreate = async () => {
     if (!schoolId || !studentId) return;
@@ -55,13 +57,7 @@ export const OrderFormScreen: React.FC<OrderFormScreenProps> = ({ scope, schoolI
               {error}
             </Text>
           ) : null}
-          <PrimaryButton
-            label={t("create")}
-            accent="orders"
-            onPress={handleCreate}
-            loading={isLoading}
-            disabled={!canCreate}
-          />
+          <PrimaryButton label={t("create")} accent="orders" onPress={handleCreate} loading={isLoading} disabled={!canCreate} />
         </YStack>
       }
     >
@@ -69,12 +65,10 @@ export const OrderFormScreen: React.FC<OrderFormScreenProps> = ({ scope, schoolI
         <SelectField
           label={t("ordersStudent")}
           value={student?.name}
+          valueHint={student?.email}
           placeholder={t("ordersChooseStudent")}
-          leading={
-            student ? (
-              <ListAvatar size={36} initials={memberInitials(student.name)} uri={student.avatarUrl} />
-            ) : undefined
-          }
+          hint={student ? undefined : t("ordersStudentHint")}
+          leading={student ? <ListAvatar size={36} initials={memberInitials(student.name)} uri={student.avatarUrl} /> : undefined}
           accent="orders"
           open={sheet === "student"}
           onPress={() => setSheet("student")}
@@ -83,9 +77,13 @@ export const OrderFormScreen: React.FC<OrderFormScreenProps> = ({ scope, schoolI
 
       <OrderProductsSection
         cart={cart}
-        onChange={setCart}
-        onAddProduct={() => setSheet("product")}
-        emptyText={t("ordersAddProductsHint")}
+        editable
+        canAdd={!!studentId}
+        onAddProduct={() => setSheet("add")}
+        onProductPress={(productId) => setSheet({ productId })}
+        onRemove={(itemId) => setCart(cart.filter((item) => item.id !== itemId))}
+        emptyText={studentId ? t("ordersAddProductsHint") : t("ordersPickStudentFirst")}
+        hint={t("ordersFormHint")}
       />
 
       {staff ? (
@@ -98,11 +96,18 @@ export const OrderFormScreen: React.FC<OrderFormScreenProps> = ({ scope, schoolI
         />
       ) : null}
       <AddProductSheet
-        open={sheet === "product"}
-        onOpenChange={(open) => setSheet(open ? "product" : null)}
+        open={sheet === "add"}
+        onOpenChange={(open) => setSheet(open ? "add" : null)}
         products={products}
         cart={cart}
         onAdd={setCart}
+      />
+      <ProductSizesSheet
+        open={!!sizesProduct}
+        onOpenChange={(open) => (open ? undefined : setSheet(null))}
+        product={sizesProduct}
+        cart={cart}
+        onSave={setCart}
       />
     </SubScreenPage>
   );
