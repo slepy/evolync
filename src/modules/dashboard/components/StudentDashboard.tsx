@@ -13,7 +13,6 @@ import {
   SyncedPill,
   TechniqueNotebook,
   TrashButton,
-  orgOptionId,
   useContextSwitch,
 } from "@/core/components";
 import { JoinRequestStatus } from "@/database/models/SchoolJoinRequest";
@@ -90,7 +89,7 @@ export function StudentDashboard() {
       open={switcherOpen}
       onOpenChange={setSwitcherOpen}
       options={options}
-      activeId={membership?.memberId ?? (organization ? orgOptionId(organization.id) : null)}
+      activeId={membership?.memberId ?? null}
       onSelect={select}
       onJoinSchool={joinSchool}
     />
