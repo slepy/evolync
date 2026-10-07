@@ -1086,5 +1086,9 @@
   "profilePersonalInfoHint": "Visible to your instructors and schools",
   "profileSignIn": "Sign-in",
   "profileSignInHint": "Used to sign in to Evolync",
-  "profileEmailLocked": "The sign-in email can't be changed in the app."
+  "profileEmailLocked": "The sign-in email can't be changed in the app.",
+  "profileLogOut": "Log out",
+  "profileLogOutHint": "Sign out of Evolync on this device",
+  "profileLogOutConfirmTitle": "Log out?",
+  "profileLogOutConfirmMessage": "You can sign in again with your email and password."
 }
