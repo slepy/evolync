@@ -9,7 +9,7 @@ Let every user sign out of the app, and stop the Android app from closing after 
 - Profile tab (`ProfileScreen`, `app/user/profile.tsx`): a "Log out" row under the Sign-in card, confirmed with a native alert, calling the registered sign-out handler (`signOutBridge`).
 - Password reset flow (`app/auth/forgot-password.tsx` → `app/auth/reset-password.tsx`, `ResetPasswordForm`, `CodeField`): find and fix the Android crash after "Send".
 
-Non-goals: redesigning auth screens, changing the OTP-code reset design, the web-only import cycle in `payments/services` (separate issue).
+Non-goals: redesigning auth screens, changing the OTP-code reset design.
 
 Base branch: config `baseBranch` is `auto`, which does not exist on the remote; the tracker's default branch `main` is used.
 
@@ -23,6 +23,10 @@ Base branch: config `baseBranch` is `auto`, which does not exist on the remote; 
 
 - 2.1 Reproduce the crash on an Android emulator and fix its cause
 - 2.2 Validation gate
+
+### Phase 3: Web startup (added on request)
+
+- 3.1 Break the payments ↔ students require cycle
 
 ## Risks
 
@@ -46,3 +50,7 @@ PR: #41
 
 - [x] 2.1 Reproduce the crash on an Android emulator and fix its cause — 3d717d5
 - [x] 2.2 Validation gate — 3d717d5
+
+### Phase 3: Web startup (added on request)
+
+- [x] 3.1 Break the payments ↔ students require cycle — 6f85607
