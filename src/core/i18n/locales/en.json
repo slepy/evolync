@@ -1052,5 +1052,8 @@
   "authCodeHint": "{{min}}–{{max}} digits. Not there? Check spam.",
   "authSendNewCode": "Send a new code",
   "authPasswordChanged": "Password changed",
-  "authPasswordChangedHint": "Sign in with your new password. Other devices stay signed in until their session ends."
+  "authPasswordChangedHint": "Sign in with your new password. Other devices stay signed in until their session ends.",
+  "launchTagline": "Your schools and techniques in one place",
+  "launchSyncing": "Syncing your schools…",
+  "launchOfflineMessage": "Opening data saved on this device. Changes sync when you are back online."
 }
