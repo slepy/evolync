@@ -13,16 +13,16 @@ export const useJoinSchool = () => {
       userEmail: string,
       displayName: string,
       avatarUrl?: string,
-    ): Promise<boolean> => {
+    ): Promise<string | null> => {
       try {
         setIsLoading(true);
         setError(null);
         setSuccess(false);
 
-        await joinSchool(code, userId, userEmail, displayName, avatarUrl);
+        const schoolId = await joinSchool(code, userId, userEmail, displayName, avatarUrl);
 
         setSuccess(true);
-        return true;
+        return schoolId;
       } catch (err) {
         const errorMessage =
           err instanceof Error ? err.message : t("errorUnknown");
@@ -37,7 +37,7 @@ export const useJoinSchool = () => {
           console.error("Error joining school:", err);
         }
 
-        return false;
+        return null;
       } finally {
         setIsLoading(false);
       }

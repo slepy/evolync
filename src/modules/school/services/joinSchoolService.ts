@@ -23,6 +23,8 @@ const { supabase } = require("@/config/supabase");
  * Strategy for finding invite:
  * - First check local WatermelonDB (fast, works offline)
  * - If not found locally, query Supabase directly (invite created on another device)
+ *
+ * Returns the id of the school the request was sent to (Request sent screen).
  */
 export const joinSchool = async (
   code: string,
@@ -30,7 +32,7 @@ export const joinSchool = async (
   userEmail: string,
   displayName: string,
   avatarUrl?: string,
-): Promise<void> => {
+): Promise<string> => {
   // ── 1. Resolve invite ────────────────────────────────────────────────────────
   let invite = await SchoolInviteRepository.findByCode(code);
 
@@ -119,4 +121,6 @@ export const joinSchool = async (
     .catch((error) => {
       console.error("[joinSchool] Sync error:", error);
     });
+
+  return invite.schoolId;
 };

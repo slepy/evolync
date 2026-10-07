@@ -49,8 +49,8 @@ export function useRegister(): UseRegisterResult {
       }
 
       // Navigate to join-school screen
-      // User can enter school code or skip to dashboard
-      router.replace("/school/join");
+      // Back and Done lead to the dashboard (from=signup)
+      router.replace("/school/join?from=signup" as any);
     } catch (err: any) {
       console.error("Registration failed:", err);
 
