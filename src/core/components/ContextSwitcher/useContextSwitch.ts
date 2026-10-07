@@ -4,8 +4,7 @@ import { useStore } from "@/store";
 import { useRouter } from "expo-router";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import type { ContextOption } from "./ContextSheet";
-
-export const orgOptionId = (organizationId: string) => `org:${organizationId}`;
+import { buildContextOptions } from "./contextOptions";
 
 /**
  * Everything the context switcher (board 3) needs, from the store and the
@@ -33,30 +32,10 @@ export function useContextSwitch() {
     }
   }, [memberships, schools]);
 
-  const options = useMemo<ContextOption[]>(() => {
-    const own: ContextOption[] = organization
-      ? [
-          {
-            id: orgOptionId(organization.id),
-            context: "organization",
-            title: organization.name,
-            subtitle: t("contextOrganizationSchools", {
-              count: schools.filter((s) => s.organizationId === organization.id).length,
-            }),
-          },
-        ]
-      : [];
-    const training = memberships.map((m): ContextOption => {
-      const school = schools.find((s) => s.id === m.schoolId);
-      return {
-        id: m.memberId,
-        context: "student",
-        title: school?.name ?? "…",
-        subtitle: school?.address ? t("contextStudentAt", { place: school.address }) : t("contextStudent"),
-      };
-    });
-    return [...own, ...training];
-  }, [organization, memberships, schools]);
+  const options = useMemo(
+    () => buildContextOptions({ organization, memberships, schools }),
+    [organization, memberships, schools],
+  );
 
   const select = useCallback(
     async (option: ContextOption) => {
