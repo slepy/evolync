@@ -36,12 +36,14 @@ Tapping a notification (push or inbox row) opens the screens of the role the not
 
 ## Progress
 
+PR: #40
+
 > Convention: `- [ ]` pending, `- [x]` done. Append ` — <commit sha>` when a step lands. Do not rename step titles.
 
 ### Phase 1: Context plan
 
-- [ ] 1.1 Audience and context plan per notification type
+- [x] 1.1 Audience and context plan per notification type — c7c7093
 
 ### Phase 2: Opening
 
-- [ ] 2.1 Shared opener for push taps and inbox rows, gated on launch
+- [x] 2.1 Shared opener for push taps and inbox rows, gated on launch — 0c64e7e
