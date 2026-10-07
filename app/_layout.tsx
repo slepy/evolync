@@ -26,7 +26,7 @@ import { View } from "react-native";
 import { PortalProvider } from "@tamagui/portal";
 import { TamaguiProvider } from "tamagui";
 import i18n from "@/core/i18n/config";
-import { loadThemePreference, useResolvedTheme } from "@/core/theme";
+import { useResolvedTheme } from "@/core/theme";
 
 import config, { themeColors as appThemeColors } from "../tamagui.config";
 
@@ -57,20 +57,13 @@ export default function RootLayout() {
     if (error) throw error;
   }, [error]);
 
-  // Load the stored appearance before the splash hides so a saved Dark choice
-  // never flashes a light frame. Never rejects (falls back to "system").
-  const [themeLoaded, setThemeLoaded] = useState(false);
   useEffect(() => {
-    loadThemePreference().finally(() => setThemeLoaded(true));
-  }, []);
-
-  useEffect(() => {
-    if (loaded && themeLoaded) {
+    if (loaded) {
       SplashScreen.hideAsync();
     }
-  }, [loaded, themeLoaded]);
+  }, [loaded]);
 
-  if (!loaded || !themeLoaded) {
+  if (!loaded) {
     return null;
   }
 

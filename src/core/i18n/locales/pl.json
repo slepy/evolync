@@ -247,13 +247,7 @@
   "settingsPaymentDefaultsHint": "Wpisywane w każdy nowy okres rozliczeniowy",
   "settingsDefaultsNote": "Zmiana ustawień domyślnych nie zmienia okresów, które już istnieją.",
   "settingsLanguage": "Język",
-  "settingsAppearance": "Wygląd",
   "settingsLanguageHint": "Zmienia aplikację od razu",
-  "settingsAppearanceHint": "Zapisane na tym urządzeniu",
-  "themeSystemHint": "Jak w telefonie",
-  "themeSystem": "Systemowy",
-  "themeLight": "Jasny",
-  "themeDark": "Ciemny",
   "settingsProfile": "Profil",
 
   "schoolsTitle": "Szkoły",
