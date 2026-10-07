@@ -10,6 +10,7 @@ const SOURCES = [
   "src/modules/events/components",
   "src/modules/events/constants.ts",
   "app/organization/events",
+  "app/user/events",
   "src/core/components/AudienceChoice",
   "src/core/components/CurrencySheet",
   "src/core/components/StatusSummary",

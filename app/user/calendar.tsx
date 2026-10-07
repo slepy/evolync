@@ -4,8 +4,8 @@ import { useRouter } from "expo-router";
 
 /**
  * Student calendar: the events the student takes part in and their school's
- * trainings, read-only (no Add new). An event row opens the student's events
- * list, where participation is confirmed.
+ * trainings, read-only (no Add new). An event row opens its details, where
+ * the student answers Attending / Absent.
  *
  * Route: /user/calendar
  */
@@ -18,7 +18,7 @@ export default function UserCalendarScreen() {
       scope={
         membership ? { kind: "student", memberId: membership.memberId, schoolId: membership.schoolId } : undefined
       }
-      onItemPress={() => router.push("/user/events")}
+      onItemPress={(item) => router.push(`/user/events/${item.id}` as any)}
       pressable={["events"]}
     />
   );
