@@ -42,6 +42,8 @@ Rebuild the launch sequence (native splash → loading until the first screen) a
 
 ## Progress
 
+PR: #35
+
 > Convention: `- [ ]` pending, `- [x]` done. Append ` — <commit sha>` when a step lands. Do not rename step titles.
 
 ### Phase 1: Launch
