@@ -42,3 +42,7 @@ PR: #34
 
 - [x] 1.1 Student dashboard 4 / 5, context switcher 3, neutral page context, translations — 888a91a
 - [x] 1.2 Extract switcher option building to a pure function with unit tests — b9571e2
+
+### Review fixes
+
+- [x] R.1 Organization row selectable from My dashboard (review finding) — cc9979d
