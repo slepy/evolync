@@ -92,7 +92,7 @@ function knownColorNames() {
     names.add(match[1]);
   }
   // Redesign tokens read from src/core/theme/tokens.ts (`neutralCard: neutral.card`).
-  for (const match of source.matchAll(/^\s{2,4}([A-Za-z0-9]+):\s*(?:neutral|danger|warning)\.[A-Za-z]+,/gm)) {
+  for (const match of source.matchAll(/^\s{2,4}([A-Za-z0-9]+):\s*(?:neutral|danger|warning|noteBubble)\.[A-Za-z]+,/gm)) {
     names.add(match[1]);
   }
   // Generated per module ($studentsTint, …) and per context ($schoolLabel, …).
@@ -100,7 +100,7 @@ function knownColorNames() {
   const unionOf = (type) =>
     [...(tokens.match(new RegExp(String.raw`export type ${type} =([^;]+);`))?.[1] ?? "").matchAll(/"([a-z]+)"/g)].map((m) => m[1]);
   for (const module of unionOf("ModuleKey")) {
-    for (const key of ["Tint", "Fill", "From", "To", "ButtonText"]) names.add(module + key);
+    for (const key of ["Tint", "Fill", "From", "To", "ButtonText", "Label"]) names.add(module + key);
   }
   for (const context of unionOf("ContextKey")) {
     for (const key of ["From", "Via", "To", "Fg", "FgSoft", "Glow", "Label", "Fill"]) names.add(context + key);

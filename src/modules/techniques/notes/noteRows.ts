@@ -15,8 +15,12 @@ export interface NoteDraft {
   rows: EditableRow[];
 }
 
-/** "right" (arrow →) means Person 1 leads, "left" (arrow ←) Person 2. */
+/** "right" means Person 1 leads, "left" Person 2 (stored values of the former → / ← arrow). */
 export const leaderOf = (direction: AttackDirection): 1 | 2 => (direction === "left" ? 2 : 1);
+
+/** Bubble order of a row (T4): the leader on top, the other person under the swap button. */
+export const bubbleOrder = (direction: AttackDirection): [1 | 2, 1 | 2] =>
+  leaderOf(direction) === 1 ? [1, 2] : [2, 1];
 
 export const toggleDirection = (direction: AttackDirection): AttackDirection =>
   direction === "left" ? "right" : "left";

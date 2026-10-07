@@ -74,6 +74,12 @@ export const warning = {
   noticeBorder: "rgba(251,191,36,0.4)",
 } as const;
 
+/** Person 1 bubble of a note row (T4): Notebook cyan at 10%, border at 30%. */
+export const noteBubble = {
+  fill: "rgba(34,211,238,0.10)",
+  border: "rgba(34,211,238,0.30)",
+} as const;
+
 /** Positive status (Paid, Present) and a rate chip of 80% or more (13A / 14A). */
 export const success = {
   text: "#4ADE9F",

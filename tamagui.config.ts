@@ -6,6 +6,7 @@ import {
   fontFamilies,
   moduleAccents,
   neutral,
+  noteBubble,
   radii,
   textRoles,
   warning,
@@ -79,6 +80,8 @@ const designColorTokens = {
   trashText: danger.text,
   trashFill: danger.fill,
   trashBorder: danger.border,
+  noteBubbleFill: noteBubble.fill,
+  noteBubbleBorder: noteBubble.border,
   ...contextColorTokens,
   ...moduleColorTokens,
 };
