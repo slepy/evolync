@@ -34,9 +34,11 @@ Source boards: local `.dc.html` copies of `Student`, `NoSchool`, `Switcher` (cla
 
 ## Progress
 
+PR: #34
+
 > Convention: `- [ ]` pending, `- [x]` done. Append ` — <commit sha>` when a step lands. Do not rename step titles.
 
 ### Phase 1: Dashboards and switcher
 
-- [ ] 1.1 Student dashboard 4 / 5, context switcher 3, neutral page context, translations
-- [ ] 1.2 Extract switcher option building to a pure function with unit tests
+- [x] 1.1 Student dashboard 4 / 5, context switcher 3, neutral page context, translations — 888a91a
+- [x] 1.2 Extract switcher option building to a pure function with unit tests — b9571e2
