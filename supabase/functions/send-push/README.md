@@ -33,6 +33,11 @@ POST (after commit) → `send-push` → Expo Push API → device.
   line with the `notification*` keys in `src/core/i18n/locales`.
 - More than 3 notifications for one recipient within 60 s: the 4th sends one
   "You have N+ new notifications" push, later ones in the window are skipped.
+- Messages go out with `priority: "high"` on the `notifications` Android channel
+  (HIGH importance, created by the app): normal-priority FCM messages are held
+  back while the device dozes, and a DEFAULT channel shows no heads-up banner.
+- No push for the actor: a payment added by the instructor notifies the
+  student, and only a student with an account (`school_members.user_id`).
 - `DeviceNotRegistered` tickets soft-delete the token.
 - Any failure is logged and answered with 200 so the webhook never retries.
 

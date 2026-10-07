@@ -90,7 +90,8 @@ Deno.test("single notification → one localized message per active token", asyn
     schoolId: "s1",
     eventId: "e1",
   });
-  assertEquals(en.channelId, "default");
+  assertEquals(en.channelId, "notifications");
+  assertEquals(en.priority, "high");
 });
 
 Deno.test("burst: the 4th notification in 60s becomes one summary, later ones are skipped", async () => {

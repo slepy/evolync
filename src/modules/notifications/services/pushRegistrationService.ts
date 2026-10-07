@@ -26,7 +26,10 @@ const PUSH_PREFERENCE_KEY = "@evolync:pushEnabled";
 const PUSH_TOKEN_KEY = "@evolync:pushToken";
 const PUSH_RATIONALE_DISMISSED_KEY = "@evolync:pushRationaleDismissed";
 const PUSH_LAST_REGISTRATION_KEY = "@evolync:pushLastRegistration";
-export const ANDROID_CHANNEL_ID = "default";
+/** Must match send-push. An existing channel's importance cannot be raised, hence a new id. */
+export const ANDROID_CHANNEL_ID = "notifications";
+/** Channel of earlier builds (DEFAULT importance: no heads-up banner). */
+const LEGACY_ANDROID_CHANNEL_ID = "default";
 
 export type PushRegistrationResult =
   | { status: "registered"; token: string }
@@ -58,8 +61,10 @@ const ensureAndroidChannel = async () => {
   if (Platform.OS !== "android") return;
   await Notifications.setNotificationChannelAsync(ANDROID_CHANNEL_ID, {
     name: t("notificationsTitle"),
-    importance: Notifications.AndroidImportance.DEFAULT,
+    importance: Notifications.AndroidImportance.HIGH,
+    sound: "default",
   });
+  await Notifications.deleteNotificationChannelAsync(LEGACY_ANDROID_CHANNEL_ID).catch(() => {});
 };
 
 /**
@@ -125,6 +130,8 @@ export const syncPushRegistration = async (): Promise<PushRegistrationResult | {
   }
   const locale = toPushLocale(getCurrentLanguage());
   if (!isPushRegistrationStale(await getLastRegistration(), locale, Date.now())) {
+    // A fresh registration from an older build still needs the current channel.
+    await ensureAndroidChannel().catch((error) => console.error("[push] Channel setup failed:", error));
     return { status: "fresh" };
   }
   return registerForPushNotifications();
