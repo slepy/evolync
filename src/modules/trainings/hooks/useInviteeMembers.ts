@@ -9,6 +9,7 @@ export interface InviteeMember {
   id: string; // school_member id
   name: string;
   avatarUrl?: string;
+  rankId?: string;
   schoolId?: string;
   /** Archived or removed members stay listed, greyed out. */
   inactive: boolean;
@@ -38,6 +39,7 @@ export const useInviteeMembers = (trainingId: string | undefined, schoolId?: str
                         id,
                         name: member?.displayName || member?.email || t("unknown"),
                         avatarUrl: member?.avatarUrl,
+                        rankId: member?.currentRankId,
                         schoolId: member?.schoolId,
                         inactive: !member || member.status === MemberStatus.ARCHIVED,
                       };

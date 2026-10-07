@@ -1,4 +1,4 @@
-import { AlertBanner, AuthPage, AuthPrompt, PrimaryButton, TextField } from '@/core/components';
+import { AlertBanner, AuthPage, AuthPrompt, PhoneField, PrimaryButton, TextField } from '@/core/components';
 import { contextColors } from '@/core/theme/tokens';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from 'expo-router';
@@ -10,7 +10,7 @@ import { useRegister } from '../hooks/useRegister';
 import type { RegisterRequest } from '../types/registerDto';
 import { registerSchema, type RegisterFormValues } from '../validation/registerSchema';
 import { PasswordFields } from './PasswordFields';
-import { PhoneField } from './PhoneField';
+import { PHONE_PREFIXES } from '@/modules/core/components';
 
 const student = contextColors.student;
 
@@ -137,10 +137,12 @@ export const RegisterForm: React.FC = () => {
           <PhoneField
             accent="student"
             label={t('authPhoneOptional')}
-            value={field.value ?? { prefix: '+48', number: '' }}
+            prefix={field.value?.prefix ?? '+48'}
+            number={field.value?.number ?? ''}
             onChange={field.onChange}
+            prefixes={PHONE_PREFIXES}
+            placeholder="600 123 456"
             error={errors.phone?.message as string | undefined}
-            disabled={isLoading}
           />
         )}
       />

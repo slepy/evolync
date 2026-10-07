@@ -21,6 +21,7 @@ export interface OrderListEntry {
   createdAt: Date;
   memberName: string;
   memberAvatarUrl?: string;
+  memberRankId?: string;
   itemCount: number;
   totalsByCurrency: Record<string, number>;
   items: ShoppingListSource[];
@@ -83,6 +84,7 @@ const toEntries = async (orders: Order[], items: OrderItem[]): Promise<OrderList
       createdAt: order.createdAt,
       memberName: member?.displayName || member?.email || t("unknownMember"),
       memberAvatarUrl: member?.avatarUrl,
+      memberRankId: member?.currentRankId,
       itemCount: cartItemCount(orderItems),
       totalsByCurrency: cartTotals(orderItems),
       items: orderItems.map((item) => {

@@ -1,4 +1,4 @@
-import { ChoiceList, FormSheet, ListAvatar, PrimaryButton, SelectField, TextField, memberInitials } from "@/core/components";
+import { ChoiceList, FormSheet, MemberAvatar, PrimaryButton, SelectField, TextField } from "@/core/components";
 import { PaymentMethod, type PaymentMethod as PaymentMethodValue } from "@/database/models/PaymentRecord";
 import React from "react";
 import { parseAmount } from "../paymentPeriod";
@@ -22,6 +22,8 @@ interface PaymentEditSheetProps {
   onOpenChange: (open: boolean) => void;
   name: string;
   avatarUrl?: string | null;
+  /** Current rank: its belt color cuts the avatar corner. */
+  rankId?: string | null;
   /** "October 2026 · Pending" */
   subtitle: string;
   draft: PaymentDraft;
@@ -37,6 +39,7 @@ export const PaymentEditSheet: React.FC<PaymentEditSheetProps> = ({
   onOpenChange,
   name,
   avatarUrl,
+  rankId,
   subtitle,
   draft,
   onChange,
@@ -49,7 +52,7 @@ export const PaymentEditSheet: React.FC<PaymentEditSheetProps> = ({
     <FormSheet
       open={open}
       onOpenChange={onOpenChange}
-      leading={<ListAvatar initials={memberInitials(name)} uri={avatarUrl} />}
+      leading={<MemberAvatar name={name} uri={avatarUrl} rankId={rankId} />}
       title={name}
       subtitle={subtitle}
       footer={<PrimaryButton label={t("save")} accent="payments" onPress={onSave} disabled={!amountValid} />}

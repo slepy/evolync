@@ -9,8 +9,12 @@ import {
   type ModuleKey,
 } from "@/core/theme/tokens";
 
-/** Module color, context color (Add new in a school / organization), neutral chrome or a status color. */
-export type ListAccent = ModuleKey | ContextKey | "neutral" | "danger" | "success" | "warning";
+/**
+ * Module color, context color (Add new in a school / organization), neutral
+ * chrome, a status color, or "light": the white selection of account
+ * settings (17A radio, push switch, N5 "Turn on").
+ */
+export type ListAccent = ModuleKey | ContextKey | "neutral" | "light" | "danger" | "success" | "warning";
 
 export interface ResolvedListAccent {
   /** Text / icon color. */
@@ -64,6 +68,17 @@ export function resolveListAccent(accent: ListAccent): ResolvedListAccent {
       fill: neutral.tintFill,
       selectedFill: withAlpha(neutral.tint, 0.08),
       from: neutral.tint,
+      to: neutral.tint,
+      onGradient: neutral.page,
+    };
+  }
+
+  if (accent === "light") {
+    return {
+      tint: neutral.text,
+      fill: neutral.tintFill,
+      selectedFill: neutral.lightSelectedFill,
+      from: neutral.text,
       to: neutral.tint,
       onGradient: neutral.page,
     };

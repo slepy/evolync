@@ -4,9 +4,9 @@ import { ScrollView } from "react-native";
 import { Text, YStack } from "tamagui";
 import { ChoiceList } from "../ChoiceList";
 import { FormSheet } from "../FormSheet";
-import { ListAvatar, ListCard, ListCheck, ListCheckbox, ListIcon, ListRow, ListSection } from "../List";
+import { ListCard, ListCheck, ListCheckbox, ListIcon, ListRow, ListSection } from "../List";
+import { MemberAvatar } from "../MemberAvatar";
 import type { ListAccent } from "../List/accent";
-import { memberInitials } from "./initials";
 
 /** Who an event or a training is for (same values as their `visibility`). */
 export const AUDIENCE = {
@@ -23,6 +23,8 @@ export interface AudienceMember {
   schoolName?: string;
   /** Profile photo shown instead of the initials. */
   avatarUrl?: string;
+  /** Current rank: its belt color cuts the avatar corner. */
+  rankId?: string;
 }
 
 export interface AudienceChoiceProps<T extends Audience> {
@@ -125,7 +127,7 @@ export function AudienceChoice<T extends Audience>({
                     aria-checked={checked}
                     title={member.displayName}
                     subtitle={member.schoolName}
-                    leading={<ListAvatar initials={memberInitials(member.displayName)} uri={member.avatarUrl} />}
+                    leading={<MemberAvatar name={member.displayName} uri={member.avatarUrl} rankId={member.rankId} />}
                     trailing={<ListCheckbox checked={checked} accent={accent} />}
                     onPress={disabled ? undefined : () => toggleMember(member.id)}
                   />

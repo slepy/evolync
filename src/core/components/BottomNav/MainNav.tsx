@@ -38,6 +38,16 @@ function useUnreadCount(userId: string | undefined): number {
 }
 
 /**
+ * Home of the current session (organization / student): the dashboard last
+ * shown, else the owner's or member's one. Tab screens take their glow from it.
+ */
+export function useNavHome(): NavHome {
+  const ownsOrganization = useStore((s) => !!s.organization);
+  const remembered = useNavStore((s) => s.home);
+  return resolveNavHome(remembered, ownsOrganization);
+}
+
+/**
  * The app's bottom nav: Home, Notebook, Alerts, Profile, Settings. Knows the
  * active item from the route, the Home dashboard from the last one shown and
  * the unread alerts from the local database.
@@ -45,9 +55,8 @@ function useUnreadCount(userId: string | undefined): number {
 export function MainNav({ home: homeProp, context }: MainNavProps) {
   const router = useRouter();
   const pathname = usePathname();
-  const ownsOrganization = useStore((s) => !!s.organization);
   const userId = useStore((s) => s.user?.id);
-  const remembered = useNavStore((s) => s.home);
+  const navHome = useNavHome();
   const setHome = useNavStore((s) => s.setHome);
   const unread = useUnreadCount(userId);
 
@@ -55,7 +64,7 @@ export function MainNav({ home: homeProp, context }: MainNavProps) {
     if (homeProp) setHome(homeProp);
   }, [homeProp, setHome]);
 
-  const home = homeProp ?? resolveNavHome(remembered, ownsOrganization);
+  const home = homeProp ?? navHome;
   const go = (href: string) => () => router.navigate(href as Href);
 
   const items: BottomNavItem[] = [

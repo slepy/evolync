@@ -1,46 +1,73 @@
-import { useBottomNavSpace } from "@/core/components";
+import {
+  EmptyState,
+  IconButton,
+  ListCard,
+  ListSection,
+  MainNav,
+  Notice,
+  TabPage,
+  useNavHome,
+} from "@/core/components";
 import type Notification from "@/database/models/Notification";
-import { Header, HeaderTitle } from "@/modules/core/components";
 import { useStore } from "@/store";
 import { useRouter } from "expo-router";
 import { BellOff, CheckCheck } from "lucide-react-native";
-import React, { useCallback, useEffect, useRef, useState } from "react";
-import { FlatList, TouchableOpacity, View } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { Text, useTheme, YStack } from "tamagui";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useNotifications } from "../hooks";
 import {
   markAllNotificationsRead,
   markNotificationRead,
   resolveNotificationOpen,
 } from "../services";
-import { NotificationCard } from "./NotificationCard";
+import { getNotificationContent, groupInbox, inboxDateLocale, inboxTimeLabel, type InboxGroupKey } from "../utils";
+import { notificationRowStyle } from "../utils/rowStyle";
+import { NotificationRow } from "./NotificationRow";
 
-const UNAVAILABLE_TOAST_MS = 2500;
+const UNAVAILABLE_NOTICE_MS = 2500;
+const CLOCK_TICK_MS = 60_000;
+
+const GROUP_LABEL: Record<InboxGroupKey, string> = {
+  today: "notificationsGroupToday",
+  yesterday: "notificationsGroupYesterday",
+  earlier: "notificationsGroupEarlier",
+};
+
+/** Current time, refreshed every minute so "12 min" and the day groups stay right. */
+function useNow(): Date {
+  const [now, setNow] = useState(() => new Date());
+  useEffect(() => {
+    const timer = setInterval(() => setNow(new Date()), CLOCK_TICK_MS);
+    return () => clearInterval(timer);
+  }, []);
+  return now;
+}
 
 /**
- * Inbox shared by owners and students. Reads from WatermelonDB, so it renders
- * offline; marking read is local-first and syncs in the background.
+ * Alerts tab (N1–N4), shared by owners and students: day groups with the
+ * unread count, module-colored rows, Mark all as read. Reads from
+ * WatermelonDB, so it renders offline; marking read is local-first and syncs
+ * in the background.
  */
 export function NotificationsScreen() {
   const router = useRouter();
-  const theme = useTheme();
-  const insets = useSafeAreaInsets();
-  const navSpace = useBottomNavSpace();
+  const home = useNavHome();
   const userId = useStore((s) => s.user?.id);
   const notifications = useNotifications(userId);
-  const hasUnread = notifications.some((n) => !n.readAt);
+  const now = useNow();
+  const locale = inboxDateLocale(t("locale"));
+  const groups = useMemo(() => groupInbox(notifications, now), [notifications, now]);
+  const hasUnread = groups.some((g) => g.unread > 0);
 
   const [unavailableVisible, setUnavailableVisible] = useState(false);
-  const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const noticeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   useEffect(() => () => {
-    if (toastTimer.current) clearTimeout(toastTimer.current);
+    if (noticeTimer.current) clearTimeout(noticeTimer.current);
   }, []);
 
   const showUnavailable = useCallback(() => {
     setUnavailableVisible(true);
-    if (toastTimer.current) clearTimeout(toastTimer.current);
-    toastTimer.current = setTimeout(() => setUnavailableVisible(false), UNAVAILABLE_TOAST_MS);
+    if (noticeTimer.current) clearTimeout(noticeTimer.current);
+    noticeTimer.current = setTimeout(() => setUnavailableVisible(false), UNAVAILABLE_NOTICE_MS);
   }, []);
 
   const handlePress = useCallback(
@@ -66,64 +93,55 @@ export function NotificationsScreen() {
     );
   }, [userId]);
 
-  const handleBack = useCallback(() => {
-    if (router.canGoBack()) router.back();
-    else router.replace("/" as any);
-  }, [router]);
-
   return (
-    <View style={{ flex: 1, paddingTop: insets.top }}>
-      <Header
-        onBack={handleBack}
-        centerContent={<HeaderTitle text={t("notificationsTitle")} />}
-        rightContent={
-          hasUnread ? (
-            <TouchableOpacity
-              onPress={handleMarkAllRead}
-              activeOpacity={0.7}
-              hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-              accessibilityRole="button"
-              accessibilityLabel={t("notificationsMarkAllRead")}
-              style={{ width: 44, height: 44, alignItems: "center", justifyContent: "center" }}
-            >
-              <CheckCheck size={24} color={theme.textPrimary?.val} />
-            </TouchableOpacity>
-          ) : undefined
-        }
-        showLogoMenu={false}
-      />
+    <TabPage
+      title={t("notificationsTitle")}
+      context={home}
+      actions={
+        hasUnread ? (
+          <IconButton icon={CheckCheck} label={t("notificationsMarkAllRead")} onPress={handleMarkAllRead} />
+        ) : null
+      }
+      nav={<MainNav />}
+    >
+      {unavailableVisible ? <Notice text={t("notificationsUnavailable")} /> : null}
 
-      {unavailableVisible && (
-        <YStack
-          marginHorizontal="$3"
-          marginTop="$2"
-          padding="$3"
-          borderRadius="$3"
-          backgroundColor="$yellow3"
-          borderWidth={1}
-          borderColor="$yellow7"
-        >
-          <Text fontSize="$3" color="$yellow11">
-            {t("notificationsUnavailable")}
-          </Text>
-        </YStack>
-      )}
-
-      {notifications.length === 0 ? (
-        <YStack flex={1} padding="$6" gap="$3" alignItems="center" justifyContent="center">
-          <BellOff size={40} color={theme.gray10?.val} />
-          <Text fontSize="$5" color="$gray11" textAlign="center">
-            {t("notificationsEmpty")}
-          </Text>
-        </YStack>
-      ) : (
-        <FlatList
-          data={notifications}
-          keyExtractor={(item) => item.id}
-          renderItem={({ item }) => <NotificationCard notification={item} onPress={handlePress} />}
-          contentContainerStyle={{ paddingVertical: 8, paddingBottom: navSpace }}
+      {groups.length === 0 ? (
+        <EmptyState
+          icon={BellOff}
+          title={t("notificationsEmpty")}
+          text={t(home === "organization" ? "notificationsEmptyHintOwner" : "notificationsEmptyHintStudent")}
         />
+      ) : (
+        groups.map((group) => (
+          <ListSection
+            key={group.key}
+            variant="label"
+            title={t(GROUP_LABEL[group.key])}
+            chip={group.unread > 0 ? t("notificationsNewCount", { count: group.unread }) : undefined}
+            accent="danger"
+          >
+            <ListCard>
+              {group.items.map((notification) => {
+                const { title, body } = getNotificationContent(notification, t, now, locale);
+                const style = notificationRowStyle(notification.type);
+                return (
+                  <NotificationRow
+                    key={notification.id}
+                    title={title}
+                    body={body}
+                    time={inboxTimeLabel(notification.createdAt, now, t, locale)}
+                    unread={!notification.readAt}
+                    icon={style.icon}
+                    accent={style.accent}
+                    onPress={() => handlePress(notification)}
+                  />
+                );
+              })}
+            </ListCard>
+          </ListSection>
+        ))
       )}
-    </View>
+    </TabPage>
   );
 }

@@ -20,6 +20,7 @@ export const useSchoolStudents = (schoolId: string | undefined) => {
               name: m.displayName || m.email || t("unknownMember"),
               email: m.email,
               avatarUrl: m.avatarUrl,
+              rankId: m.currentRankId,
             }))
             .sort((a, b) => a.name.localeCompare(b.name)),
         ),
