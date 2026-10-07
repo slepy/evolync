@@ -43,23 +43,31 @@ Rebuild the student's own Payments and Attendance screens (opened from the stude
 
 ## Progress
 
+PR: #38
+
 > Convention: `- [ ]` pending, `- [x]` done. Append ` — <commit sha>` when a step lands. Do not rename step titles.
 
 ### Phase 1: Core components
 
-- [ ] 1.1 AuthIntro centered variant, StepList, StatusHero
+- [x] 1.1 AuthIntro centered variant, StepList, StatusHero — 4311541
 
 ### Phase 2: Student payments & attendance
 
-- [ ] 2.1 Pure helpers for summary and grouping
-- [ ] 2.2 Student Payments screen
-- [ ] 2.3 Student Attendance screen
+- [x] 2.1 Pure helpers for summary and grouping — 126eeea
+- [x] 2.2 Student Payments screen — a9a5f87
+- [x] 2.3 Student Attendance screen — a9a5f87
 
 ### Phase 3: Join a school
 
-- [ ] 3.1 Join a school screen and Request sent
-- [ ] 3.2 Entry points and back navigation
+- [x] 3.1 Join a school screen and Request sent — d4e89ff
+- [x] 3.2 Entry points and back navigation — d4e89ff
 
 ### Phase 4: Docs
 
-- [ ] 4.1 Translations and CLAUDE.md component map
+- [x] 4.1 Translations and CLAUDE.md component map — 35620fd
+
+## Decisions
+
+- Settings has no Join row on its board; "Join another school" stays in the context sheet (plus the No school card and sign-up).
+- The organization name is not available for a school of another organization; the Request sent row shows the school address under the name.
+- Paid legend icon: Wallet, as on the StudentPayments board (the instructor 14B summary keeps CreditCard).
