@@ -8,6 +8,7 @@ export {
   AttendanceSessionsScreen,
   AttendanceSessionScreen,
   AttendanceCreateScreen,
+  StudentAttendanceScreen,
 } from "./components";
 
 // Constants

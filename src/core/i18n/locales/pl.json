@@ -310,6 +310,7 @@
   "attendanceSessions": "Zajęcia",
   "attendancePresentOf": "Obecni: {{present}} z {{total}}",
   "attendancePresentSummary": "Obecni: {{count}} · {{percent}}%",
+  "attendancePercentPresent": "{{percent}}% obecności",
   "attendanceStatusHint": "Dotknij status, aby go zmienić: Obecny, Nieobecny, Usprawiedliwiony.",
   "attendanceTodayTitle": "Dziś, {{date}}",
 
@@ -326,6 +327,8 @@
   "paymentsErrorEndBeforeStart": "Data końcowa musi być po dacie początkowej",
   "paymentsBillingPeriods": "Okresy rozliczeniowe",
   "paymentsCurrent": "Bieżący",
+  "paymentsToPay": "{{amount}} do zapłaty",
+  "paymentsNothingToPay": "Nic do zapłaty",
   "paymentsCustomPeriod": "Własny okres",
   "paymentsWeekPeriod": "Tydzień",
   "paymentsPaidOf": "Opłacone: {{paid}} z {{total}}",

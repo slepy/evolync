@@ -13,9 +13,9 @@ export { usePaymentRecords } from "./hooks/usePaymentRecords";
 
 // Components
 export { PaymentPeriodsScreen } from "./components/PaymentPeriodsScreen";
+export { StudentPaymentsScreen } from "./components/StudentPaymentsScreen";
 export { PaymentPeriodScreen } from "./components/PaymentPeriodScreen";
 export { PaymentPeriodFormScreen } from "./components/PaymentPeriodFormScreen";
-export { PaymentCycleStats } from "./components/PaymentCycleStats";
 
 // Types
 export type { CreatePaymentCycleDto } from "./types/dto";

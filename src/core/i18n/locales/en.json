@@ -308,6 +308,7 @@
   "attendanceSessions": "Sessions",
   "attendancePresentOf": "{{present}} of {{total}} present",
   "attendancePresentSummary": "{{count}} present · {{percent}}%",
+  "attendancePercentPresent": "{{percent}}% present",
   "attendanceStatusHint": "Tap a status to change it: Present, Absent, Excused.",
   "attendanceTodayTitle": "Today, {{date}}",
 
@@ -324,6 +325,8 @@
   "paymentsErrorEndBeforeStart": "End date must be after start date",
   "paymentsBillingPeriods": "Billing periods",
   "paymentsCurrent": "Current",
+  "paymentsToPay": "{{amount}} to pay",
+  "paymentsNothingToPay": "Nothing to pay",
   "paymentsCustomPeriod": "Custom period",
   "paymentsWeekPeriod": "Week",
   "paymentsPaidOf": "{{paid}} of {{total}} paid",

@@ -11,7 +11,8 @@ import {
 import { LoadingScreen } from "@/modules/core/components/LoadingScreen";
 import { CreditCard } from "lucide-react-native";
 import React from "react";
-import { Text, View } from "tamagui";
+import { Text } from "tamagui";
+import { CurrentBadge } from "./CurrentBadge";
 import { usePaymentPeriodList, type PaymentPeriodEntry } from "../hooks/usePaymentPeriodList";
 import { dateLocaleTag, describePeriod, isCurrentPeriod, localDayKey } from "../paymentPeriod";
 
@@ -67,16 +68,5 @@ function PeriodRow({ period, onPress }: { period: PaymentPeriodEntry; onPress: (
       trailing={<ListChip label={`${period.paid}/${period.total}`} accent={rateAccent(period.paid, period.total)} />}
       onPress={onPress}
     />
-  );
-}
-
-/** "CURRENT" tag after the title of the period that contains today. */
-function CurrentBadge() {
-  return (
-    <View paddingVertical={2} paddingHorizontal={8} borderRadius={8} backgroundColor="$paymentsFill" flexShrink={0}>
-      <Text fontSize={10.5} fontWeight="$button" letterSpacing={0.6} textTransform="uppercase" color="$paymentsTint">
-        {t("paymentsCurrent")}
-      </Text>
-    </View>
   );
 }

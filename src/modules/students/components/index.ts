@@ -1,6 +1,4 @@
 export { StudentFormScreen } from "./StudentFormScreen";
-export { StudentPaymentRow } from "./StudentPaymentRow";
-export { StudentAttendanceHistoryItem } from "./StudentAttendanceHistoryItem";
 export { StudentEventCard } from "./StudentEventCard";
 export { ApproveJoinRequestSheet } from "./ApproveJoinRequestSheet";
 export { StudentsScreen, type StudentsTab } from "./StudentsScreen";
