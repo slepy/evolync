@@ -10,10 +10,9 @@ import {
 } from "@/core/components";
 import type Notification from "@/database/models/Notification";
 import { useStore } from "@/store";
-import { useRouter } from "expo-router";
 import { BellOff, CheckCheck } from "lucide-react-native";
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { useNotifications } from "../hooks";
+import { useNotifications, useOpenNotification } from "../hooks";
 import {
   markAllNotificationsRead,
   markNotificationRead,
@@ -49,7 +48,7 @@ function useNow(): Date {
  * in the background.
  */
 export function NotificationsScreen() {
-  const router = useRouter();
+  const openNotification = useOpenNotification();
   const home = useNavHome();
   const userId = useStore((s) => s.user?.id);
   const notifications = useNotifications(userId);
@@ -78,12 +77,13 @@ export function NotificationsScreen() {
 
       const result = await resolveNotificationOpen(notification);
       if (result.status === "navigate") {
-        router.push(result.route as any);
+        // No longer a member of that school / owner: same notice as a gone entity.
+        if (!openNotification(notification, result.route)) showUnavailable();
       } else if (result.status === "unavailable") {
         showUnavailable();
       }
     },
-    [router, showUnavailable],
+    [openNotification, showUnavailable],
   );
 
   const handleMarkAllRead = useCallback(() => {

@@ -1,12 +1,13 @@
 import { sync } from "@/database/sync";
 import { useStore } from "@/store";
 import * as Notifications from "expo-notifications";
-import { useRootNavigationState, useRouter } from "expo-router";
+import { usePathname, useRootNavigationState, useRouter } from "expo-router";
 import { useEffect, useRef, useState } from "react";
 import { Platform } from "react-native";
+import { useOpenNotification } from "../hooks";
 import { NotificationRepository } from "../repositories";
 import { markNotificationRead } from "../services";
-import { getNotificationRoute, parsePushData, type PushTapTarget } from "../utils";
+import { getNotificationRoute, isLaunchRoute, parsePushData, type PushTapTarget } from "../utils";
 
 if (Platform.OS !== "web") {
   // Show pushes as banners while the app is in the foreground too.
@@ -32,13 +33,20 @@ async function markReadWhenAvailable(notificationId: string) {
 
 /**
  * Root-level listener for push taps (warm: response listener; cold start:
- * last response). Routes through the same deep-link map as the inbox once the
- * router is ready and a user is signed in, and marks the notification read.
+ * last response). Routes through the same deep-link map as the inbox, in the
+ * recipient's context (student / organization), and marks the notification
+ * read. Waits until the session restore has left the launch routes (index,
+ * sign in): `checkSession` sets the user before loading the organization and
+ * memberships and then replaces the stack, which would tear down a screen
+ * opened earlier.
  */
 export function NotificationResponseHandler() {
   const router = useRouter();
   const navigationReady = !!useRootNavigationState()?.key;
   const signedIn = useStore((s) => !!s.user?.id);
+  const pathname = usePathname();
+  const ready = navigationReady && signedIn && !isLaunchRoute(pathname);
+  const openNotification = useOpenNotification();
   const [pending, setPending] = useState<PushTapTarget | null>(null);
   const handled = useRef(new Set<string>());
 
@@ -62,7 +70,7 @@ export function NotificationResponseHandler() {
   }, []);
 
   useEffect(() => {
-    if (!pending || !navigationReady || !signedIn) return;
+    if (!pending || !ready) return;
     setPending(null);
 
     if (pending.kind === "inbox") {
@@ -75,8 +83,11 @@ export function NotificationResponseHandler() {
         console.error("[NotificationResponseHandler] markRead:", err),
       );
     }
-    router.push((getNotificationRoute(pending.target) ?? "/notifications") as any);
-  }, [pending, navigationReady, signedIn, router]);
+    const route = getNotificationRoute(pending.target);
+    if (!route || !openNotification(pending.target, route)) {
+      router.push("/notifications" as any);
+    }
+  }, [pending, ready, router, openNotification]);
 
   return null;
 }

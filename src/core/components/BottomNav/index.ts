@@ -5,4 +5,4 @@ export {
   type BottomNavProps,
 } from "./BottomNav";
 export { MainNav, useNavHome, type MainNavProps } from "./MainNav";
-export { activeNavKey, NAV_KEYS, type NavHome, type NavKey } from "./navItems";
+export { activeNavKey, NAV_HOME_HREF, NAV_KEYS, type NavHome, type NavKey } from "./navItems";
