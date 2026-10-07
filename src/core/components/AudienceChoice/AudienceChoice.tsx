@@ -153,7 +153,6 @@ export function AudienceChoice<T extends Audience>({
                 role="radio"
                 aria-checked={school.id === schoolId}
                 title={school.name}
-                selected={school.id === schoolId}
                 accent={accent}
                 leading={<ListIcon icon={School} accent="school" size={44} />}
                 trailing={school.id === schoolId ? <ListCheck accent={accent} /> : undefined}

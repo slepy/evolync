@@ -1,7 +1,7 @@
-import { contextColors, type ContextKey } from "@/core/theme/tokens";
-import { Building2, CircleCheck, Plus } from "lucide-react-native";
+import { type ContextKey } from "@/core/theme/tokens";
+import { Building2, Plus } from "lucide-react-native";
 import { Sheet, Text, YStack } from "tamagui";
-import { ListCard, ListIcon, ListRow, ListSection } from "../List";
+import { ListCard, ListCheck, ListIcon, ListRow, ListSection } from "../List";
 import { ContextBadge } from "./ContextSwitcher";
 
 export interface ContextOption {
@@ -57,9 +57,7 @@ export function ContextSheet({
         title={option.title}
         subtitle={option.subtitle}
         leading={<ContextBadge context={option.context} icon={Building2} size={48} />}
-        trailing={
-          selected ? <CircleCheck size={24} color={contextColors[option.context].label} strokeWidth={2.2} /> : undefined
-        }
+        trailing={selected ? <ListCheck accent={option.context} /> : undefined}
         onPress={() => {
           onOpenChange(false);
           if (!selected) onSelect(option);

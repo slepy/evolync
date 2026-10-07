@@ -30,7 +30,7 @@ export const CurrencySheet: React.FC<CurrencySheetProps> = ({
           size="md"
           role="option"
           title={currency}
-          selected={currency === value}
+          aria-selected={currency === value}
           accent={accent}
           trailing={currency === value ? <ListCheck accent={accent} /> : undefined}
           onPress={() => {

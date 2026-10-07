@@ -164,6 +164,7 @@ export function StudentDashboard() {
             title={t("ordersTitle")}
             subtitle={t("dashboardStudentTileOrders")}
             href="/user/orders"
+            addHref="/user/orders/create"
           />
         </ModuleTileGrid>
 
