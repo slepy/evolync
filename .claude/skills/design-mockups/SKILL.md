@@ -14,7 +14,7 @@ Canvas: https://claude.ai/artifact/5GM35Pr9XwTRWQAez7pCWx ("Evolync Redesign Moc
 | Board | Path | What it holds |
 | --- | --- | --- |
 | **0 · Color and label rules** | `project/ColorRules.dc.html` | Module accent table (tint, fill, button gradient, button text), the color rules and the one-word button labels |
-| **S · Styleguide (list, tile, header box, choice, checklist, status summary)** | `project/Styleguide.dc.html` | The reusable components: header box (amber / red / blue), list card, module tile (+ wide settings row), radio choice list, checkbox list, status summary |
+| **S · Styleguide (list, tile, header box, choice, checklist, status summary)** | `project/Styleguide.dc.html` | The reusable components: header box (amber / red / blue), list card, module tile (+ wide settings row), radio choice list, checkbox list, status summary, select, view switch, status filter, status badge, photo field |
 
 Also read `project/canvas.json` when you add a board (layout, `order`, free position).
 
@@ -129,8 +129,9 @@ Full markup with placeholders is in [components.md](components.md). Rendered exa
 | **View switch** (`ViewSwitch`) | S section 8, 12A "Orders / Shopping list" | Two views of one screen: card track, two 40px tabs with icon + label, active tab in the module accent at 16% |
 | **Status filter** (`StatusFilter`) | S section 9, 12A status chips | Chips above a list, one per status: selected = status fill, border, label and filled count circle; unselected = page fill, muted label, status dot left, neutral count. Variant without counts |
 | **Status badge** (`StatusBadge`) | S section 10, 12A rows | Read-only mini badge on the right of a list row, under the amount: 6px dot + name in the status color on its fill |
+| **Photo field** (`PhotoField`) | S section 11, 9B / 9C products, P1 / P2 profile | Every photo of a form, the profile photo included: 96px square (radius 24) at the top. Empty = dashed square + "Add photo" link in the accent; with a photo = image + "Change photo" pill + red trash. Camera / Gallery from the system sheet. Module accent, `light` on profile / account screens. Never a round avatar with a camera badge or a custom photo sheet |
 
-When a brief says "list", "tile", "header box" or "choice" / "radio" or "checklist" / "checkbox" or "select" / "dropdown" / "picker" or "status summary" / "counters" or "switch" / "status filter" / "status badge", use these components unchanged and only swap the placeholders. Do not invent new radii, paddings or colors.
+When a brief says "list", "tile", "header box" or "choice" / "radio" or "checklist" / "checkbox" or "select" / "dropdown" / "picker" or "status summary" / "counters" or "switch" / "status filter" / "status badge" or "photo" / "avatar upload", use these components unchanged and only swap the placeholders. Do not invent new radii, paddings or colors.
 
 ## Creating a board
 
