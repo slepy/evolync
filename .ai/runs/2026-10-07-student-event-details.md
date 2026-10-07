@@ -40,6 +40,8 @@ The student dashboard's Orders tile gets the `+` quick action, a calendar event 
 
 ## Progress
 
+PR: #39
+
 > Convention: `- [ ]` pending, `- [x]` done. Append ` — <commit sha>` when a step lands. Do not rename step titles.
 
 ### Phase 1: Orders tile and select check
