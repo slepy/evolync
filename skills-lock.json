@@ -71,7 +71,7 @@
       "source": "open-mercato/skills",
       "sourceType": "github",
       "skillPath": "skills/om-auto-review-pr/SKILL.md",
-      "computedHash": "072fe23ebcd5ad666847893bdee6fee4c5f2ab39fbddd954109e298180d71e70"
+      "computedHash": "052125b436b763c5a63c57b4015095250ae663f17838d16ef0203074327e2a96"
     },
     "om-auto-update-changelog": {
       "source": "open-mercato/skills",
@@ -137,7 +137,7 @@
       "source": "open-mercato/skills",
       "sourceType": "github",
       "skillPath": "skills/om-followup-issue-from-pr/SKILL.md",
-      "computedHash": "855e71fb474a2f87d5def23c1f4027ebe99ea1a7ed4d0f074ca2e2ee01ea21fb"
+      "computedHash": "517bbb426c2c51d16571f75062489d58312597525cd741a8501a0d86c12e89e1"
     },
     "om-integration-tests": {
       "source": "open-mercato/skills",
@@ -149,7 +149,7 @@
       "source": "open-mercato/skills",
       "sourceType": "github",
       "skillPath": "skills/om-merge-buddy/SKILL.md",
-      "computedHash": "7f29a5a0a14e0bb2b692c8c072f0198fee8b485a4ca28186681ee343d51016db"
+      "computedHash": "99548abdb2cfab03df1a273f2a99536bf40b39adfed0d4750bd94555e8a97816"
     },
     "om-mockup-prototype": {
       "source": "open-mercato/skills",
@@ -173,7 +173,7 @@
       "source": "open-mercato/skills",
       "sourceType": "github",
       "skillPath": "skills/om-pr-autopilot/SKILL.md",
-      "computedHash": "16b70edf9fd3d9d24b10434130b02d464438ac814b3651e1043d6c52e818855a"
+      "computedHash": "18f865174a438ef42503d595ba3e7fb9fbd442e1bd4223005f516749e79e07ad"
     },
     "om-prepare-issue": {
       "source": "open-mercato/skills",
@@ -209,7 +209,7 @@
       "source": "open-mercato/skills",
       "sourceType": "github",
       "skillPath": "skills/om-setup-agent-pipeline/SKILL.md",
-      "computedHash": "4455abfbb3577c5ec2e3b56d10b159e16dc39b2f081391813a673adcfcbe379f"
+      "computedHash": "b854424167aa84e4dd39af996c0a0e22245f2ab4e69a2965b56a7b53b7604103"
     },
     "om-setup-discovery-pipeline": {
       "source": "open-mercato/skills",
@@ -221,7 +221,7 @@
       "source": "open-mercato/skills",
       "sourceType": "github",
       "skillPath": "skills/om-spec-writing/SKILL.md",
-      "computedHash": "92becc57b344654f813d0dd34ba51324fa5df989be3d22429719868636641b4e"
+      "computedHash": "a27ef6db1e0b6b764cdc4e51aaa313f6920d3a2557d8d99b2b7f813459f6941f"
     },
     "om-synthetic-users": {
       "source": "open-mercato/skills",
