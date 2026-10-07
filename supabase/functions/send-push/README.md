@@ -24,7 +24,7 @@ POST (after commit) → `send-push` → Expo Push API → device.
 4. **Push credentials** (EAS): FCM v1 service account for Android
    (`eas credentials`, plus `google-services.json` — `app.config.js` picks up the
    `GOOGLE_SERVICES_JSON` EAS file variable, e.g.
-   `eas env:create --name GOOGLE_SERVICES_JSON --type file --value ./google-services.json`,
+   `eas env:set --name GOOGLE_SERVICES_JSON --type file --value ./google-services.json`,
    or a local `./google-services.json`)
    and an APNs key for iOS. Then build a new dev client / store build — the
    `expo-notifications` native module is not in older builds.
