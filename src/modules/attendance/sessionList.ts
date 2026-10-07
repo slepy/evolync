@@ -81,3 +81,9 @@ export function countStatuses(items: ReadonlyArray<{ status: AttendanceStatus }>
   for (const item of items) counts[item.status] += 1;
   return counts;
 }
+
+/** "18:00" (student Attendance row after the school); null for a session saved without a time (midnight). */
+export function formatSessionTime(date: Date, locale: string): string | null {
+  if (date.getHours() === 0 && date.getMinutes() === 0) return null;
+  return date.toLocaleTimeString(locale, { hour: "2-digit", minute: "2-digit", hour12: false });
+}

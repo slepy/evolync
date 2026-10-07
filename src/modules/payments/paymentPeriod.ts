@@ -151,3 +151,7 @@ export function countPeriods(
   }
   return counts;
 }
+
+/** "150 PLN", "150 PLN · 20 EUR" (student Payments summary "… to pay"). */
+export const formatCurrencyAmounts = (amounts: ReadonlyArray<CurrencyAmount>): string =>
+  amounts.map(({ amount, currency }) => `${formatAmount(amount)} ${currency}`).join(" · ");

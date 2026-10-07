@@ -6,6 +6,7 @@ import {
   dateLocaleTag,
   formatSessionMonth,
   formatSessionShort,
+  formatSessionTime,
   formatSessionTitle,
   groupSessionsByMonth,
   isSameDay,
@@ -76,5 +77,16 @@ describe("session date labels", () => {
 
   it("capitalizes the Polish weekday", () => {
     assert.match(formatSessionTitle(day(2026, 10, 2), dateLocaleTag("pl")), /^Piątek, 2 października$/);
+  });
+});
+
+describe("formatSessionTime", () => {
+  it("formats the start time in 24h", () => {
+    assert.equal(formatSessionTime(new Date(2026, 9, 2, 18, 0), "en-GB"), "18:00");
+    assert.equal(formatSessionTime(new Date(2026, 9, 2, 9, 30), "pl-PL"), "09:30");
+  });
+
+  it("has no time for a session saved at midnight", () => {
+    assert.equal(formatSessionTime(new Date(2026, 9, 2), "en-GB"), null);
   });
 });

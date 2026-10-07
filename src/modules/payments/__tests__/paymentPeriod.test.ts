@@ -7,6 +7,7 @@ import {
   dateLocaleTag,
   describePeriod,
   formatAmount,
+  formatCurrencyAmounts,
   formatPeriodDay,
   formatPeriodRange,
   isCurrentPeriod,
@@ -138,5 +139,19 @@ describe("parseAmount", () => {
 
   it("rejects empty, negative, non-numeric and over-precise values", () => {
     for (const text of ["", "-5", "abc", "1.234", "1e3"]) assert.equal(parseAmount(text), null, text);
+  });
+});
+
+describe("formatCurrencyAmounts", () => {
+  it("joins amounts per currency with a middle dot", () => {
+    assert.equal(formatCurrencyAmounts([{ amount: 150, currency: "PLN" }]), "150 PLN");
+    assert.equal(
+      formatCurrencyAmounts([
+        { amount: 150, currency: "PLN" },
+        { amount: 20.5, currency: "EUR" },
+      ]),
+      "150 PLN · 20.50 EUR",
+    );
+    assert.equal(formatCurrencyAmounts([]), "");
   });
 });
