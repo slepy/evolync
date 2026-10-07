@@ -1,6 +1,7 @@
 import { NAV_HOME_HREF, useNavHome } from "@/core/components";
 import { useStore } from "@/store";
-import { useRouter } from "expo-router";
+import { StackActions } from "@react-navigation/native";
+import { useNavigationContainerRef, useRouter } from "expo-router";
 import { useCallback } from "react";
 import type { NotificationTarget } from "../types";
 import { planNotificationContext } from "../utils";
@@ -15,6 +16,7 @@ import { planNotificationContext } from "../utils";
  */
 export function useOpenNotification() {
   const router = useRouter();
+  const navigationRef = useNavigationContainerRef();
   const home = useNavHome();
   const ownsOrganization = useStore((s) => !!s.organization);
   const memberships = useStore((s) => s.schoolMemberships);
@@ -38,12 +40,17 @@ export function useOpenNotification() {
       }
 
       if (plan.switchContext) {
-        if (router.canDismiss()) router.dismissAll();
+        // Pop the root stack (router.dismissAll only pops the focused, possibly
+        // nested, stack), then swap its first screen for the recipient's dashboard.
+        const root = navigationRef.getRootState();
+        if (root?.type === "stack" && root.routes.length > 1) {
+          navigationRef.dispatch({ ...StackActions.popToTop(), target: root.key });
+        }
         router.replace(NAV_HOME_HREF[plan.home] as any);
       }
       router.push(route as any);
       return true;
     },
-    [router, home, ownsOrganization, memberships, activeMembershipId, setActiveMembershipId],
+    [router, navigationRef, home, ownsOrganization, memberships, activeMembershipId, setActiveMembershipId],
   );
 }
