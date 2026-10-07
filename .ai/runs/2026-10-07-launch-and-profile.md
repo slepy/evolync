@@ -46,9 +46,9 @@ Rebuild the launch sequence (native splash → loading until the first screen) a
 
 ### Phase 1: Launch
 
-- [ ] 1.1 Native splash on the page color with the centered logo
-- [ ] 1.2 LaunchScreen shared component (L2 / L3)
-- [ ] 1.3 LaunchScreen on the launch path without white frames
+- [x] 1.1 Native splash on the page color with the centered logo — 2ae8aac
+- [x] 1.2 LaunchScreen shared component (L2 / L3) — ab52755
+- [x] 1.3 LaunchScreen on the launch path without white frames — f1c9e42
 
 ### Phase 2: Profile
 
