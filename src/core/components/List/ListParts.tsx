@@ -144,7 +144,7 @@ export function ListChip({ label, accent = "neutral" }: { label: string; accent?
   const a = resolveListAccent(accent);
   return (
     <View paddingVertical={3} paddingHorizontal={9} borderRadius={9} backgroundColor={a.fill} flexShrink={0}>
-      <Text fontSize={12.5} fontWeight="$button" color={a.tint} numberOfLines={1}>
+      <Text fontSize={12.5} fontWeight="$button" color={a.label} numberOfLines={1}>
         {label}
       </Text>
     </View>

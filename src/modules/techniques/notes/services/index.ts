@@ -1,8 +1,1 @@
-export {
-  createNoteDocument,
-  updateNoteDocument,
-  deleteNoteDocument,
-  addNoteRow,
-  updateNoteRow,
-  deleteNoteRow,
-} from "./noteService";
+export { createNote, saveNote, deleteNoteDocument, type NoteInput } from "./noteService";

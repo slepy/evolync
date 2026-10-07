@@ -18,6 +18,8 @@ export interface PrimaryButtonProps {
   disabled?: boolean;
   /** Shows a spinner instead of the label and blocks presses. */
   loading?: boolean;
+  /** Fits its label instead of the full width (empty-state action, T2E). */
+  inline?: boolean;
 }
 
 /**
@@ -32,6 +34,7 @@ export function PrimaryButton({
   icon: Icon,
   disabled,
   loading,
+  inline,
 }: PrimaryButtonProps) {
   const c = resolvePrimaryButtonColors(accent, colors);
   const inactive = disabled || loading;
@@ -44,7 +47,9 @@ export function PrimaryButton({
       onPress={inactive ? undefined : onPress}
       pressStyle={inactive ? undefined : { opacity: 0.85 }}
       opacity={disabled && !loading ? 0.5 : 1}
-      width="100%"
+      width={inline ? undefined : "100%"}
+      paddingLeft={inline ? 20 : undefined}
+      paddingRight={inline ? 26 : undefined}
       height={52}
       borderRadius={26}
       overflow="hidden"

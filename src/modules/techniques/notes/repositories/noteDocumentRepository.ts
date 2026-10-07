@@ -54,6 +54,11 @@ export const NoteDocumentRepository = {
     });
   },
 
+  observeById(id: string) {
+    const collection = database.get<TechniqueNoteDocument>("technique_note_documents");
+    return collection.findAndObserve(id);
+  },
+
   observeByUserId(userId: string) {
     const collection = database.get<TechniqueNoteDocument>("technique_note_documents");
     return collection

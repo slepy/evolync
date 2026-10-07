@@ -55,6 +55,14 @@ export const TaggableRepository = {
       .observeWithColumns(["tag_id"]);
   },
 
+  /** Every tag link of one entity type (the notes list resolves all its rows' tags at once). */
+  observeByType(taggableType: TaggableType) {
+    const collection = database.get<Taggable>("taggables");
+    return collection
+      .query(Q.where("taggable_type", taggableType))
+      .observeWithColumns(["tag_id", "taggable_id"]);
+  },
+
   async fetchTagIdsForEntity(taggableId: string, taggableType: TaggableType): Promise<string[]> {
     const collection = database.get<Taggable>("taggables");
     const records = await collection

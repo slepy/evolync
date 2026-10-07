@@ -39,3 +39,6 @@ export * from "./Notice";
 export * from "./EmptyState";
 export * from "./Toggle";
 export * from "./SecondaryButton";
+export * from "./TagChip";
+export * from "./DashedButton";
+export * from "./ChipFilter";

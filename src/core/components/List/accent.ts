@@ -19,6 +19,8 @@ export type ListAccent = ModuleKey | ContextKey | "neutral" | "light" | "danger"
 export interface ResolvedListAccent {
   /** Text / icon color. */
   tint: string;
+  /** Text on the 16% fill (chips, the Add new pill): the tint, or a lighter one (Tags rose). */
+  label: string;
   /** Tint at 16%: icon squares, chips, the Add new pill. */
   fill: string;
   /** Tint at 8%: selected row background. */
@@ -42,6 +44,7 @@ export function resolveListAccent(accent: ListAccent): ResolvedListAccent {
   if (accent === "danger") {
     return {
       tint: danger.text,
+      label: danger.text,
       fill: withAlpha(neutral.alertDot, 0.14),
       selectedFill: withAlpha(danger.text, 0.08),
       from: danger.text,
@@ -54,6 +57,7 @@ export function resolveListAccent(accent: ListAccent): ResolvedListAccent {
     const c = accent === "success" ? success : warning;
     return {
       tint: c.text,
+      label: c.text,
       fill: c.fill,
       selectedFill: withAlpha(c.text, 0.08),
       from: c.text,
@@ -65,6 +69,7 @@ export function resolveListAccent(accent: ListAccent): ResolvedListAccent {
   if (accent === "neutral") {
     return {
       tint: neutral.tint,
+      label: neutral.tint,
       fill: neutral.tintFill,
       selectedFill: withAlpha(neutral.tint, 0.08),
       from: neutral.tint,
@@ -76,6 +81,7 @@ export function resolveListAccent(accent: ListAccent): ResolvedListAccent {
   if (accent === "light") {
     return {
       tint: neutral.text,
+      label: neutral.text,
       fill: neutral.tintFill,
       selectedFill: neutral.lightSelectedFill,
       from: neutral.text,
@@ -88,6 +94,7 @@ export function resolveListAccent(accent: ListAccent): ResolvedListAccent {
     const c = contextColors[accent as ContextKey];
     return {
       tint: c.label,
+      label: c.label,
       fill: c.fill,
       selectedFill: withAlpha(c.label, 0.08),
       from: c.gradient[0].color,
@@ -99,6 +106,7 @@ export function resolveListAccent(accent: ListAccent): ResolvedListAccent {
   const m = moduleAccents[accent as ModuleKey];
   return {
     tint: m.tint,
+    label: m.label,
     fill: m.fill,
     selectedFill: withAlpha(m.tint, 0.08),
     from: m.from,

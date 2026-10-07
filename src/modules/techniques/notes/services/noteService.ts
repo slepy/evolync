@@ -1,41 +1,58 @@
 import { sync } from "@/database/sync";
+import type TechniqueNoteDocument from "@/database/models/TechniqueNoteDocument";
+import { setTagsForEntity } from "@/modules/tags";
+import { planRowChanges, type EditableRow } from "../noteRows";
 import { NoteDocumentRepository } from "../repositories/noteDocumentRepository";
 import { NoteRowRepository } from "../repositories/noteRowRepository";
-import type {
-  AttackDirection,
-  CreateNoteDocumentInput,
-  UpdateNoteDocumentInput,
-  UpdateNoteRowInput,
-} from "../types";
-import type TechniqueNoteDocument from "@/database/models/TechniqueNoteDocument";
-import type TechniqueNoteRow from "@/database/models/TechniqueNoteRow";
+import { createNoteDocumentSchema } from "../validation";
 
-export const createNoteDocument = async (
-  data: CreateNoteDocumentInput
-): Promise<TechniqueNoteDocument> => {
-  if (!data.title.trim()) throw new Error("noteTitleRequired");
+export interface NoteInput {
+  title: string;
+  tagIds: string[];
+  rows: EditableRow[];
+}
 
-  const document = await NoteDocumentRepository.create(data);
+/** Trimmed title, validated by the module schema (throws "noteTitleRequired" when empty). */
+const validTitle = (title: string) => createNoteDocumentSchema.parse({ title: title.trim() }).title;
 
-  await NoteRowRepository.create({
-    documentId: document.id,
-    orderIndex: 0,
-    person1Text: "",
-    person2Text: "",
-    direction: "right",
-  });
+const rowFields = (row: EditableRow, orderIndex: number) => ({
+  orderIndex,
+  person1Text: row.person1Text.trim(),
+  person2Text: row.person2Text.trim(),
+  direction: row.direction,
+});
+
+async function writeRows(documentId: string, rows: EditableRow[]): Promise<void> {
+  const saved = await NoteRowRepository.findByDocumentId(documentId);
+  const changes = planRowChanges(saved.map((row) => row.id), rows);
+  for (const id of changes.remove) await NoteRowRepository.softDelete(id);
+  for (const { row, orderIndex } of changes.update) await NoteRowRepository.update(row.id, rowFields(row, orderIndex));
+  for (const { row, orderIndex } of changes.create) {
+    await NoteRowRepository.create({ documentId, ...rowFields(row, orderIndex) });
+  }
+}
+
+/** New note (T3): the document, its tags and its non-empty rows. */
+export const createNote = async (userId: string, data: NoteInput): Promise<TechniqueNoteDocument> => {
+  const title = validTitle(data.title);
+
+  const document = await NoteDocumentRepository.create({ userId, title });
+  await writeRows(document.id, data.rows);
+  if (data.tagIds.length > 0) await setTagsForEntity(data.tagIds, document.id, "note_document");
 
   sync().catch(console.error);
   return document;
 };
 
-export const updateNoteDocument = async (
-  id: string,
-  data: UpdateNoteDocumentInput
-): Promise<TechniqueNoteDocument> => {
-  const updated = await NoteDocumentRepository.update(id, data);
+/** Save of an existing note (T4A): title, tag set and rows as shown on screen. */
+export const saveNote = async (documentId: string, data: NoteInput): Promise<void> => {
+  const title = validTitle(data.title);
+
+  await NoteDocumentRepository.update(documentId, { title });
+  await writeRows(documentId, data.rows);
+  await setTagsForEntity(data.tagIds, documentId, "note_document");
+
   sync().catch(console.error);
-  return updated;
 };
 
 export const deleteNoteDocument = async (id: string): Promise<void> => {
@@ -44,34 +61,5 @@ export const deleteNoteDocument = async (id: string): Promise<void> => {
     await NoteRowRepository.softDelete(row.id);
   }
   await NoteDocumentRepository.softDelete(id);
-  sync().catch(console.error);
-};
-
-export const addNoteRow = async (
-  documentId: string,
-  data?: { person1Text?: string; person2Text?: string; direction?: AttackDirection },
-): Promise<TechniqueNoteRow> => {
-  const count = await NoteRowRepository.countByDocumentId(documentId);
-  const row = await NoteRowRepository.create({
-    documentId,
-    orderIndex: count,
-    person1Text: data?.person1Text ?? "",
-    person2Text: data?.person2Text ?? "",
-    direction: data?.direction ?? "right",
-  });
-  sync().catch(console.error);
-  return row;
-};
-
-export const updateNoteRow = async (
-  id: string,
-  data: UpdateNoteRowInput,
-): Promise<TechniqueNoteRow> => {
-  const updated = await NoteRowRepository.update(id, data);
-  return updated;
-};
-
-export const deleteNoteRow = async (id: string): Promise<void> => {
-  await NoteRowRepository.softDelete(id);
   sync().catch(console.error);
 };

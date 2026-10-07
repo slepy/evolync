@@ -118,8 +118,8 @@ function SectionActionPill({ action, accent }: { action: ListSectionAction; acce
       borderRadius="$pill"
       backgroundColor={a.fill}
     >
-      <Icon size={16} color={a.tint} strokeWidth={2.8} />
-      <Text fontSize="$button" fontWeight="$button" color={a.tint}>
+      <Icon size={16} color={a.label} strokeWidth={2.8} />
+      <Text fontSize="$button" fontWeight="$button" color={a.label}>
         {action.label}
       </Text>
     </XStack>

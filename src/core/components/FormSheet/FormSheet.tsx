@@ -9,6 +9,8 @@ export interface FormSheetProps {
   title: string;
   /** Muted line under the title (6B: the selected day). */
   subtitle?: string;
+  /** Right after the title, e.g. a "2 selected" `ListChip` (T5). */
+  badge?: ReactNode;
   /** In front of the title, e.g. the member's avatar (14C). */
   leading?: ReactNode;
   /** Next to the close button, e.g. a `TrashButton` when editing. */
@@ -34,6 +36,7 @@ export function FormSheet({
   title,
   subtitle,
   leading,
+  badge,
   headerAction,
   children,
   footer,
@@ -73,6 +76,7 @@ export function FormSheet({
                 </Text>
               ) : null}
             </YStack>
+            {badge}
             {headerAction}
             <View
               role="button"

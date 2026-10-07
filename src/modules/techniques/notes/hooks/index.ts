@@ -1,3 +1,3 @@
-export { useNoteDocuments } from "./useNoteDocuments";
-export { useNoteDocumentsByTag } from "./useNoteDocumentsByTag";
+export { useNoteList } from "./useNoteList";
+export { useNoteDocument } from "./useNoteDocument";
 export { useNoteRows } from "./useNoteRows";

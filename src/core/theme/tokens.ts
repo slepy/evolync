@@ -18,6 +18,8 @@ export const neutral = {
   raisedBorder: "#2A3345",
   text: "#F4F6FA",
   muted: "#A7B1C6",
+  /** Label of an unselected filter chip (T2 tag filter). */
+  soft: "#DCE2EE",
   /** Field placeholder and hint text. */
   placeholder: "#7D889F",
   /** Empty checkbox / radio ring, Absent bar segment. */
@@ -186,6 +188,8 @@ export interface ModuleAccent {
   to: string;
   /** Text on the primary button (dark on light accents, ≥ 4.5:1). */
   buttonText: string;
+  /** Text on the 16% fill (chips, Add new): the tint, or a lighter one when the tint reads too dark there (Tags, T2–T5). */
+  label: string;
 }
 
 export const moduleAccents: Record<ModuleKey, ModuleAccent> = {
@@ -195,6 +199,7 @@ export const moduleAccents: Record<ModuleKey, ModuleAccent> = {
     from: "#FB923C",
     to: "#C2410C",
     buttonText: "#1B0A02",
+    label: "#FB923C",
   },
   attendance: {
     tint: "#8DB8FF",
@@ -202,6 +207,7 @@ export const moduleAccents: Record<ModuleKey, ModuleAccent> = {
     from: "#2563EB",
     to: "#1E40AF",
     buttonText: "#FFFFFF",
+    label: "#8DB8FF",
   },
   payments: {
     tint: "#4ADE9F",
@@ -209,6 +215,7 @@ export const moduleAccents: Record<ModuleKey, ModuleAccent> = {
     from: "#059669",
     to: "#065F46",
     buttonText: "#FFFFFF",
+    label: "#4ADE9F",
   },
   grading: {
     tint: "#CBD5E1",
@@ -216,6 +223,7 @@ export const moduleAccents: Record<ModuleKey, ModuleAccent> = {
     from: "#64748B",
     to: "#334155",
     buttonText: "#FFFFFF",
+    label: "#CBD5E1",
   },
   orders: {
     tint: "#C4AEFF",
@@ -223,6 +231,7 @@ export const moduleAccents: Record<ModuleKey, ModuleAccent> = {
     from: "#7C3AED",
     to: "#5B21B6",
     buttonText: "#FFFFFF",
+    label: "#C4AEFF",
   },
   products: {
     tint: "#F9A8D4",
@@ -230,6 +239,7 @@ export const moduleAccents: Record<ModuleKey, ModuleAccent> = {
     from: "#DB2777",
     to: "#9D174D",
     buttonText: "#FFFFFF",
+    label: "#F9A8D4",
   },
   events: {
     tint: "#F5B53D",
@@ -237,6 +247,7 @@ export const moduleAccents: Record<ModuleKey, ModuleAccent> = {
     from: "#FBBF24",
     to: "#D97706",
     buttonText: "#1B1203",
+    label: "#F5B53D",
   },
   trainings: {
     tint: "#5EEAD4",
@@ -244,6 +255,7 @@ export const moduleAccents: Record<ModuleKey, ModuleAccent> = {
     from: "#2DD4BF",
     to: "#0F766E",
     buttonText: "#04201D",
+    label: "#5EEAD4",
   },
   tags: {
     tint: "#FB7185",
@@ -251,6 +263,7 @@ export const moduleAccents: Record<ModuleKey, ModuleAccent> = {
     from: "#FB7185",
     to: "#E11D48",
     buttonText: "#FFFFFF",
+    label: "#FDA4AF",
   },
   notebook: {
     tint: "#67E8F9",
@@ -258,6 +271,7 @@ export const moduleAccents: Record<ModuleKey, ModuleAccent> = {
     from: "#22D3EE",
     to: "#0891B2",
     buttonText: "#03222A",
+    label: "#67E8F9",
   },
 };
 
