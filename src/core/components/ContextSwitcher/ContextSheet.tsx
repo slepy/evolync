@@ -1,14 +1,15 @@
-import type { ContextKey } from "@/core/theme/tokens";
+import { contextColors, type ContextKey } from "@/core/theme/tokens";
+import { Building2, CircleCheck, Plus } from "lucide-react-native";
 import { Sheet, Text, YStack } from "tamagui";
-import { ListCard, ListCheck, ListIcon, ListRow } from "../List";
-import { CONTEXT_ICONS } from "./ContextSwitcher";
+import { ListCard, ListIcon, ListRow, ListSection } from "../List";
+import { ContextBadge } from "./ContextSwitcher";
 
 export interface ContextOption {
   id: string;
-  /** Context the option opens: colors its icon (schools as a student are blue). */
+  /** Context the option opens: organization (Manage) or student (Train as student). */
   context: ContextKey;
   title: string;
-  /** "Organization", "Student"… */
+  /** "Organization · 3 schools", "Student · Poznań"… */
   subtitle?: string;
 }
 
@@ -16,18 +17,57 @@ export interface ContextSheetProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   options: ContextOption[];
-  /** Id of the current context: 8% tint + check, like a select sheet row. */
+  /** Id of the current context: check in its context color. */
   activeId: string | null;
   /** Called with the chosen option; the sheet closes itself. */
   onSelect: (option: ContextOption) => void;
+  /** Last row of Train as student, "Join another school" (opens the join screen). */
+  onJoinSchool?: () => void;
   title?: string;
+  /** Muted line under the title (default: depends on whether an organization is listed). */
+  description?: string;
 }
 
 /**
- * Sheet opened by the context switcher: one list card, a row per context
- * with its icon in the target context color. Tap = switch and close.
+ * Sheet opened by the context switcher (board 3): title and description, the
+ * organization under MANAGE, the schools the user trains in under TRAIN AS
+ * STUDENT, closed by "Join another school". Tap = switch and close.
  */
-export function ContextSheet({ open, onOpenChange, options, activeId, onSelect, title }: ContextSheetProps) {
+export function ContextSheet({
+  open,
+  onOpenChange,
+  options,
+  activeId,
+  onSelect,
+  onJoinSchool,
+  title,
+  description,
+}: ContextSheetProps) {
+  const manage = options.filter((o) => o.context !== "student");
+  const train = options.filter((o) => o.context === "student");
+  const heading = title ?? t("contextSwitchTitle");
+
+  const renderRow = (option: ContextOption) => {
+    const selected = option.id === activeId;
+    return (
+      <ListRow
+        key={option.id}
+        role="option"
+        aria-selected={selected}
+        title={option.title}
+        subtitle={option.subtitle}
+        leading={<ContextBadge context={option.context} icon={Building2} size={48} />}
+        trailing={
+          selected ? <CircleCheck size={24} color={contextColors[option.context].label} strokeWidth={2.2} /> : undefined
+        }
+        onPress={() => {
+          onOpenChange(false);
+          if (!selected) onSelect(option);
+        }}
+      />
+    );
+  };
+
   return (
     <Sheet modal open={open} onOpenChange={onOpenChange} snapPointsMode="fit" dismissOnSnapToBottom zIndex={200_000}>
       <Sheet.Overlay backgroundColor="rgba(0,0,0,0.5)" enterStyle={{ opacity: 0 }} exitStyle={{ opacity: 0 }} />
@@ -37,35 +77,47 @@ export function ContextSheet({ open, onOpenChange, options, activeId, onSelect, 
         borderTopRightRadius="$header"
         paddingHorizontal={20}
         paddingTop={10}
-        paddingBottom={36}
+        paddingBottom={32}
       >
         <Sheet.Handle backgroundColor="$neutralControl" />
-        <YStack gap={16} paddingTop={12}>
-          <Text fontSize="$section" fontWeight="$section" letterSpacing={-0.2} color="$neutralText">
-            {title ?? t("contextSwitchTitle")}
-          </Text>
-          <ListCard role="group" aria-label={title ?? t("contextSwitchTitle")}>
-            {options.map((option) => {
-              const selected = option.id === activeId;
-              return (
-                <ListRow
-                  key={option.id}
-                  size="md"
-                  role="option"
-                  title={option.title}
-                  subtitle={option.subtitle}
-                  leading={<ListIcon icon={CONTEXT_ICONS[option.context]} accent={option.context} size={44} />}
-                  trailing={selected ? <ListCheck accent={option.context} /> : undefined}
-                  selected={selected}
-                  accent={option.context}
-                  onPress={() => {
-                    onOpenChange(false);
-                    if (!selected) onSelect(option);
-                  }}
-                />
-              );
-            })}
-          </ListCard>
+        <YStack gap={20} paddingTop={12}>
+          <YStack gap={4}>
+            <Text fontSize={22} fontWeight="800" letterSpacing={-0.3} color="$neutralText">
+              {heading}
+            </Text>
+            <Text fontSize={14} fontWeight="500" color="$neutralMuted">
+              {description ??
+                (manage.length > 0 ? t("contextSwitchDescription") : t("contextSwitchDescriptionStudent"))}
+            </Text>
+          </YStack>
+
+          {manage.length > 0 ? (
+            <ListSection title={t("dashboardManage")} variant="label">
+              <ListCard role="group" aria-label={t("dashboardManage")}>
+                {manage.map(renderRow)}
+              </ListCard>
+            </ListSection>
+          ) : null}
+
+          {train.length > 0 || onJoinSchool ? (
+            <ListSection title={t("contextTrainAsStudent")} variant="label">
+              <ListCard role="group" aria-label={t("contextTrainAsStudent")}>
+                {train.map(renderRow)}
+                {onJoinSchool ? (
+                  <ListRow
+                    role="button"
+                    title={t("contextJoinAnotherSchool")}
+                    subtitle={t("contextJoinAnotherSchoolHint")}
+                    leading={<ListIcon icon={Plus} accent="neutral" />}
+                    onPress={() => {
+                      onOpenChange(false);
+                      onJoinSchool();
+                    }}
+                  />
+                ) : null}
+              </ListCard>
+            </ListSection>
+          ) : null}
         </YStack>
       </Sheet.Frame>
     </Sheet>
