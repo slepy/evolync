@@ -35,4 +35,4 @@ Show each row of a descriptive note the way the revised T4 / T4A boards do: Pers
 
 ### Phase 1: Bubble rows
 
-- [ ] 1.1 Tokens, translations and NoteRowCard / NoteForm on the new layout
+- [x] 1.1 Tokens, translations and NoteRowCard / NoteForm on the new layout — c793ad0
