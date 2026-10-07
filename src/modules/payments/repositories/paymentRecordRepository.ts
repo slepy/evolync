@@ -156,7 +156,7 @@ export const PaymentRecordRepository = {
         Q.where("payment_cycle_id", Q.oneOf(cycleIds)),
         Q.where("deleted_at", null)
       )
-      .observe();
+      .observeWithColumns(["status"]);
   },
 
   async findByCycleIds(cycleIds: string[]): Promise<PaymentRecord[]> {
@@ -170,6 +170,8 @@ export const PaymentRecordRepository = {
       .fetch();
   },
 
+  // Status is observed so per-period counts refresh when a record's status changes
+  // (plain observe() only emits when records are added or removed).
   observeBySchoolId(schoolId: string) {
     const recordsCollection = database.get<PaymentRecord>("payment_records");
     return recordsCollection
@@ -180,6 +182,6 @@ export const PaymentRecordRepository = {
         ]),
         Q.where("deleted_at", null)
       )
-      .observe();
+      .observeWithColumns(["status"]);
   },
 };

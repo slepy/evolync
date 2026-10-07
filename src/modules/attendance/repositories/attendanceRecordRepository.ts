@@ -146,6 +146,8 @@ export const AttendanceRecordRepository = {
       .observe();
   },
 
+  // Status is observed so per-session counts refresh when a record's status changes
+  // (plain observe() only emits when records are added or removed).
   observeBySchoolId(schoolId: string) {
     const collection = database.get<AttendanceRecord>("attendance_records");
     return collection
@@ -156,6 +158,6 @@ export const AttendanceRecordRepository = {
         ]),
         Q.where("deleted_at", null)
       )
-      .observe();
+      .observeWithColumns(["status"]);
   },
 };
