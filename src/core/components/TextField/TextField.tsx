@@ -107,6 +107,10 @@ export function TextField({
         borderStyle={locked ? "dashed" : "solid"}
         borderColor={hasError ? errorColor : focused ? tint : "$neutralRaisedBorder"}
         opacity={disabled ? 0.6 : 1}
+        // Android (Fabric): the dimmed state must not flatten / unflatten this
+        // row — moving its native EditText to another parent while the screen
+        // is replaced crashed the app (forgot password → Send).
+        collapsable={false}
       >
         {Icon ? <Icon size={18} color={neutral.muted} strokeWidth={2} /> : null}
         <Input
