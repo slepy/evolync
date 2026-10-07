@@ -49,5 +49,5 @@ The student dashboard's Orders tile gets the `+` quick action, a calendar event 
 
 ### Phase 2: Student events
 
-- [ ] 2.1 Student event details screen
-- [ ] 2.2 Student events list on the new components
+- [x] 2.1 Student event details screen — f447a29
+- [x] 2.2 Student events list on the new components — f447a29
