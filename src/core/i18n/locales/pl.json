@@ -59,7 +59,7 @@
   "joinSchoolStep2": "Wpisz go tutaj i wyślij prośbę",
   "joinSchoolStep3": "Dostęp dostaniesz po akceptacji",
   "joinSchoolSentTitle": "Prośba wysłana",
-  "joinSchoolSentHint": "Dostęp dostaniesz, gdy instruktor ją zaakceptuje. Damy znać w Powiadomieniach.",
+  "joinSchoolSentHint": "Dostęp dostaniesz, gdy instruktor ją zaakceptuje. Damy znać w Alertach.",
   "joinSchoolDone": "Gotowe",
   "notInAnySchool": "Nie jesteś zapisany do żadnej szkoły",
   "pendingMembershipInfo": "Twoja prośba o dołączenie oczekuje na zatwierdzenie przez właściciela szkoły.",
