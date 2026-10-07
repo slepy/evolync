@@ -1,4 +1,4 @@
-import type { ContextKey } from "@/core/theme/tokens";
+import type { PageContext } from "@/core/theme/tokens";
 import { NotificationRepository } from "@/modules/notifications/repositories";
 import { useStore } from "@/store";
 import { usePathname, useRouter, type Href } from "expo-router";
@@ -18,8 +18,8 @@ import { useNavStore } from "./navStore";
 export interface MainNavProps {
   /** Set on a dashboard: makes it the Home the tab screens go back to. */
   home?: NavHome;
-  /** Color of the active pill when it differs from Home's (the school dashboard is red). */
-  context?: ContextKey;
+  /** Color of the active pill when it differs from Home's (the school dashboard is red, no school is neutral). */
+  context?: PageContext;
 }
 
 function useUnreadCount(userId: string | undefined): number {

@@ -1,4 +1,4 @@
-import { contextColors, neutral, type ContextKey } from "@/core/theme/tokens";
+import { contextColors, neutral, type PageContext } from "@/core/theme/tokens";
 import { LinearGradient } from "expo-linear-gradient";
 import type { LucideIcon } from "lucide-react-native";
 import { StyleSheet } from "react-native";
@@ -15,8 +15,8 @@ export interface BottomNavItem {
 }
 
 export interface BottomNavProps {
-  /** Colors the active pill: Organization amber, School red, Student blue. */
-  context: ContextKey;
+  /** Colors the active pill: Organization amber, School red, Student blue, neutral white (5). */
+  context: PageContext;
   items: BottomNavItem[];
   /** Key of the active item; null when the screen is outside the nav. */
   activeKey: string | null;
@@ -77,9 +77,16 @@ export function BottomNav({ context, items, activeKey }: BottomNavProps) {
   );
 }
 
-function ActivePill({ item, context }: { item: BottomNavItem; context: ContextKey }) {
-  const c = contextColors[context];
+function ActivePill({ item, context }: { item: BottomNavItem; context: PageContext }) {
   const Icon = item.icon;
+  const colors =
+    context === "neutral"
+      ? { from: neutral.text, to: neutral.text, fg: neutral.page }
+      : {
+          from: contextColors[context].gradient[0].color,
+          to: contextColors[context].gradient[contextColors[context].gradient.length - 1].color,
+          fg: contextColors[context].fg,
+        };
 
   return (
     <XStack
@@ -96,13 +103,13 @@ function ActivePill({ item, context }: { item: BottomNavItem; context: ContextKe
       overflow="hidden"
     >
       <LinearGradient
-        colors={[c.gradient[0].color, c.gradient[c.gradient.length - 1].color]}
+        colors={[colors.from, colors.to]}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
         style={StyleSheet.absoluteFill}
       />
-      <Icon size={20} color={c.fg} strokeWidth={2.2} />
-      <Text fontSize={13} fontWeight="$button" color={c.fg} numberOfLines={1}>
+      <Icon size={20} color={colors.fg} strokeWidth={2.2} />
+      <Text fontSize={13} fontWeight="$button" color={colors.fg} numberOfLines={1}>
         {item.label}
       </Text>
     </XStack>
