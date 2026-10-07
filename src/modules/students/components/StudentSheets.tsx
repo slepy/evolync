@@ -34,7 +34,7 @@ export const StudentRankSheet: React.FC<StudentRankSheetProps> = ({ open, onOpen
                 title={option.name}
                 leading={<RankIcon color={option.color} size={40} empty={!option.id} />}
                 trailing={selected ? <ListCheck accent="students" /> : undefined}
-                selected={selected}
+                aria-selected={selected}
                 accent="students"
                 onPress={() => {
                   onSelect(option.id);

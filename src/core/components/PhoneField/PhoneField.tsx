@@ -124,7 +124,7 @@ export function PhoneField({ label, prefix, number, onChange, prefixes, placehol
                 size="md"
                 role="option"
                 title={option.label}
-                selected={option.code === prefix}
+                aria-selected={option.code === prefix}
                 accent={accent}
                 trailing={option.code === prefix ? <ListCheck accent={accent} /> : undefined}
                 onPress={() => {

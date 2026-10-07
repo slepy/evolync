@@ -65,7 +65,7 @@ export const StudentSelectSheet: React.FC<StudentSelectSheetProps> = ({ open, on
                   title={student.name}
                   subtitle={student.email}
                   leading={<MemberAvatar name={student.name} uri={student.avatarUrl} rankId={student.rankId} />}
-                  selected={selected}
+                  aria-selected={selected}
                   accent="orders"
                   trailing={selected ? <ListCheck accent="orders" /> : undefined}
                   onPress={() => {

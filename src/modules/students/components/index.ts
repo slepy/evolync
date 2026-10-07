@@ -1,5 +1,4 @@
 export { StudentFormScreen } from "./StudentFormScreen";
-export { StudentEventCard } from "./StudentEventCard";
 export { ApproveJoinRequestSheet } from "./ApproveJoinRequestSheet";
 export { StudentsScreen, type StudentsTab } from "./StudentsScreen";
 export { InviteCodeCard } from "./InviteCodeCard";

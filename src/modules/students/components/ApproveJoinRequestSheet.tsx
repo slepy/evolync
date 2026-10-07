@@ -357,7 +357,6 @@ export const ApproveJoinRequestSheet: React.FC<
                         subtitle={member.email ?? member.phoneNumber ?? undefined}
                         leading={<MemberAvatar name={memberName} uri={member.avatarUrl} rankId={member.currentRankId} />}
                         trailing={selected ? <ListCheck accent="students" /> : undefined}
-                        selected={selected}
                         accent="students"
                         onPress={() => handleMemberSelect(member.id)}
                       />
