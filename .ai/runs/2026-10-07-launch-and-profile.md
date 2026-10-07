@@ -52,6 +52,6 @@ Rebuild the launch sequence (native splash → loading until the first screen) a
 
 ### Phase 2: Profile
 
-- [ ] 2.1 Locked TextField, large PhoneField, TabPage footer
-- [ ] 2.2 ProfileScreen on P1 / P2 with translations
-- [ ] 2.3 Profile form logic tests
+- [x] 2.1 Locked TextField, large PhoneField, TabPage footer — 9677657
+- [x] 2.2 ProfileScreen on P1 / P2 with translations — e16d22b
+- [x] 2.3 Profile form logic tests — 6ce7957
