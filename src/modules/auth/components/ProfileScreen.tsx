@@ -111,6 +111,8 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({ initial, email, on
           prefix={phone.prefix}
           number={phone.number}
           onChange={(value) => {
+            // Picking the prefix already set is not a change.
+            if (value.prefix === phone.prefix && value.number === phone.number) return;
             setPhone(value);
             changed("phone");
           }}
