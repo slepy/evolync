@@ -1,9 +1,9 @@
 import { TrashButton } from "@/core/components";
 import { moduleAccents, neutral } from "@/core/theme/tokens";
-import { ArrowLeft, ArrowRight } from "lucide-react-native";
+import { RefreshCw } from "lucide-react-native";
 import { useState } from "react";
 import { Input, Text, View, XStack, YStack } from "tamagui";
-import { leaderOf, type EditableRow } from "../noteRows";
+import { bubbleOrder, leaderOf, type EditableRow } from "../noteRows";
 
 type Person = "person1Text" | "person2Text";
 
@@ -18,25 +18,26 @@ export interface NoteRowCardProps {
 
 /**
  * One step of a descriptive note (T4): number, who leads, delete; then the
- * Person 1 and Person 2 cells with the direction arrow between them
- * (→ Person 1 leads, ← Person 2 leads).
+ * two people as chat bubbles, Person 1 cyan on the left, Person 2 neutral on
+ * the right, the leader on top. The swap button between them changes who leads.
  */
 export function NoteRowCard({ row, number, onChangeText, onToggleDirection, onDelete }: NoteRowCardProps) {
   const leader = leaderOf(row.direction);
-  const Arrow = leader === 1 ? ArrowRight : ArrowLeft;
+  const [first, second] = bubbleOrder(row.direction);
+  const bubble = (person: 1 | 2) => {
+    const field: Person = person === 1 ? "person1Text" : "person2Text";
+    return (
+      <PersonBubble
+        person={person}
+        leads={person === leader}
+        value={row[field]}
+        onChangeText={(v) => onChangeText(field, v)}
+      />
+    );
+  };
 
   return (
-    <YStack
-      gap={10}
-      paddingTop={12}
-      paddingBottom={14}
-      paddingLeft={14}
-      paddingRight={12}
-      borderRadius="$card"
-      borderWidth={1}
-      borderColor="$neutralCardBorder"
-      backgroundColor="$neutralCard"
-    >
+    <YStack gap={8}>
       <XStack alignItems="center" gap={10}>
         <View width={28} height={28} borderRadius={14} backgroundColor="$neutralTintFill" alignItems="center" justifyContent="center">
           <Text fontSize={13} fontWeight="$button" color="$neutralTint">
@@ -49,11 +50,11 @@ export function NoteRowCard({ row, number, onChangeText, onToggleDirection, onDe
         <TrashButton size={40} label={t("notesDeleteRowNumber", { number })} onPress={onDelete} />
       </XStack>
 
-      <XStack alignItems="center" gap={4}>
-        <RowCell value={row.person1Text} placeholder={t("notesPerson1")} onChangeText={(v) => onChangeText("person1Text", v)} />
+      {bubble(first)}
+      <XStack justifyContent="center" marginVertical={-2}>
         <View
           role="button"
-          aria-label={t("notesChangeDirection", { person: leader })}
+          aria-label={t("notesSwapLeader", { person: second })}
           onPress={onToggleDirection}
           pressStyle={{ opacity: 0.8 }}
           width={44}
@@ -62,44 +63,75 @@ export function NoteRowCard({ row, number, onChangeText, onToggleDirection, onDe
           backgroundColor="$notebookFill"
           alignItems="center"
           justifyContent="center"
-          flexShrink={0}
         >
-          <Arrow size={20} color={moduleAccents.notebook.tint} strokeWidth={2.4} />
+          <RefreshCw size={20} color={moduleAccents.notebook.tint} strokeWidth={2.2} />
         </View>
-        <RowCell value={row.person2Text} placeholder={t("notesPerson2")} onChangeText={(v) => onChangeText("person2Text", v)} />
       </XStack>
+      {bubble(second)}
     </YStack>
   );
 }
 
-function RowCell({ value, placeholder, onChangeText }: { value: string; placeholder: string; onChangeText: (v: string) => void }) {
+interface PersonBubbleProps {
+  person: 1 | 2;
+  leads: boolean;
+  value: string;
+  onChangeText: (v: string) => void;
+}
+
+/** Person 1 bubble: cyan, on the left, square top-left corner; Person 2: neutral, on the right, square top-right. */
+function PersonBubble({ person, leads, value, onChangeText }: PersonBubbleProps) {
   const [focused, setFocused] = useState(false);
+  const isFirst = person === 1;
+  const name = t(isFirst ? "notesPerson1" : "notesPerson2");
 
   return (
-    <Input
-      unstyled
-      flex={1}
-      minWidth={0}
-      minHeight={76}
-      multiline
-      aria-label={placeholder}
-      value={value}
-      onChangeText={onChangeText}
-      placeholder={placeholder}
-      placeholderTextColor={neutral.placeholder}
-      onFocus={() => setFocused(true)}
-      onBlur={() => setFocused(false)}
-      textAlignVertical="top"
-      paddingVertical={10}
-      paddingHorizontal={12}
-      borderRadius={14}
-      borderWidth={focused ? 1.5 : 1}
-      borderColor={focused ? "$notebookTint" : "$neutralRaisedBorder"}
-      backgroundColor="$neutralPage"
-      color="$neutralText"
-      fontSize={14}
-      fontWeight="600"
-      lineHeight={20}
-    />
+    <YStack
+      alignSelf={isFirst ? "flex-start" : "flex-end"}
+      width="86%"
+      gap={8}
+      padding={10}
+      borderRadius={20}
+      borderTopLeftRadius={isFirst ? 6 : 20}
+      borderTopRightRadius={isFirst ? 20 : 6}
+      borderWidth={1}
+      borderColor={isFirst ? "$noteBubbleBorder" : "$neutralRaisedBorder"}
+      backgroundColor={isFirst ? "$noteBubbleFill" : "$neutralCard"}
+    >
+      <Text
+        paddingHorizontal={4}
+        fontSize={11}
+        fontWeight="$eyebrow"
+        letterSpacing={0.8}
+        textTransform="uppercase"
+        color={isFirst ? "$notebookLabel" : "$neutralMuted"}
+      >
+        {leads ? t("notesPersonLeads", { person }) : name}
+      </Text>
+      <Input
+        unstyled
+        multiline
+        scrollEnabled={false}
+        minHeight={44}
+        aria-label={name}
+        value={value}
+        onChangeText={onChangeText}
+        placeholder={t("notesPersonPlaceholder", { person })}
+        placeholderTextColor={neutral.placeholder}
+        onFocus={() => setFocused(true)}
+        onBlur={() => setFocused(false)}
+        textAlignVertical="top"
+        paddingVertical={10}
+        paddingHorizontal={12}
+        borderRadius={14}
+        borderWidth={focused ? 1.5 : 1}
+        borderColor={focused ? "$notebookFrom" : "$neutralRaisedBorder"}
+        backgroundColor="$neutralPage"
+        color="$neutralText"
+        fontSize={15}
+        fontWeight="600"
+        lineHeight={22}
+      />
+    </YStack>
   );
 }

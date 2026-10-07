@@ -1,6 +1,6 @@
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
-import { isNoteChanged, leaderOf, normalizeDraft, planRowChanges, toggleDirection, type EditableRow, type NoteDraft } from "../noteRows";
+import { bubbleOrder, isNoteChanged, leaderOf, normalizeDraft, planRowChanges, toggleDirection, type EditableRow, type NoteDraft } from "../noteRows";
 
 const row = (id: string, p1 = "a", p2 = "b", direction: EditableRow["direction"] = "right"): EditableRow => ({
   id,
@@ -15,6 +15,12 @@ describe("direction", () => {
     assert.equal(leaderOf("left"), 2);
     assert.equal(toggleDirection("right"), "left");
     assert.equal(toggleDirection("left"), "right");
+  });
+
+  it("puts the leader's bubble on top and swaps the order with the direction", () => {
+    assert.deepEqual(bubbleOrder("right"), [1, 2]);
+    assert.deepEqual(bubbleOrder("left"), [2, 1]);
+    assert.deepEqual(bubbleOrder(toggleDirection("right")), [2, 1]);
   });
 });
 

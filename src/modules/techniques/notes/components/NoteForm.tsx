@@ -1,7 +1,7 @@
 import { DashedButton, TagChip, TextField } from "@/core/components";
 import { TagPickerSheet, useTags } from "@/modules/tags";
 import { useState } from "react";
-import { Text, View, XStack, YStack } from "tamagui";
+import { Text, XStack, YStack } from "tamagui";
 import { v4 as uuidv4 } from "uuid";
 import { toggleDirection, type EditableRow, type NoteDraft } from "../noteRows";
 import { NoteRowCard } from "./NoteRowCard";
@@ -58,7 +58,7 @@ export function NoteForm({ value, onChange, autoFocusTitle }: NoteFormProps) {
       </YStack>
       </YStack>
 
-      <YStack gap={12}>
+      <YStack gap={14} marginTop={4}>
         <XStack alignItems="baseline" justifyContent="space-between" gap={12}>
           <Text fontSize={18} fontWeight="$section" color="$neutralText">
             {t("notesRows")}
@@ -67,21 +67,20 @@ export function NoteForm({ value, onChange, autoFocusTitle }: NoteFormProps) {
             {t("notesRowsHint")}
           </Text>
         </XStack>
-        <XStack alignItems="center" gap={4} paddingLeft={14} paddingRight={12}>
-          <PersonLabel text={t("notesPerson1")} />
-          <View width={44} flexShrink={0} />
-          <PersonLabel text={t("notesPerson2")} />
-        </XStack>
-        {value.rows.map((row, index) => (
-          <NoteRowCard
-            key={row.id}
-            row={row}
-            number={index + 1}
-            onChangeText={(field, text) => updateRow(row.id, { [field]: text })}
-            onToggleDirection={() => updateRow(row.id, { direction: toggleDirection(row.direction) })}
-            onDelete={() => onChange({ ...value, rows: value.rows.filter((r) => r.id !== row.id) })}
-          />
-        ))}
+        {value.rows.length > 0 && (
+          <YStack gap={26}>
+            {value.rows.map((row, index) => (
+              <NoteRowCard
+                key={row.id}
+                row={row}
+                number={index + 1}
+                onChangeText={(field, text) => updateRow(row.id, { [field]: text })}
+                onToggleDirection={() => updateRow(row.id, { direction: toggleDirection(row.direction) })}
+                onDelete={() => onChange({ ...value, rows: value.rows.filter((r) => r.id !== row.id) })}
+              />
+            ))}
+          </YStack>
+        )}
         <DashedButton
           accent="notebook"
           label={t("notesAddRow")}
@@ -91,13 +90,5 @@ export function NoteForm({ value, onChange, autoFocusTitle }: NoteFormProps) {
 
       <TagPickerSheet open={tagsOpen} onOpenChange={setTagsOpen} selectedTagIds={value.tagIds} onToggleTag={toggleTag} />
     </>
-  );
-}
-
-function PersonLabel({ text }: { text: string }) {
-  return (
-    <Text flex={1} fontSize={12} fontWeight="$eyebrow" letterSpacing={0.8} textTransform="uppercase" color="$neutralMuted" textAlign="center">
-      {text}
-    </Text>
   );
 }
