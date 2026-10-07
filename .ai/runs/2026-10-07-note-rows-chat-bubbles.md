@@ -31,6 +31,8 @@ Show each row of a descriptive note the way the revised T4 / T4A boards do: Pers
 
 ## Progress
 
+PR: #42
+
 > Convention: `- [ ]` pending, `- [x]` done. Append ` — <commit sha>` when a step lands. Do not rename step titles.
 
 ### Phase 1: Bubble rows
