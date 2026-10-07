@@ -44,8 +44,8 @@ The student dashboard's Orders tile gets the `+` quick action, a calendar event 
 
 ### Phase 1: Orders tile and select check
 
-- [ ] 1.1 Orders tile `+` on the student dashboard
-- [ ] 1.2 Round 24px select check
+- [x] 1.1 Orders tile `+` on the student dashboard — 0e508df
+- [x] 1.2 Round 24px select check — 0e508df
 
 ### Phase 2: Student events
 
