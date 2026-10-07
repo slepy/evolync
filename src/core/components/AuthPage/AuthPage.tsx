@@ -1,4 +1,4 @@
-import { brand } from "@/core/theme/tokens";
+import { brand, contextColors, type ContextKey } from "@/core/theme/tokens";
 import { LinearGradient } from "expo-linear-gradient";
 import type { ReactNode } from "react";
 import { KeyboardAvoidingView, Platform } from "react-native";
@@ -18,6 +18,8 @@ export interface AuthPageProps {
   footer?: ReactNode;
   /** Pushed to the bottom of the page ("No account yet? Sign up"). */
   bottom?: ReactNode;
+  /** Glow of a context instead of the brand one (Join a school "Request sent": school red). */
+  context?: ContextKey;
 }
 
 /**
@@ -25,11 +27,11 @@ export interface AuthPageProps {
  * reset): dark page with the orange brand glow, optional back header,
  * content 18px apart, optional pinned footer button.
  */
-export function AuthPage({ title, onBack, children, footer, bottom }: AuthPageProps) {
+export function AuthPage({ title, onBack, children, footer, bottom, context }: AuthPageProps) {
   return (
     <YStack flex={1} backgroundColor="$neutralPage">
       <LinearGradient
-        colors={[brand.glow, "transparent"]}
+        colors={[context ? contextColors[context].glow : brand.glow, "transparent"]}
         locations={[0, 1]}
         pointerEvents="none"
         style={{ position: "absolute", top: 0, left: 0, right: 0, height: 340 }}
