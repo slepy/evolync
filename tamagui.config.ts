@@ -63,6 +63,7 @@ const designColorTokens = {
   neutralText: neutral.text,
   neutralMuted: neutral.muted,
   neutralSoft: neutral.soft,
+  neutralPlaceholder: neutral.placeholder,
   neutralControl: neutral.control,
   neutralTint: neutral.tint,
   neutralTintFill: neutral.tintFill,

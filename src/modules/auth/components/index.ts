@@ -4,9 +4,11 @@
 
 // Atoms
 export { GoogleAuthButton } from "./GoogleAuthButton";
-export { RegisterPrompt } from "./RegisterPrompt";
-export { LoginPrompt } from "./LoginPrompt";
-export { AccountTypeCard } from "./AccountTypeCard";
+export { AccountTypeOption } from "./AccountTypeOption";
+export { AuthLogo } from "./AuthLogo";
+export { CodeField } from "./CodeField";
+export { PasswordFields } from "./PasswordFields";
+export { PasswordRules } from "./PasswordRules";
 
 // Molecules
 export { LoginForm } from "./LoginForm";

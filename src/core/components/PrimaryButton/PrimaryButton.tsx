@@ -58,16 +58,19 @@ export function PrimaryButton({
       gap={8}
     >
       <LinearGradient colors={[c.from, c.to]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={StyleSheet.absoluteFill} />
-      {loading ? (
-        <ActivityIndicator color={c.text} />
-      ) : (
-        <>
-          {Icon ? <Icon size={18} color={c.text} strokeWidth={2.4} /> : null}
-          <Text fontSize={15} fontWeight="$button" color={c.text} numberOfLines={1}>
-            {label}
-          </Text>
-        </>
-      )}
+      {/* zIndex: on web the absolute gradient would otherwise paint over the label. */}
+      <XStack zIndex={1} alignItems="center" gap={8}>
+        {loading ? (
+          <ActivityIndicator color={c.text} />
+        ) : (
+          <>
+            {Icon ? <Icon size={18} color={c.text} strokeWidth={2.4} /> : null}
+            <Text fontSize={15} fontWeight="$button" color={c.text} numberOfLines={1}>
+              {label}
+            </Text>
+          </>
+        )}
+      </XStack>
     </XStack>
   );
 }

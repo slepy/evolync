@@ -1,175 +1,100 @@
-import { SubmitButton } from "@/modules/core/components";
+import { AlertBanner, PrimaryButton, TextField } from "@/core/components";
+import { neutral } from "@/core/theme/tokens";
+import type { AuthError } from "@/store";
 import { useRouter } from "expo-router";
-import { Eye, EyeOff } from "lucide-react-native";
 import React, { useState } from "react";
-import { Pressable, StyleSheet, TextInput } from "react-native";
-import { Button, Label, Text, YStack, useTheme } from "tamagui";
-import type { FormErrors, LoginFormData } from "../validation/loginSchema";
+import { Text, XStack, YStack } from "tamagui";
+import type { LoginFormData } from "../validation/loginSchema";
 
-// ============================================================================
-// Input Styles
-// ============================================================================
+/** Neutral gradient of the auth screens' primary button (#F4F6FA → #CBD5E1, dark label). */
+export const AUTH_BUTTON_COLORS = { from: neutral.text, to: neutral.tint, text: neutral.page };
 
-const inputStyles = StyleSheet.create({
-  base: {
-    borderWidth: 2,
-    borderRadius: 12,
-    paddingHorizontal: 16,
-    paddingVertical: 14,
-    fontSize: 16,
-  },
-  error: {
-    borderColor: "#DC2626",
-  },
-  passwordInput: {
-    paddingRight: 48,
-  },
-});
-
-// ============================================================================
-// Types
-// ============================================================================
+const errorTitle = (error: AuthError): string => {
+  switch (error.code) {
+    case "invalid_credentials":
+      return t("authWrongCredentials");
+    case "network_error":
+      return t("errorNetworkError");
+    case "too_many_requests":
+      return t("errorTooManyRequests");
+    default:
+      return t("errorUnknown");
+  }
+};
 
 interface LoginFormProps {
   onSubmit: (data: LoginFormData) => Promise<void>;
   isLoading: boolean;
-  errors?: FormErrors;
+  error?: AuthError | null;
+  onDismissError?: () => void;
 }
 
-// ============================================================================
-// LoginForm Component
-// ============================================================================
-
-export const LoginForm: React.FC<LoginFormProps> = ({
-  onSubmit,
-  isLoading,
-  errors,
-}) => {
+/**
+ * Sign in form (sign in board): error alert, EMAIL, PASSWORD with the eye
+ * toggle, "Forgot password?" on the right, neutral Sign in button.
+ */
+export const LoginForm: React.FC<LoginFormProps> = ({ onSubmit, isLoading, error, onDismissError }) => {
   const router = useRouter();
-  const theme = useTheme();
-  const themedInputStyle = {
-    backgroundColor: theme.background?.val,
-    color: theme.textPrimary?.val,
-    borderColor: theme.borderSubtle?.val,
-  };
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
+  const wrongCredentials = error?.code === "invalid_credentials";
 
-  const handleFormSubmit = async () => {
-    await onSubmit({ email: email.trim(), password });
-  };
-
-  const togglePasswordVisibility = () => {
-    setShowPassword((prev) => !prev);
-  };
+  const handleSubmit = () => onSubmit({ email: email.trim(), password });
 
   return (
-    <YStack gap="$3">
-      {/* Email Input */}
-      <YStack gap="$0.5">
-        <Label htmlFor="email" fontSize="$4" fontWeight="600" color="$textMuted">
-          {t("email")}
-        </Label>
-        <TextInput
-          placeholder={t("email")}
-          value={email}
-          onChangeText={setEmail}
-          editable={!isLoading}
-          autoCapitalize="none"
-          autoCorrect={false}
-          keyboardType="email-address"
-          textContentType="emailAddress"
-          autoComplete="email"
-          placeholderTextColor={theme.textMuted?.val}
-          style={[inputStyles.base, themedInputStyle, errors?.email && inputStyles.error]}
+    <YStack gap={18}>
+      {error ? (
+        <AlertBanner
+          title={errorTitle(error)}
+          message={wrongCredentials ? t("authWrongCredentialsHint") : error.message}
+          onDismiss={onDismissError}
         />
-        {errors?.email && (
-          <Text color="$imperialRed" fontSize="$3" fontWeight="500">
-            {errors.email}
-          </Text>
-        )}
-      </YStack>
+      ) : null}
 
-      {/* Password Input */}
-      <YStack gap="$0.5">
-        <Label
-          htmlFor="password"
-          fontSize="$4"
-          fontWeight="600"
-          color="$textMuted"
-        >
-          {t("password")}
-        </Label>
-        <YStack position="relative" justifyContent="center">
-          <TextInput
-            placeholder="••••••••"
-            value={password}
-            onChangeText={setPassword}
-            editable={!isLoading}
-            secureTextEntry={!showPassword}
-            autoCapitalize="none"
-            autoCorrect={false}
-            spellCheck={false}
-            textContentType="password"
-            autoComplete="password"
-            placeholderTextColor={theme.textMuted?.val}
-            style={[
-              inputStyles.base,
-              themedInputStyle,
-              inputStyles.passwordInput,
-              errors?.password && inputStyles.error,
-            ]}
-          />
-          <Pressable
-            onPress={togglePasswordVisibility}
-            style={{
-              position: "absolute",
-              right: 12,
-              padding: 8,
-            }}
-            disabled={isLoading}
-          >
-            {showPassword ? (
-              <EyeOff size={22} color={isLoading ? theme.textMuted?.val : theme.textSecondary?.val} />
-            ) : (
-              <Eye size={22} color={isLoading ? theme.textMuted?.val : theme.textSecondary?.val} />
-            )}
-          </Pressable>
-        </YStack>
-        {errors?.password && (
-          <Text color="$imperialRed" fontSize="$3" fontWeight="500">
-            {errors.password}
-          </Text>
-        )}
-      </YStack>
-
-      {/* Forgot Password Link */}
-      <Button
-        chromeless
-        alignSelf="flex-end"
-        size="$3"
-        color="$chineseGold"
-        fontWeight="600"
-        marginTop="$-3"
-        hoverStyle={{
-          backgroundColor: "rgba(245, 158, 11, 0.1)",
-        }}
-        pressStyle={{
-          backgroundColor: "rgba(245, 158, 11, 0.15)",
-        }}
-        onPress={() => {
-          router.push("/auth/forgot-password" as any);
-        }}
-      >
-        {t("forgotPassword")}
-      </Button>
-
-      <SubmitButton
-        onPress={handleFormSubmit}
-        isLoading={isLoading}
+      <TextField
+        size="large"
+        label={t("email")}
+        value={email}
+        onChangeText={setEmail}
         disabled={isLoading}
+        autoCapitalize="none"
+        keyboardType="email-address"
+        autoComplete="email"
+        textContentType="emailAddress"
+        returnKeyType="next"
       />
+
+      <TextField
+        size="large"
+        secure
+        label={t("password")}
+        value={password}
+        onChangeText={setPassword}
+        placeholder="••••••••"
+        invalid={wrongCredentials}
+        disabled={isLoading}
+        autoComplete="current-password"
+        textContentType="password"
+        returnKeyType="go"
+        onSubmitEditing={handleSubmit}
+      />
+
+      <XStack
+        role="link"
+        aria-label={t("authForgotPassword")}
+        onPress={() => router.push("/auth/forgot-password" as any)}
+        pressStyle={{ opacity: 0.7 }}
+        alignSelf="flex-end"
+        height={36}
+        marginTop={-8}
+        alignItems="center"
+      >
+        <Text fontSize={14} fontWeight="$button" color="$neutralText">
+          {t("authForgotPassword")}
+        </Text>
+      </XStack>
+
+      <PrimaryButton label={t("authSignIn")} onPress={handleSubmit} colors={AUTH_BUTTON_COLORS} loading={isLoading} />
     </YStack>
   );
 };
