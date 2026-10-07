@@ -27,18 +27,27 @@ export interface PhoneFieldProps {
   placeholder?: string;
   accent?: ListAccent;
   error?: string;
+  /**
+   * "form" (default): 56px on the card fill. "large": 52px on the page fill
+   * with 17/700 text, like `TextField` `size="large"` (P1 Profile card).
+   */
+  size?: "form" | "large";
 }
 
 /**
  * Phone field (16C): 96px country prefix button (opens a searchable sheet)
  * next to the number input, both 56px with the form field geometry.
  */
-export function PhoneField({ label, prefix, number, onChange, prefixes, placeholder, accent = "neutral", error }: PhoneFieldProps) {
+export function PhoneField({ label, prefix, number, onChange, prefixes, placeholder, accent = "neutral", error, size = "form" }: PhoneFieldProps) {
   const [focused, setFocused] = useState(false);
   const [sheetOpen, setSheetOpen] = useState(false);
   const [query, setQuery] = useState("");
   const tint = resolveListAccent(accent).tint;
   const options = prefixes.filter((p) => matchesSearch(query, p.code, p.label));
+  const large = size === "large";
+  const height = large ? 52 : 56;
+  const fill = large ? "$neutralPage" : "$neutralCard";
+  const fontSize = large ? 17 : 15;
 
   return (
     <YStack gap={8}>
@@ -53,7 +62,7 @@ export function PhoneField({ label, prefix, number, onChange, prefixes, placehol
           onPress={() => setSheetOpen(true)}
           pressStyle={{ opacity: 0.85 }}
           width={96}
-          height={56}
+          height={height}
           paddingLeft={16}
           paddingRight={12}
           alignItems="center"
@@ -61,10 +70,10 @@ export function PhoneField({ label, prefix, number, onChange, prefixes, placehol
           borderRadius={16}
           borderWidth={sheetOpen ? 1.5 : 1}
           borderColor={sheetOpen ? tint : "$neutralRaisedBorder"}
-          backgroundColor="$neutralCard"
+          backgroundColor={fill}
           flexShrink={0}
         >
-          <Text fontSize={15} fontWeight="$rowTitle" color="$neutralText">
+          <Text fontSize={fontSize} fontWeight={large ? "700" : "$rowTitle"} color="$neutralText">
             {prefix}
           </Text>
           <ChevronDown size={16} color={neutral.muted} strokeWidth={2} />
@@ -80,15 +89,15 @@ export function PhoneField({ label, prefix, number, onChange, prefixes, placehol
           keyboardType="phone-pad"
           onFocus={() => setFocused(true)}
           onBlur={() => setFocused(false)}
-          height={56}
+          height={height}
           paddingHorizontal={16}
           borderRadius={16}
           borderWidth={focused || error ? 1.5 : 1}
           borderColor={error ? "$trashText" : focused ? tint : "$neutralRaisedBorder"}
-          backgroundColor="$neutralCard"
+          backgroundColor={fill}
           color="$neutralText"
-          fontSize={15}
-          fontWeight="600"
+          fontSize={fontSize}
+          fontWeight={large ? "700" : "600"}
         />
       </XStack>
       {error ? (
