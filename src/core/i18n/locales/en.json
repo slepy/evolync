@@ -245,13 +245,7 @@
   "settingsPaymentDefaultsHint": "Prefilled in every new billing period",
   "settingsDefaultsNote": "Changing the defaults does not update periods that already exist.",
   "settingsLanguage": "Language",
-  "settingsAppearance": "Appearance",
   "settingsLanguageHint": "Changes the app right away",
-  "settingsAppearanceHint": "Stored on this device",
-  "themeSystemHint": "Follows your phone",
-  "themeSystem": "System",
-  "themeLight": "Light",
-  "themeDark": "Dark",
   "settingsProfile": "Profile",
 
   "schoolsTitle": "Schools",
