@@ -17,7 +17,7 @@ import {
   PaymentCycleRepository,
   PaymentRecordRepository,
 } from "../repositories";
-import { MemberStatus } from "@/modules/students";
+import { MemberStatus } from "@/modules/students/types";
 import {
   createPaymentCycleSchema,
   paymentRecordEditSchema,
