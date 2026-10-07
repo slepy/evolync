@@ -1,14 +1,14 @@
-import { contextColors, type ContextKey } from "@/core/theme/tokens";
+import { contextColors, neutral } from "@/core/theme/tokens";
 import { LinearGradient } from "expo-linear-gradient";
 import type { ReactNode } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { ScrollView, XStack, YStack } from "tamagui";
 import { useBottomNavSpace } from "../BottomNav/BottomNav";
-import { ContextSwitcher } from "../ContextSwitcher/ContextSwitcher";
+import { ContextSwitcher, type SwitcherContext } from "../ContextSwitcher/ContextSwitcher";
 
 export interface DashboardPageProps {
-  /** Organization = amber, School = red, Student = blue: the glow at the top of the page. */
-  context: ContextKey;
+  /** Organization = amber, School = red, Student = blue, neutral = slate (5): the glow at the top of the page. */
+  context: SwitcherContext;
   /** Usually a `DashboardHeader`. Sits above the scroll content. */
   header: ReactNode;
   /** Shown between the header and the content (prompts, banners). */
@@ -19,7 +19,7 @@ export interface DashboardPageProps {
 }
 
 /**
- * Main-screen layout of a context dashboard (1A / 2A / 4): dark page with the
+ * Main-screen layout of a context dashboard (1A / 2A / 4 / 5): dark page with the
  * context glow on top, header row, then sections 24px apart.
  */
 export function DashboardPage({ context, header, banner, nav, children }: DashboardPageProps) {
@@ -28,7 +28,7 @@ export function DashboardPage({ context, header, banner, nav, children }: Dashbo
   return (
     <YStack flex={1} backgroundColor="$neutralPage">
       <LinearGradient
-        colors={[contextColors[context].glow, "transparent"]}
+        colors={[context === "neutral" ? neutral.glow : contextColors[context].glow, "transparent"]}
         locations={[0, 1]}
         pointerEvents="none"
         style={{ position: "absolute", top: 0, left: 0, right: 0, height: 380 }}
@@ -50,8 +50,8 @@ export function DashboardPage({ context, header, banner, nav, children }: Dashbo
 }
 
 export interface DashboardHeaderProps {
-  /** Organization (1A), School, Student (4): colors the switcher. */
-  context: ContextKey;
+  /** Organization (1A), School, Student (4), neutral (5): colors the switcher. */
+  context: SwitcherContext;
   /** Organization / school name shown in the switcher. */
   title: string;
   /** Opens the context sheet; without it the switcher is a static label. */

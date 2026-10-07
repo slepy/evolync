@@ -27,6 +27,9 @@ export const neutral = {
   /** Settings rows and other chrome that belongs to no module. */
   tint: "#CBD5E1",
   tintFill: "rgba(148,163,184,0.16)",
+  /** Context badge and page glow outside any context (5, student without a school). */
+  badge: "#243049",
+  glow: "rgba(148,163,184,0.2)",
   synced: "#4ADE9F",
   syncedFill: "rgba(52,211,153,0.12)",
   alertDot: "#FF5A5A",
@@ -106,6 +109,9 @@ export interface ContextColors {
   /** 16% fill of the label, for "Add new" and similar chrome. */
   fill: string;
 }
+
+/** A context, or "neutral": the student dashboard before joining any school (5) — slate glow, white nav pill. */
+export type PageContext = ContextKey | "neutral";
 
 export const contextColors: Record<ContextKey, ContextColors> = {
   organization: {

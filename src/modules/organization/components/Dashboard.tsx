@@ -12,13 +12,14 @@ import {
   NextUp,
   SyncedPill,
   TechniqueNotebook,
-  type ContextOption,
+  orgOptionId,
+  useContextSwitch,
   type NextUpItem,
 } from "@/core/components";
 import { PushPermissionPrompt } from "@/modules/notifications";
-import { useStore, type Organization } from "@/store";
+import type { Organization } from "@/store";
 import { useRouter } from "expo-router";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import {
   Award,
   Building2,
@@ -54,21 +55,8 @@ function DashboardInner({ organization, schools }: OrganizationDashboardProps) {
   const router = useRouter();
   const { dashboardData } = useOrganizationDashboard(organization.id);
 
-  const schoolMemberships = useStore((s) => s.schoolMemberships);
-  const setActiveMembershipId = useStore((s) => s.setActiveMembershipId);
+  const { options: switcherOptions, select, joinSchool } = useContextSwitch();
   const [switcherOpen, setSwitcherOpen] = useState(false);
-
-  // Fetch schools from Supabase for memberships not yet in local DB (foreign org schools)
-  useEffect(() => {
-    for (const m of schoolMemberships) {
-      const exists = schools.some((s) => s.id === m.schoolId);
-      if (!exists) {
-        SchoolRepository.findByIdOrFetchFromSupabase(m.schoolId).catch(
-          console.error,
-        );
-      }
-    }
-  }, [schoolMemberships, schools]);
 
   const ownSchools = useMemo(
     () =>
@@ -77,37 +65,6 @@ function DashboardInner({ organization, schools }: OrganizationDashboardProps) {
         .sort((a, b) => a.name.localeCompare(b.name)),
     [schools, organization.id],
   );
-
-  // ==========================================================================
-  // Context switcher (organization ↔ schools the user is a member of)
-  // ==========================================================================
-
-  const handleMembershipSelect = useCallback(
-    async (membershipId: string) => {
-      setActiveMembershipId(membershipId);
-      const AsyncStorage =
-        require("@react-native-async-storage/async-storage").default;
-      await AsyncStorage.setItem("activeMembershipId", membershipId);
-      router.replace("/user/dashboard" as any);
-    },
-    [setActiveMembershipId, router],
-  );
-
-  const orgOptionId = `org:${organization.id}`;
-  const switcherOptions: ContextOption[] = [
-    {
-      id: orgOptionId,
-      context: "organization",
-      title: organization.name,
-      subtitle: t("contextOrganization"),
-    },
-    ...schoolMemberships.map((m) => ({
-      id: m.memberId,
-      context: "student" as const,
-      title: schools.find((s) => s.id === m.schoolId)?.name ?? m.schoolId,
-      subtitle: t("contextStudent"),
-    })),
-  ];
 
   // ==========================================================================
   // Event Handlers
@@ -135,11 +92,7 @@ function DashboardInner({ organization, schools }: OrganizationDashboardProps) {
           <DashboardHeader
             context="organization"
             title={organization.name}
-            onSwitchPress={
-              schoolMemberships.length > 0
-                ? () => setSwitcherOpen(true)
-                : undefined
-            }
+            onSwitchPress={() => setSwitcherOpen(true)}
             switchLabel={t("contextSwitchTitle")}
             right={<SyncedPill />}
           />
@@ -216,8 +169,9 @@ function DashboardInner({ organization, schools }: OrganizationDashboardProps) {
         open={switcherOpen}
         onOpenChange={setSwitcherOpen}
         options={switcherOptions}
-        activeId={orgOptionId}
-        onSelect={(option) => handleMembershipSelect(option.id)}
+        activeId={orgOptionId(organization.id)}
+        onSelect={select}
+        onJoinSchool={joinSchool}
       />
     </>
   );
