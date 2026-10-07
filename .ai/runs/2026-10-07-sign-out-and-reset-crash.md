@@ -26,17 +26,23 @@ Base branch: config `baseBranch` is `auto`, which does not exist on the remote; 
 
 ## Risks
 
+- Root cause (reproduced on an API 36 emulator dev build): `TextField` toggles the row opacity while disabled; Fabric flattened/unflattened the row in the same frame the screen was replaced and crashed in `addViewAt` ("View already has a parent", ReactEditText). Fixed with `collapsable={false}`; crash gone in two runs, back when reverted.
+- No component-test harness exists (tests are node pure-logic only), so both changes are covered by the emulator run and manual QA, not unit tests.
+- Log out not exercised at runtime (no test account on the emulator).
+
 - The crash cannot be reproduced on the user's device; reproduction relies on the emulator dev build.
 
 ## Progress
+
+PR: #41
 
 > Convention: `- [ ]` pending, `- [x]` done. Append ` — <commit sha>` when a step lands. Do not rename step titles.
 
 ### Phase 1: Sign out
 
-- [ ] 1.1 Log out row on the Profile tab with confirmation (translations en/pl)
+- [x] 1.1 Log out row on the Profile tab with confirmation (translations en/pl) — c7eb230
 
 ### Phase 2: Reset crash
 
-- [ ] 2.1 Reproduce the crash on an Android emulator and fix its cause
-- [ ] 2.2 Validation gate
+- [x] 2.1 Reproduce the crash on an Android emulator and fix its cause — 3d717d5
+- [x] 2.2 Validation gate — 3d717d5
