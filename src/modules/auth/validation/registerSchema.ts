@@ -1,9 +1,7 @@
 import { z } from 'zod';
+import { passwordRegex } from '../utils/passwordRules';
 
-/**
- * Password regex: requires at least 8 characters, one uppercase, one lowercase, one digit, and one special character
- */
-export const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+export { passwordRegex };
 
 /**
  * Validation schema for instructor registration form.

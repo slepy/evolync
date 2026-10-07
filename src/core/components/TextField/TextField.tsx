@@ -1,8 +1,8 @@
-import { neutral } from "@/core/theme/tokens";
-import type { LucideIcon } from "lucide-react-native";
-import { useState } from "react";
+import { danger, neutral } from "@/core/theme/tokens";
+import { CircleAlert, Eye, EyeOff, type LucideIcon } from "lucide-react-native";
+import { useState, type ReactNode } from "react";
 import type { TextInputProps } from "react-native";
-import { Input, Text, XStack, YStack } from "tamagui";
+import { Input, Text, View, XStack, YStack } from "tamagui";
 import { resolveListAccent, type ListAccent } from "../List/accent";
 
 export interface TextFieldProps {
@@ -16,12 +16,26 @@ export interface TextFieldProps {
   /** Muted line under the field; replaced by `error` when set. */
   hint?: string;
   error?: string;
+  /** Red border without a message (the alert above the form explains it). */
+  invalid?: boolean;
+  /**
+   * "form" (default): 56px. "large": 52px on the page fill with 17/700 text —
+   * the sign in / sign up / password reset fields.
+   */
+  size?: "form" | "large";
+  /** Password: hidden text with a show / hide eye button on the right. */
+  secure?: boolean;
+  /** Under the input, before the hint (password rule chips). */
+  footer?: ReactNode;
+  disabled?: boolean;
   autoFocus?: boolean;
   maxLength?: number;
   onSubmitEditing?: () => void;
   returnKeyType?: TextInputProps["returnKeyType"];
   autoCapitalize?: TextInputProps["autoCapitalize"];
   keyboardType?: TextInputProps["keyboardType"];
+  autoComplete?: TextInputProps["autoComplete"];
+  textContentType?: TextInputProps["textContentType"];
   /** Grows from 56px to fit several lines (descriptions). */
   multiline?: boolean;
   /** Muted 18px icon in front of the value (15A ADDRESS: map pin). */
@@ -42,19 +56,32 @@ export function TextField({
   accent = "neutral",
   hint,
   error,
+  invalid,
+  size = "form",
+  secure,
+  footer,
+  disabled,
   autoFocus,
   maxLength,
   onSubmitEditing,
   returnKeyType,
   autoCapitalize,
   keyboardType,
+  autoComplete,
+  textContentType,
   multiline,
   icon: Icon,
   inset,
 }: TextFieldProps) {
   const [focused, setFocused] = useState(false);
+  const [revealed, setRevealed] = useState(false);
   const tint = resolveListAccent(accent).tint;
+  const large = size === "large";
   const note = error ?? hint;
+  const hasError = !!error || invalid;
+  const errorColor = large ? "$alertDot" : "$trashText";
+  const height = large ? 52 : 56;
+  const hasTrailing = !!Icon || secure;
 
   return (
     <YStack gap={8}>
@@ -64,14 +91,15 @@ export function TextField({
       <XStack
         alignItems={multiline ? "flex-start" : "center"}
         gap={10}
-        height={multiline ? undefined : 56}
+        height={multiline ? undefined : height}
         minHeight={multiline ? 96 : undefined}
         paddingLeft={16}
-        paddingRight={Icon ? 16 : 0}
+        paddingRight={Icon ? 16 : secure ? 4 : 0}
         borderRadius={16}
-        backgroundColor={inset ? "$neutralPage" : "$neutralCard"}
-        borderWidth={focused || error ? 1.5 : 1}
-        borderColor={error ? "$trashText" : focused ? tint : "$neutralRaisedBorder"}
+        backgroundColor={inset || large ? "$neutralPage" : "$neutralCard"}
+        borderWidth={focused || hasError ? 1.5 : 1}
+        borderColor={hasError ? errorColor : focused ? tint : "$neutralRaisedBorder"}
+        opacity={disabled ? 0.6 : 1}
       >
         {Icon ? <Icon size={18} color={neutral.muted} strokeWidth={2} /> : null}
         <Input
@@ -81,30 +109,61 @@ export function TextField({
           onChangeText={onChangeText}
           placeholder={placeholder}
           placeholderTextColor={neutral.placeholder}
+          editable={!disabled}
           autoFocus={autoFocus}
           maxLength={maxLength}
           onSubmitEditing={onSubmitEditing}
           returnKeyType={returnKeyType}
-          autoCapitalize={autoCapitalize}
+          autoCapitalize={secure ? "none" : autoCapitalize}
+          autoCorrect={secure ? false : undefined}
           keyboardType={keyboardType}
+          autoComplete={autoComplete}
+          textContentType={textContentType}
+          secureTextEntry={secure && !revealed}
           multiline={multiline}
           onFocus={() => setFocused(true)}
           onBlur={() => setFocused(false)}
           unstyled
-          height={multiline ? undefined : 54}
+          height={multiline ? undefined : height - 2}
           minHeight={multiline ? 94 : undefined}
-          paddingRight={Icon ? 0 : 16}
+          paddingRight={hasTrailing ? 0 : 16}
           paddingVertical={multiline ? 16 : undefined}
           textAlignVertical={multiline ? "top" : undefined}
           color="$neutralText"
-          fontSize={15}
-          fontWeight="600"
+          fontSize={large ? 17 : 15}
+          fontWeight={large ? "700" : "600"}
         />
+        {secure ? (
+          <View
+            role="button"
+            aria-label={revealed ? t("hidePassword") : t("showPassword")}
+            onPress={() => setRevealed((v) => !v)}
+            pressStyle={{ opacity: 0.7 }}
+            width={44}
+            height={44}
+            borderRadius={14}
+            alignItems="center"
+            justifyContent="center"
+            flexShrink={0}
+          >
+            {revealed ? <EyeOff size={20} color={neutral.muted} /> : <Eye size={20} color={neutral.muted} />}
+          </View>
+        ) : null}
       </XStack>
+      {footer}
       {note ? (
-        <Text fontSize={12.5} fontWeight="$secondary" color={error ? "$trashText" : "$neutralMuted"}>
-          {note}
-        </Text>
+        error && large ? (
+          <XStack alignItems="center" gap={6}>
+            <CircleAlert size={14} color={danger.text} strokeWidth={2.4} />
+            <Text flex={1} fontSize={12.5} fontWeight="600" color="$trashText">
+              {error}
+            </Text>
+          </XStack>
+        ) : (
+          <Text fontSize={12.5} fontWeight="$secondary" color={error ? "$trashText" : large ? "$neutralPlaceholder" : "$neutralMuted"}>
+            {note}
+          </Text>
+        )
       ) : null}
     </YStack>
   );
