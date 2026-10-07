@@ -1,12 +1,10 @@
 import { supabase } from "@/config/supabase";
+import { LaunchScreen } from "@/core/components";
 import { useAuth } from "@/modules/auth/hooks/useAuth";
 import { safeStorageSet } from "@/modules/auth/services/secureStorage";
-import { AppLogo } from "@/modules/core/components/AppLogo";
 import { useStore } from "@/store";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useEffect } from "react";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { Spinner, Text, YStack } from "tamagui";
 
 // ============================================================================
 // AuthCallbackScreen Component
@@ -70,21 +68,5 @@ export default function AuthCallbackScreen() {
     handleOAuthCallback();
   }, [params]);
 
-  return (
-    <SafeAreaView style={{ flex: 1 }}>
-      <YStack
-        flex={1}
-        alignItems="center"
-        justifyContent="center"
-        backgroundColor="$background"
-        space="$4"
-      >
-        <AppLogo />
-        <Spinner size="large" color="$blue11" />
-        <Text color="$textBody" fontSize="$4">
-          {t("finalizingLogin")}
-        </Text>
-      </YStack>
-    </SafeAreaView>
-  );
+  return <LaunchScreen />;
 }

@@ -1110,5 +1110,13 @@
   "authCodeHint": "{{min}}–{{max}} cyfr. Nie ma? Sprawdź spam.",
   "authSendNewCode": "Wyślij nowy kod",
   "authPasswordChanged": "Hasło zmienione",
-  "authPasswordChangedHint": "Zaloguj się nowym hasłem. Inne urządzenia pozostaną zalogowane do końca swojej sesji."
+  "authPasswordChangedHint": "Zaloguj się nowym hasłem. Inne urządzenia pozostaną zalogowane do końca swojej sesji.",
+  "launchTagline": "Twoje szkoły i techniki w jednym miejscu",
+  "launchSyncing": "Synchronizacja szkół…",
+  "launchOfflineMessage": "Otwieramy dane zapisane na tym urządzeniu. Zmiany zsynchronizują się, gdy wrócisz do sieci.",
+  "profilePersonalInfo": "Dane osobowe",
+  "profilePersonalInfoHint": "Widoczne dla Twoich instruktorów i szkół",
+  "profileSignIn": "Logowanie",
+  "profileSignInHint": "Służy do logowania w Evolync",
+  "profileEmailLocked": "E-maila do logowania nie można zmienić w aplikacji."
 }

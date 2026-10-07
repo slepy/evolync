@@ -128,7 +128,14 @@ function RootLayoutNav() {
                 headerShown: false,
                 contentStyle: { backgroundColor: themeColors.background },
               }}
-            ></Stack>
+            >
+              {/* Launch path (L2): screens that replace the launch loading
+                  fade in instead of sliding over it. */}
+              <Stack.Screen name="index" options={{ animation: "none" }} />
+              <Stack.Screen name="auth/login" options={{ animation: "fade" }} />
+              <Stack.Screen name="organization/dashboard" options={{ animation: "fade" }} />
+              <Stack.Screen name="user/dashboard" options={{ animation: "fade" }} />
+            </Stack>
             <NotificationResponseHandler />
           </View>
         </ThemeProvider>

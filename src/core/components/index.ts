@@ -42,3 +42,4 @@ export * from "./SecondaryButton";
 export * from "./TagChip";
 export * from "./DashedButton";
 export * from "./ChipFilter";
+export * from "./LaunchScreen";

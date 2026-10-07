@@ -1,4 +1,4 @@
-import { PHONE_PREFIXES, type PhoneValue } from "@/modules/core/components/PhoneInput";
+import { PHONE_PREFIXES, type PhoneValue } from "./phonePrefixes";
 
 /**
  * Parses a stored phone_number string (e.g. "+48123456789") into

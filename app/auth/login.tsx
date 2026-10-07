@@ -1,9 +1,8 @@
-import { AuthPage, AuthPrompt } from '@/core/components';
+import { AuthPage, AuthPrompt, LaunchScreen } from '@/core/components';
 import { AuthLogo } from '@/modules/auth/components/AuthLogo';
 import { LoginForm } from '@/modules/auth/components/LoginForm';
 import { useAuth } from '@/modules/auth/hooks/useAuth';
 import type { LoginFormData } from '@/modules/auth/validation/loginSchema';
-import { LoadingScreen } from '@/modules/core/components/LoadingScreen';
 import { useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 
@@ -33,7 +32,7 @@ export default function LoginScreen() {
   };
 
   if (isCheckingSession) {
-    return <LoadingScreen />;
+    return <LaunchScreen />;
   }
 
   return (

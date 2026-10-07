@@ -1,5 +1,5 @@
 import { danger, neutral } from "@/core/theme/tokens";
-import { CircleAlert, Eye, EyeOff, type LucideIcon } from "lucide-react-native";
+import { CircleAlert, Eye, EyeOff, Lock, type LucideIcon } from "lucide-react-native";
 import { useState, type ReactNode } from "react";
 import type { TextInputProps } from "react-native";
 import { Input, Text, View, XStack, YStack } from "tamagui";
@@ -42,6 +42,11 @@ export interface TextFieldProps {
   icon?: LucideIcon;
   /** Inside a `FormCard`: page fill instead of the card fill (15A, 16E RANK). */
   inset?: boolean;
+  /**
+   * Read-only value (P1 sign-in EMAIL): dashed border, no fill, muted text and
+   * a lock on the right; `hint` says why it can't be changed.
+   */
+  locked?: boolean;
 }
 
 /**
@@ -72,6 +77,7 @@ export function TextField({
   multiline,
   icon: Icon,
   inset,
+  locked,
 }: TextFieldProps) {
   const [focused, setFocused] = useState(false);
   const [revealed, setRevealed] = useState(false);
@@ -81,7 +87,7 @@ export function TextField({
   const hasError = !!error || invalid;
   const errorColor = large ? "$alertDot" : "$trashText";
   const height = large ? 52 : 56;
-  const hasTrailing = !!Icon || secure;
+  const hasTrailing = !!Icon || secure || locked;
 
   return (
     <YStack gap={8}>
@@ -94,10 +100,11 @@ export function TextField({
         height={multiline ? undefined : height}
         minHeight={multiline ? 96 : undefined}
         paddingLeft={16}
-        paddingRight={Icon ? 16 : secure ? 4 : 0}
+        paddingRight={Icon || locked ? 16 : secure ? 4 : 0}
         borderRadius={16}
-        backgroundColor={inset || large ? "$neutralPage" : "$neutralCard"}
+        backgroundColor={locked ? "transparent" : inset || large ? "$neutralPage" : "$neutralCard"}
         borderWidth={focused || hasError ? 1.5 : 1}
+        borderStyle={locked ? "dashed" : "solid"}
         borderColor={hasError ? errorColor : focused ? tint : "$neutralRaisedBorder"}
         opacity={disabled ? 0.6 : 1}
       >
@@ -109,7 +116,8 @@ export function TextField({
           onChangeText={onChangeText}
           placeholder={placeholder}
           placeholderTextColor={neutral.placeholder}
-          editable={!disabled}
+          editable={!disabled && !locked}
+          aria-readonly={locked}
           autoFocus={autoFocus}
           maxLength={maxLength}
           onSubmitEditing={onSubmitEditing}
@@ -129,7 +137,7 @@ export function TextField({
           paddingRight={hasTrailing ? 0 : 16}
           paddingVertical={multiline ? 16 : undefined}
           textAlignVertical={multiline ? "top" : undefined}
-          color="$neutralText"
+          color={locked ? "$neutralMuted" : "$neutralText"}
           fontSize={large ? 17 : 15}
           fontWeight={large ? "700" : "600"}
         />
@@ -149,6 +157,7 @@ export function TextField({
             {revealed ? <EyeOff size={20} color={neutral.muted} /> : <Eye size={20} color={neutral.muted} />}
           </View>
         ) : null}
+        {locked ? <Lock size={18} color={neutral.muted} strokeWidth={2} /> : null}
       </XStack>
       {footer}
       {note ? (
@@ -159,6 +168,10 @@ export function TextField({
               {error}
             </Text>
           </XStack>
+        ) : locked ? (
+          <Text fontSize={13} fontWeight="$secondary" lineHeight={19} color="$neutralMuted">
+            {note}
+          </Text>
         ) : (
           <Text fontSize={12.5} fontWeight="$secondary" color={error ? "$trashText" : large ? "$neutralPlaceholder" : "$neutralMuted"}>
             {note}
