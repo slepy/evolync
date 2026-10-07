@@ -59,6 +59,7 @@
   "joinSchoolSentTitle": "Request sent",
   "joinSchoolSentHint": "You get access once the instructor approves it. We'll let you know in Alerts.",
   "joinSchoolDone": "Done",
+  "joinSchoolSettingsHint": "Enter the code from your instructor",
   "notInAnySchool": "You're not enrolled in any school yet",
   "pendingMembershipInfo": "Your membership request is pending approval by the school owner.",
   "invalidSchoolCode": "This code doesn't work",

@@ -68,6 +68,6 @@ PR: #38
 
 ## Decisions
 
-- Settings has no Join row on its board; "Join another school" stays in the context sheet (plus the No school card and sign-up).
+- The Settings board has no Join row, but the brief names Settings as an entry point: a "Join a school" row (ticket, school accent) was added under Appearance.
 - The organization name is not available for a school of another organization; the Request sent row shows the school address under the name.
 - Paid legend icon: Wallet, as on the StudentPayments board (the instructor 14B summary keeps CreditCard).
