@@ -1,3 +1,4 @@
+import { LaunchScreen } from "@/core/components";
 import { useStore } from "@/store";
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
@@ -33,5 +34,6 @@ export default function IndexScreen() {
     return () => clearTimeout(timer);
   }, [user, organization, isMounted]);
 
-  return null;
+  // Same frame as the native splash until the first screen replaces it.
+  return <LaunchScreen />;
 }

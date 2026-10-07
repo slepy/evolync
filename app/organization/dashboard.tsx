@@ -1,4 +1,4 @@
-import { LoadingScreen } from "@/modules/core/components/LoadingScreen";
+import { LaunchScreen } from "@/core/components";
 import { Dashboard } from "@/modules/organization/components/Dashboard";
 import { useRequireOrganizationOwner } from "@/modules/organization/hooks/useRequireOrganizationOwner";
 import { useStore } from "@/store";
@@ -22,7 +22,7 @@ export default function OrganizationDashboardScreen() {
   }, [user?.id, router]);
 
   if (!organization) {
-    return <LoadingScreen />;
+    return <LaunchScreen />;
   }
 
   return <Dashboard organization={organization} />;

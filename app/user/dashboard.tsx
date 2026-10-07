@@ -1,6 +1,6 @@
 import { useCallback, useEffect } from "react";
 import { useRouter } from "expo-router";
-import { YStack, Text, Button, ScrollView, Spinner, XStack } from "tamagui";
+import { YStack, Text, Button, ScrollView, XStack } from "tamagui";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { View } from "react-native";
 import {
@@ -19,7 +19,7 @@ import {
 import { usePendingJoinRequests } from "@/modules/school/hooks";
 import { DashboardStatCard } from "@/modules/dashboard/components/DashboardStatCard";
 import { NotificationBell, PushPermissionPrompt } from "@/modules/notifications";
-import { MainNav, useBottomNavSpace } from "@/core/components";
+import { LaunchScreen, MainNav, useBottomNavSpace } from "@/core/components";
 import { useStore } from "@/store";
 import { withObservables } from "@nozbe/watermelondb/react";
 import {
@@ -201,18 +201,7 @@ function UserDashboardInner({ schools }: UserDashboardInnerProps) {
     );
 
   if (!activeMembershipLoaded) {
-    return (
-      <View style={{ flex: 1, paddingTop: insets.top }}>
-        <Header
-          centerContent={<HeaderTitle text={t("userDashboard")} />}
-          leftContent={<NotificationBell />}
-        />
-        <YStack flex={1} alignItems="center" justifyContent="center">
-          <Spinner size="large" />
-        </YStack>
-        <MainNav home="student" />
-      </View>
-    );
+    return <LaunchScreen />;
   }
 
   const renderCards = (cards: typeof schoolCards) => (
@@ -314,23 +303,11 @@ const enhance = withObservables([], () => ({
 const UserDashboardEnhanced = enhance(UserDashboardInner);
 
 export default function UserDashboard() {
-  const insets = useSafeAreaInsets();
   const schoolMemberships = useStore((s) => s.schoolMemberships);
 
-  // Show spinner until store is hydrated (memberships still loading)
+  // Launch loading until the store is hydrated (memberships still loading)
   if (schoolMemberships === undefined) {
-    return (
-      <View style={{ flex: 1, paddingTop: insets.top }}>
-        <Header
-          centerContent={<HeaderTitle text={t("userDashboard")} />}
-          leftContent={<NotificationBell />}
-        />
-        <YStack flex={1} alignItems="center" justifyContent="center">
-          <Spinner size="large" />
-        </YStack>
-        <MainNav home="student" />
-      </View>
-    );
+    return <LaunchScreen />;
   }
 
   return <UserDashboardEnhanced />;
