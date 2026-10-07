@@ -17,6 +17,16 @@ const student = contextColors.student;
 /** Student button gradient of the board: the first two stops of the student context. */
 const STUDENT_BUTTON_COLORS = { from: student.gradient[0].color, to: student.gradient[1].color, text: student.fg };
 
+/**
+ * useRegister reports either a translation key ("errorEmailAlreadyExists") or a
+ * raw Supabase message; only keys go through t(), whose ":" / "." separators
+ * would mangle free text.
+ */
+const registrationErrorMessage = (error: string): string | undefined => {
+  if (error === 'errorRegistrationFailed') return undefined;
+  return /^error[A-Z]\w*$/.test(error) ? t(error) : error;
+};
+
 /** "Next: your school code" card: what happens after the account exists. */
 const NextStepCard: React.FC = () => (
   <XStack
@@ -89,7 +99,7 @@ export const RegisterForm: React.FC = () => {
       footer={<PrimaryButton label={t('create')} colors={STUDENT_BUTTON_COLORS} onPress={onSubmit} loading={isLoading} />}
     >
       {apiError && !errorDismissed ? (
-        <AlertBanner title={t(apiError)} onDismiss={() => setErrorDismissed(true)} />
+        <AlertBanner title={t('errorRegistrationFailed')} message={registrationErrorMessage(apiError)} onDismiss={() => setErrorDismissed(true)} />
       ) : null}
 
       <Controller

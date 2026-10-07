@@ -52,6 +52,7 @@ export function PasswordFields<T extends FieldValues>({
               autoComplete="new-password"
               textContentType="newPassword"
               error={allMet ? (errors[password]?.message as string | undefined) : undefined}
+              invalid={!!errors[password]}
               footer={<PasswordRules password={value} />}
             />
           );
