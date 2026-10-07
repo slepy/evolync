@@ -18,6 +18,15 @@ export type {
   RegisterInstructorResponse,
 } from "./types/registerDto";
 
+// Utils
+export {
+  isLocalPhoto,
+  profileValuesFromUser,
+  toProfileMetadata,
+  type ProfileMetadata,
+  type ProfileValues,
+} from "./utils/profileValues";
+
 // Validation
 export type { LoginFormData, FormErrors } from "./validation/loginSchema";
 export {
