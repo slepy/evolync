@@ -2,6 +2,13 @@ export { getNotificationRoute } from "./routes";
 export { getNotificationContent } from "./content";
 export { formatUnreadBadge } from "./badge";
 export { getNotificationEntityRef } from "./target";
+export { getNotificationAudience, isLaunchRoute, planNotificationContext } from "./context";
+export type {
+  NotificationAudience,
+  NotificationContextPlan,
+  NotificationContextState,
+  NotificationHome,
+} from "./context";
 export {
   toPushLocale,
   shouldRegisterForPush,
