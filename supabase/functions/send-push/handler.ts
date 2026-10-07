@@ -14,7 +14,8 @@ export const EXPO_BATCH_SIZE = 100;
 /** More than this many notifications for one recipient inside the window → one summary push. */
 export const BURST_LIMIT = 3;
 export const BURST_WINDOW_MS = 60_000;
-export const ANDROID_CHANNEL_ID = "default";
+/** High-importance channel created by the app (an existing channel's importance cannot be raised). */
+export const ANDROID_CHANNEL_ID = "notifications";
 
 export interface NotificationRecord {
   id: string;
@@ -116,6 +117,8 @@ export async function handleSendPush(body: unknown, deps: SendPushDeps): Promise
       title: content.title,
       body: content.body,
       sound: "default",
+      // Without it Expo sends FCM "normal" priority, which Android defers in Doze.
+      priority: "high",
       channelId: ANDROID_CHANNEL_ID,
       data:
         mode === "summary"

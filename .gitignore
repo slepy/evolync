@@ -47,3 +47,7 @@ yarn-error.*
 
 # Supabase CLI local state
 supabase/.temp/
+
+# Firebase / FCM credentials (EAS: GOOGLE_SERVICES_JSON file variable)
+google-services.json
+*-firebase-adminsdk-*.json
