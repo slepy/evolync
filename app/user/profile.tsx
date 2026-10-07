@@ -5,6 +5,7 @@ import {
   toProfileMetadata,
   type ProfileValues,
 } from "@/modules/auth";
+import { signOut } from "@/modules/core/utils/signOutBridge";
 import { uploadImage } from "@/modules/core/utils/uploadImage";
 import { sync } from "@/database/sync";
 import { useStore } from "@/store";
@@ -47,6 +48,7 @@ export default function ProfileRoute() {
       initial={profileValuesFromUser(user)}
       email={user?.email ?? ""}
       onSubmit={handleSubmit}
+      onSignOut={() => signOut().catch(console.error)}
     />
   );
 }

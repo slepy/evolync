@@ -1131,5 +1131,9 @@
   "profilePersonalInfoHint": "Widoczne dla Twoich instruktorów i szkół",
   "profileSignIn": "Logowanie",
   "profileSignInHint": "Służy do logowania w Evolync",
-  "profileEmailLocked": "E-maila do logowania nie można zmienić w aplikacji."
+  "profileEmailLocked": "E-maila do logowania nie można zmienić w aplikacji.",
+  "profileLogOut": "Wyloguj się",
+  "profileLogOutHint": "Wyloguj się z Evolync na tym urządzeniu",
+  "profileLogOutConfirmTitle": "Wylogować się?",
+  "profileLogOutConfirmMessage": "Możesz zalogować się ponownie e-mailem i hasłem."
 }
