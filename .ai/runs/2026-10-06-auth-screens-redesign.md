@@ -63,23 +63,30 @@ Password rule chips: 8+ characters · A–Z · a–z · 0–9 · Symbol @$!%*?& 
 - Auth screens are the entry point; regressions block sign-in. Logic hooks are untouched, only the UI and form wiring change.
 - Password rule chips derive from the same `passwordRegex` rules; the chip logic is unit-tested against the regex.
 
+## Verification
+
+- `npm run typecheck`, `npm run check:theme`, `npm test` (273 pass, incl. 5 new `passwordRules` tests).
+- Every screen rendered on Expo web at 390px and compared with its board: `.ai/qa/auth-screens-redesign/`. Found and fixed on web: `PrimaryButton` label painted under its gradient; a sign in error carried over to forgot password.
+
 ## Progress
+
+PR: #30
 
 > Convention: `- [ ]` pending, `- [x]` done. Append ` — <commit sha>` when a step lands. Do not rename step titles.
 
 ### Phase 1: Shared pieces
 
-- [ ] 1.1 Brand tokens, AuthPage, AlertBanner, TextField large / secure variant
-- [ ] 1.2 passwordRules with tests + PasswordRules, AuthLogo, AuthPrompt, CodeField, PhoneField
+- [x] 1.1 Brand tokens, AuthPage, AlertBanner, TextField large / secure variant — ab59a55
+- [x] 1.2 passwordRules with tests + PasswordRules, AuthLogo, AuthPrompt, CodeField, PhoneField — ab8640a
 
 ### Phase 2: Screens
 
-- [ ] 2.1 Sign in + error banner
-- [ ] 2.2 Account type
-- [ ] 2.3 New organization
-- [ ] 2.4 New student account
-- [ ] 2.5 Forgot password, new password, password changed
+- [x] 2.1 Sign in + error banner — 2070527
+- [x] 2.2 Account type — 08975df
+- [x] 2.3 New organization — 15f47bb
+- [x] 2.4 New student account — a3ea1d9
+- [x] 2.5 Forgot password, new password, password changed — b4b2938
 
 ### Phase 3: Cleanup and gate
 
-- [ ] 3.1 Remove unused auth UI and keys, en + pl, CLAUDE.md, full gate
+- [x] 3.1 Remove unused auth UI and keys, en + pl, CLAUDE.md, full gate — ff48e60, aa877bf
