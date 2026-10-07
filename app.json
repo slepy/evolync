@@ -8,6 +8,7 @@
     "scheme": "evolync",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
+    "backgroundColor": "#0B0E14",
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.evolync.app"
