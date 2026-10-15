@@ -20,7 +20,7 @@ Two phases in one spec, because the list view's type filter is meaningless witho
 - *Filter inside the month grid instead of a list.* Lost: the brief asks for a list result; a grid cannot show a multi-month range.
 
 ## 📝 Architecture
-- **events module** owns everything new: `EventTypeRepository`, `eventTypeService`, `useEventTypes`, `EventTypePickerSheet`, `EventTypeSheet`, the `useEventList` hook and `EventListView`. No new module.
+- **events module** owns everything new: `EventTypeRepository`, `eventTypeService`, `useEventTypes`, `EventTypePickerSheet`, `EventTypeSheet`, `EventTypesListScreen`, the `useEventList` hook and `EventListView`. No new module.
 - **core `Calendar`** gets one optional prop, `listView?: ReactNode`; when present, it renders a `ViewSwitch` (Month / List) above the body and swaps in the slot. `core` keeps not importing from modules — the organization route composes `<Calendar listView={<EventListView … />} />`. School and student calendars pass nothing and are unchanged.
 - **Reused primitives**: `SelectField`, `FormSheet` + `ListCard` / `ListRow` / `ListCheck` + `ActionPill` "Add new" (as in `TagPickerSheet`), `FormSheet` + `TextField` + `PrimaryButton` + `TrashButton` (as in `TagSheet`), `ViewSwitch`, `DateTimeField`, `ChipFilter`, `ListSection` / `ListRow` / `StatusBadge`, `ListEmpty`, `EventRepository.observeInRangeByOrganization` (already exists).
 - **Sync**: `event_types` added to `sync-organization.ts` (push + pull by `organization_id`); `sync-user.ts` pulls the types referenced by the student's pulled events so students see the type name.
@@ -69,11 +69,19 @@ No HTTP surface; internal module contracts only.
 ## 📝 UI/UX
 Prototype: `.ai/specs/assets/event-types/` (static mockups, illustrative only).
 
-| Event form with TYPE | Event type sheet | Organization calendar — List |
-|---|---|---|
-| ![](assets/event-types/mockup-01-event-form-type.png) | ![](assets/event-types/mockup-02-event-type-sheet.png) | ![](assets/event-types/mockup-03-calendar-list-view.png) |
+| Event form with TYPE | Event type sheet (T5 pattern) | New event type (7B pattern) | Organization calendar — List |
+|---|---|---|---|
+| ![](assets/event-types/mockup-01-event-form-type.png) | ![](assets/event-types/mockup-02-event-type-sheet.png) | ![](assets/event-types/mockup-04-new-event-type-sheet.png) | ![](assets/event-types/mockup-03-calendar-list-view.png) |
 
-**Event form (10A / 10B)** — `TYPE` `SelectField` directly under NAME: placeholder "Choose a type", value = type name, chevron. Tap → **Event type sheet** (`FormSheet`, title "Event type"): one `ListRow` per type with a `ListCheck` on the selected one (single choice — a tap selects and closes), `ActionPill` **Add new** in the footer. Add new → `EventTypeSheet` (title "New event type", NAME `TextField`, **Create**) → creates, selects it and returns to the form. With no types yet the sheet shows `ListEmpty` "No event types yet" + Add new. Each row also has a small pencil `IconButton` that opens the same `EventTypeSheet` in edit mode (rename + Save, `TrashButton` delete) — mirroring `TagSheet`'s 7B / 7C create/edit split.
+**Event form (10A / 10B)** — `TYPE` `SelectField` directly under NAME: placeholder "Choose a type", value = type name, chevron. Tap → **Event type sheet**, a copy of the notebook's Tags sheet (board T5, `TagPickerSheet`) in the events amber:
+- `FormSheet` titled "Event type", round close ✕; the T5 "N selected" `badge` is omitted (one value).
+- One `ListCard` with a `ListRow` (`size="md"`) per type: `ListIcon` `CalendarDays` `accent="events"` `size={36}`, the name, and a `ListCheckbox` `accent="events"` on the right — the same rows as T5, no extra controls in the row.
+- Single choice: tapping a row checks it and unchecks the previous one (T5 toggles freely). Like T5 the sheet stays open and closes via ✕ or swipe.
+- Footer: full-width `ActionPill` **＋ Add new** in the amber fill (as T5).
+- Add new → **New event type** sheet, a copy of 7B "New tag" (`TagSheet`): title, NAME `TextField` (amber focus border), full-width amber **Create** `PrimaryButton`. Create saves the type, checks it in the picker and goes back to it.
+- No types yet: `ListEmpty` "No event types yet" in place of the card, Add new below.
+
+**Rename / delete** — not in the picker, matching T5 (tags are edited on the Tags list, 7A / 7C). An **Event types** screen `/organization/events/types` copies `TagsListScreen`: rows → the 7C edit sheet (NAME, Save, `TrashButton`). It opens from a `headerAction` icon button (`Settings2`) in the Event type sheet — the one addition to T5, in the slot the "N selected" chip uses there.
 
 **Event details / calendar rows** — the type name is the first part of the row meta (`Camp · Zakopane`) replacing today's generic "Event" kind label; events without a type keep "Event".
 
@@ -113,6 +121,7 @@ Prototype: `.ai/specs/assets/event-types/` (static mockups, illustrative only).
 | A6 | Do types have a color? | No — name only, events amber everywhere. | Smallest surface; color can be added later as an optional column. |
 | A7 | Default list range and contents? | Range = the month shown in Month view; events only (trainings excluded); cancelled events listed with a badge. | Ties the list to the calendar's context; trainings have no type. |
 | A8 | Is the list view available on school / student calendars? | No — organization calendar only. | The brief limits it to the organization calendar. |
+| A9 | Where are types renamed / deleted? | On an Event types screen opened from the picker's header icon, not in the picker rows. | Keeps the picker identical to T5, which has no edit controls. |
 
 ## 📋 Phasing
 - **Phase 1 — Event types.** Table, sync, picker + create/edit sheet, required TYPE field, type shown in details and calendar rows. Shippable alone.
@@ -125,7 +134,7 @@ Prototype: `.ai/specs/assets/event-types/` (static mockups, illustrative only).
 2. WatermelonDB: `EventType` model, schema entry, `events.type_id` column, migration v22, model registered. Test: typecheck + app boots on an existing v21 database.
 3. Sync: push/pull `event_types` in `sync-organization.ts`; pull referenced types in `sync-user.ts`. Test: Deno tests for both pulls (`sync-user.test.ts` pattern).
 4. `EventTypeRepository` + `eventTypeService` + `eventTypeSchema` + `useEventTypes`. Test: unit tests for name trim/uniqueness and delete-in-use rejection.
-5. `EventTypeSheet` (create / rename / delete) and `EventTypePickerSheet`; translations (en + pl, duplicate-checked). Test: translations test passes.
+5. `EventTypeSheet` (7B / 7C copy: create / rename / delete), `EventTypePickerSheet` (T5 copy, single choice) and `EventTypesListScreen` at `/organization/events/types` (7A copy); translations (en + pl, duplicate-checked). Test: translations test passes; picker matches board T5 side by side.
 6. Event form: TYPE `SelectField`, `typeId` in `EventFormState`, validation and DTOs; create/update pass `type_id`. Test: `eventFormState.test.ts` covers missing type error and legacy event edit.
 7. Show the type in event details and calendar row meta (`Calendar` items carry `typeName`). Test: `calendarMonth`/`toRow` test for meta with and without a type.
 
