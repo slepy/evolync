@@ -89,7 +89,8 @@ interface StudentDetailsScreenProps {
  * status, joined date, email / phone, RANK field opening 16F), History tabs
  * with a Status summary and rows whose status button cycles on tap, Orders
  * opening their details; Save after a change. ⋮ opens 16G (Edit, Archive).
- * PAYMENT AMOUNT opens the student's own fee for new periods (or the school default).
+ * PAYMENT AMOUNT, on top of the Payments tab above its summary, opens the student's
+ * own fee for new periods (or the school default).
  */
 export const StudentDetailsScreen: React.FC<StudentDetailsScreenProps> = ({
   schoolId,
@@ -307,16 +308,6 @@ export const StudentDetailsScreen: React.FC<StudentDetailsScreenProps> = ({
             accent="students"
             inset
           />
-
-          <SelectField
-            label={t("studentPaymentAmount")}
-            value={ownFee ?? (schoolDefaultText ? t("studentSchoolDefaultValue", { amount: schoolDefaultText }) : t("studentSchoolDefault"))}
-            leading={<ListIcon icon={CreditCard} accent="payments" size={44} />}
-            onPress={openFee}
-            open={sheet === "fee" || sheet === "feeCurrency"}
-            accent="students"
-            inset
-          />
         </YStack>
 
         <IconTabs
@@ -330,6 +321,17 @@ export const StudentDetailsScreen: React.FC<StudentDetailsScreenProps> = ({
             { key: "events", icon: CalendarDays, label: t("eventsTitle"), accent: "events" },
           ]}
         />
+
+        {tab === "payments" ? (
+          <SelectField
+            label={t("studentPaymentAmount")}
+            value={ownFee ?? (schoolDefaultText ? t("studentSchoolDefaultValue", { amount: schoolDefaultText }) : t("studentSchoolDefault"))}
+            leading={<ListIcon icon={CreditCard} accent="payments" size={44} />}
+            onPress={openFee}
+            open={sheet === "fee" || sheet === "feeCurrency"}
+            accent="payments"
+          />
+        ) : null}
 
         {tab === "payments" ? (
           payments.payments.length === 0 ? (
