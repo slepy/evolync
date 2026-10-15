@@ -101,11 +101,6 @@ export const createPaymentCycle = async (
       if (data.notes) {
         record.notes = data.notes;
       }
-      // Kept on the period so members added later pay the same one-off amount
-      if (periodAmount) {
-        record.amount = periodAmount.amount;
-        record.currency = periodAmount.currency;
-      }
     });
 
     // Create payment records for all active members
