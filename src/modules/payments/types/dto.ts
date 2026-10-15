@@ -11,6 +11,9 @@ export interface CreatePaymentCycleDto {
   periodStart: string; // ISO date string (YYYY-MM-DD)
   periodEnd: string; // ISO date string (YYYY-MM-DD)
   notes?: string;
+  /** One-off amount for everyone in this period; without it each member pays their own fee or the school default. */
+  amount?: number;
+  currency?: string;
 }
 
 /**

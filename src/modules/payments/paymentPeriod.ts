@@ -112,6 +112,22 @@ export interface CurrencyAmount {
   amount: number;
 }
 
+/**
+ * Amount of a member's payment in a new period: the period's own amount when
+ * it has one (a one-off payment), else the member's own fee, else the school default.
+ */
+export const memberPaymentAmount = (
+  member: { paymentAmount?: number | null; paymentCurrency?: string | null },
+  schoolDefault: CurrencyAmount,
+  periodAmount?: CurrencyAmount,
+): CurrencyAmount => {
+  if (periodAmount) return periodAmount;
+  if (member.paymentAmount != null && member.paymentCurrency) {
+    return { amount: member.paymentAmount, currency: member.paymentCurrency };
+  }
+  return schoolDefault;
+};
+
 /** Sums per currency for each status (14B1 COLLECTED / PENDING / CANCELLED), currencies in first-seen order. */
 export function amountsByStatus(
   items: ReadonlyArray<{ status: PaymentStatus; amount: number; currency: string }>,

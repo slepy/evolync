@@ -1,4 +1,5 @@
 import {
+  CurrencySheet,
   IconTabs,
   ListAvatar,
   ListCard,
@@ -18,6 +19,7 @@ import {
   type StatusSummaryItem,
 } from "@/core/components";
 import { neutral } from "@/core/theme/tokens";
+import { DEFAULT_CURRENCY, SUPPORTED_CURRENCIES } from "@/modules/core/components";
 import { STATUS_CYCLE as ATTENDANCE_CYCLE } from "@/database/models/AttendanceRecord";
 import type SchoolMember from "@/database/models/SchoolMember";
 import { ATTENDANCE_STATUS_STYLE, ATTENDANCE_SUMMARY_ORDER } from "@/modules/attendance/constants";
@@ -40,9 +42,10 @@ import {
   describePeriod,
   formatAmount,
   nextPaymentStatus,
+  parseAmount,
   storedDayKey,
 } from "@/modules/payments/paymentPeriod";
-import { SchoolRepository } from "@/modules/school/repositories";
+import { SchoolRepository, SchoolSettingsRepository } from "@/modules/school/repositories";
 import { timestampToDay } from "@/modules/trainings/types/helpers";
 import {
   Calendar,
@@ -60,9 +63,10 @@ import React, { useEffect, useState } from "react";
 import { Alert, Linking } from "react-native";
 import { Text, View, XStack, YStack } from "tamagui";
 import { StudentRepository } from "../repositories";
-import { archiveStudent, assignRankToStudent } from "../services";
+import { archiveStudent, assignRankToStudent, setStudentPaymentAmount } from "../services";
 import { MemberStatus, getDisplayStatus } from "../types";
 import { studentStatusPill } from "../studentList";
+import { StudentPaymentAmountSheet, type StudentPaymentAmountDraft } from "./StudentPaymentAmountSheet";
 import { StudentActionsSheet, StudentRankSheet } from "./StudentSheets";
 import { STUDENT_PILL_COLOR } from "./studentStatusStyle";
 
@@ -85,6 +89,7 @@ interface StudentDetailsScreenProps {
  * status, joined date, email / phone, RANK field opening 16F), History tabs
  * with a Status summary and rows whose status button cycles on tap, Orders
  * opening their details; Save after a change. ⋮ opens 16G (Edit, Archive).
+ * PAYMENT AMOUNT opens the student's own fee for new periods (or the school default).
  */
 export const StudentDetailsScreen: React.FC<StudentDetailsScreenProps> = ({
   schoolId,
@@ -96,7 +101,10 @@ export const StudentDetailsScreen: React.FC<StudentDetailsScreenProps> = ({
   const [student, setStudent] = useState<SchoolMember | null>(null);
   const [school, setSchool] = useState<{ name: string; organizationId: string } | null>(null);
   const [tab, setTab] = useState<HistoryTab>("payments");
-  const [sheet, setSheet] = useState<"rank" | "actions" | null>(null);
+  const [sheet, setSheet] = useState<"rank" | "actions" | "fee" | "feeCurrency" | null>(null);
+  const [schoolDefault, setSchoolDefault] = useState<{ amount: number; currency: string } | null>(null);
+  const [feeDraft, setFeeDraft] = useState<StudentPaymentAmountDraft>({ useDefault: true, amount: "", currency: DEFAULT_CURRENCY });
+  const [feeSaving, setFeeSaving] = useState(false);
   const [pendingRankId, setPendingRankId] = useState<string | null | undefined>(undefined);
 
   useEffect(() => {
@@ -111,6 +119,17 @@ export const StudentDetailsScreen: React.FC<StudentDetailsScreenProps> = ({
     SchoolRepository.findById(schoolId)
       .then((s) => s && setSchool({ name: s.name, organizationId: s.organizationId }))
       .catch((err) => console.error("[StudentDetails] School error:", err));
+  }, [schoolId]);
+
+  useEffect(() => {
+    const subscription = SchoolSettingsRepository.observeBySchoolId(schoolId).subscribe({
+      next: ([settings]) =>
+        setSchoolDefault(
+          settings ? { amount: settings.defaultPaymentAmount ?? 0, currency: settings.defaultCurrency || DEFAULT_CURRENCY } : null,
+        ),
+      error: (err: Error) => console.error("[StudentDetails] Settings error:", err),
+    });
+    return () => subscription.unsubscribe();
   }, [schoolId]);
 
   const { ranks } = useGradingRanks(school?.organizationId ?? "");
@@ -152,6 +171,36 @@ export const StudentDetailsScreen: React.FC<StudentDetailsScreenProps> = ({
     } catch (err) {
       console.error("[StudentDetails] Save error:", err);
       setSaveError(t("errorSaveFailed"));
+    }
+  };
+
+  const ownFee =
+    student.paymentAmount != null && student.paymentCurrency
+      ? `${formatAmount(student.paymentAmount)} ${student.paymentCurrency}`
+      : null;
+  const schoolDefaultText = schoolDefault ? `${formatAmount(schoolDefault.amount)} ${schoolDefault.currency}` : undefined;
+
+  const openFee = () => {
+    setFeeDraft({
+      useDefault: !ownFee,
+      amount: formatAmount(student.paymentAmount ?? schoolDefault?.amount ?? 0),
+      currency: student.paymentCurrency ?? schoolDefault?.currency ?? DEFAULT_CURRENCY,
+    });
+    setSheet("fee");
+  };
+
+  const handleSaveFee = async () => {
+    const amount = parseAmount(feeDraft.amount);
+    if (!feeDraft.useDefault && amount === null) return;
+    setFeeSaving(true);
+    try {
+      await setStudentPaymentAmount(student.id, feeDraft.useDefault ? null : { amount: amount!, currency: feeDraft.currency });
+      setSheet(null);
+    } catch (err) {
+      console.error("[StudentDetails] Payment amount error:", err);
+      Alert.alert(t("errorSaveFailed"));
+    } finally {
+      setFeeSaving(false);
     }
   };
 
@@ -255,6 +304,16 @@ export const StudentDetailsScreen: React.FC<StudentDetailsScreenProps> = ({
             leading={<RankIcon color={rank?.color} size={44} empty={!rank} />}
             onPress={() => setSheet("rank")}
             open={sheet === "rank"}
+            accent="students"
+            inset
+          />
+
+          <SelectField
+            label={t("studentPaymentAmount")}
+            value={ownFee ?? (schoolDefaultText ? t("studentSchoolDefaultValue", { amount: schoolDefaultText }) : t("studentSchoolDefault"))}
+            leading={<ListIcon icon={CreditCard} accent="payments" size={44} />}
+            onPress={openFee}
+            open={sheet === "fee" || sheet === "feeCurrency"}
             accent="students"
             inset
           />
@@ -458,6 +517,30 @@ export const StudentDetailsScreen: React.FC<StudentDetailsScreenProps> = ({
         ranks={ranks}
         value={rankId ?? null}
         onSelect={(id) => setPendingRankId(id === (student.currentRankId ?? null) ? undefined : id)}
+      />
+      <StudentPaymentAmountSheet
+        open={sheet === "fee"}
+        onOpenChange={(open) => setSheet(open ? "fee" : null)}
+        name={name}
+        avatarUrl={student.avatarUrl}
+        rankId={rankId}
+        schoolDefault={schoolDefaultText}
+        draft={feeDraft}
+        onChange={setFeeDraft}
+        onCurrencyPress={() => setSheet("feeCurrency")}
+        onSave={handleSaveFee}
+        saving={feeSaving}
+      />
+      <CurrencySheet
+        open={sheet === "feeCurrency"}
+        onOpenChange={(open) => setSheet(open ? "feeCurrency" : "fee")}
+        options={SUPPORTED_CURRENCIES}
+        value={feeDraft.currency}
+        accent="payments"
+        onSelect={(currency) => {
+          setFeeDraft({ ...feeDraft, currency });
+          setSheet("fee");
+        }}
       />
       <StudentActionsSheet
         open={sheet === "actions"}

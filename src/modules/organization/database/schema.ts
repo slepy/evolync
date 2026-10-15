@@ -38,6 +38,9 @@ export const organizationSchema = [
       { name: 'phone_number', type: 'string', isOptional: true },
       { name: 'status', type: 'string' },
       { name: 'current_rank_id', type: 'string', isOptional: true },
+      // Own fee of the member; empty = the school's default amount
+      { name: 'payment_amount', type: 'number', isOptional: true },
+      { name: 'payment_currency', type: 'string', isOptional: true },
       { name: 'joined_at', type: 'number' },
       { name: 'created_at', type: 'number' },
       { name: 'updated_at', type: 'number' },

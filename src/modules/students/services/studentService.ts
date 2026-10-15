@@ -7,6 +7,7 @@ import { StudentRepository } from "../repositories";
 import { SchoolJoinRequestRepository } from "@/modules/school/repositories/schoolJoinRequestRepository";
 import { SchoolSettingsRepository } from "@/modules/school/repositories";
 import { PaymentRecordRepository } from "@/modules/payments/repositories/paymentRecordRepository";
+import { memberPaymentAmount } from "@/modules/payments/paymentPeriod";
 import { EventParticipantRepository } from "@/modules/events/repositories/eventParticipantRepository";
 
 import { Q } from "@nozbe/watermelondb";
@@ -226,8 +227,11 @@ export const approveJoinRequest = async (
   // Add to selected payment cycles
   if (cycleIds.length > 0) {
     const schoolSettings = await SchoolSettingsRepository.findBySchoolId(schoolId);
-    const amount = schoolSettings?.defaultPaymentAmount ?? 0;
-    const currency = schoolSettings?.defaultCurrency ?? "PLN";
+    const member = await StudentRepository.findById(memberId);
+    const { amount, currency } = memberPaymentAmount(member ?? {}, {
+      amount: schoolSettings?.defaultPaymentAmount ?? 0,
+      currency: schoolSettings?.defaultCurrency ?? "PLN",
+    });
     for (const cycleId of cycleIds) {
       await PaymentRecordRepository.bulkCreate(cycleId, [memberId], amount, currency);
     }
@@ -296,6 +300,26 @@ export const assignRankToStudent = async (
   await StudentRepository.update(studentId, {
     currentRankId: rankId ?? undefined,
   } as any);
+
+  sync().catch(console.error);
+};
+
+/**
+ * Sets the student's own fee for new payment periods (e.g. half the amount
+ * for a child); `null` goes back to the school's default amount.
+ * Existing payments keep their amounts.
+ */
+export const setStudentPaymentAmount = async (
+  studentId: string,
+  fee: { amount: number; currency: string } | null,
+): Promise<void> => {
+  if (fee && (!(fee.amount >= 0) || !fee.currency)) {
+    throw new Error(t("amountInvalidType"));
+  }
+  await StudentRepository.update(studentId, {
+    paymentAmount: fee?.amount ?? null,
+    paymentCurrency: fee?.currency ?? null,
+  });
 
   sync().catch(console.error);
 };

@@ -65,8 +65,10 @@ export async function syncUser(ctx: SyncContext): Promise<SyncPullChanges> {
           return records.filter((r: any) => r.user_id === userId);
 
         case "school_members":
-          // Only their own membership records
-          return records.filter((r: any) => r.user_id === userId);
+          // Only their own membership records; the fee is set by the instructor
+          return records
+            .filter((r: any) => r.user_id === userId)
+            .map(({ payment_amount: _amount, payment_currency: _currency, ...r }: any) => r);
 
         case "orders":
         case "order_items":
