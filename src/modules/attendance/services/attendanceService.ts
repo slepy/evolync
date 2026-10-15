@@ -146,15 +146,31 @@ export const updateTrainingSessionNotes = async (
 
 /**
  * Soft deletes a training session and its attendance records
+ *
+ * Atomic: the session and all of its records commit in a single
+ * database.batch(), or none do.
  */
 export const deleteTrainingSession = async (
   sessionId: string
 ): Promise<void> => {
-  // Soft delete all attendance records for this session
-  await AttendanceRecordRepository.softDeleteBySessionId(sessionId);
+  const session = await database
+    .get<TrainingSession>("training_sessions")
+    .find(sessionId);
+  const records = await AttendanceRecordRepository.findBySessionId(sessionId);
+  const deletedAt = new Date();
 
-  // Soft delete the session
-  await TrainingSessionRepository.softDelete(sessionId);
+  await database.write(async () => {
+    await database.batch([
+      ...records.map((record) =>
+        record.prepareUpdate((r) => {
+          r.deletedAt = deletedAt;
+        })
+      ),
+      session.prepareUpdate((s) => {
+        s.deletedAt = deletedAt;
+      }),
+    ]);
+  });
 
   sync().catch((err) => {
     console.error("[deleteTrainingSession] Sync failed:", err);
