@@ -11,3 +11,4 @@ export { useStudentEvents, type StudentEvent } from "./useStudentEvents";
 export { useStudentEventStatuses } from "./useStudentEventStatuses";
 export { useEventParticipantIds } from "./useEventParticipantIds";
 export { useEventTypes, useEventTypeName } from "./useEventTypes";
+export { useEventList } from "./useEventList";
