@@ -56,13 +56,19 @@ and the organization calendar gains a List view filtered by a date range and a t
 - 2.3 `EventListView` (filters card, result list, empty state).
 - 2.4 `Calendar` `listView` slot with `ViewSwitch`; organization calendar passes `EventListView`.
 
+## Review round (om-auto-review-pr)
+
+- Fixed: member type pull scoped to the event's organization; full pull of tables with migrated columns (`events.type_id`); v22 migration test; Supabase migration applied twice on a throwaway Postgres — 636069d, 91c4f22.
+
 ## Risks
 
 - Schema change (new table + nullable column): additive; older builds ignore `type_id`.
-- The Supabase migration is not applied by this run (no local Supabase stack); it must be pushed with the deploy.
+- The Supabase migration was verified on a throwaway Postgres with stubbed Supabase prerequisites, not on a real Supabase stack; it must be pushed with the deploy.
 - The sync edge function must be redeployed together with the migration.
 
 ## Progress
+
+PR: #48
 
 > Convention: `- [ ]` pending, `- [x]` done. Append ` — <commit sha>` when a step lands. Do not rename step titles.
 
