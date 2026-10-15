@@ -8,6 +8,26 @@ import {
 export default schemaMigrations({
   migrations: [
     {
+      toVersion: 22,
+      steps: [
+        createTable({
+          name: "event_types",
+          columns: [
+            { name: "organization_id", type: "string", isIndexed: true },
+            { name: "name", type: "string" },
+            { name: "created_by", type: "string" },
+            { name: "created_at", type: "number" },
+            { name: "updated_at", type: "number" },
+            { name: "deleted_at", type: "number", isOptional: true },
+          ],
+        }),
+        addColumns({
+          table: "events",
+          columns: [{ name: "type_id", type: "string", isOptional: true, isIndexed: true }],
+        }),
+      ],
+    },
+    {
       toVersion: 21,
       steps: [
         addColumns({

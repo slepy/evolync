@@ -39,6 +39,8 @@ export default class Event extends Model {
   @field("organization_id") organizationId!: string;
   @field("school_id") schoolId?: string;
   @field("name") name!: string;
+  /** Optional in the database (events created before types); the form requires one. */
+  @field("type_id") typeId?: string;
   @field("short_note") shortNote?: string;
   @field("address") address?: string;
   @date("start_date") startDate!: Date;

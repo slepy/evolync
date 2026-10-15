@@ -1,6 +1,7 @@
 export { default as AttendanceRecord } from './AttendanceRecord'
 export { default as Event } from './Event'
 export { default as EventParticipant } from './EventParticipant'
+export { default as EventType } from './EventType'
 export { default as GradingRank } from './GradingRank'
 export { default as Order } from './Order'
 export { default as OrderItem } from './OrderItem'

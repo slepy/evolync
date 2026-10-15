@@ -4,6 +4,7 @@ import { adapter } from "./adapter";
 import AttendanceRecord from "./models/AttendanceRecord";
 import Event from "./models/Event";
 import EventParticipant from "./models/EventParticipant";
+import EventType from "./models/EventType";
 import GradingRank from "./models/GradingRank";
 import Order from "./models/Order";
 import OrderItem from "./models/OrderItem";
@@ -38,6 +39,7 @@ export const database = new Database({
     AttendanceRecord,
     Event,
     EventParticipant,
+    EventType,
     GradingRank,
     Order,
     OrderItem,
