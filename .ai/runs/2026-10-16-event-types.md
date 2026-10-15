@@ -32,6 +32,12 @@ and the organization calendar gains a List view filtered by a date range and a t
   list's default FROM–TO comes from the month shown in Month view (spec UI/UX section) without core importing modules.
 - Soft-deleted types are pulled as updates carrying `deleted_at` (not as deletes), so an event that still
   points at one resolves its name (spec edge case "type deleted on another device").
+- The sync runs with the service role, so pushed `event_types` rows are limited to the owner's organization
+  (create never overwrites an existing id, update / delete are scoped by `organization_id`).
+- Added the 13 missing `eventValidation*` translations (the event form showed raw keys); the events
+  translation test now scans services and validation too.
+- "School and student calendars render without the switch" is covered by code (they pass no `listView`)
+  and UI QA; the repo has no component render tests for Tamagui screens.
 
 ## Implementation Plan
 
@@ -72,7 +78,7 @@ and the organization calendar gains a List view filtered by a date range and a t
 
 ### Phase 2: Filtered list view
 
-- [ ] 2.1 `filterEventList` helper
-- [ ] 2.2 `useEventList` hook
-- [ ] 2.3 `EventListView`
-- [ ] 2.4 `Calendar` `listView` slot on the organization calendar
+- [x] 2.1 `filterEventList` helper — 0c2f02a
+- [x] 2.2 `useEventList` hook — 69e3c0b
+- [x] 2.3 `EventListView` — f8b2927
+- [x] 2.4 `Calendar` `listView` slot on the organization calendar — e02634d
