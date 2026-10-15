@@ -14,7 +14,7 @@
  */
 
 import { SyncContext, SyncPullChanges } from "./types.ts";
-import { convertToSupabaseRecord, convertToWatermelonRecord } from "./utils.ts";
+import { convertToSupabaseRecord, convertToWatermelonRecord, ownMembershipPush } from "./utils.ts";
 import { pushThreeDChanges, pullThreeDChanges } from "./sync-threed.ts";
 import { pushNotesChanges, pullNotesChanges } from "./sync-notes.ts";
 import { pushTagsChanges, pullTagsChanges } from "./sync-tags.ts";
@@ -65,8 +65,7 @@ export async function syncUser(ctx: SyncContext): Promise<SyncPullChanges> {
           return records.filter((r: any) => r.user_id === userId);
 
         case "school_members":
-          // Only their own membership records
-          return records.filter((r: any) => r.user_id === userId);
+          return ownMembershipPush(records, userId);
 
         case "orders":
         case "order_items":

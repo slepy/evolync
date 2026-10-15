@@ -107,3 +107,13 @@ export function convertToWatermelonRecord(record: any, tableName: string): any {
 
   return watermelonRecord;
 }
+
+/**
+ * A user's pushed school_members rows: only their own membership records,
+ * without the payment amount columns (the fee is set by the instructor).
+ */
+export function ownMembershipPush(records: any[], userId: string): any[] {
+  return records
+    .filter((r: any) => r.user_id === userId)
+    .map(({ payment_amount: _amount, payment_currency: _currency, ...r }: any) => r);
+}

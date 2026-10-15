@@ -8,6 +8,25 @@ import {
 export default schemaMigrations({
   migrations: [
     {
+      toVersion: 21,
+      steps: [
+        addColumns({
+          table: "school_members",
+          columns: [
+            { name: "payment_amount", type: "number", isOptional: true },
+            { name: "payment_currency", type: "string", isOptional: true },
+          ],
+        }),
+        addColumns({
+          table: "payment_cycles",
+          columns: [
+            { name: "amount", type: "number", isOptional: true },
+            { name: "currency", type: "string", isOptional: true },
+          ],
+        }),
+      ],
+    },
+    {
       toVersion: 20,
       steps: [
         createTable({

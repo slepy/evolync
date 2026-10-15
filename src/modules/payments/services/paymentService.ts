@@ -22,6 +22,7 @@ import {
   createPaymentCycleSchema,
   paymentRecordEditSchema,
 } from "../validation";
+import { memberPaymentAmount, periodOwnAmount } from "../paymentPeriod";
 
 // ============================================================================
 // Payment Cycles
@@ -29,9 +30,10 @@ import {
 
 /**
  * Creates a new payment cycle for a school and automatically creates
- * payment records for all active members with default values from school settings.
+ * payment records for all active members: the period's own amount when given,
+ * else each member's own fee, else the school's default amount.
  *
- * @param data - Cycle data (schoolId, periodStart, periodEnd, notes)
+ * @param data - Cycle data (schoolId, periodStart, periodEnd, notes, optional amount + currency)
  * @returns Created PaymentCycle
  * @throws Error if a cycle with the same period already exists
  */
@@ -69,8 +71,11 @@ export const createPaymentCycle = async (
     .query(Q.where("school_id", data.schoolId), Q.where("deleted_at", null))
     .fetch();
 
-  const defaultCurrency = settings[0]?.defaultCurrency ?? "PLN";
-  const defaultAmount = settings[0]?.defaultPaymentAmount ?? 0;
+  const schoolDefault = {
+    amount: settings[0]?.defaultPaymentAmount ?? 0,
+    currency: settings[0]?.defaultCurrency ?? "PLN",
+  };
+  const periodAmount = periodOwnAmount(data);
 
   // Get all active members of the school
   const membersCollection = database.get<SchoolMember>("school_members");
@@ -96,18 +101,24 @@ export const createPaymentCycle = async (
       if (data.notes) {
         record.notes = data.notes;
       }
+      // Kept on the period so members added later pay the same one-off amount
+      if (periodAmount) {
+        record.amount = periodAmount.amount;
+        record.currency = periodAmount.currency;
+      }
     });
 
     // Create payment records for all active members
     if (activeMembers.length > 0) {
       const recordOperations = activeMembers.map((member) => {
         const recordId = uuidv4();
+        const { amount, currency } = memberPaymentAmount(member, schoolDefault, periodAmount);
         return recordsCollection.prepareCreate((r) => {
           r._raw.id = recordId;
           r.paymentCycleId = cycleId;
           r.schoolMemberId = member.id;
-          r.amount = defaultAmount;
-          r.currency = defaultCurrency;
+          r.amount = amount;
+          r.currency = currency;
           r.status = "pending";
           r.method = "cash";
         });

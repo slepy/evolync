@@ -12,9 +12,11 @@ import {
   formatPeriodRange,
   isCurrentPeriod,
   localDayKey,
+  memberPaymentAmount,
   nextPaymentStatus,
   parseAmount,
   periodKind,
+  periodOwnAmount,
   periodPresetRange,
   storedDayKey,
 } from "@/modules/payments/paymentPeriod";
@@ -139,6 +141,35 @@ describe("parseAmount", () => {
 
   it("rejects empty, negative, non-numeric and over-precise values", () => {
     for (const text of ["", "-5", "abc", "1.234", "1e3"]) assert.equal(parseAmount(text), null, text);
+  });
+});
+
+describe("memberPaymentAmount", () => {
+  const school = { amount: 200, currency: "PLN" };
+
+  it("uses the school default for a member without an own amount", () => {
+    assert.deepEqual(memberPaymentAmount({}, school), school);
+    assert.deepEqual(memberPaymentAmount({ paymentAmount: null, paymentCurrency: null }, school), school);
+  });
+
+  it("uses the member's own amount, zero included", () => {
+    assert.deepEqual(memberPaymentAmount({ paymentAmount: 100, paymentCurrency: "PLN" }, school), { amount: 100, currency: "PLN" });
+    assert.deepEqual(memberPaymentAmount({ paymentAmount: 0, paymentCurrency: "EUR" }, school), { amount: 0, currency: "EUR" });
+  });
+
+  it("uses the period's own amount for everyone", () => {
+    const period = { amount: 50, currency: "EUR" };
+    assert.deepEqual(memberPaymentAmount({ paymentAmount: 100, paymentCurrency: "PLN" }, school, period), period);
+    assert.deepEqual(memberPaymentAmount({}, school, period), period);
+  });
+});
+
+describe("periodOwnAmount", () => {
+  it("is the period's amount only when both amount and currency are set", () => {
+    assert.deepEqual(periodOwnAmount({ amount: 0, currency: "EUR" }), { amount: 0, currency: "EUR" });
+    assert.equal(periodOwnAmount({}), undefined);
+    assert.equal(periodOwnAmount({ amount: null, currency: null }), undefined);
+    assert.equal(periodOwnAmount({ amount: 50 }), undefined);
   });
 });
 

@@ -6,9 +6,9 @@ import migrations from "@/database/migrations";
 const TABLES = ["trainings", "training_series", "training_invitees"];
 
 describe("trainings schema", () => {
-  it("bumps the schema to v20 with a migration step for it", () => {
-    assert.equal(schema.version, 20);
-    assert.equal(migrations.maxVersion, 20);
+  it("the schema has a migration step for every version up to its own (v20 included)", () => {
+    assert.ok(schema.version >= 20);
+    assert.equal(migrations.maxVersion, schema.version);
   });
 
   it("migration v20 creates exactly the three trainings tables, matching the schema", () => {

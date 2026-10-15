@@ -1,12 +1,27 @@
-import { ChoiceList, DateTimeField, PrimaryButton, SubScreenPage } from "@/core/components";
-import React, { useMemo, useState } from "react";
+import {
+  ChoiceList,
+  CurrencySheet,
+  DateTimeField,
+  FormCard,
+  PrimaryButton,
+  SelectField,
+  SubScreenPage,
+  TextField,
+  ToggleRow,
+} from "@/core/components";
+import { DEFAULT_CURRENCY, SUPPORTED_CURRENCIES } from "@/modules/core/components";
+import { SchoolSettingsRepository } from "@/modules/school/repositories";
+import { CreditCard } from "lucide-react-native";
+import React, { useEffect, useMemo, useState } from "react";
 import { Text, XStack, YStack } from "tamagui";
 import { usePaymentCycles } from "../hooks/usePaymentCycles";
 import {
   dateLocaleTag,
+  formatAmount,
   formatPeriodDay,
   formatPeriodRange,
   localDayKey,
+  parseAmount,
   periodPresetRange,
   type DayKey,
   type PeriodPreset,
@@ -26,7 +41,9 @@ interface PaymentPeriodFormScreenProps {
 
 /**
  * New period (14D / 14D1): This month / This week / This year with their
- * dates, or Custom with START / END; Create adds a payment for every active member.
+ * dates, or Custom with START / END; Create adds a payment for every active
+ * member. Amount card: "Use default amounts" (each student's own amount or the
+ * school default) or, switched off, one AMOUNT + CURRENCY for everyone in this period.
  */
 export const PaymentPeriodFormScreen: React.FC<PaymentPeriodFormScreenProps> = ({ schoolId, onCreated }) => {
   const { createCycle } = usePaymentCycles(schoolId);
@@ -36,19 +53,49 @@ export const PaymentPeriodFormScreen: React.FC<PaymentPeriodFormScreenProps> = (
   const [custom, setCustom] = useState(() => periodPresetRange("this_month", today));
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [useDefaults, setUseDefaults] = useState(true);
+  const [schoolDefault, setSchoolDefault] = useState<string | null>(null);
+  const [amount, setAmount] = useState("");
+  const [currency, setCurrency] = useState<string>(DEFAULT_CURRENCY);
+  const [currencyOpen, setCurrencyOpen] = useState(false);
+
+  useEffect(() => {
+    // AMOUNT / CURRENCY start from the school default once; later settings updates keep the user's input
+    let seeded = false;
+    const subscription = SchoolSettingsRepository.observeBySchoolId(schoolId).subscribe({
+      next: ([settings]) => {
+        if (!settings) return;
+        const defaultCurrency = settings.defaultCurrency || DEFAULT_CURRENCY;
+        setSchoolDefault(`${formatAmount(settings.defaultPaymentAmount ?? 0)} ${defaultCurrency}`);
+        if (seeded) return;
+        seeded = true;
+        setAmount((prev) => prev || formatAmount(settings.defaultPaymentAmount ?? 0));
+        setCurrency(defaultCurrency);
+      },
+      error: (err: Error) => console.error("[PaymentPeriodForm] Settings error:", err),
+    });
+    return () => subscription.unsubscribe();
+  }, [schoolId]);
 
   const range = preset === "custom" ? custom : periodPresetRange(preset, today);
   const invalid = range.end < range.start;
+  const parsedAmount = parseAmount(amount);
+  const amountInvalid = !useDefaults && parsedAmount === null;
 
   const handleCreate = async () => {
     if (invalid) {
       setError(t("paymentsErrorEndBeforeStart"));
       return;
     }
+    if (amountInvalid) return;
     setIsSaving(true);
     setError(null);
     try {
-      const cycle = await createCycle({ periodStart: range.start, periodEnd: range.end });
+      const cycle = await createCycle({
+        periodStart: range.start,
+        periodEnd: range.end,
+        ...(useDefaults ? {} : { amount: parsedAmount!, currency }),
+      });
       if (cycle) onCreated(cycle.id);
     } catch (err) {
       setError(err instanceof Error ? err.message : t("errorCreateFailed"));
@@ -120,7 +167,61 @@ export const PaymentPeriodFormScreen: React.FC<PaymentPeriodFormScreenProps> = (
             </YStack>
           </XStack>
         ) : null}
+
+        <FormCard
+          icon={CreditCard}
+          accent="payments"
+          title={t("fieldAmount")}
+          subtitle={useDefaults ? t("paymentsDefaultAmountsHint") : t("paymentsPeriodAmountHint")}
+        >
+          <ToggleRow
+            title={t("paymentsUseDefaultAmounts")}
+            hint={schoolDefault ? t("paymentsSchoolDefault", { amount: schoolDefault }) : undefined}
+            label={t("paymentsUseDefaultAmounts")}
+            checked={useDefaults}
+            onChange={(checked) => {
+              setError(null);
+              setUseDefaults(checked);
+            }}
+            accent="payments"
+          />
+          {useDefaults ? null : (
+            <XStack gap={12}>
+              <YStack flex={5} minWidth={0}>
+                <TextField
+                  label={t("fieldAmount")}
+                  value={amount}
+                  onChangeText={setAmount}
+                  placeholder="0"
+                  keyboardType="decimal-pad"
+                  accent="payments"
+                  inset
+                  error={amountInvalid ? t("amountInvalidType") : undefined}
+                />
+              </YStack>
+              <YStack flex={3} minWidth={0}>
+                <SelectField
+                  label={t("fieldCurrency")}
+                  value={currency}
+                  onPress={() => setCurrencyOpen(true)}
+                  open={currencyOpen}
+                  accent="payments"
+                  inset
+                />
+              </YStack>
+            </XStack>
+          )}
+        </FormCard>
       </YStack>
+
+      <CurrencySheet
+        open={currencyOpen}
+        onOpenChange={setCurrencyOpen}
+        options={SUPPORTED_CURRENCIES}
+        value={currency}
+        accent="payments"
+        onSelect={setCurrency}
+      />
     </SubScreenPage>
   );
 };

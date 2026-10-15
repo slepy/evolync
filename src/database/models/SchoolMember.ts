@@ -18,6 +18,9 @@ export default class SchoolMember extends Model {
   @field('phone_number') phoneNumber?: string
   @field('status') status!: MemberStatus
   @field('current_rank_id') currentRankId?: string
+  /** Own fee for new payment periods; null = the school's default amount. */
+  @field('payment_amount') paymentAmount?: number | null
+  @field('payment_currency') paymentCurrency?: string | null
 
   @relation('schools', 'school_id') school!: School
 

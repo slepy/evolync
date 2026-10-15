@@ -5,7 +5,18 @@ export const createPaymentCycleSchema = z.object({
   periodStart: z.string().min(1, "paymentValidationDateRequired"),
   periodEnd: z.string().min(1, "paymentValidationDateRequired"),
   notes: z.string().max(500, "paymentValidationNotesTooLong").optional(),
-});
+  amount: z.number().nonnegative("paymentValidationAmountNegative").optional(),
+  currency: z.string().min(1, "paymentValidationCurrencyRequired").optional(),
+})
+  // A period's own amount comes with its currency, or neither is set
+  .refine((d) => d.amount === undefined || d.currency !== undefined, {
+    message: "paymentValidationCurrencyRequired",
+    path: ["currency"],
+  })
+  .refine((d) => d.currency === undefined || d.amount !== undefined, {
+    message: "amountRequired",
+    path: ["amount"],
+  });
 
 export const paymentRecordEditSchema = z.object({
   amount: z.number().nonnegative("paymentValidationAmountNegative"),
