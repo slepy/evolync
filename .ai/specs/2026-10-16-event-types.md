@@ -69,6 +69,10 @@ No HTTP surface; internal module contracts only.
 ## 📝 UI/UX
 Prototype: `.ai/specs/assets/event-types/` (static mockups, illustrative only).
 
+| Event form with TYPE | Event type sheet | Organization calendar — List |
+|---|---|---|
+| ![](assets/event-types/mockup-01-event-form-type.png) | ![](assets/event-types/mockup-02-event-type-sheet.png) | ![](assets/event-types/mockup-03-calendar-list-view.png) |
+
 **Event form (10A / 10B)** — `TYPE` `SelectField` directly under NAME: placeholder "Choose a type", value = type name, chevron. Tap → **Event type sheet** (`FormSheet`, title "Event type"): one `ListRow` per type with a `ListCheck` on the selected one (single choice — a tap selects and closes), `ActionPill` **Add new** in the footer. Add new → `EventTypeSheet` (title "New event type", NAME `TextField`, **Create**) → creates, selects it and returns to the form. With no types yet the sheet shows `ListEmpty` "No event types yet" + Add new. Each row also has a small pencil `IconButton` that opens the same `EventTypeSheet` in edit mode (rename + Save, `TrashButton` delete) — mirroring `TagSheet`'s 7B / 7C create/edit split.
 
 **Event details / calendar rows** — the type name is the first part of the row meta (`Camp · Zakopane`) replacing today's generic "Event" kind label; events without a type keep "Event".
