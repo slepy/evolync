@@ -6,6 +6,7 @@ import {
   defaultSelectedDay,
   eventRowMeta,
   itemsForDay,
+  monthDays,
   monthRange,
   seriesFrequencyLabel,
   shiftMonth,
@@ -199,5 +200,12 @@ describe("eventRowMeta", () => {
     const typed = { ...event("a", "2099-01-05"), typeId: "camp" };
     const [item] = itemsForDay("2099-01-05", [typed, event("b", "2099-01-06")], [], "all");
     assert.ok(item.kind === "event" && item.typeId === "camp");
+  });
+});
+
+describe("monthDays", () => {
+  it("gives the first and last day of a month", () => {
+    assert.deepEqual(monthDays(2099, 1), { from: "2099-02-01", to: "2099-02-28" });
+    assert.deepEqual(monthDays(2099, 11), { from: "2099-12-01", to: "2099-12-31" });
   });
 });

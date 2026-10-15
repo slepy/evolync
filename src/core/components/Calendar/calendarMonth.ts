@@ -94,6 +94,12 @@ export function monthRange(year: number, month: number): { from: number; to: num
   return { from: Date.UTC(year, month, 1), to: Date.UTC(year, month + 1, 0) };
 }
 
+/** First and last day of a month as "YYYY-MM-DD" (the List view's default range). */
+export function monthDays(year: number, month: number): { from: string; to: string } {
+  const { from, to } = monthRange(year, month);
+  return { from: timestampToDay(from), to: timestampToDay(to) };
+}
+
 /** The month `delta` months away, as { year, month (0-based) }. */
 export function shiftMonth(year: number, month: number, delta: number): { year: number; month: number } {
   const date = new Date(Date.UTC(year, month + delta, 1));

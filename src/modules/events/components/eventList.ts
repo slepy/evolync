@@ -57,12 +57,6 @@ export function eventTypeFilterOptions(
   return untyped ? [...options, { value: NO_EVENT_TYPE, label: labels.none }] : options;
 }
 
-/** First and last day of a month (`month` 0-based), the default range of the list. */
-export const monthDays = (year: number, month: number): { from: string; to: string } => ({
-  from: timestampToDay(Date.UTC(year, month, 1)),
-  to: timestampToDay(Date.UTC(year, month + 1, 0)),
-});
-
 /** FROM moved past TO: TO follows it. */
 export const withFromDay = (range: { from: string; to: string }, from: string) => ({
   from,

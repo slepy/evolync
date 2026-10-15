@@ -1,7 +1,9 @@
 import type { ContextKey } from "@/core/theme/tokens";
-import { useMemo, useState } from "react";
+import { LayoutGrid, List } from "lucide-react-native";
+import { useMemo, useState, type ReactNode } from "react";
 import { localToday } from "../NextUp/pickNextUp";
 import { SubScreenPage } from "../SubScreen/SubScreen";
+import { ViewSwitch } from "../ViewSwitch/ViewSwitch";
 import { CalendarAddSheet } from "./CalendarAddSheet";
 import { formatDayTitle, formatMonth, formatShortDay, weekdayLabels } from "./calendarFormat";
 import {
@@ -9,6 +11,7 @@ import {
   defaultSelectedDay,
   eventRowMeta,
   itemsForDay,
+  monthDays,
   shiftMonth,
   type CalendarFilter,
   type CalendarItem,
@@ -35,6 +38,12 @@ export interface CalendarProps {
   onItemPress?: (item: CalendarItem) => void;
   /** Rows of this kind are tappable (default: both when `onItemPress` is set). */
   pressable?: CalendarSource[];
+  /**
+   * Alternative List view behind a Month / List switch (organization calendar).
+   * Rendered with the month shown in Month view as its default range; without
+   * it there is no switch.
+   */
+  listView?: (range: { from: string; to: string }) => ReactNode;
 }
 
 const CONTEXT_BY_SCOPE: Record<CalendarScope["kind"], ContextKey> = {
@@ -117,6 +126,7 @@ export function Calendar({
   onAdd,
   onItemPress,
   pressable = ["events", "trainings"],
+  listView,
 }: CalendarProps) {
   const today = localToday();
   const [year, setYear] = useState(() => Number(today.slice(0, 4)));
@@ -124,6 +134,7 @@ export function Calendar({
   const [selected, setSelected] = useState(today);
   const [filter, setFilter] = useState<CalendarFilter>("all");
   const [sheetOpen, setSheetOpen] = useState(false);
+  const [view, setView] = useState<"month" | "list">("month");
 
   const data = useCalendarMonth(scope, year, month, show);
   const locale = t("locale");
@@ -177,24 +188,37 @@ export function Calendar({
 
   return (
     <SubScreenPage title={t("calendarTitle")} subtitle={subtitle} context={ctx}>
-      <CalendarView
-        context={ctx}
-        filter={bothKinds ? filter : undefined}
-        onFilterChange={bothKinds ? setFilter : undefined}
-        monthLabel={formatMonth(year, month, locale)}
-        weekdayLabels={weekdayLabels(locale)}
-        onPrevMonth={() => goToMonth(-1)}
-        onNextMonth={() => goToMonth(1)}
-        cells={cells}
-        onSelectDay={setSelected}
-        dayLabel={(cell) => t("calendarDayItems", { count: cell.count, day: formatDayTitle(cell.day, locale) })}
-        selectedTitle={selectedTitle}
-        selectedSubtitle={rows.length === 0 ? t("calendarNothingPlanned") : t("calendarItemsCount", { count: rows.length })}
-        rows={rows}
-        emptyText={t("calendarEmptyDay")}
-        onAdd={handleAdd}
-        isLoading={data.isLoading}
-      />
+      {listView ? (
+        <ViewSwitch
+          accent="events"
+          aria-label={t("calendarTitle")}
+          first={{ icon: LayoutGrid, label: t("calendarViewMonth"), onPress: () => setView("month") }}
+          second={{ icon: List, label: t("calendarViewList"), onPress: () => setView("list") }}
+          active={view === "month" ? "first" : "second"}
+        />
+      ) : null}
+      {listView && view === "list" ? (
+        listView(monthDays(year, month))
+      ) : (
+        <CalendarView
+          context={ctx}
+          filter={bothKinds ? filter : undefined}
+          onFilterChange={bothKinds ? setFilter : undefined}
+          monthLabel={formatMonth(year, month, locale)}
+          weekdayLabels={weekdayLabels(locale)}
+          onPrevMonth={() => goToMonth(-1)}
+          onNextMonth={() => goToMonth(1)}
+          cells={cells}
+          onSelectDay={setSelected}
+          dayLabel={(cell) => t("calendarDayItems", { count: cell.count, day: formatDayTitle(cell.day, locale) })}
+          selectedTitle={selectedTitle}
+          selectedSubtitle={rows.length === 0 ? t("calendarNothingPlanned") : t("calendarItemsCount", { count: rows.length })}
+          rows={rows}
+          emptyText={t("calendarEmptyDay")}
+          onAdd={handleAdd}
+          isLoading={data.isLoading}
+        />
+      )}
       {addable.length > 1 ? (
         <CalendarAddSheet
           open={sheetOpen}

@@ -3,7 +3,6 @@ import assert from "node:assert/strict";
 import {
   eventTypeFilterOptions,
   filterEventList,
-  monthDays,
   NO_EVENT_TYPE,
   withFromDay,
   type EventListSource,
@@ -83,12 +82,7 @@ describe("eventTypeFilterOptions", () => {
   });
 });
 
-describe("monthDays / withFromDay", () => {
-  it("gives the first and last day of a month", () => {
-    assert.deepEqual(monthDays(2099, 1), { from: "2099-02-01", to: "2099-02-28" });
-    assert.deepEqual(monthDays(2099, 11), { from: "2099-12-01", to: "2099-12-31" });
-  });
-
+describe("withFromDay", () => {
   it("moves TO along when FROM passes it", () => {
     assert.deepEqual(withFromDay(MARCH, "2099-03-10"), { from: "2099-03-10", to: "2099-03-31" });
     assert.deepEqual(withFromDay(MARCH, "2099-04-10"), { from: "2099-04-10", to: "2099-04-10" });
