@@ -15,12 +15,13 @@ import { EVENT_PARTICIPANT_STATUS, type EventParticipantStatus } from "@/databas
 import { formatPrice } from "@/modules/core/utils/formatters";
 import { showError } from "@/modules/trainings/components/confirmAction";
 import { localToday, timestampToDay } from "@/modules/trainings/types/helpers";
-import { CalendarDays, MapPin } from "lucide-react-native";
+import { CalendarDays, MapPin, Shapes } from "lucide-react-native";
 import React from "react";
 import { ActivityIndicator } from "react-native";
 import { Text, XStack, YStack } from "tamagui";
 import { PARTICIPANT_STATUS_STYLE } from "../constants";
 import { useEvent } from "../hooks/useEvent";
+import { useEventTypeName } from "../hooks/useEventTypes";
 import { useParticipantStatus } from "../hooks/useParticipantStatus";
 import { eventDayCount } from "./eventFormState";
 import { formatEventDates } from "./formatEventDates";
@@ -49,6 +50,7 @@ const STATUS_ACCENT: Record<EventParticipantStatus, ListAccent> = {
  */
 export const StudentEventDetailsScreen: React.FC<StudentEventDetailsScreenProps> = ({ eventId, memberId }) => {
   const { event, isLoading } = useEvent(eventId);
+  const typeName = useEventTypeName(event?.typeId);
   const participation = useParticipantStatus(eventId, memberId);
 
   if (isLoading || participation.isLoading || !event) {
@@ -112,6 +114,9 @@ export const StudentEventDetailsScreen: React.FC<StudentEventDetailsScreenProps>
 
       <YStack gap={10}>
         <ListCard>
+          {typeName ? (
+            <ListRow title={typeName} subtitle={t("eventsTypeLabel")} leading={<ListIcon icon={Shapes} size={44} />} />
+          ) : null}
           <ListRow
             title={formatEventDates(startDate, endDate)}
             subtitle={`${t("fieldDate")} · ${t("eventsDaysCount", { count: days })}`}

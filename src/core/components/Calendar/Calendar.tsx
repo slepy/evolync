@@ -7,6 +7,7 @@ import { formatDayTitle, formatMonth, formatShortDay, weekdayLabels } from "./ca
 import {
   buildMonthCells,
   defaultSelectedDay,
+  eventRowMeta,
   itemsForDay,
   shiftMonth,
   type CalendarFilter,
@@ -59,9 +60,14 @@ function toRow(
       key: `event-${item.id}`,
       kind: "event",
       title: item.title,
-      meta: multi
-        ? join(`${formatShortDay(item.startDay, locale)} – ${formatShortDay(item.endDay, locale)}`, item.place)
-        : join(t("calendarKindEvent"), item.place),
+      meta: eventRowMeta({
+        dateRange: multi
+          ? `${formatShortDay(item.startDay, locale)} – ${formatShortDay(item.endDay, locale)}`
+          : undefined,
+        typeName: item.typeId ? data.typeNames.get(item.typeId) : undefined,
+        place: item.place,
+        fallback: t("calendarKindEvent"),
+      }),
       badge: item.cancelled
         ? { label: t("statusCancelled"), accent: "danger" }
         : multi

@@ -1,4 +1,4 @@
-import { EventRepository } from "@/modules/events/repositories";
+import { EventRepository, EventTypeRepository } from "@/modules/events/repositories";
 import { SchoolRepository } from "@/modules/school/repositories";
 import { TrainingRepository, TrainingSeriesRepository } from "@/modules/trainings/repositories";
 import { useEffect, useState } from "react";
@@ -24,6 +24,8 @@ export interface CalendarMonthData {
   seriesFrequency: Map<string, SeriesFrequencyLabel>;
   /** School id → name, for the training meta line. */
   schoolNames: Map<string, string>;
+  /** Event type id → name, for the event meta line. */
+  typeNames: Map<string, string>;
 }
 
 const EMPTY: CalendarMonthData = {
@@ -31,6 +33,7 @@ const EMPTY: CalendarMonthData = {
   trainings: [],
   seriesFrequency: new Map(),
   schoolNames: new Map(),
+  typeNames: new Map(),
 };
 
 const NONE = of([] as never[]);
@@ -69,12 +72,15 @@ function observeMonth(
     switchMap(([events, trainings, schools]) => {
       const seriesIds = [...new Set(trainings.map((t) => t.seriesId).filter((id): id is string => !!id))];
       const series = seriesIds.length > 0 ? TrainingSeriesRepository.observeByIds(seriesIds) : NONE;
-      return series.pipe(
-        map((rows) => ({
+      const typeIds = [...new Set(events.map((e) => e.typeId).filter((id): id is string => !!id))];
+      const types = typeIds.length > 0 ? EventTypeRepository.observeByIds(typeIds) : NONE;
+      return combineLatest([series, types]).pipe(
+        map(([seriesRows, typeRows]) => ({
           events,
           trainings,
-          seriesFrequency: new Map(rows.map((row) => [row.id, seriesFrequencyLabel(row.rules)])),
+          seriesFrequency: new Map(seriesRows.map((row) => [row.id, seriesFrequencyLabel(row.rules)])),
           schoolNames: new Map(schools.map((school) => [school.id, school.name])),
+          typeNames: new Map(typeRows.map((row) => [row.id, row.name])),
         })),
       );
     }),

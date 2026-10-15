@@ -10,6 +10,7 @@ import { timestampToDay } from "../NextUp/pickNextUp";
 export interface CalendarEventSource {
   id: string;
   name: string;
+  typeId?: string;
   address?: string;
   startDate: Date;
   endDate: Date;
@@ -59,6 +60,7 @@ export type CalendarItem =
       kind: "event";
       id: string;
       title: string;
+      typeId?: string;
       place?: string;
       startDay: string;
       endDay: string;
@@ -206,6 +208,7 @@ export function itemsForDay(
           kind: "event" as const,
           id: event.id,
           title: event.name,
+          typeId: event.typeId || undefined,
           place: event.address || undefined,
           startDay: start,
           endDay: end,
@@ -233,6 +236,17 @@ export function itemsForDay(
     : [];
 
   return [...eventItems, ...trainingItems];
+}
+
+/**
+ * Meta line of an event row: "Camp · Zakopane", or for a multi-day event
+ * "20 Nov – 24 Nov · Camp · Zakopane". Without a type a single-day row keeps
+ * the generic kind label (`fallback`, "Event").
+ */
+export function eventRowMeta(parts: { dateRange?: string; typeName?: string; place?: string; fallback: string }): string {
+  const { dateRange, typeName, place, fallback } = parts;
+  const kind = typeName || (dateRange ? undefined : fallback);
+  return [dateRange, kind, place].filter(Boolean).join(" · ");
 }
 
 /** "↻ Weekly" / "↻ Monthly"; a series mixing both is just "recurring". */
