@@ -16,3 +16,4 @@ export * from "./studentEvents";
 export { EventTypeSheet } from "./EventTypeSheet";
 export { EventTypePickerSheet } from "./EventTypePickerSheet";
 export { EventTypesListScreen } from "./EventTypesListScreen";
+export * from "./eventList";
