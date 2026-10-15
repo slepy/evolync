@@ -20,6 +20,7 @@ import { pushNotesChanges, pullNotesChanges } from "./sync-notes.ts";
 import { pushTagsChanges, pullTagsChanges } from "./sync-tags.ts";
 import { pushNotificationsChanges, pullNotificationsChanges } from "./sync-notifications.ts";
 import { pullTrainingsForMember } from "./sync-trainings.ts";
+import { pullEventTypesForMember } from "./sync-event-types.ts";
 
 export async function syncUser(ctx: SyncContext): Promise<SyncPullChanges> {
   const { supabaseClient, userId, changes, lastPulledAt } = ctx;
@@ -404,15 +405,22 @@ export async function syncUser(ctx: SyncContext): Promise<SyncPullChanges> {
       pullChanges.event_participants = await fetchTableChanges("event_participants", (q) =>
         q.in("event_id", eventIds).in("school_member_id", memberIds),
       );
+      // Step 4: Types of those events (read-only), so the rows show the type name
+      pullChanges.event_types = await pullEventTypesForMember(ctx, eventIds, [
+        ...pullChanges.events.created,
+        ...pullChanges.events.updated,
+      ]);
       console.log(`[SYNC:USER] Events pulled: created=${pullChanges.events.created.length}, updated=${pullChanges.events.updated.length}`);
       console.log(`[SYNC:USER] Event participants pulled: created=${pullChanges.event_participants.created.length}, updated=${pullChanges.event_participants.updated.length}`);
     } else {
       pullChanges.events = { created: [], updated: [], deleted: [] };
       pullChanges.event_participants = { created: [], updated: [], deleted: [] };
+      pullChanges.event_types = { created: [], updated: [], deleted: [] };
     }
   } else {
     pullChanges.events = { created: [], updated: [], deleted: [] };
     pullChanges.event_participants = { created: [], updated: [], deleted: [] };
+    pullChanges.event_types = { created: [], updated: [], deleted: [] };
   }
 
   // Planned trainings the member is in the audience of (read-only)
