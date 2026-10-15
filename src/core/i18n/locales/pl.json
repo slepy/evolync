@@ -313,6 +313,8 @@
   "attendancePercentPresent": "{{percent}}% obecności",
   "attendanceStatusHint": "Dotknij status, aby go zmienić: Obecny, Nieobecny, Usprawiedliwiony.",
   "attendanceTodayTitle": "Dziś, {{date}}",
+  "attendanceDeleteTitle": "Usuń zajęcia",
+  "attendanceDeleteMessage": "Czy na pewno chcesz usunąć te zajęcia razem z obecnościami? Tej operacji nie można cofnąć.",
 
   "paymentsTitle": "Płatności",
   "paymentsThisMonth": "Ten miesiąc",

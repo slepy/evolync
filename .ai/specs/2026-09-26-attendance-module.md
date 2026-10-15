@@ -2,6 +2,8 @@
 
 > **Status (2026-09-30):** All five fixes plus the two folded-in mechanical items below are implemented and live on `main` (commit `2c81b92`, landed the same day this spec was authored — the remediation shipped directly alongside the as-built documentation rather than through a separate PR). Verified by direct code inspection: batched `database.batch()` writes in `attendanceService.ts`, atomic `database.write()` guards in `upsertAttendanceRecord`/`getOrCreateSessionForDate`, `attendanceStatusSchema`/`createTrainingSessionSchema` wired into every write path, `disabled` treatment for archived members in `useAttendance`/`AttendanceListItem`, `Q.where('deleted_at', null)` in `TrainingSessionRepository.findByIds`, UTC-day boundaries in `getOrCreateSessionForDate` and `observeTodayBySchoolId`, and the complete barrel exports in `attendance/index.ts`.
 >
+> **Update (2026-10-15):** Fix #6 — deleting a session from its details screen — implemented (see Proposed Solution #6, UI/UX, Edge Cases).
+>
 > The one item intentionally left out of this spec's client-code scope — aligning the Supabase `attendance_records.status` column default from `'absent'` to `'present'` (a schema migration, see Data Model) — is tracked separately as [issue #4](https://github.com/slepy/evolync/issues/4).
 
 ## 📝 TLDR
@@ -15,25 +17,29 @@ Documents current behavior of `src/modules/attendance/` — training sessions (o
 - "One session per school per day" is computed from device-local midnight boundaries while the DB stores a plain `date` column — cross-device/cross-timezone disagreement about which calendar day a session belongs to is possible.
 
 ## 📝 Proposed Solution
-Five independently shippable fixes:
+Six independently shippable fixes:
 
 1. **Batch bulk writes + partial-failure reporting** — rewrite `bulkUpdateAttendanceStatus`, `bulkUpsertAttendance`, `bulkSaveAttendanceList` to build one `database.batch()` of `prepareUpdate`/`prepareCreate` operations (mirroring `createSessionWithAttendance`'s existing pattern) instead of a sequential await-loop. A batch either fully commits or fully fails — no partial-state gap — and the caller's `saveAll()` (in `useAttendance`/`useStudentAttendance`) surfaces a single success/failure instead of an ambiguous partial state.
 2. **Client-side duplicate guard** — `upsertAttendanceRecord` and `getOrCreateSessionForDate` wrap their find-then-create in a `database.write()` transaction so the check and the create happen atomically from WatermelonDB's perspective (eliminates the in-app race; the remaining cross-device race is still resolved by the existing DB unique constraint at sync time, which is out of scope to change).
 3. **Wire existing validation schemas into the write path** — `createTrainingSession`/`getOrCreateSessionForDate` run the DTO through `createTrainingSessionSchema` before writing; `upsertAttendanceRecord`/bulk functions validate each status through `attendanceStatusSchema`. Throws a clear validation error instead of trusting the caller — a safety net for any future caller that isn't the current fixed-control UI (e.g. a future bulk-import feature).
 4. **Fix archived/soft-deleted data leakage** — two parts: (a) session-roster hydration (`useAttendance`, via `StudentRepository.findByIds`) marks a member's row read-only when their current `status` is `ARCHIVED`, instead of leaving it silently editable — the historical record still displays (attendance history is preserved), it just can't be changed; (b) `TrainingSessionRepository.findByIds` adds the standard `Q.where('deleted_at', null)` filter, so a soft-deleted session's records no longer surface in a student's own attendance history.
 5. **Normalize session-day computation to a single timezone convention** — `getOrCreateSessionForDate` and `observeTodayBySchoolId` switch from device-local midnight boundaries to UTC-day boundaries (no school-timezone field exists yet to normalize against instead — UTC is the practical fix available today; revisit if/when schools gain a stored timezone). All devices computing "today" or "the session for date X" now agree regardless of local timezone offset.
+6. **Delete a session from its details screen** — an instructor opens organization → school → Attendance → session details (13B, `/school/[schoolId]/attendance/[sessionId]`) and taps the trash button in the header. A confirmation alert (`confirmDelete`: "Delete session" / cannot be undone) guards it; on confirm `deleteTrainingSession` soft deletes the session **and** all of its attendance records in one `database.write()` + `database.batch()` (both rows get the same `deleted_at`), triggers a background `sync()`, and the screen goes back to the sessions list. Previously the service did two separate writes (records, then session), so a failure in between left deleted records under a live session.
 
 ## 📝 Architecture
-No new modules or cross-module dependencies. All five fixes are internal to `attendance`'s own service/repository layer.
+No new modules or cross-module dependencies. All six fixes are internal to `attendance`'s own service/repository layer.
 
 ## 📝 Data Model
 No schema changes for Fixes #1–#5. Fix #2's atomicity is a transaction-boundary change, not a schema change. Fix #5 changes only which boundary values (`Date` objects) are computed in JS before querying — the stored `date`/timestamp columns are unchanged. The one exception is the folded-in DB default alignment (`attendance_records.status` default `'absent'` → `'present'`): this **is** a schema change — a Supabase migration, not a client-code edit — and is out of this spec's client-code scope to implement directly; it's recorded here as a follow-up migration to request, not something the implementation plan's client-side work can complete on its own.
+
+Fix #6 needs one Supabase migration (`20261015000000_training_sessions_unique_live_date.sql`): the `unique_school_date` constraint on `training_sessions (school_id, date)` is replaced with a partial unique index `where deleted_at is null`. Without it, a soft-deleted session still holds its day, and a new session created for that day fails the sync push. The migration must be deployed before the app version that can delete sessions.
 
 ## 📝 API Contracts
 No public contract changes. Fix #1 changes the internal return behavior of the three bulk functions from `Promise<void>` (which could reject mid-way with partial commits) to `Promise<void>` that either fully succeeds or fully rejects with nothing committed — a stricter but compatible contract for existing callers. Fix #3 adds a new thrown error case (validation failure) to `createTrainingSession`/`getOrCreateSessionForDate`/`upsertAttendanceRecord` and the bulk functions.
 
 ## 📝 UI/UX
 - Fix #1, #2, #3, #5: no visible UI change — correctness fixes underneath existing screens.
+- Fix #6: the session details screen (13B) shows a `TrashButton` in the `SubScreenPage` header in place of the Sync pill; disabled while saving or deleting. A delete failure shows "Failed to delete" above the (optional) Save button. Translations: `attendanceDeleteTitle`, `attendanceDeleteMessage` (en + pl). No delete from the sessions list.
 - Fix #4: an archived student's row in a past session's roster view renders with the same "read-only" visual treatment already used elsewhere (e.g. `StudentAttendanceHistoryItem`'s `disabled` state) instead of being tappable.
 
 ## 📝 Edge Cases & Failure Scenarios
@@ -44,6 +50,9 @@ No public contract changes. Fix #1 changes the internal return behavior of the t
 | Instructor creates a session with an invalid/unparseable date somehow reaching the service | Silently accepted | Throws a validation error (fix #3) |
 | Editing a past session that includes a since-archived member | Editable, indistinguishable from active members | Read-only, historical value preserved (fix #4a) |
 | Student views their own history after a session was soft-deleted | Soft-deleted session's records still show | No longer surfaces (fix #4b) |
+| Instructor deletes a session | Not possible from the UI | Confirmation, then session + records soft deleted atomically; hidden from the sessions list, stats and students' history (all filter `deleted_at`); synced like any soft delete (fix #6) |
+| Instructor deletes today's session, then creates a new one for today | — | Allowed: uniqueness counts live sessions only (partial unique index), so the new session syncs (fix #6) |
+| Session delete fails mid-way (e.g. DB error) | Records could be deleted while the session stays live | Nothing changes; "Failed to delete" shown, screen stays open (fix #6) |
 | Instructor's device is in a different timezone than expected, checks "today's session" near midnight | May disagree with another device/the server about which day it is | Both agree via UTC-day boundary (fix #5) |
 
 ## 📝 Risks & Impact Review
@@ -59,6 +68,7 @@ Each fix ships independently, in any order:
 - **Fix #3** — Wire existing Zod validation into the write path. *Status: ✅ implemented, on `main`.*
 - **Fix #4** — Fix archived/soft-deleted data leakage (read-only archived rows + session `deleted_at` filter). *Status: ✅ implemented, on `main`.*
 - **Fix #5** — Normalize session-day computation to UTC. *Status: ✅ implemented, on `main`.*
+- **Fix #6** — Delete a session from its details screen (atomic soft delete + trash button). *Status: ✅ implemented (2026-10-15, PR #43).*
 - (Folded in, no separate phase): barrel export fix — *Status: ✅ implemented, on `main`.* DB default alignment — *Status: not yet implemented; tracked as [issue #4](https://github.com/slepy/evolync/issues/4) (schema migration, out of this spec's client-code scope).*
 
 ## 📋 Implementation Plan
@@ -69,3 +79,4 @@ Each fix ships independently, in any order:
 4. In `useAttendance`'s roster hydration, cross-reference each member's current `status` (already available via `StudentRepository.findByIds`) and mark the row `disabled` in the UI when `status === ARCHIVED`; add `Q.where('deleted_at', null)` to `TrainingSessionRepository.findByIds`. Test: a session containing a now-archived member renders that row non-interactive; a student's history no longer includes a soft-deleted session.
 5. Replace device-local `setHours(0,0,0,0)`/`(23,59,59,999)` boundary computation in `getOrCreateSessionForDate` and `TrainingSessionRepository.observeTodayBySchoolId` with UTC-day boundaries. Test: with the device clock set to a timezone that crosses midnight relative to UTC, "today's session" resolves to the same session as a UTC-based reference calculation.
 6. Add the missing hook/service exports to `src/modules/attendance/index.ts` (pure client-code change, testable now). Separately, request a Supabase migration changing `attendance_records.status`'s column default from `'absent'` to `'present'` (a DB schema change, not part of this spec's client-side implementation — file as a follow-up migration task). Test: existing imports from the module barrel still resolve.
+7. Rewrite `deleteTrainingSession` as one `database.write()` with a `database.batch()` of `prepareUpdate` calls setting `deleted_at` on the session and its live records; add a `TrashButton` + `confirmDelete` to `AttendanceSessionScreen` and route back on success; add the partial-unique-index migration for `training_sessions (school_id, date) where deleted_at is null`. Test (`__tests__/deleteTrainingSession.test.ts`, in-memory DB): session and records are soft deleted with the same timestamp, other sessions are untouched, an unknown session rejects without changes.

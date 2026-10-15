@@ -311,6 +311,8 @@
   "attendancePercentPresent": "{{percent}}% present",
   "attendanceStatusHint": "Tap a status to change it: Present, Absent, Excused.",
   "attendanceTodayTitle": "Today, {{date}}",
+  "attendanceDeleteTitle": "Delete session",
+  "attendanceDeleteMessage": "Are you sure you want to delete this session and its attendance? This action cannot be undone.",
 
   "paymentsTitle": "Payments",
   "paymentsThisMonth": "This month",

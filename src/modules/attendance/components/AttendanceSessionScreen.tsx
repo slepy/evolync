@@ -7,19 +7,21 @@ import {
   StatusButton,
   StatusSummary,
   SubScreenPage,
+  TrashButton,
   ratePercent,
 } from "@/core/components";
 import { DEFAULT_ATTENDANCE_STATUS, STATUS_CYCLE, type AttendanceStatus } from "@/database/models/AttendanceRecord";
 import type SchoolMember from "@/database/models/SchoolMember";
 import TrainingSession from "@/database/models/TrainingSession";
 import { LoadingScreen } from "@/modules/core/components/LoadingScreen";
+import { confirmDelete } from "@/modules/core/utils/confirmDelete";
 import { StudentRepository } from "@/modules/students/repositories";
 import React, { useEffect, useMemo, useState } from "react";
 import { Text, YStack } from "tamagui";
 import { ATTENDANCE_STATUS_STYLE, ATTENDANCE_SUMMARY_ORDER } from "../constants";
 import { useAttendance } from "../hooks/useAttendance";
 import { TrainingSessionRepository } from "../repositories";
-import { createSessionWithAttendance } from "../services";
+import { createSessionWithAttendance, deleteTrainingSession } from "../services";
 import { countStatuses, dateLocaleTag, formatDayMonthShort, formatSessionShort } from "../sessionList";
 
 const nextStatus = (status: AttendanceStatus): AttendanceStatus =>
@@ -42,6 +44,8 @@ interface AttendanceSessionBodyProps {
   onSubmit: () => void;
   isSaving: boolean;
   error: string | null;
+  /** Trash button in the header (13B): deletes the session. */
+  headerAction?: React.ReactNode;
 }
 
 /** 13B / 13C: Status summary, hint, member rows with a status button, Save / Create pinned at the bottom. */
@@ -54,6 +58,7 @@ function AttendanceSessionBody({
   onSubmit,
   isSaving,
   error,
+  headerAction,
 }: AttendanceSessionBodyProps) {
   const counts = countStatuses(rows);
 
@@ -61,21 +66,24 @@ function AttendanceSessionBody({
     <SubScreenPage
       title={title}
       context="school"
+      right={headerAction}
       footer={
-        showButton ? (
+        showButton || error ? (
           <YStack gap={10}>
             {error ? (
               <Text fontSize={12.5} fontWeight="$secondary" color="$trashText" textAlign="center">
                 {error}
               </Text>
             ) : null}
-            <PrimaryButton
-              label={buttonLabel}
-              accent="attendance"
-              onPress={onSubmit}
-              loading={isSaving}
-              disabled={rows.length === 0}
-            />
+            {showButton ? (
+              <PrimaryButton
+                label={buttonLabel}
+                accent="attendance"
+                onPress={onSubmit}
+                loading={isSaving}
+                disabled={rows.length === 0}
+              />
+            ) : null}
           </YStack>
         ) : undefined
       }
@@ -139,13 +147,15 @@ function AttendanceSessionBody({
 interface AttendanceSessionScreenProps {
   schoolId: string;
   sessionId: string;
-  /** After Save: back to the sessions. */
+  /** After Save or Delete: back to the sessions. */
   onSaved: () => void;
 }
 
-/** Session details (13B): tap a status to change it; Save appears after a change. */
+/** Session details (13B): tap a status to change it; Save appears after a change; the trash deletes the session. */
 export const AttendanceSessionScreen: React.FC<AttendanceSessionScreenProps> = ({ schoolId, sessionId, onSaved }) => {
   const [session, setSession] = useState<TrainingSession | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
   const { attendanceList, isLoading, isSaving, error, toggleStatus, saveAll } = useAttendance(sessionId, schoolId);
 
   useEffect(() => {
@@ -167,6 +177,20 @@ export const AttendanceSessionScreen: React.FC<AttendanceSessionScreenProps> = (
     }
   };
 
+  const handleDelete = () =>
+    confirmDelete(t("attendanceDeleteTitle"), t("attendanceDeleteMessage"), async () => {
+      setIsDeleting(true);
+      setDeleteError(null);
+      try {
+        await deleteTrainingSession(sessionId);
+        onSaved();
+      } catch (err) {
+        console.error("[AttendanceSessionScreen] Delete error:", err);
+        setDeleteError(t("errorDeleteFailed"));
+        setIsDeleting(false);
+      }
+    });
+
   if (isLoading || !session) return <LoadingScreen />;
 
   return (
@@ -180,8 +204,11 @@ export const AttendanceSessionScreen: React.FC<AttendanceSessionScreenProps> = (
       buttonLabel={t("save")}
       showButton={changed}
       onSubmit={handleSave}
-      isSaving={isSaving}
-      error={error}
+      isSaving={isSaving || isDeleting}
+      error={deleteError ?? error}
+      headerAction={
+        <TrashButton label={t("attendanceDeleteTitle")} onPress={handleDelete} disabled={isSaving || isDeleting} />
+      }
     />
   );
 };
