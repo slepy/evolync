@@ -42,16 +42,18 @@ An instructor can delete a training session (attendance) from its details screen
 
 ## Progress
 
+PR: #43
+
 > Convention: `- [ ]` pending, `- [x]` done. Append ` — <commit sha>` when a step lands. Do not rename step titles.
 
 ### Phase 1: Service
 
-- [ ] 1.1 Atomic deleteTrainingSession with unit test
+- [x] 1.1 Atomic deleteTrainingSession with unit test — 1a8970e
 
 ### Phase 2: UI
 
-- [ ] 2.1 Trash button with confirmation on session details
+- [x] 2.1 Trash button with confirmation on session details — 8975f4b
 
 ### Phase 3: Spec
 
-- [ ] 3.1 Update the attendance spec
+- [x] 3.1 Update the attendance spec — dbbee77
