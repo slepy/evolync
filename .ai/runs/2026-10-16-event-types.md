@@ -62,13 +62,13 @@ and the organization calendar gains a List view filtered by a date range and a t
 
 ### Phase 1: Event types
 
-- [ ] 1.1 Supabase migration `event_types` + `events.type_id` + RLS
-- [ ] 1.2 WatermelonDB model, schema, migration v22
-- [ ] 1.3 Sync push/pull of `event_types`
-- [ ] 1.4 Repository, service, schema, hooks
-- [ ] 1.5 Type sheets, types list screen, translations
-- [ ] 1.6 Event form TYPE field
-- [ ] 1.7 Type in event details and calendar rows
+- [x] 1.1 Supabase migration `event_types` + `events.type_id` + RLS — 83e0574
+- [x] 1.2 WatermelonDB model, schema, migration v22 — 1d906f9
+- [x] 1.3 Sync push/pull of `event_types` — d6b98eb
+- [x] 1.4 Repository, service, schema, hooks — 69854a8
+- [x] 1.5 Type sheets, types list screen, translations — 44b5fa1
+- [x] 1.6 Event form TYPE field — 15cea95
+- [x] 1.7 Type in event details and calendar rows — 1c68138
 
 ### Phase 2: Filtered list view
 
