@@ -36,6 +36,7 @@ export const createEvent = async (data: CreateEventDto): Promise<Event> => {
     organizationId: data.organizationId,
     schoolId: data.schoolId,
     name: data.name,
+    typeId: data.typeId,
     shortNote: data.shortNote,
     address: data.address,
     startDate: new Date(data.startDate),
@@ -106,6 +107,7 @@ export const updateEvent = async (
 
   const updateData: Partial<Event> = {
     ...(data.name !== undefined && { name: data.name }),
+    ...(data.typeId !== undefined && { typeId: data.typeId }),
     ...(data.shortNote !== undefined && { shortNote: data.shortNote }),
     ...(data.address !== undefined && { address: data.address }),
     ...(data.startDate !== undefined && { startDate: new Date(data.startDate) }),

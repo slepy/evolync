@@ -14,6 +14,7 @@ const TODAY = "2099-03-02";
 const SCHOOL = "8a6e0804-2bd0-4672-b79d-d97358ad76d1";
 const MEMBER_A = "1b9d6bcd-bbfd-4b2d-9b5d-ab8dfbbd4bed";
 const MEMBER_B = "6ec0bd7f-11c0-43da-975e-2a8ad9ebae0b";
+const TYPE = "3f2b8c1e-5d4a-4e6f-9a7b-2c1d0e9f8a7b";
 
 describe("initialEventForm", () => {
   it("starts and ends on the calendar's day, for the whole organization", () => {
@@ -33,7 +34,7 @@ describe("initialEventForm", () => {
 
 describe("validateEventForm", () => {
   it("returns trimmed values; empty price means free", () => {
-    const form = { ...initialEventForm("2099-03-07", TODAY), name: " Winter Camp ", shortNote: "  " };
+    const form = { ...initialEventForm("2099-03-07", TODAY), name: " Winter Camp ", shortNote: "  ", typeId: TYPE };
     const result = validateEventForm(form);
     assert.ok(result.ok);
     if (result.ok) {
@@ -41,17 +42,24 @@ describe("validateEventForm", () => {
       assert.equal(result.values.shortNote, undefined);
       assert.equal(result.values.price, 0);
       assert.equal(result.values.whitelistedMemberIds, undefined);
+      assert.equal(result.values.typeId, TYPE);
     }
   });
 
+  it("asks for a type", () => {
+    const result = validateEventForm({ ...initialEventForm("2099-03-07", TODAY), name: "Camp" });
+    assert.ok(!result.ok && result.errors.typeId === "eventValidationTypeRequired");
+  });
+
   it("accepts a decimal comma in the price", () => {
-    const result = validateEventForm({ ...initialEventForm(undefined, TODAY), name: "Camp", price: "12,50" });
+    const result = validateEventForm({ ...initialEventForm(undefined, TODAY), name: "Camp", typeId: TYPE, price: "12,50" });
     assert.ok(result.ok && result.values.price === 12.5);
   });
 
   it("maps errors to the fields that show them", () => {
     const form = {
       ...initialEventForm("2099-03-07", TODAY),
+      typeId: TYPE,
       endDate: "2099-03-06",
       price: "-1",
       visibility: EVENT_VISIBILITY.WHITELIST,
@@ -69,7 +77,7 @@ describe("validateEventForm", () => {
   });
 
   it("asks for the school of a school event", () => {
-    const form = { ...initialEventForm(undefined, TODAY), name: "Camp", visibility: EVENT_VISIBILITY.SCHOOL };
+    const form = { ...initialEventForm(undefined, TODAY), name: "Camp", typeId: TYPE, visibility: EVENT_VISIBILITY.SCHOOL };
     const result = validateEventForm(form);
     assert.ok(!result.ok && result.errors.schoolId === "eventValidationSchoolIdRequired");
     assert.ok(validateEventForm({ ...form, schoolId: SCHOOL }).ok);
@@ -96,6 +104,22 @@ describe("eventToForm / hasEventChanges", () => {
     assert.equal(form.price, "800");
     assert.equal(form.shortNote, "");
     assert.deepEqual(form.inviteeIds, [MEMBER_A]);
+  });
+
+  it("an event saved before types asks for one, and picking it is a change", () => {
+    const initial = eventToForm(event, [MEMBER_A]);
+    assert.equal(initial.typeId, "");
+    const result = validateEventForm(initial);
+    assert.ok(!result.ok && result.errors.typeId === "eventValidationTypeRequired");
+    const typed = { ...initial, typeId: TYPE };
+    assert.equal(hasEventChanges(typed, initial), true);
+    assert.ok(validateEventForm(typed).ok);
+  });
+
+  it("keeps the stored type", () => {
+    const form = eventToForm({ ...event, typeId: TYPE }, [MEMBER_A]);
+    assert.equal(form.typeId, TYPE);
+    assert.equal(hasEventChanges({ ...form, typeId: "" }, form), true);
   });
 
   it("sees only real changes (member order does not count)", () => {

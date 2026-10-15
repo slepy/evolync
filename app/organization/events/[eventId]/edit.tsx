@@ -73,6 +73,7 @@ export default function EditEventScreen() {
       schools={schools}
       members={members}
       onSubmit={handleSubmit}
+      onManageTypes={() => router.push("/organization/events/types" as any)}
     />
   );
 }

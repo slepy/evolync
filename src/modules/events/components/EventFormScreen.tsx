@@ -13,6 +13,7 @@ import { formatDay } from "@/modules/trainings/components/format";
 import { localToday } from "@/modules/trainings/types/helpers";
 import React, { useState } from "react";
 import { Text, XStack, YStack } from "tamagui";
+import { useEventTypeName } from "../hooks/useEventTypes";
 import { EVENT_CURRENCIES } from "../types/enums";
 import type { CreateEventFormValues } from "../validation";
 import {
@@ -23,6 +24,7 @@ import {
   type EventFormErrors,
   type EventFormState,
 } from "./eventFormState";
+import { EventTypePickerSheet } from "./EventTypePickerSheet";
 
 const NAME_MAX = 200;
 const SHORT_NOTE_MAX = 300;
@@ -39,10 +41,12 @@ interface EventFormScreenProps {
   members: AudienceMember[];
   /** Persists the validated values; a thrown error key is shown above the button. */
   onSubmit: (values: CreateEventFormValues) => Promise<void>;
+  /** Opens the Event types screen from the type sheet's header icon. */
+  onManageTypes?: () => void;
 }
 
 /**
- * New event (10A) and edit (10B): NAME, SHORT NOTE, LOCATION, START / END
+ * New event (10A) and edit (10B): NAME, TYPE, SHORT NOTE, LOCATION, START / END
  * with the day count, PRICE / CURRENCY, "Who can see it?", Create / Save
  * pinned at the bottom in the Events amber.
  */
@@ -53,11 +57,14 @@ export const EventFormScreen: React.FC<EventFormScreenProps> = ({
   schools,
   members,
   onSubmit,
+  onManageTypes,
 }) => {
   const [form, setForm] = useState<EventFormState>(initial);
   const [errors, setErrors] = useState<EventFormErrors>({});
   const [submitError, setSubmitError] = useState<string | undefined>();
   const [currencyOpen, setCurrencyOpen] = useState(false);
+  const [typeOpen, setTypeOpen] = useState(false);
+  const typeName = useEventTypeName(form.typeId);
   const [isSaving, setIsSaving] = useState(false);
 
   const today = localToday();
@@ -132,6 +139,21 @@ export const EventFormScreen: React.FC<EventFormScreenProps> = ({
             error={fieldError("name")}
             autoCapitalize="sentences"
           />
+          <YStack gap={6}>
+            <SelectField
+              label={t("eventsTypeLabel")}
+              value={form.typeId ? typeName : undefined}
+              placeholder={t("eventsTypePlaceholder")}
+              onPress={() => setTypeOpen(true)}
+              open={typeOpen}
+              accent="events"
+            />
+            {fieldError("typeId") ? (
+              <Text fontSize={12.5} fontWeight="$secondary" color="$trashText">
+                {fieldError("typeId")}
+              </Text>
+            ) : null}
+          </YStack>
           <TextField
             label={t("eventsShortNoteOptional")}
             value={form.shortNote}
@@ -228,6 +250,14 @@ export const EventFormScreen: React.FC<EventFormScreenProps> = ({
           />
         </YStack>
       </SubScreenPage>
+
+      <EventTypePickerSheet
+        open={typeOpen}
+        onOpenChange={setTypeOpen}
+        selectedTypeId={form.typeId || undefined}
+        onSelect={(typeId) => update({ typeId })}
+        onManage={onManageTypes}
+      />
 
       <CurrencySheet
         open={currencyOpen}

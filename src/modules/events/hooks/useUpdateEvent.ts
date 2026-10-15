@@ -43,6 +43,7 @@ export const useUpdateEvent = (eventId: string | undefined, organizationId?: str
 
         const dto: UpdateEventDto = {
           name: formData.name,
+          typeId: formData.typeId,
           shortNote: formData.shortNote,
           address: formData.address,
           startDate: formData.startDate,
