@@ -17,3 +17,4 @@ export { EventTypeSheet } from "./EventTypeSheet";
 export { EventTypePickerSheet } from "./EventTypePickerSheet";
 export { EventTypesListScreen } from "./EventTypesListScreen";
 export * from "./eventList";
+export { EventListView } from "./EventListView";
