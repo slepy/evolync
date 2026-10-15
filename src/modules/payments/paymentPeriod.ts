@@ -128,6 +128,13 @@ export const memberPaymentAmount = (
   return schoolDefault;
 };
 
+/** The period's own one-off amount, or undefined when its members pay their own fee or the school default. */
+export const periodOwnAmount = (period: {
+  amount?: number | null;
+  currency?: string | null;
+}): CurrencyAmount | undefined =>
+  period.amount != null && period.currency ? { amount: period.amount, currency: period.currency } : undefined;
+
 /** Sums per currency for each status (14B1 COLLECTED / PENDING / CANCELLED), currencies in first-seen order. */
 export function amountsByStatus(
   items: ReadonlyArray<{ status: PaymentStatus; amount: number; currency: string }>,

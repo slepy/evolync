@@ -7,7 +7,8 @@ import { StudentRepository } from "../repositories";
 import { SchoolJoinRequestRepository } from "@/modules/school/repositories/schoolJoinRequestRepository";
 import { SchoolSettingsRepository } from "@/modules/school/repositories";
 import { PaymentRecordRepository } from "@/modules/payments/repositories/paymentRecordRepository";
-import { memberPaymentAmount } from "@/modules/payments/paymentPeriod";
+import { PaymentCycleRepository } from "@/modules/payments/repositories/paymentCycleRepository";
+import { memberPaymentAmount, periodOwnAmount } from "@/modules/payments/paymentPeriod";
 import { EventParticipantRepository } from "@/modules/events/repositories/eventParticipantRepository";
 
 import { Q } from "@nozbe/watermelondb";
@@ -228,11 +229,17 @@ export const approveJoinRequest = async (
   if (cycleIds.length > 0) {
     const schoolSettings = await SchoolSettingsRepository.findBySchoolId(schoolId);
     const member = await StudentRepository.findById(memberId);
-    const { amount, currency } = memberPaymentAmount(member ?? {}, {
+    const schoolDefault = {
       amount: schoolSettings?.defaultPaymentAmount ?? 0,
       currency: schoolSettings?.defaultCurrency ?? "PLN",
-    });
+    };
     for (const cycleId of cycleIds) {
+      const cycle = await PaymentCycleRepository.findById(cycleId);
+      const { amount, currency } = memberPaymentAmount(
+        member ?? {},
+        schoolDefault,
+        cycle ? periodOwnAmount(cycle) : undefined,
+      );
       await PaymentRecordRepository.bulkCreate(cycleId, [memberId], amount, currency);
     }
   }

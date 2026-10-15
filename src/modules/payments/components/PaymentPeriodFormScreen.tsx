@@ -60,12 +60,17 @@ export const PaymentPeriodFormScreen: React.FC<PaymentPeriodFormScreenProps> = (
   const [currencyOpen, setCurrencyOpen] = useState(false);
 
   useEffect(() => {
+    // AMOUNT / CURRENCY start from the school default once; later settings updates keep the user's input
+    let seeded = false;
     const subscription = SchoolSettingsRepository.observeBySchoolId(schoolId).subscribe({
       next: ([settings]) => {
         if (!settings) return;
-        setSchoolDefault(`${formatAmount(settings.defaultPaymentAmount ?? 0)} ${settings.defaultCurrency}`);
+        const defaultCurrency = settings.defaultCurrency || DEFAULT_CURRENCY;
+        setSchoolDefault(`${formatAmount(settings.defaultPaymentAmount ?? 0)} ${defaultCurrency}`);
+        if (seeded) return;
+        seeded = true;
         setAmount((prev) => prev || formatAmount(settings.defaultPaymentAmount ?? 0));
-        setCurrency(settings.defaultCurrency || DEFAULT_CURRENCY);
+        setCurrency(defaultCurrency);
       },
       error: (err: Error) => console.error("[PaymentPeriodForm] Settings error:", err),
     });

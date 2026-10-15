@@ -22,7 +22,7 @@ import {
   createPaymentCycleSchema,
   paymentRecordEditSchema,
 } from "../validation";
-import { memberPaymentAmount } from "../paymentPeriod";
+import { memberPaymentAmount, periodOwnAmount } from "../paymentPeriod";
 
 // ============================================================================
 // Payment Cycles
@@ -75,10 +75,7 @@ export const createPaymentCycle = async (
     amount: settings[0]?.defaultPaymentAmount ?? 0,
     currency: settings[0]?.defaultCurrency ?? "PLN",
   };
-  const periodAmount =
-    data.amount !== undefined && data.currency
-      ? { amount: data.amount, currency: data.currency }
-      : undefined;
+  const periodAmount = periodOwnAmount(data);
 
   // Get all active members of the school
   const membersCollection = database.get<SchoolMember>("school_members");
@@ -103,6 +100,11 @@ export const createPaymentCycle = async (
       record.periodEnd = new Date(data.periodEnd);
       if (data.notes) {
         record.notes = data.notes;
+      }
+      // Kept on the period so members added later pay the same one-off amount
+      if (periodAmount) {
+        record.amount = periodAmount.amount;
+        record.currency = periodAmount.currency;
       }
     });
 

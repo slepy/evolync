@@ -23,6 +23,9 @@ export default class PaymentCycle extends Model {
   @date("period_start") periodStart!: Date;
   @date("period_end") periodEnd!: Date;
   @field("notes") notes?: string;
+  /** One-off amount for everyone in this period; null = each member's own fee or the school default. */
+  @field("amount") amount?: number | null;
+  @field("currency") currency?: string | null;
 
   @relation("schools", "school_id") school!: School;
   @children("payment_records") records!: PaymentRecord[];

@@ -17,6 +17,13 @@ export default schemaMigrations({
             { name: "payment_currency", type: "string", isOptional: true },
           ],
         }),
+        addColumns({
+          table: "payment_cycles",
+          columns: [
+            { name: "amount", type: "number", isOptional: true },
+            { name: "currency", type: "string", isOptional: true },
+          ],
+        }),
       ],
     },
     {
