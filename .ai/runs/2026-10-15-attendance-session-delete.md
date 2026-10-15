@@ -17,10 +17,11 @@ An instructor can delete a training session (attendance) from its details screen
   `confirmDelete` alert, back to the sessions list after deleting; error shown above the button.
 - Translations `attendanceDeleteTitle` / `attendanceDeleteMessage` in `en.json` and `pl.json`.
 - Spec `.ai/specs/2026-09-26-attendance-module.md` — document the delete flow.
+- Supabase migration (added after review): `unique (school_id, date)` → partial unique index on live rows,
+  so a session can be created on the day of a deleted one.
 
 ## Non-goals
 
-- No schema / Supabase migration: soft delete via `deleted_at` already syncs like every other table.
 - No delete from the sessions list (swipe / long press) — details screen only.
 - No undo.
 
@@ -37,6 +38,7 @@ An instructor can delete a training session (attendance) from its details screen
 
 ## Risks
 
+- The migration must be deployed to Supabase before the app version that can delete sessions ships.
 - Deleting a session hides its records from students' attendance history and from stats
   (both already filter `deleted_at`). Intended; the confirmation states it cannot be undone.
 
@@ -49,6 +51,7 @@ PR: #43
 ### Phase 1: Service
 
 - [x] 1.1 Atomic deleteTrainingSession with unit test — 1a8970e
+- [x] 1.2 Partial unique index for live sessions per school per day — 0b11fe8
 
 ### Phase 2: UI
 
