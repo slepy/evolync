@@ -9,6 +9,8 @@ const ROOT = path.resolve(__dirname, "../../../..");
 const SOURCES = [
   "src/modules/events/components",
   "src/modules/events/constants.ts",
+  "src/modules/events/services",
+  "src/modules/events/validation",
   "app/organization/events",
   "app/user/events",
   "src/core/components/AudienceChoice",
@@ -33,7 +35,7 @@ const usedKeys = () => {
   for (const file of SOURCES.flatMap(files).filter((f) => /\.tsx?$/.test(f))) {
     const source = readFileSync(file, "utf8");
     for (const m of source.matchAll(/\bt\(\s*"([A-Za-z0-9_]+)"/g)) keys.add(m[1]);
-    for (const m of source.matchAll(/"((?:events|eventValidation|statusA|statusP)[A-Z][A-Za-z0-9]+)"/g)) keys.add(m[1]);
+    for (const m of source.matchAll(/"((?:events|eventValidation|eventType|statusA|statusP)[A-Z][A-Za-z0-9]+)"/g)) keys.add(m[1]);
   }
   return [...keys];
 };
@@ -44,6 +46,7 @@ describe("events translations", () => {
   it("finds the keys used by the module", () => {
     assert.ok(keys.includes("eventsAudienceTitle"));
     assert.ok(keys.includes("statusPaid"));
+    assert.ok(keys.includes("eventTypeValidationNameTaken"));
   });
 
   for (const [name, locale] of [["en", en], ["pl", pl]] as const) {

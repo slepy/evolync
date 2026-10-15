@@ -13,3 +13,6 @@ export { formatEventDates } from "./formatEventDates";
 export { StudentEventDetailsScreen } from "./StudentEventDetailsScreen";
 export { StudentEventsScreen } from "./StudentEventsScreen";
 export * from "./studentEvents";
+export { EventTypeSheet } from "./EventTypeSheet";
+export { EventTypePickerSheet } from "./EventTypePickerSheet";
+export { EventTypesListScreen } from "./EventTypesListScreen";
