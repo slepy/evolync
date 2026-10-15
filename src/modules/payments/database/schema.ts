@@ -15,9 +15,6 @@ export const paymentsSchema = [
       { name: "period_start", type: "number" },
       { name: "period_end", type: "number" },
       { name: "notes", type: "string", isOptional: true },
-      // One-off amount for everyone in the period; empty = each member's own fee or the school default
-      { name: "amount", type: "number", isOptional: true },
-      { name: "currency", type: "string", isOptional: true },
       { name: "created_at", type: "number" },
       { name: "updated_at", type: "number" },
       { name: "deleted_at", type: "number", isOptional: true },

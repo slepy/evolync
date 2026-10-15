@@ -4,25 +4,27 @@ import schema from "@/database/schema";
 import migrations from "@/database/migrations";
 import { createPaymentCycleSchema } from "../validation/paymentSchema";
 
-const COLUMNS: Record<string, string[]> = {
-  school_members: ["payment_amount", "payment_currency"],
-  payment_cycles: ["amount", "currency"],
-};
+const COLUMNS = ["payment_amount", "payment_currency"];
 
 describe("own payment amounts schema", () => {
-  for (const [table, names] of Object.entries(COLUMNS)) {
-    it(`migration v21 adds the optional ${table} amount columns, matching the schema`, () => {
-      const step = migrations.sortedMigrations.find((m) => m.toVersion === 21);
-      assert.ok(step);
-      const added = step.steps.flatMap((s: any) => (s.table === table ? s.columns : []));
-      assert.deepEqual(added.map((c: any) => c.name), names);
-      const columns = schema.tables[table].columns;
-      for (const column of added) {
-        assert.deepEqual(columns[column.name], column, column.name);
-        assert.equal(column.isOptional, true, column.name);
-      }
-    });
-  }
+  it("migration v21 adds only the optional school_members amount columns, matching the schema", () => {
+    const step = migrations.sortedMigrations.find((m) => m.toVersion === 21);
+    assert.ok(step);
+    assert.deepEqual(step.steps.map((s: any) => s.table), ["school_members"]);
+    const added = step.steps.flatMap((s: any) => s.columns);
+    assert.deepEqual(added.map((c: any) => c.name), COLUMNS);
+    const columns = schema.tables.school_members.columns;
+    for (const column of added) {
+      assert.deepEqual(columns[column.name], column, column.name);
+      assert.equal(column.isOptional, true, column.name);
+    }
+  });
+
+  it("payment_cycles has no amount columns: a one-off amount is written to the records only", () => {
+    const columns = schema.tables.payment_cycles.columns;
+    assert.equal(columns.amount, undefined);
+    assert.equal(columns.currency, undefined);
+  });
 });
 
 describe("createPaymentCycleSchema", () => {
