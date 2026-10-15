@@ -9,6 +9,7 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.3";
 import { corsHeaders } from "../_shared/cors.ts";
 import { SyncPushChanges, SyncContext } from "./types.ts";
+import { columnMigratedTables } from "./utils.ts";
 import { syncOrganization } from "./sync-organization.ts";
 import { syncUser } from "./sync-user.ts";
 
@@ -103,6 +104,7 @@ Deno.serve(async (req) => {
       changes,
       lastPulledAt,
       migratedTables: migration?.tables ?? [],
+      columnMigratedTables: columnMigratedTables(migration),
     };
 
     let result;

@@ -117,3 +117,14 @@ export function ownMembershipPush(records: any[], userId: string): any[] {
     .filter((r: any) => r.user_id === userId)
     .map(({ payment_amount: _amount, payment_currency: _currency, ...r }: any) => r);
 }
+
+/**
+ * Tables to pull in full: a client that gained a column through a schema
+ * migration (e.g. events.type_id at v22) holds its rows without that column,
+ * so unchanged rows are sent again (as updates) to fill it in.
+ */
+export function columnMigratedTables(
+  migration: { columns?: { table: string; columns: string[] }[] } | null | undefined,
+): string[] {
+  return [...new Set((migration?.columns ?? []).filter((c) => c.columns.length > 0).map((c) => c.table))];
+}

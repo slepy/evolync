@@ -79,6 +79,18 @@ export const ownEventTypesPush = (records: any[], organizationId: string): any[]
   return own;
 };
 
+/**
+ * Types that some event points at from its own organization: a `type_id`
+ * naming another organization's type never makes that type readable.
+ */
+export const typesOfOwnOrganization = (
+  types: any[],
+  events: { type_id?: string | null; organization_id?: string }[],
+): any[] => {
+  const allowed = new Set(events.filter((e) => e.type_id).map((e) => `${e.organization_id}:${e.type_id}`));
+  return types.filter((type) => allowed.has(`${type.organization_id}:${type.id}`));
+};
+
 /** Distinct, non-empty `type_id`s of event rows. */
 export const referencedTypeIds = (events: any[]): string[] => [
   ...new Set(events.map((e) => e?.type_id).filter((id): id is string => typeof id === "string" && id.length > 0)),
@@ -129,24 +141,27 @@ export async function pullEventTypesForMember(
   const isFirstPull = isFirstPullOf(ctx);
   if (eventIds.length === 0) return { created: [], updated: [], deleted: [] };
 
-  const typeIds = new Set<string>();
+  const eventRows: any[] = [];
   for (const part of chunks(eventIds)) {
     const { data, error } = await supabaseClient
       .from("events")
-      .select("type_id")
+      .select("type_id, organization_id")
       .in("id", part)
       .is("deleted_at", null);
     if (error) throw new Error(`Failed to fetch events: ${error.message}`);
-    for (const id of referencedTypeIds(data || [])) typeIds.add(id);
+    eventRows.push(...(data || []));
   }
+  const typeIds = new Set(referencedTypeIds(eventRows));
   if (typeIds.size === 0) return { created: [], updated: [], deleted: [] };
 
-  const rows: any[] = [];
+  const fetched: any[] = [];
   for (const part of chunks([...typeIds])) {
     const { data, error } = await supabaseClient.from(EVENT_TYPES_TABLE).select("*").in("id", part);
     if (error) throw new Error(`Failed to fetch from ${EVENT_TYPES_TABLE}: ${error.message}`);
-    rows.push(...(data || []));
+    fetched.push(...(data || []));
   }
+  // Only a type of the event's own organization (the service role skips RLS).
+  const rows = typesOfOwnOrganization(fetched, eventRows);
 
   return eventTypeChanges(rows, lastPulledAt, isFirstPull, {
     force: new Set(referencedTypeIds(pulledEvents)),

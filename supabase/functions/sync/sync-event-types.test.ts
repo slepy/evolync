@@ -6,6 +6,7 @@ import {
   pullEventTypesForMember,
   pullEventTypesForOrganization,
   referencedTypeIds,
+  typesOfOwnOrganization,
 } from "./sync-event-types.ts";
 
 const ORG = "org-1";
@@ -115,10 +116,10 @@ Deno.test("a member pulls only the types of their events, and those of newly pul
   const client = fakeClient({
     event_types: [type("camp", T0), type("seminar", T0), type("other", T0)],
     events: [
-      { id: "e1", type_id: "camp", deleted_at: null },
-      { id: "e2", type_id: "seminar", deleted_at: null },
-      { id: "e3", type_id: "other", deleted_at: null }, // not the member's
-      { id: "e4", type_id: null, deleted_at: null },
+      { id: "e1", type_id: "camp", organization_id: ORG, deleted_at: null },
+      { id: "e2", type_id: "seminar", organization_id: ORG, deleted_at: null },
+      { id: "e3", type_id: "other", organization_id: ORG, deleted_at: null }, // not the member's
+      { id: "e4", type_id: null, organization_id: ORG, deleted_at: null },
     ],
   });
 
@@ -138,4 +139,23 @@ Deno.test("a member pulls only the types of their events, and those of newly pul
 Deno.test("an owner's push keeps only their own organization's types", () => {
   const rows = [type("a", T0), type("b", T0, T0, undefined, "org-2")];
   assertEquals(ids(ownEventTypesPush(rows, ORG)), ["a"]);
+});
+
+Deno.test("a member never receives another organization's type, even when an event points at it", async () => {
+  const client = fakeClient({
+    event_types: [type("camp", T0), type("foreign", T0, T0, undefined, "org-2")],
+    events: [
+      { id: "e1", type_id: "camp", organization_id: ORG, deleted_at: null },
+      { id: "e2", type_id: "foreign", organization_id: ORG, deleted_at: null },
+    ],
+  });
+  const changes = await pullEventTypesForMember({ supabaseClient: client, lastPulledAt: 0 }, ["e1", "e2"], []);
+  assertEquals(ids(changes.created), ["camp"]);
+  assertEquals(
+    ids(typesOfOwnOrganization([type("a", T0), type("b", T0, T0, undefined, "org-2")], [
+      { type_id: "a", organization_id: ORG },
+      { type_id: "b", organization_id: ORG },
+    ])),
+    ["a"],
+  );
 });

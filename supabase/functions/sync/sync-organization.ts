@@ -280,11 +280,11 @@ export async function syncOrganization(ctx: SyncContext): Promise<SyncPullChange
     tableName: string,
     filterFn?: (query: any) => any,
   ) => {
-    let query = supabaseClient
-      .from(tableName)
-      .select("*")
-      .or(`created_at.gte.${lastPulledDate},updated_at.gte.${lastPulledDate}`)
-      .is("deleted_at", null);
+    const fullPull = (ctx.columnMigratedTables ?? []).includes(tableName);
+    let query = supabaseClient.from(tableName).select("*").is("deleted_at", null);
+    if (!fullPull) {
+      query = query.or(`created_at.gte.${lastPulledDate},updated_at.gte.${lastPulledDate}`);
+    }
 
     if (filterFn) {
       query = filterFn(query);
@@ -306,7 +306,7 @@ export async function syncOrganization(ctx: SyncContext): Promise<SyncPullChange
 
       if (createdAt > lastPulledAt) {
         created.push(watermelonRecord);
-      } else if (updatedAt > lastPulledAt) {
+      } else if (updatedAt > lastPulledAt || fullPull) {
         updated.push(watermelonRecord);
       }
     }
@@ -328,7 +328,7 @@ export async function syncOrganization(ctx: SyncContext): Promise<SyncPullChange
       throw new Error(`Failed to fetch deleted from ${tableName}: ${deletedError.message}`);
     }
 
-    const deleted = (deletedRecords || []).map((r) => r.id);
+    const deleted = (deletedRecords || []).map((r: any) => r.id);
 
     return { created, updated, deleted };
   };
