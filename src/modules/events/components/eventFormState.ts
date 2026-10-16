@@ -10,6 +10,8 @@ import { createEventSchema, type CreateEventFormValues } from "../validation";
 
 export interface EventFormState {
   name: string;
+  /** Chosen event type; empty until picked (events created before types). */
+  typeId: string;
   shortNote: string;
   address: string;
   /** "YYYY-MM-DD" */
@@ -34,6 +36,7 @@ export type EventFormResult =
 /** What the form needs from a stored event. */
 export interface EventLike {
   name: string;
+  typeId?: string | null;
   shortNote?: string | null;
   address?: string | null;
   startDate: Date | number;
@@ -52,6 +55,7 @@ export const initialEventForm = (day?: string, today: string = localToday()): Ev
   const start = day && isValidDay(day) && day >= today ? day : today;
   return {
     name: "",
+    typeId: "",
     shortNote: "",
     address: "",
     startDate: start,
@@ -66,6 +70,7 @@ export const initialEventForm = (day?: string, today: string = localToday()): Ev
 /** The edit form of a stored event; `inviteeIds` are its current participants. */
 export const eventToForm = (event: EventLike, inviteeIds: string[] = []): EventFormState => ({
   name: event.name,
+  typeId: event.typeId ?? "",
   shortNote: event.shortNote ?? "",
   address: event.address ?? "",
   startDate: timestampToDay(event.startDate),
@@ -82,6 +87,7 @@ const optional = (value: string): string | undefined => value.trim() || undefine
 /** What the schema validates: only the audience fields of the chosen visibility. */
 export const toSchemaInput = (form: EventFormState) => ({
   name: form.name.trim(),
+  typeId: form.typeId || undefined,
   shortNote: optional(form.shortNote),
   address: optional(form.address),
   startDate: form.startDate,

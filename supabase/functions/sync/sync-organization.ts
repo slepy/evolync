@@ -14,6 +14,7 @@ import { pushNotesChanges, pullNotesChanges } from "./sync-notes.ts";
 import { pushTagsChanges, pullTagsChanges } from "./sync-tags.ts";
 import { pushNotificationsChanges, pullNotificationsChanges } from "./sync-notifications.ts";
 import { pushTrainingsChanges, pullTrainingsChanges } from "./sync-trainings.ts";
+import { ownEventTypesPush, pullEventTypesForOrganization } from "./sync-event-types.ts";
 
 export async function syncOrganization(ctx: SyncContext): Promise<SyncPullChanges> {
   const { supabaseClient, userId, changes, lastPulledAt } = ctx;
@@ -50,6 +51,7 @@ export async function syncOrganization(ctx: SyncContext): Promise<SyncPullChange
     "payment_records",
     "training_sessions",
     "attendance_records",
+    "event_types",
     "events",
     "event_participants",
   ];
@@ -77,6 +79,11 @@ export async function syncOrganization(ctx: SyncContext): Promise<SyncPullChange
           `[SYNC:ORGANIZATION] Filtered ${originalCount - created.length} payment_records referencing skipped cycles`,
         );
       }
+    }
+
+    if (tableName === "event_types") {
+      created = ownEventTypesPush(created, organizationId);
+      updated = ownEventTypesPush(updated, organizationId);
     }
 
     // Insert created records
@@ -157,9 +164,10 @@ export async function syncOrganization(ctx: SyncContext): Promise<SyncPullChange
           convertToSupabaseRecord(record, tableName),
         );
 
+        // A created type never overwrites an existing row (another organization's id).
         const { error } = await supabaseClient
           .from(tableName)
-          .upsert(records);
+          .upsert(records, tableName === "event_types" ? { ignoreDuplicates: true } : undefined);
 
         if (error) {
           throw new Error(`Failed to insert to ${tableName}: ${error.message}`);
@@ -203,10 +211,13 @@ export async function syncOrganization(ctx: SyncContext): Promise<SyncPullChange
       } else {
         for (const record of updated) {
           const supabaseRecord = convertToSupabaseRecord(record, tableName);
-          const { error } = await supabaseClient
+          let updateQuery = supabaseClient
             .from(tableName)
             .update(supabaseRecord)
             .eq("id", record.id);
+          // Only the organization's own types (never re-homes a foreign one).
+          if (tableName === "event_types") updateQuery = updateQuery.eq("organization_id", organizationId);
+          const { error } = await updateQuery;
 
           if (error) {
             throw new Error(`Failed to update ${tableName}: ${error.message}`);
@@ -217,10 +228,12 @@ export async function syncOrganization(ctx: SyncContext): Promise<SyncPullChange
 
     // Soft delete records
     if (deleted.length > 0) {
-      const { error } = await supabaseClient
+      let deleteQuery = supabaseClient
         .from(tableName)
         .update({ deleted_at: new Date().toISOString() })
         .in("id", deleted);
+      if (tableName === "event_types") deleteQuery = deleteQuery.eq("organization_id", organizationId);
+      const { error } = await deleteQuery;
 
       if (error) {
         throw new Error(`Failed to delete from ${tableName}: ${error.message}`);
@@ -267,11 +280,11 @@ export async function syncOrganization(ctx: SyncContext): Promise<SyncPullChange
     tableName: string,
     filterFn?: (query: any) => any,
   ) => {
-    let query = supabaseClient
-      .from(tableName)
-      .select("*")
-      .or(`created_at.gte.${lastPulledDate},updated_at.gte.${lastPulledDate}`)
-      .is("deleted_at", null);
+    const fullPull = (ctx.columnMigratedTables ?? []).includes(tableName);
+    let query = supabaseClient.from(tableName).select("*").is("deleted_at", null);
+    if (!fullPull) {
+      query = query.or(`created_at.gte.${lastPulledDate},updated_at.gte.${lastPulledDate}`);
+    }
 
     if (filterFn) {
       query = filterFn(query);
@@ -293,7 +306,7 @@ export async function syncOrganization(ctx: SyncContext): Promise<SyncPullChange
 
       if (createdAt > lastPulledAt) {
         created.push(watermelonRecord);
-      } else if (updatedAt > lastPulledAt) {
+      } else if (updatedAt > lastPulledAt || fullPull) {
         updated.push(watermelonRecord);
       }
     }
@@ -315,7 +328,7 @@ export async function syncOrganization(ctx: SyncContext): Promise<SyncPullChange
       throw new Error(`Failed to fetch deleted from ${tableName}: ${deletedError.message}`);
     }
 
-    const deleted = (deletedRecords || []).map((r) => r.id);
+    const deleted = (deletedRecords || []).map((r: any) => r.id);
 
     return { created, updated, deleted };
   };
@@ -445,6 +458,9 @@ export async function syncOrganization(ctx: SyncContext): Promise<SyncPullChange
   } else {
     pullChanges.attendance_records = { created: [], updated: [], deleted: [] };
   }
+
+  // Event types (deleted ones as updates, see sync-event-types.ts)
+  pullChanges.event_types = await pullEventTypesForOrganization(ctx, organizationId);
 
   // Events
   pullChanges.events = await fetchTableChanges("events", (q) =>

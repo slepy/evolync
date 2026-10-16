@@ -7,6 +7,7 @@ import { tableSchema } from "@nozbe/watermelondb";
  * - events: Main event records with visibility and lifecycle management
  * - event_participants: Participation status per member per event
  *   (also serves as whitelist for 'whitelist' visibility events)
+ * - event_types: Organization-defined types (Seminar, Camp…), one per event
  */
 export const eventsSchema = [
   tableSchema({
@@ -15,6 +16,7 @@ export const eventsSchema = [
       { name: "organization_id", type: "string", isIndexed: true },
       { name: "school_id", type: "string", isOptional: true, isIndexed: true },
       { name: "name", type: "string" },
+      { name: "type_id", type: "string", isOptional: true, isIndexed: true },
       { name: "short_note", type: "string", isOptional: true },
       { name: "address", type: "string", isOptional: true },
       { name: "start_date", type: "number" }, // Stored as timestamp
@@ -36,6 +38,17 @@ export const eventsSchema = [
       { name: "school_member_id", type: "string", isIndexed: true },
       { name: "status", type: "string" }, // 'absent', 'attending', 'paid'
       { name: "status_changed_by", type: "string", isOptional: true },
+      { name: "created_at", type: "number" },
+      { name: "updated_at", type: "number" },
+      { name: "deleted_at", type: "number", isOptional: true },
+    ],
+  }),
+  tableSchema({
+    name: "event_types",
+    columns: [
+      { name: "organization_id", type: "string", isIndexed: true },
+      { name: "name", type: "string" },
+      { name: "created_by", type: "string" },
       { name: "created_at", type: "number" },
       { name: "updated_at", type: "number" },
       { name: "deleted_at", type: "number", isOptional: true },

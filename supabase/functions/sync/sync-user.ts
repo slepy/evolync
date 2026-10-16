@@ -20,6 +20,7 @@ import { pushNotesChanges, pullNotesChanges } from "./sync-notes.ts";
 import { pushTagsChanges, pullTagsChanges } from "./sync-tags.ts";
 import { pushNotificationsChanges, pullNotificationsChanges } from "./sync-notifications.ts";
 import { pullTrainingsForMember } from "./sync-trainings.ts";
+import { pullEventTypesForMember } from "./sync-event-types.ts";
 
 export async function syncUser(ctx: SyncContext): Promise<SyncPullChanges> {
   const { supabaseClient, userId, changes, lastPulledAt } = ctx;
@@ -206,11 +207,11 @@ export async function syncUser(ctx: SyncContext): Promise<SyncPullChanges> {
     tableName: string,
     filterFn?: (query: any) => any,
   ) => {
-    let query = supabaseClient
-      .from(tableName)
-      .select("*")
-      .or(`created_at.gte.${lastPulledDate},updated_at.gte.${lastPulledDate}`)
-      .is("deleted_at", null);
+    const fullPull = (ctx.columnMigratedTables ?? []).includes(tableName);
+    let query = supabaseClient.from(tableName).select("*").is("deleted_at", null);
+    if (!fullPull) {
+      query = query.or(`created_at.gte.${lastPulledDate},updated_at.gte.${lastPulledDate}`);
+    }
 
     if (filterFn) {
       query = filterFn(query);
@@ -233,7 +234,7 @@ export async function syncUser(ctx: SyncContext): Promise<SyncPullChanges> {
 
       if (createdAt > lastPulledAt) {
         created.push(watermelonRecord);
-      } else if (updatedAt > lastPulledAt) {
+      } else if (updatedAt > lastPulledAt || fullPull) {
         updated.push(watermelonRecord);
       }
     }
@@ -256,7 +257,7 @@ export async function syncUser(ctx: SyncContext): Promise<SyncPullChanges> {
       return { created, updated, deleted: [] };
     }
 
-    const deleted = (deletedRecords || []).map((r) => r.id);
+    const deleted = (deletedRecords || []).map((r: any) => r.id);
 
     return { created, updated, deleted };
   };
@@ -268,7 +269,7 @@ export async function syncUser(ctx: SyncContext): Promise<SyncPullChanges> {
     .in("id", schoolIds)
     .is("deleted_at", null);
 
-  const organizationIds = [...new Set((schools || []).map((s: any) => s.organization_id))];
+  const organizationIds: string[] = [...new Set<string>((schools || []).map((s: any) => s.organization_id))];
 
   // Fetch schools user belongs to
   pullChanges.schools = await fetchTableChanges("schools", (q) =>
@@ -391,7 +392,7 @@ export async function syncUser(ctx: SyncContext): Promise<SyncPullChanges> {
       .in("school_member_id", memberIds)
       .is("deleted_at", null);
     console.log(`[SYNC:USER] event_participants query: memberIds=${JSON.stringify(memberIds)}, found=${participantRecords?.length || 0}, error=${partError?.message || 'none'}, data=${JSON.stringify(participantRecords)}`);
-    const eventIds = [...new Set((participantRecords || []).map((p: any) => p.event_id))];
+    const eventIds: string[] = [...new Set<string>((participantRecords || []).map((p: any) => p.event_id))];
     console.log(`[SYNC:USER] User is participant in ${eventIds.length} event(s), eventIds=${JSON.stringify(eventIds)}`);
 
     if (eventIds.length > 0) {
@@ -404,15 +405,22 @@ export async function syncUser(ctx: SyncContext): Promise<SyncPullChanges> {
       pullChanges.event_participants = await fetchTableChanges("event_participants", (q) =>
         q.in("event_id", eventIds).in("school_member_id", memberIds),
       );
+      // Step 4: Types of those events (read-only), so the rows show the type name
+      pullChanges.event_types = await pullEventTypesForMember(ctx, eventIds, [
+        ...pullChanges.events.created,
+        ...pullChanges.events.updated,
+      ]);
       console.log(`[SYNC:USER] Events pulled: created=${pullChanges.events.created.length}, updated=${pullChanges.events.updated.length}`);
       console.log(`[SYNC:USER] Event participants pulled: created=${pullChanges.event_participants.created.length}, updated=${pullChanges.event_participants.updated.length}`);
     } else {
       pullChanges.events = { created: [], updated: [], deleted: [] };
       pullChanges.event_participants = { created: [], updated: [], deleted: [] };
+      pullChanges.event_types = { created: [], updated: [], deleted: [] };
     }
   } else {
     pullChanges.events = { created: [], updated: [], deleted: [] };
     pullChanges.event_participants = { created: [], updated: [], deleted: [] };
+    pullChanges.event_types = { created: [], updated: [], deleted: [] };
   }
 
   // Planned trainings the member is in the audience of (read-only)

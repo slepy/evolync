@@ -11,6 +11,7 @@ export interface CreateEventDto {
   organizationId: string;
   schoolId?: string; // Required when visibility = 'school'
   name: string;
+  typeId?: string;
   shortNote?: string;
   address?: string;
   startDate: string; // ISO date string (YYYY-MM-DD)
@@ -26,6 +27,7 @@ export interface CreateEventDto {
  */
 export interface UpdateEventDto {
   name?: string;
+  typeId?: string;
   shortNote?: string;
   address?: string;
   startDate?: string; // ISO date string (YYYY-MM-DD)
@@ -63,6 +65,7 @@ export interface EventResponseDto {
   organizationId: string;
   schoolId?: string;
   name: string;
+  typeId?: string;
   shortNote?: string;
   address?: string;
   startDate: Date;
@@ -108,4 +111,13 @@ export interface EventFilterOptions {
   status?: EventStatus;
   upcoming?: boolean; // Only events with start_date >= today
   historical?: boolean; // Only events with end_date < today
+}
+
+/**
+ * DTO for creating an event type (organization-scoped, name only)
+ */
+export interface CreateEventTypeDto {
+  organizationId: string;
+  name: string;
+  createdBy: string;
 }

@@ -79,12 +79,37 @@ describe("useCalendarMonth", () => {
     assert.deepEqual(hook.eventIds(), ["e-cancelled", "e-in", "e-spanning"]);
     assert.deepEqual(hook.trainingIds(), ["t-cancelled", "t-in"]);
     assert.equal(hook.current().schoolNames.get("school-a"), "Mokotów");
+    assert.equal(hook.current().typeNames.size, 0);
 
     await act(async () => {
       await seedTraining({ id: "t-new", date: JAN_5 });
     });
     await act(flush);
     assert.deepEqual(hook.trainingIds(), ["t-cancelled", "t-in", "t-new"]);
+    await hook.unmount();
+  });
+
+  it("organization: names of the events' types, deleted types included", async () => {
+    await seedRow("event_types", { id: "camp", organization_id: "org-1", name: "Camp", created_by: "owner" });
+    await seedRow("event_types", {
+      id: "old",
+      organization_id: "org-1",
+      name: "Old",
+      created_by: "owner",
+      deleted_at: Date.UTC(2099, 0, 1),
+    });
+    await seedEvent({ id: "e-camp", type_id: "camp" });
+    await seedEvent({ id: "e-old", type_id: "old" });
+    await seedEvent({ id: "e-none" });
+
+    const hook = await renderMonth({ kind: "organization", organizationId: "org-1" });
+    assert.deepEqual(
+      [...hook.current().typeNames.entries()].sort(),
+      [
+        ["camp", "Camp"],
+        ["old", "Old"],
+      ],
+    );
     await hook.unmount();
   });
 

@@ -7,7 +7,7 @@ import { switchMap } from "rxjs/operators";
 import { v4 as uuidv4 } from "uuid";
 
 /** Columns whose edits must re-render "next up" views. */
-const NEXT_UP_COLUMNS = ["name", "address", "start_date", "end_date", "status", "visibility", "school_id"];
+const NEXT_UP_COLUMNS = ["name", "type_id", "address", "start_date", "end_date", "status", "visibility", "school_id"];
 
 const activeFromClauses = (fromTimestamp: number) => [
   Q.where("deleted_at", null),

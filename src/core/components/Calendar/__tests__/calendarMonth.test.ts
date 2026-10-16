@@ -4,7 +4,9 @@ import {
   assignLanes,
   buildMonthCells,
   defaultSelectedDay,
+  eventRowMeta,
   itemsForDay,
+  monthDays,
   monthRange,
   seriesFrequencyLabel,
   shiftMonth,
@@ -176,5 +178,34 @@ describe("month helpers", () => {
     assert.equal(seriesFrequencyLabel(JSON.stringify([{ frequency: "monthly" }])), "monthly");
     assert.equal(seriesFrequencyLabel(JSON.stringify([{ frequency: "weekly" }, { frequency: "monthly" }])), "recurring");
     assert.equal(seriesFrequencyLabel("not json"), "recurring");
+  });
+});
+
+describe("eventRowMeta", () => {
+  it("puts the type first, in place of the generic kind", () => {
+    assert.equal(eventRowMeta({ typeName: "Camp", place: "Zakopane", fallback: "Event" }), "Camp · Zakopane");
+    assert.equal(eventRowMeta({ place: "Zakopane", fallback: "Event" }), "Event · Zakopane");
+    assert.equal(eventRowMeta({ typeName: "Camp", fallback: "Event" }), "Camp");
+  });
+
+  it("follows the date range of a multi-day event", () => {
+    assert.equal(
+      eventRowMeta({ dateRange: "20 Nov – 24 Nov", typeName: "Camp", place: "Zakopane", fallback: "Event" }),
+      "20 Nov – 24 Nov · Camp · Zakopane",
+    );
+    assert.equal(eventRowMeta({ dateRange: "20 Nov – 24 Nov", place: "Zakopane", fallback: "Event" }), "20 Nov – 24 Nov · Zakopane");
+  });
+
+  it("itemsForDay carries the event's type", () => {
+    const typed = { ...event("a", "2099-01-05"), typeId: "camp" };
+    const [item] = itemsForDay("2099-01-05", [typed, event("b", "2099-01-06")], [], "all");
+    assert.ok(item.kind === "event" && item.typeId === "camp");
+  });
+});
+
+describe("monthDays", () => {
+  it("gives the first and last day of a month", () => {
+    assert.deepEqual(monthDays(2099, 1), { from: "2099-02-01", to: "2099-02-28" });
+    assert.deepEqual(monthDays(2099, 11), { from: "2099-12-01", to: "2099-12-31" });
   });
 });

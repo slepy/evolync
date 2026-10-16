@@ -41,6 +41,7 @@ export const useCreateEvent = (organizationId: string | undefined) => {
           organizationId,
           schoolId: formData.schoolId,
           name: formData.name,
+          typeId: formData.typeId,
           shortNote: formData.shortNote,
           address: formData.address,
           startDate: formData.startDate,

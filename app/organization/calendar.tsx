@@ -1,11 +1,13 @@
 import { Calendar } from "@/core/components";
+import { EventListView } from "@/modules/events";
 import { useRequireOrganizationOwner } from "@/modules/organization/hooks/useRequireOrganizationOwner";
 import { useStore } from "@/store";
 import { useRouter } from "expo-router";
 
 /**
  * Organization calendar (board 6): events and trainings of every school,
- * Add new offers an event or a training on the selected day.
+ * Add new offers an event or a training on the selected day. The List view
+ * filters the organization's events by a date range and a type.
  *
  * Route: /organization/calendar
  */
@@ -32,6 +34,13 @@ export default function OrganizationCalendarScreen() {
             : `/organization/trainings/${item.id}`) as any,
         )
       }
+      listView={(range) => (
+        <EventListView
+          organizationId={organization?.id}
+          initialRange={range}
+          onEventPress={(eventId) => router.push(`/organization/events/${eventId}` as any)}
+        />
+      )}
     />
   );
 }

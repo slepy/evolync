@@ -14,11 +14,12 @@ import { EVENT_STATUS } from "@/database/models/Event";
 import { formatPrice } from "@/modules/core/utils/formatters";
 import { showError } from "@/modules/trainings/components/confirmAction";
 import { timestampToDay } from "@/modules/trainings/types/helpers";
-import { CalendarDays, MapPin, Pencil, RotateCcw, XCircle } from "lucide-react-native";
+import { CalendarDays, MapPin, Pencil, RotateCcw, Shapes, XCircle } from "lucide-react-native";
 import React, { useState } from "react";
 import { ActivityIndicator } from "react-native";
 import { Text, XStack, YStack } from "tamagui";
 import { useEvent } from "../hooks/useEvent";
+import { useEventTypeName } from "../hooks/useEventTypes";
 import { useEventParticipants } from "../hooks/useEventParticipants";
 import { cancelEvent, deleteEvent, updateEvent } from "../services";
 import { EventCancelSheet, type EventSheetAction } from "./EventCancelSheet";
@@ -50,6 +51,7 @@ export const EventDetailsScreen: React.FC<EventDetailsScreenProps> = ({
   onDeleted,
 }) => {
   const { event, isLoading } = useEvent(eventId);
+  const typeName = useEventTypeName(event?.typeId);
   const { dbCounts: counts } = useEventParticipants(eventId);
   const [sheet, setSheet] = useState<EventSheetAction | null>(null);
   const [busy, setBusy] = useState(false);
@@ -116,6 +118,13 @@ export const EventDetailsScreen: React.FC<EventDetailsScreenProps> = ({
 
         <YStack gap={10}>
           <ListCard>
+            {typeName ? (
+              <ListRow
+                title={typeName}
+                subtitle={t("eventsTypeLabel")}
+                leading={<ListIcon icon={Shapes} size={44} />}
+              />
+            ) : null}
             <ListRow
               title={formatEventDates(startDate, endDate)}
               subtitle={`${t("fieldDate")} · ${t("eventsDaysCount", { count: days })}`}
