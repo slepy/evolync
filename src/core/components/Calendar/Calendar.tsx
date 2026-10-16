@@ -190,7 +190,7 @@ export function Calendar({
     <SubScreenPage title={t("calendarTitle")} subtitle={subtitle} context={ctx}>
       {listView ? (
         <ViewSwitch
-          accent="events"
+          accent={ctx}
           aria-label={t("calendarTitle")}
           first={{ icon: LayoutGrid, label: t("calendarViewMonth"), onPress: () => setView("month") }}
           second={{ icon: List, label: t("calendarViewList"), onPress: () => setView("list") }}
