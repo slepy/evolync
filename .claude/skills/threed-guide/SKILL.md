@@ -16,12 +16,10 @@ src/modules/threed/
 │   ├── HumanModel.tsx            # GLB model loader + bone management
 │   ├── BoneMarkerGroup.tsx       # Renders clickable bone markers
 │   ├── BoneMarker.tsx            # Single bone marker sphere
-│   ├── BoneGizmo.tsx             # Rotation/translation gizmo on selected bone
 │   ├── BoneControlPanel.tsx      # UI panel for bone rotation sliders
 │   ├── HandEditorPanel.tsx       # Hand-specific bone editor
 │   ├── HandEditorTab.tsx         # Tab for hand editing mode
 │   ├── FPSCameraController.tsx   # Touch camera controls
-│   ├── IKTargetGizmo.tsx         # Legacy IK target handles
 │   ├── AxisGizmo.tsx             # XYZ axis indicator
 │   ├── SaveTechniqueSheet.tsx    # Bottom sheet for saving technique
 │   ├── StartingPositionSheet.tsx # Bottom sheet for saving starting position
@@ -31,14 +29,13 @@ src/modules/threed/
 │   ├── SequencesTab.tsx          # List of sequences
 │   ├── TechniquesTab.tsx         # List of techniques
 │   ├── StartingPositionsTab.tsx  # List of starting positions
-│   └── HandPresetPicker.tsx      # Picker for saved hand presets
+│   └── ThreeDTabSelector.tsx     # Tab switcher of the 3D screen
 ├── hooks/
 │   ├── useSequenceEditor.ts      # Main editor state machine
 │   ├── useSequenceViewer.ts      # Read-only viewer state
 │   ├── useSequences.ts           # Load sequences from DB
 │   ├── useTechniques.ts          # Load techniques from DB
 │   ├── useStartingPositions.ts   # Load starting positions
-│   ├── useHandPresets.ts         # Load all hand presets
 │   ├── useHandPresetsByUserAndSide.ts  # Filter presets by L/R
 │   ├── useSequenceSteps.ts       # Load steps for a sequence
 │   ├── useThreeDScreen.ts        # Main screen tab state
@@ -50,7 +47,6 @@ src/modules/threed/
 ├── repositories/
 │   ├── sequenceRepository.ts
 │   ├── sequenceStepRepository.ts
-│   ├── stepTechniqueRepository.ts
 │   ├── techniqueRepository.ts
 │   └── bodyPosePresetRepository.ts
 ├── types/
@@ -62,7 +58,6 @@ src/modules/threed/
 │   └── index.ts      # Re-exports everything
 ├── utils/
 │   ├── fkSystem.ts   # FK bone transform calculations
-│   ├── ikSystem.ts   # Legacy IK calculations
 │   ├── dataCompat.ts # V1→V2→V3 data conversion
 │   └── sceneCenterCalculator.ts
 └── database/
@@ -163,12 +158,11 @@ The `components/index.ts` separates:
 
 ### Render Flow
 ```
-app/threed/[sequenceId]/edit.tsx
+app/techniques/threed/[sequenceId]/edit.tsx
   └── ThreeDCanvas (R3F Canvas wrapper)
        ├── FPSCameraController (touch orbit/pan)
        ├── HumanModel (GLB loader, applies bone transforms)
        │    └── BoneMarkerGroup (clickable bone spheres)
-       ├── BoneGizmo (transform gizmo on selected bone)
        └── AxisGizmo (orientation indicator)
 ```
 
