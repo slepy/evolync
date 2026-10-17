@@ -1,8 +1,3 @@
-export {
-  EventStatusBadge,
-  BADGE_VARIANT,
-  type BadgeVariant,
-} from "./EventStatusBadge";
 export { EventFormScreen } from "./EventFormScreen";
 export * from "./eventFormState";
 export { EventDetailsScreen } from "./EventDetailsScreen";

@@ -7,9 +7,7 @@ export {
   ThreeDCanvas,
   HumanModel,
   BoneMarker,
-  BoneGizmo,
   BoneMarkerGroup,
-  HandPresetPicker,
   SequenceCard,
   TechniqueCard,
   TechniqueLibrarySheet,
@@ -29,7 +27,6 @@ export {
   useSequences,
   useSequenceSteps,
   useTechniques,
-  useHandPresets,
   useSequenceEditor,
   useSequenceViewer,
 } from "./hooks";
