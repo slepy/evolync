@@ -54,6 +54,7 @@ Remove code, dependencies, assets and translation keys that nothing in the app, 
 ## Deviations from the report
 
 - Kept `src/database/adapter.ts` (web adapter, swapped by `test/register.cjs`), the `src/core/i18n` trio and module barrels (see Non-goals).
+- Kept `src/modules/tags/validation/` (c3b731e): PR #51 rewrites it for tag-name validation.
 - Kept `src/modules/trainings/hooks/useUpcomingTrainings.ts`: unused by the app but covered by `trainings/__tests__/hooks.test.ts`.
 - Kept 23 `trainingsWeekday*` / `trainingsWeekOfMonth*` keys: built with template literals in `src/modules/trainings`.
 - Removed 30 more keys than the report: their only users were files deleted in Phase 1.
