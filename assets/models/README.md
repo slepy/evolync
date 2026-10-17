@@ -24,8 +24,8 @@
 
 1. Pobierz model w formacie `.glb` lub `.gltf`
 2. Umieść plik w tym folderze: `assets/models/`
-3. Nazwij plik: `human.glb`
-4. Model zostanie automatycznie załadowany w aplikacji
+3. Nazwij plik: `character.glb` (ładuje go `src/modules/threed/components/HumanModel.tsx`)
+4. Model zastąpi obecną postać w edytorze 3D
 
 ## Konwersja formatów (jeśli potrzebne):
 

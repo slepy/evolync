@@ -3,7 +3,6 @@
 // ============================================================================
 
 // Atoms
-export { GoogleAuthButton } from "./GoogleAuthButton";
 export { AccountTypeOption } from "./AccountTypeOption";
 export { AuthLogo } from "./AuthLogo";
 export { CodeField } from "./CodeField";

@@ -3,7 +3,7 @@
 // ============================================================================
 
 // Components
-export { SchoolCard, CreateSchoolForm } from './components';
+export { CreateSchoolForm } from './components';
 
 // Repositories
 export {
@@ -23,4 +23,4 @@ export { createSchoolSchema } from './validation';
 export type { CreateSchoolFormValues } from './validation';
 
 // Types
-export type { CreateSchoolDto, SchoolRecord } from './types';
+export type { CreateSchoolDto } from './types';

@@ -45,7 +45,7 @@ describe("events translations", () => {
 
   it("finds the keys used by the module", () => {
     assert.ok(keys.includes("eventsAudienceTitle"));
-    assert.ok(keys.includes("statusPaid"));
+    assert.ok(keys.includes("statusAttending"));
     assert.ok(keys.includes("eventTypeValidationNameTaken"));
   });
 

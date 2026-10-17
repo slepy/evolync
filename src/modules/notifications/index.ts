@@ -1,5 +1,4 @@
 export {
-  NotificationBell,
   NotificationRow,
   NotificationsScreen,
   NotificationResponseHandler,
