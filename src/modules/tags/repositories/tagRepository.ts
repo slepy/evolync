@@ -26,6 +26,13 @@ export const TagRepository = {
     }
   },
 
+  async findByUserId(userId: string): Promise<Tag[]> {
+    return await database
+      .get<Tag>("tags")
+      .query(Q.where("user_id", userId), Q.where("deleted_at", null))
+      .fetch();
+  },
+
   async update(id: string, data: UpdateTagInput): Promise<Tag> {
     const collection = database.get<Tag>("tags");
     const record = await collection.find(id);
