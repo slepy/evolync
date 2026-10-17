@@ -60,8 +60,8 @@ Remove code, dependencies, assets and translation keys that nothing in the app, 
 
 ### Phase 2: Dependencies and assets
 
-- [ ] 2.1 Remove unused dependencies
-- [ ] 2.2 Delete unreferenced assets
+- [x] 2.1 Remove unused dependencies — 18d8baf
+- [x] 2.2 Delete unreferenced assets — 07ca3e5
 
 ### Phase 3: Translation keys
 
