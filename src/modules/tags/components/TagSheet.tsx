@@ -46,6 +46,7 @@ export const TagSheet: React.FC<TagSheetProps> = ({ open, onOpenChange, tag, onC
       }
       onOpenChange(false);
     } catch (err) {
+      console.error("[TagSheet] save:", err);
       setError(t(err instanceof Error ? err.message : "errorUnknown"));
     } finally {
       setIsSaving(false);
