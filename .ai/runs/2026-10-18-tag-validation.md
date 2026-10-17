@@ -1,4 +1,4 @@
-# Execution plan — validate tag names
+# Execution plan — form validation (tags, notes, 3D names)
 
 Date: 2026-10-18
 Branch: fix/tag-validation
@@ -8,6 +8,19 @@ Branch: fix/tag-validation
 Creating or renaming a tag checks its name in the service (trimmed, 1–30 characters, unique per user regardless of case). The tag sheet shows the problem under the field instead of failing silently.
 
 ## Scope
+
+Extended on the user's request (2026-10-18) from tags to an audit of every form with text fields.
+
+### Form audit
+
+| Form | Before | Change |
+| --- | --- | --- |
+| Tag sheet | UI trim only, no service check, errors in console | Zod schema + unique name in service, error under the field |
+| Note create / details | Service `.parse` threw ZodError, UI logged it | Service throws key; title error under TITLE, other failures in an `AlertBanner` |
+| New 3D sequence | Raw ZodError JSON in the banner; spaces-only title passed | Key translated; titles trimmed before `min(1)`; `maxLength` on inputs |
+| Save technique / starting position | Save not awaited, sheet closed on failure | Sheet awaits, keeps the error under the name |
+| Events, event types, trainings, payments, payment amounts, ranks, school settings, products, students, profile, auth, join school, hand presets, rank color | Already validated with visible errors | No change |
+
 
 - `src/modules/tags/validation/tagSchema.ts`: a Zod schema whose messages are translation keys (resolved when shown), plus `isTagNameTaken`.
 - `src/modules/tags/services/tagService.ts`: `createTag` / `updateTag` validate before writing and throw the key of the problem.
@@ -32,6 +45,9 @@ The pattern is copied from event types (`events/validation/eventTypeSchema.ts`, 
 3. Show the validation error in `TagSheet`.
 4. Add tests for the schema and the service.
 
+4. Show note title validation and save errors.
+5. Translate 3D validation errors and keep the save sheet open on failure.
+
 ### Phase 2: Validation gate
 
 1. Run `npm run typecheck`, `npm run check:theme` and `npm test`.
@@ -43,15 +59,19 @@ The pattern is copied from event types (`events/validation/eventTypeSchema.ts`, 
 
 ## Progress
 
+PR: #51
+
 > Convention: `- [ ]` pending, `- [x]` done. Append ` — <commit sha>` when a step lands. Do not rename step titles.
 
 ### Phase 1: Validation
 
-- [ ] 1.1 Add tag schema, name check, repository lookup and keys
-- [ ] 1.2 Validate in createTag / updateTag
-- [ ] 1.3 Show the validation error in TagSheet
-- [ ] 1.4 Add schema and service tests
+- [x] 1.1 Add tag schema, name check, repository lookup and keys — ee4911e
+- [x] 1.2 Validate in createTag / updateTag — ee4911e
+- [x] 1.3 Show the validation error in TagSheet — ee4911e
+- [x] 1.4 Add schema and service tests — ee4911e
+- [x] 1.5 Show note title validation and save errors — ea5b13e
+- [x] 1.6 Translate 3D validation errors and keep the save sheet open on failure — 7db79eb
 
 ### Phase 2: Validation gate
 
-- [ ] 2.1 Run typecheck, theme check and tests
+- [x] 2.1 Run typecheck, theme check and tests — 7db79eb
