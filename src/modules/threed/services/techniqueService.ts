@@ -3,7 +3,7 @@ import { useStore } from "@/store";
 import type Technique from "@/database/models/Technique";
 import { TechniqueRepository } from "../repositories";
 import type { BodyPart, CreateTechniqueDto, UpdateTechniqueDto } from "../types";
-import { createTechniqueSchema, updateTechniqueSchema } from "../validation";
+import { createTechniqueSchema, updateTechniqueSchema, validated } from "../validation";
 
 export const saveTechnique = async (
   data: CreateTechniqueDto
@@ -11,7 +11,7 @@ export const saveTechnique = async (
   const { user } = useStore.getState();
   if (!user) throw new Error("threedErrorNoUser");
 
-  const parsed = createTechniqueSchema.parse(data);
+  const parsed = validated(createTechniqueSchema, data);
 
   const technique = await TechniqueRepository.create({
     userId: user.id,
@@ -30,7 +30,7 @@ export const updateTechnique = async (
   techniqueId: string,
   data: UpdateTechniqueDto
 ): Promise<Technique> => {
-  const parsed = updateTechniqueSchema.parse(data);
+  const parsed = validated(updateTechniqueSchema, data);
   const technique = await TechniqueRepository.update(techniqueId, parsed);
   sync().catch(console.error);
   return technique;

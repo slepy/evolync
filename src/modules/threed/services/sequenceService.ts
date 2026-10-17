@@ -5,7 +5,7 @@ import type SequenceStep from "@/database/models/SequenceStep";
 import { uploadImage } from "@/modules/core/utils/uploadImage";
 import { SequenceRepository, SequenceStepRepository } from "../repositories";
 import type { CreateSequenceDto, UpdateSequenceDto, AnyStepData } from "../types";
-import { addStepSchema, createSequenceSchema, updateSequenceSchema } from "../validation";
+import { addStepSchema, createSequenceSchema, updateSequenceSchema, validated } from "../validation";
 
 export const createSequence = async (
   data: CreateSequenceDto
@@ -13,7 +13,7 @@ export const createSequence = async (
   const { user } = useStore.getState();
   if (!user) throw new Error("threedErrorNoUser");
 
-  const parsed = createSequenceSchema.parse(data);
+  const parsed = validated(createSequenceSchema, data);
 
   const sequence = await SequenceRepository.create({
     userId: user.id,
@@ -29,7 +29,7 @@ export const updateSequence = async (
   sequenceId: string,
   data: UpdateSequenceDto
 ): Promise<Sequence> => {
-  const parsed = updateSequenceSchema.parse(data);
+  const parsed = validated(updateSequenceSchema, data);
   const sequence = await SequenceRepository.update(sequenceId, parsed);
   sync().catch(console.error);
   return sequence;
@@ -69,7 +69,7 @@ export const addStepToSequence = async (
   const orderIndex =
     await SequenceStepRepository.getNextOrderIndex(sequenceId);
 
-  addStepSchema.parse({ sequenceId, orderIndex, durationMs, stepData });
+  validated(addStepSchema, { sequenceId, orderIndex, durationMs, stepData });
 
   const step = await SequenceStepRepository.create({
     sequenceId,
