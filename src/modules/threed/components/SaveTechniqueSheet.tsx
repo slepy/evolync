@@ -2,12 +2,14 @@ import React, { useState } from "react";
 import { Button, Text, YStack, XStack } from "tamagui";
 import { X } from "lucide-react-native";
 import { TextInput, SubmitComponent } from "@/modules/core/components";
+import { THREED_TITLE_MAX } from "../validation";
 
 interface SaveTechniqueSheetProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   bodyPart: string | null;
-  onSave: (title: string) => void;
+  /** Saves the technique; a rejection keeps the sheet open with the error under the name. */
+  onSave: (title: string) => Promise<void> | void;
 }
 
 export const SaveTechniqueSheet: React.FC<SaveTechniqueSheetProps> = ({
@@ -17,12 +19,23 @@ export const SaveTechniqueSheet: React.FC<SaveTechniqueSheetProps> = ({
   onSave,
 }) => {
   const [title, setTitle] = useState("");
+  const [error, setError] = useState<string | undefined>();
+  const [saving, setSaving] = useState(false);
 
-  const handleSave = () => {
-    if (!title.trim()) return;
-    onSave(title.trim());
-    setTitle("");
-    onOpenChange(false);
+  const handleSave = async () => {
+    if (!title.trim() || saving) return;
+    setSaving(true);
+    setError(undefined);
+    try {
+      await onSave(title.trim());
+      setTitle("");
+      onOpenChange(false);
+    } catch (err) {
+      console.error("[SaveTechniqueSheet] save:", err);
+      setError(t(err instanceof Error ? err.message : "errorSaveFailed"));
+    } finally {
+      setSaving(false);
+    }
   };
 
   if (!open) return null;
@@ -71,9 +84,14 @@ export const SaveTechniqueSheet: React.FC<SaveTechniqueSheetProps> = ({
 
           <TextInput
             value={title}
-            onChangeText={setTitle}
+            onChangeText={(value) => {
+              setTitle(value);
+              setError(undefined);
+            }}
             placeholder={t("threedTechniqueTitle")}
             label={t("fieldName")}
+            maxLength={THREED_TITLE_MAX}
+            error={error}
           />
         </YStack>
       </YStack>
@@ -81,7 +99,7 @@ export const SaveTechniqueSheet: React.FC<SaveTechniqueSheetProps> = ({
       {/* Submit button at bottom */}
       <SubmitComponent
         onPress={handleSave}
-        isLoading={false}
+        isLoading={saving}
         disabled={!title.trim()}
         title={t("save")}
       />

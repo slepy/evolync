@@ -5,8 +5,7 @@ import { confirmDelete } from "@/modules/core/utils/confirmDelete";
 import { useStore } from "@/store";
 import React, { useEffect, useState } from "react";
 import { createTag, deleteTag, updateTag } from "../services";
-
-const NAME_MAX_LENGTH = 30;
+import { TAG_NAME_MAX } from "../validation/tagSchema";
 
 interface TagSheetProps {
   open: boolean;
@@ -21,11 +20,15 @@ interface TagSheetProps {
 export const TagSheet: React.FC<TagSheetProps> = ({ open, onOpenChange, tag, onCreated }) => {
   const user = useStore((s) => s.user);
   const [name, setName] = useState("");
+  const [error, setError] = useState<string | undefined>();
   const [isSaving, setIsSaving] = useState(false);
   const editing = !!tag;
 
   useEffect(() => {
-    if (open) setName(tag?.name ?? "");
+    if (open) {
+      setName(tag?.name ?? "");
+      setError(undefined);
+    }
   }, [open, tag]);
 
   const trimmed = name.trim();
@@ -44,6 +47,7 @@ export const TagSheet: React.FC<TagSheetProps> = ({ open, onOpenChange, tag, onC
       onOpenChange(false);
     } catch (err) {
       console.error("[TagSheet] save:", err);
+      setError(t(err instanceof Error ? err.message : "errorUnknown"));
     } finally {
       setIsSaving(false);
     }
@@ -76,10 +80,14 @@ export const TagSheet: React.FC<TagSheetProps> = ({ open, onOpenChange, tag, onC
       <TextField
         label={t("fieldName")}
         value={name}
-        onChangeText={setName}
+        onChangeText={(value) => {
+          setName(value);
+          setError(undefined);
+        }}
         placeholder={t("tagsNewTagName")}
         accent="tags"
-        maxLength={NAME_MAX_LENGTH}
+        maxLength={TAG_NAME_MAX}
+        error={error}
         autoFocus
         returnKeyType="done"
         onSubmitEditing={handleSubmit}

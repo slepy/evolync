@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Text, XStack, YStack } from "tamagui";
 import { v4 as uuidv4 } from "uuid";
 import { toggleDirection, type EditableRow, type NoteDraft } from "../noteRows";
+import { NOTE_TITLE_MAX } from "../validation";
 import { NoteRowCard } from "./NoteRowCard";
 
 export const emptyRow = (): EditableRow => ({ id: uuidv4(), person1Text: "", person2Text: "", direction: "right" });
@@ -12,13 +13,15 @@ export interface NoteFormProps {
   value: NoteDraft;
   onChange: (next: NoteDraft) => void;
   autoFocusTitle?: boolean;
+  /** Problem with the title from the last Create / Save, shown under the field. */
+  titleError?: string;
 }
 
 /**
  * Body of the new-note and note screens (T3 / T4): TITLE, TAGS (rose chips,
  * dashed Add tag opening the tags sheet T5) and the Person 1 / Person 2 rows.
  */
-export function NoteForm({ value, onChange, autoFocusTitle }: NoteFormProps) {
+export function NoteForm({ value, onChange, autoFocusTitle, titleError }: NoteFormProps) {
   const { tags } = useTags();
   const [tagsOpen, setTagsOpen] = useState(false);
   const selectedTags = tags.filter((tag) => value.tagIds.includes(tag.id));
@@ -41,7 +44,8 @@ export function NoteForm({ value, onChange, autoFocusTitle }: NoteFormProps) {
         onChangeText={(title) => onChange({ ...value, title })}
         placeholder={t("notesDocumentTitlePlaceholder")}
         accent="notebook"
-        maxLength={200}
+        maxLength={NOTE_TITLE_MAX}
+        error={titleError}
         autoFocus={autoFocusTitle}
       />
 

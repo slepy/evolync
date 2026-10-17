@@ -1,4 +1,4 @@
-import { PrimaryButton, SubScreenPage, TrashButton } from "@/core/components";
+import { AlertBanner, PrimaryButton, SubScreenPage, TrashButton } from "@/core/components";
 import type TechniqueNoteRow from "@/database/models/TechniqueNoteRow";
 import { LoadingScreen } from "@/modules/core/components";
 import { confirmDelete } from "@/modules/core/utils/confirmDelete";
@@ -9,6 +9,7 @@ import { useNoteDocument, useNoteRows } from "../hooks";
 import { isNoteChanged, normalizeDraft, type EditableRow, type NoteDraft } from "../noteRows";
 import { deleteNoteDocument, saveNote } from "../services";
 import type { AttackDirection } from "../types";
+import { NOTE_TITLE_ERRORS } from "../validation";
 import { NoteForm } from "./NoteForm";
 
 const toEditable = (row: TechniqueNoteRow): EditableRow => ({
@@ -36,6 +37,8 @@ export function NoteDetailsScreen({ documentId }: { documentId: string }) {
   );
   const [draft, setDraft] = useState<NoteDraft | null>(null);
   const [isSaving, setIsSaving] = useState(false);
+  const [titleError, setTitleError] = useState<string | undefined>();
+  const [saveError, setSaveError] = useState(false);
   // What the last Save wrote: once the database shows it, the form takes the
   // stored rows (with their real ids) so the next Save updates, not duplicates.
   const pendingSave = useRef<NoteDraft | null>(null);
@@ -58,6 +61,7 @@ export function NoteDetailsScreen({ documentId }: { documentId: string }) {
   const handleSave = async () => {
     if (isSaving || !draft.title.trim()) return;
     setIsSaving(true);
+    setSaveError(false);
     try {
       const stored = normalizeDraft(draft);
       pendingSave.current = stored;
@@ -65,7 +69,12 @@ export function NoteDetailsScreen({ documentId }: { documentId: string }) {
       await saveNote(documentId, stored);
     } catch (err) {
       pendingSave.current = null;
-      console.error("[NoteDetailsScreen] save:", err);
+      const key = err instanceof Error ? err.message : "";
+      if (NOTE_TITLE_ERRORS.includes(key)) setTitleError(t(key));
+      else {
+        console.error("[NoteDetailsScreen] save:", err);
+        setSaveError(true);
+      }
     } finally {
       setIsSaving(false);
     }
@@ -87,7 +96,15 @@ export function NoteDetailsScreen({ documentId }: { documentId: string }) {
         ) : undefined
       }
     >
-      <NoteForm value={draft} onChange={setDraft} />
+      {saveError ? <AlertBanner title={t("errorSaveFailed")} onDismiss={() => setSaveError(false)} /> : null}
+      <NoteForm
+        value={draft}
+        onChange={(next) => {
+          if (next.title !== draft.title) setTitleError(undefined);
+          setDraft(next);
+        }}
+        titleError={titleError}
+      />
     </SubScreenPage>
   );
 }

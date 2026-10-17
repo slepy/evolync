@@ -514,20 +514,14 @@ export default function EditorScreen() {
         open={showSaveTechnique}
         onOpenChange={setShowSaveTechnique}
         bodyPart={selectedBodyGroup}
-        onSave={(title) => {
-          saveTechniqueFromSelection(title);
-          setShowSaveTechnique(false);
-        }}
+        onSave={(title) => saveTechniqueFromSelection(title)}
       />
 
       <SaveTechniqueSheet
         open={showSavePosition}
         onOpenChange={setShowSavePosition}
         bodyPart={null}
-        onSave={(title) => {
-          saveAsStartingPosition(title);
-          setShowSavePosition(false);
-        }}
+        onSave={(title) => saveAsStartingPosition(title)}
       />
 
       <StartingPositionSheet

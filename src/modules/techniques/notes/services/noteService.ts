@@ -12,8 +12,12 @@ export interface NoteInput {
   rows: EditableRow[];
 }
 
-/** Trimmed title, validated by the module schema (throws "noteTitleRequired" when empty). */
-const validTitle = (title: string) => createNoteDocumentSchema.parse({ title: title.trim() }).title;
+/** Trimmed, valid title; throws the translation key of the problem ("noteTitleRequired"…). */
+const validTitle = (title: string): string => {
+  const parsed = createNoteDocumentSchema.safeParse({ title });
+  if (!parsed.success) throw new Error(parsed.error.issues[0]?.message ?? "noteTitleRequired");
+  return parsed.data.title;
+};
 
 const rowFields = (row: EditableRow, orderIndex: number) => ({
   orderIndex,

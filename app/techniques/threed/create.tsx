@@ -6,6 +6,7 @@ import {
   TextInput,
 } from "@/modules/core/components";
 import { createSequence } from "@/modules/threed/services";
+import { THREED_DESCRIPTION_MAX, THREED_TITLE_MAX } from "@/modules/threed/validation";
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
 import { KeyboardAvoidingView, Platform, View } from "react-native";
@@ -34,9 +35,8 @@ export default function CreateSequenceScreen() {
 
       router.replace(`/techniques/threed/${sequence.id}` as any);
     } catch (err) {
-      setError(
-        err instanceof Error ? err.message : t("errorCreateFailed")
-      );
+      console.error("[CreateSequenceScreen] create:", err);
+      setError(t(err instanceof Error ? err.message : "errorCreateFailed"));
     } finally {
       setIsCreating(false);
     }
@@ -77,6 +77,7 @@ export default function CreateSequenceScreen() {
                 value={title}
                 onChangeText={setTitle}
                 placeholder={t("threedSequenceTitlePlaceholder")}
+                maxLength={THREED_TITLE_MAX}
                 autoFocus
               />
 
@@ -85,6 +86,7 @@ export default function CreateSequenceScreen() {
                 value={description}
                 onChangeText={setDescription}
                 placeholder={t("threedSequenceDescriptionPlaceholder")}
+                maxLength={THREED_DESCRIPTION_MAX}
               />
             </YStack>
           </ScrollView>
