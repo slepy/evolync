@@ -814,6 +814,7 @@
   "notesDocumentTitle": "Title",
   "notesDocumentTitlePlaceholder": "e.g. Guard pass defence",
   "noteTitleRequired": "Title is required",
+  "notesValidationTitleTooLong": "The title can have at most 200 characters",
   "notesPerson1": "Person 1",
   "notesPerson2": "Person 2",
   "notesAddRow": "Add row",

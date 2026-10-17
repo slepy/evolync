@@ -845,6 +845,7 @@
   "notesDocumentTitle": "Tytuł",
   "notesDocumentTitlePlaceholder": "np. Obrona przejścia gardy",
   "noteTitleRequired": "Tytuł jest wymagany",
+  "notesValidationTitleTooLong": "Tytuł może mieć najwyżej 200 znaków",
   "notesPerson1": "Osoba 1",
   "notesPerson2": "Osoba 2",
   "notesAddRow": "Dodaj wiersz",
