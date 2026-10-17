@@ -55,8 +55,8 @@ Remove code, dependencies, assets and translation keys that nothing in the app, 
 
 ### Phase 1: Dead source files
 
-- [ ] 1.1 Delete unreachable files
-- [ ] 1.2 Delete barrel-only files with unused exports
+- [x] 1.1 Delete unreachable files — 91c7ac0
+- [x] 1.2 Delete barrel-only files with unused exports — 8d33bfc
 
 ### Phase 2: Dependencies and assets
 
