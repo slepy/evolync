@@ -48,6 +48,16 @@ Remove code, dependencies, assets and translation keys that nothing in the app, 
 - Dynamic imports or keys built at runtime can look unused: checked by grepping template-literal key prefixes and `require()` of assets.
 - Native-only packages (Expo config plugins, peer deps of other packages) can have no JS import: each removal is checked against `app.json` plugins and peer dependency lists.
 - No device build runs in this gate; a removed native dependency shows up only on the next EAS build.
+- `.claude/skills/threed-guide/SKILL.md` still lists `utils/ikSystem.ts`: editing `.claude/` was denied in this run.
+- Found, not fixed (pre-existing): `src/modules/auth/hooks/useAuth.ts` calls `t('errorNoInternetMessage')`, `t('errorLoginFailedMessage')`, `t('errorGoogleRequiresInternetMessage')`, which exist in neither locale, so users see the raw key. Their wording lives in `errorNoInternet` / `errorLoginFailed` / `errorGoogleRequiresInternet`, which this run keeps.
+
+## Deviations from the report
+
+- Kept `src/database/adapter.ts` (web adapter, swapped by `test/register.cjs`), the `src/core/i18n` trio and module barrels (see Non-goals).
+- Kept `src/modules/trainings/hooks/useUpcomingTrainings.ts`: unused by the app but covered by `trainings/__tests__/hooks.test.ts`.
+- Kept 23 `trainingsWeekday*` / `trainingsWeekOfMonth*` keys: built with template literals in `src/modules/trainings`.
+- Removed 30 more keys than the report: their only users were files deleted in Phase 1.
+- Dependencies and assets are not in the report; they come from this run's own scan (`expo-gl`, `expo-linking`, `expo-system-ui`, `react-native-screens`, `react-native-worklets`, `react-dom`, `react-native-web` have no import but are peers or platform packages and stay).
 
 ## Progress
 
@@ -65,8 +75,8 @@ Remove code, dependencies, assets and translation keys that nothing in the app, 
 
 ### Phase 3: Translation keys
 
-- [ ] 3.1 Remove unused translation keys
+- [x] 3.1 Remove unused translation keys — 310a2f7
 
 ### Phase 4: Validation
 
-- [ ] 4.1 Run typecheck, theme check and tests
+- [x] 4.1 Run typecheck, theme check and tests — 310a2f7
