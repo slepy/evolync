@@ -7,7 +7,6 @@ const sharp = require("sharp");
 const ICONS = [
   { name: "icon.png", size: 1024, showAccent: false, fullBleed: true },
   { name: "adaptive-icon.png", size: 1024, showAccent: false },
-  { name: "splash-icon.png", size: 1284, showAccent: true },
   { name: "favicon.png", size: 48, showAccent: false }, // Too small for accent
   { name: "logo.png", size: 200, showAccent: true, halfBleed: true },
 ];
@@ -30,13 +29,7 @@ async function generateIcon(config) {
   const ctx = canvas.getContext("2d");
 
   // Calculate dimensions
-  const logoRatio = fullBleed
-    ? 1.0
-    : halfBleed
-      ? 0.8
-      : name === "splash-icon.png"
-        ? 0.25
-        : 0.65;
+  const logoRatio = fullBleed ? 1.0 : halfBleed ? 0.8 : 0.65;
   const logoSize = size * logoRatio;
   const borderRadius = logoSize / 5;
   const fontSize = logoSize * 0.5;

@@ -1,4 +1,3 @@
-export { NotificationBell } from "./NotificationBell";
 export { NotificationRow } from "./NotificationRow";
 export { NotificationsScreen } from "./NotificationsScreen";
 export { NotificationResponseHandler } from "./NotificationResponseHandler";
