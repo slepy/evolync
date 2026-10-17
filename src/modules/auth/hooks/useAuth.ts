@@ -234,7 +234,7 @@ export const useAuth = () => {
       if (!isConnected) {
         setError({
           code: 'network_error',
-          message: t('errorNoInternetMessage'),
+          message: t('errorNoInternet'),
           recoverable: true,
         });
         return;
@@ -254,7 +254,7 @@ export const useAuth = () => {
       if (!data.session || !data.user) {
         setError({
           code: 'unknown',
-          message: t('errorLoginFailedMessage'),
+          message: t('errorLoginFailed'),
           recoverable: true,
         });
         return;
@@ -299,7 +299,7 @@ export const useAuth = () => {
       if (!isConnected) {
         setError({
           code: 'network_error',
-          message: t('errorNoInternetMessage'),
+          message: t('errorNoInternet'),
           recoverable: true,
         });
         return false;
@@ -339,7 +339,7 @@ export const useAuth = () => {
       if (!isConnected) {
         setError({
           code: 'network_error',
-          message: t('errorNoInternetMessage'),
+          message: t('errorNoInternet'),
           recoverable: true,
         });
         return false;
@@ -379,7 +379,7 @@ export const useAuth = () => {
       if (!isConnected) {
         setError({
           code: 'network_error',
-          message: t('errorNoInternetMessage'),
+          message: t('errorNoInternet'),
           recoverable: true,
         });
         return false;
@@ -439,7 +439,7 @@ export const useAuth = () => {
       if (!isConnected) {
         setError({
           code: 'network_error',
-          message: t('errorGoogleRequiresInternetMessage'),
+          message: t('errorGoogleRequiresInternet'),
           recoverable: true,
         });
         return;
