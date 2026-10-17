@@ -61,6 +61,8 @@ Remove code, dependencies, assets and translation keys that nothing in the app, 
 
 ## Progress
 
+PR: #50
+
 > Convention: `- [ ]` pending, `- [x]` done. Append ` — <commit sha>` when a step lands. Do not rename step titles.
 
 ### Phase 1: Dead source files
