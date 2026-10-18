@@ -3,6 +3,7 @@ import { useStore } from "@/store";
 import type Sequence from "@/database/models/Sequence";
 import type SequenceStep from "@/database/models/SequenceStep";
 import { uploadImage } from "@/modules/core/utils/uploadImage";
+import { TaggableRepository, setTagsForEntity } from "@/modules/tags";
 import { SequenceRepository, SequenceStepRepository } from "../repositories";
 import type { CreateSequenceDto, UpdateSequenceDto, AnyStepData } from "../types";
 import { addStepSchema, createSequenceSchema, updateSequenceSchema, validated } from "../validation";
@@ -20,6 +21,7 @@ export const createSequence = async (
     title: parsed.title,
     description: parsed.description,
   });
+  if (data.tagIds?.length) await setTagsForEntity(data.tagIds, sequence.id, "threed_sequence");
 
   sync().catch(console.error);
   return sequence;
@@ -29,8 +31,10 @@ export const updateSequence = async (
   sequenceId: string,
   data: UpdateSequenceDto
 ): Promise<Sequence> => {
-  const parsed = validated(updateSequenceSchema, data);
+  const { tagIds, ...fields } = data;
+  const parsed = validated(updateSequenceSchema, fields);
   const sequence = await SequenceRepository.update(sequenceId, parsed);
+  if (tagIds) await setTagsForEntity(tagIds, sequenceId, "threed_sequence");
   sync().catch(console.error);
   return sequence;
 };
@@ -58,6 +62,7 @@ export const updateSequenceCoverImage = async (
 export const deleteSequence = async (sequenceId: string): Promise<void> => {
   await SequenceStepRepository.softDeleteBySequenceId(sequenceId);
   await SequenceRepository.softDelete(sequenceId);
+  await TaggableRepository.detachAllFromEntity(sequenceId, "threed_sequence");
   sync().catch(console.error);
 };
 
