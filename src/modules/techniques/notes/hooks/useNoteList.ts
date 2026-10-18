@@ -1,11 +1,11 @@
 import type Tag from "@/database/models/Tag";
 import type Taggable from "@/database/models/Taggable";
 import type TechniqueNoteDocument from "@/database/models/TechniqueNoteDocument";
-import { TagRepository, TaggableRepository } from "@/modules/tags";
+import { TagRepository, TaggableRepository, tagsByEntity } from "@/modules/tags";
 import { useStore } from "@/store";
 import { useEffect, useState } from "react";
 import { combineLatest } from "rxjs";
-import { tagsByNote, type NoteListItem, type NoteTag } from "../noteList";
+import type { NoteListItem, NoteTag } from "../noteList";
 import { NoteDocumentRepository } from "../repositories";
 
 /** The user's notes with their tags, and the tags for the filter chips; reactive. */
@@ -30,7 +30,7 @@ export const useNoteList = () => {
     ]).subscribe({
       next: ([documents, tagRecords, links]: [TechniqueNoteDocument[], Tag[], Taggable[]]) => {
         const userTags = tagRecords.map((tag) => ({ id: tag.id, name: tag.name }));
-        const byNote = tagsByNote(links, userTags);
+        const byNote = tagsByEntity(links, userTags);
         setTags(userTags);
         setNotes(
           documents.map((doc) => ({

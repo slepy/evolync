@@ -1,4 +1,5 @@
 export { useSequences } from "./useSequences";
+export { useSequenceList } from "./useSequenceList";
 export { useSequenceSteps } from "./useSequenceSteps";
 export { useSequenceEditor } from "./useSequenceEditor";
 export { useSequenceViewer } from "./useSequenceViewer";

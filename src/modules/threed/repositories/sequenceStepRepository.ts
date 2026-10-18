@@ -88,6 +88,12 @@ export const SequenceStepRepository = {
       .observe();
   },
 
+  /** Every live step (the local database holds only the user's own sequences); for step counts. */
+  observeAll() {
+    const collection = database.get<SequenceStep>("sequence_steps");
+    return collection.query(Q.where("deleted_at", null)).observeWithColumns(["sequence_id"]);
+  },
+
   async getNextOrderIndex(sequenceId: string): Promise<number> {
     const steps = await this.findBySequenceId(sequenceId);
     if (steps.length === 0) return 0;
