@@ -70,9 +70,9 @@ Rebuild the 3D notebook screens on the shared core components so they match the 
 
 ### Phase 2: Sequence and technique screens
 
-- [ ] 2.1 New sequence screen
-- [ ] 2.2 Sequence details screen
-- [ ] 2.3 Technique preview screen
+- [x] 2.1 New sequence screen — 7c8df88
+- [x] 2.2 Sequence details screen — b18feff
+- [x] 2.3 Technique preview screen — 64f376f
 
 ### Phase 3: Viewer and editor
 
