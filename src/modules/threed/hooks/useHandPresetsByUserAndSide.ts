@@ -20,10 +20,11 @@ export const useHandPresetsByUserAndSide = (handSide: "L" | "R") => {
       "hand"
     ).subscribe({
       next: (result: BodyPosePreset[]) => {
-        // Hand and finger bones end in their side: DEF-handR, DEF-f_index01R…
+        // A capital L / R marks the side in both bone namings: DEF-f_index01R
+        // now, DEF-fingerRIndex1 in older presets (so not endsWith).
         const filtered = result.filter((preset) => {
           try {
-            return Object.keys(preset.presetData).some((bone) => bone.endsWith(handSide));
+            return Object.keys(preset.presetData).some((bone) => bone.includes(handSide));
           } catch {
             return false;
           }

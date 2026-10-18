@@ -12,33 +12,37 @@ description: Architecture guide for the 3D visualization module (threed). Use wh
 ```
 src/modules/threed/
 ├── components/
-│   ├── ThreeDCanvas.tsx          # Main R3F Canvas wrapper
+│   ├── ThreeDLibraryScreen.tsx   # D2–D4: Sequences / Techniques / Positions tabs (IconTabs)
+│   ├── SequenceCreateScreen.tsx  # D5: title, description, tags; Create opens the editor
+│   ├── SequenceDetailsScreen.tsx # D6: first step on the model (PosePreview), Edit / View, steps
+│   ├── TechniquePreviewScreen.tsx # D7: technique / starting position on a full-screen scene
+│   ├── SequenceEditorScreen.tsx  # D8: editor (camera pad, steps strip, tools, joint panel, hand editor)
+│   ├── SequenceViewerScreen.tsx  # D9: step progress card with previous / next
+│   ├── SceneScreen.tsx           # Full-screen 3D layout: header over the scene, card panel below
+│   ├── PosePreview.tsx           # Non-interactive model in a 22px card
+│   ├── CanvasErrorBoundary.tsx   # Message instead of a crash when GL / the model fails
+│   ├── JointPanel.tsx            # Selected joint: Rotate / Move, one AxisSlider per axis
+│   ├── AxisSlider.tsx            # Centered −range..+range slider with the value ("+24°")
+│   ├── HandEditorPanel.tsx       # D10: finger chips, segments, X / Z, presets
+│   ├── SaveTechniqueSheet.tsx    # D11: new technique / starting position (FormSheet)
+│   ├── TechniquePickerSheet.tsx  # D12: apply a technique / position to the current step
+│   ├── StepStrip.tsx, CameraPad.tsx, ToolButton.tsx, RoundButton.tsx  # editor chrome
+│   ├── ThreeDCanvas.tsx          # Main R3F Canvas wrapper (dark scene from threedScene tokens)
 │   ├── HumanModel.tsx            # GLB model loader + bone management
 │   ├── BoneMarkerGroup.tsx       # Renders clickable bone markers
-│   ├── BoneMarker.tsx            # Single bone marker sphere
-│   ├── BoneControlPanel.tsx      # UI panel for bone rotation sliders
-│   ├── HandEditorPanel.tsx       # Hand-specific bone editor
-│   ├── HandEditorTab.tsx         # Tab for hand editing mode
-│   ├── FPSCameraController.tsx   # Touch camera controls
-│   ├── AxisGizmo.tsx             # XYZ axis indicator
-│   ├── SaveTechniqueSheet.tsx    # Bottom sheet for saving technique
-│   ├── StartingPositionSheet.tsx # Bottom sheet for saving starting position
-│   ├── TechniqueLibrarySheet.tsx # Technique browser sheet
-│   ├── TechniqueCard.tsx         # Card displaying a technique
-│   ├── SequenceCard.tsx          # Card displaying a sequence
-│   ├── SequencesTab.tsx          # List of sequences
-│   ├── TechniquesTab.tsx         # List of techniques
-│   ├── StartingPositionsTab.tsx  # List of starting positions
-│   └── ThreeDTabSelector.tsx     # Tab switcher of the 3D screen
+│   ├── BoneMarker.tsx            # Single bone marker sphere (3D lime)
+│   ├── FPSCameraController.tsx   # Camera yaw / pitch (pad steps and drag orbit)
+│   └── AxisGizmo.tsx             # XYZ axis indicator
 ├── hooks/
 │   ├── useSequenceEditor.ts      # Main editor state machine
 │   ├── useSequenceViewer.ts      # Read-only viewer state
-│   ├── useSequences.ts           # Load sequences from DB
+│   ├── useSequenceList.ts        # Library rows: sequences with step counts and tags
+│   ├── useSequenceDetails.ts     # One sequence with its tags and steps
+│   ├── useSequences.ts           # Load sequences from DB (Notebook count)
 │   ├── useTechniques.ts          # Load techniques from DB
 │   ├── useStartingPositions.ts   # Load starting positions
 │   ├── useHandPresetsByUserAndSide.ts  # Filter presets by L/R
 │   ├── useSequenceSteps.ts       # Load steps for a sequence
-│   ├── useThreeDScreen.ts        # Main screen tab state
 │   └── useTechniqueById.ts       # Load single technique
 ├── services/
 │   ├── sequenceService.ts        # Sequence CRUD + step management
@@ -54,8 +58,10 @@ src/modules/threed/
 │   ├── fk.ts         # FK bones, BoneTransform, body groups
 │   ├── ik.ts         # Legacy IK targets (V1 compat)
 │   ├── dto.ts        # DTOs for services
-│   ├── tabs.ts       # Tab enum
+│   ├── tabs.ts       # Library tab enum
 │   └── index.ts      # Re-exports everything
+├── library.ts        # Pure: list filters, body-part labels / chips, dates
+├── jointAxes.ts      # Pure: quaternion ↔ Euler degrees, slider math, "+24°"
 ├── utils/
 │   ├── fkSystem.ts   # FK bone transform calculations
 │   ├── dataCompat.ts # V1→V2→V3 data conversion
@@ -151,14 +157,18 @@ This works for both hand bones (`DEF-handL`) and finger bones (`DEF-f_index01L`)
 
 ### GL vs Non-GL Components
 The `components/index.ts` separates:
-- **UI-only components** (no GL dependencies): Cards, Sheets, Tabs, Panels
-- **GL components** (Three.js): Canvas, HumanModel, BoneMarker, Gizmo
+- **UI-only components** (no GL dependencies): library and new-sequence screens, sheets, panels
+- **GL components** (Three.js): Canvas, HumanModel, BoneMarker, Gizmo, and every screen that shows the model
+
+Screens follow the "3D notebook" boards (`design/project/ThreeD*.dc.html`) in 3D lime, but the
+figure is always the real `HumanModel`, never the boards' line drawing. Scene colors (background,
+floor, grid, model, partner, markers, axes) come from `threedScene` in `src/core/theme/tokens.ts`.
 
 **Only import GL components in screens that render `<Canvas>`!**
 
 ### Render Flow
 ```
-app/techniques/threed/[sequenceId]/edit.tsx
+app/techniques/threed/[sequenceId]/edit.tsx → SequenceEditorScreen → SceneScreen
   └── ThreeDCanvas (R3F Canvas wrapper)
        ├── FPSCameraController (touch orbit/pan)
        ├── HumanModel (GLB loader, applies bone transforms)
