@@ -188,7 +188,8 @@ export type ModuleKey =
   | "events"
   | "trainings"
   | "tags"
-  | "notebook";
+  | "notebook"
+  | "threed";
 
 export interface ModuleAccent {
   /** Text / icon color. */
@@ -284,6 +285,15 @@ export const moduleAccents: Record<ModuleKey, ModuleAccent> = {
     to: "#0891B2",
     buttonText: "#03222A",
     label: "#67E8F9",
+  },
+  /** 3D notebook (D1–D9): lime, the only hue no other module uses. */
+  threed: {
+    tint: "#BEF264",
+    fill: "rgba(190,242,100,0.16)",
+    from: "#A3E635",
+    to: "#65A30D",
+    buttonText: "#142003",
+    label: "#BEF264",
   },
 };
 

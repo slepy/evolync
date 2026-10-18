@@ -78,6 +78,7 @@ The accent of a module is the color of its tile on the dashboards (organization,
 | Trainings | `#5EEAD4` | `#2DD4BF` → `#0F766E` | dark `#04201D` |
 | Tags | `#FB7185` (rose; "Add new" text `#FDA4AF`) | `#FB7185` → `#E11D48` | white |
 | Notebook (technique notes) | `#67E8F9` (cyan, fill `rgba(34,211,238,0.16)`) | `#22D3EE` → `#0891B2` | dark `#03222A` |
+| 3D (sequences, techniques, poses; D1–D9) | `#BEF264` (lime, fill `rgba(190,242,100,0.16)`) | `#A3E635` → `#65A30D` | dark `#142003` |
 
 Tiles and quick actions use the tint at 16% opacity as the fill (`rgba(r,g,b,0.16)`).
 
