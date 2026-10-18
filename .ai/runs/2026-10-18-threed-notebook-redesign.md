@@ -59,6 +59,14 @@ Rebuild the 3D notebook screens on the shared core components so they match the 
 - No device run in this gate: the editor layout (overlays on the GL canvas) is checked only by typecheck and by reading the boards; it needs a device QA pass.
 - The joint panel shows X / Y / Z as Euler degrees converted from the stored quaternion; values round-trip through the existing slider math.
 
+## Deviations from the boards
+
+- The figure is the real `HumanModel` everywhere (operator: the boards' line drawing is only a stand-in).
+- Techniques filter: no "Full body" chip; full-body poses are the Positions tab, so the chip would always be empty.
+- Step captions ("Overhook grip, right arm") and "used in 3 sequences" are not stored: rows show "Step N", the preview "Saved 2 Oct".
+- Also removed as unused (outside 3D): `MiniStat`, `StatusIndicator`, `OrderStatusBadge`, `useUnreadNotificationCount`. `students/types/db.ts` stays (types-folder convention).
+- Unused exports inside live files (`updateSequence`, `updateSequenceCoverImage`, `updateTechnique`) stay, as in the earlier cleanup run.
+
 ## Progress
 
 > Convention: `- [ ]` pending, `- [x]` done. Append ` — <commit sha>` when a step lands. Do not rename step titles.
@@ -84,6 +92,6 @@ Rebuild the 3D notebook screens on the shared core components so they match the 
 
 ### Phase 4: Cleanup
 
-- [ ] 4.1 Delete unused files
-- [ ] 4.2 Translations
-- [ ] 4.3 Docs
+- [x] 4.1 Delete unused files — ac429d3
+- [x] 4.2 Translations — 76063ab
+- [x] 4.3 Docs — ce699ee
