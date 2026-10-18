@@ -76,11 +76,11 @@ Rebuild the 3D notebook screens on the shared core components so they match the 
 
 ### Phase 3: Viewer and editor
 
-- [ ] 3.1 Viewer chrome
-- [ ] 3.2 Editor chrome
-- [ ] 3.3 Joint panel
-- [ ] 3.4 Editor sheets
-- [ ] 3.5 Hand editor
+- [x] 3.1 Viewer chrome — 936aa71
+- [x] 3.2 Editor chrome — 6c485ee
+- [x] 3.3 Joint panel — 6c485ee
+- [x] 3.4 Editor sheets — a62f72e
+- [x] 3.5 Hand editor — 691a57f
 
 ### Phase 4: Cleanup
 
