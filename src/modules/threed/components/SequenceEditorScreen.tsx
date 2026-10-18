@@ -9,6 +9,7 @@ import { Text, View, XStack, YStack } from "tamagui";
 import { useStore } from "@/store";
 import { useSequenceDetails, useSequenceEditor, useStartingPositions, useTechniques } from "../hooks";
 import { withAxisDeg, type Axis } from "../jointAxes";
+import { bodyPartLabelKey } from "../library";
 import { saveHandPreset } from "../services/handPresetService";
 import { FK_BONE_DISPLAY_KEYS, FK_MIRROR_MAP, getBoneBodyGroup, type BoneTransformMap, type FKBoneName } from "../types/fk";
 import { calculateSceneCenter } from "../utils/sceneCenterCalculator";
@@ -21,9 +22,8 @@ import { HumanModel, type HumanModelHandle } from "./HumanModel";
 import { JointPanel, type JointMode } from "./JointPanel";
 import { SaveTechniqueSheet } from "./SaveTechniqueSheet";
 import { SceneScreen } from "./SceneScreen";
-import { StartingPositionSheet } from "./StartingPositionSheet";
 import { StepStrip } from "./StepStrip";
-import { TechniqueLibrarySheet } from "./TechniqueLibrarySheet";
+import { TechniquePickerSheet } from "./TechniquePickerSheet";
 import { ThreeDCanvas, type ThreeDCanvasHandle } from "./ThreeDCanvas";
 import { ToolButton } from "./ToolButton";
 
@@ -186,6 +186,15 @@ export function SequenceEditorScreen() {
       if (transform.position) handleBonePositionChange(bone, transform.position);
     });
 
+  // Techniques of the selected joint's body part (V1 wrists count as arms).
+  const jointTechniques = useMemo(
+    () =>
+      selectedBodyGroup
+        ? techniques.filter((tech) => bodyPartLabelKey(tech.bodyPart) === bodyPartLabelKey(selectedBodyGroup))
+        : techniques,
+    [techniques, selectedBodyGroup],
+  );
+
   const jointName = selectedBone ? t(FK_BONE_DISPLAY_KEYS[selectedBone]) : "";
   const save = <PrimaryButton label={t("save")} accent="threed" loading={isSaving} onPress={() => run(saveCurrentStep)} />;
 
@@ -333,36 +342,40 @@ export function SequenceEditorScreen() {
         panel={panel}
       />
 
-      <TechniqueLibrarySheet
+      <TechniquePickerSheet
         open={sheet === "techniques"}
         onOpenChange={(open) => !open && setSheet(null)}
-        techniques={techniques}
-        filterBodyPart={selectedBodyGroup}
+        kind="techniques"
+        items={jointTechniques}
+        bodyPart={selectedBodyGroup}
         onSelect={(technique) => {
           applyTechnique(technique);
           setSheet(null);
         }}
       />
-      <StartingPositionSheet
+      <TechniquePickerSheet
         open={sheet === "positions"}
         onOpenChange={(open) => !open && setSheet(null)}
-        positions={positions}
+        kind="positions"
+        items={positions}
         onSelect={(position) => {
           applyTechnique(position);
           setSheet(null);
         }}
       />
-      <SaveTechniqueSheet
-        open={sheet === "saveTechnique"}
-        onOpenChange={(open) => !open && setSheet(null)}
-        bodyPart={selectedBodyGroup}
-        onSave={(title) => saveTechniqueFromSelection(title)}
-      />
+      {selectedBodyGroup ? (
+        <SaveTechniqueSheet
+          open={sheet === "saveTechnique"}
+          onOpenChange={(open) => !open && setSheet(null)}
+          bodyPart={selectedBodyGroup}
+          onSave={saveTechniqueFromSelection}
+        />
+      ) : null}
       <SaveTechniqueSheet
         open={sheet === "savePosition"}
         onOpenChange={(open) => !open && setSheet(null)}
-        bodyPart={null}
-        onSave={(title) => saveAsStartingPosition(title)}
+        bodyPart="fullbody"
+        onSave={saveAsStartingPosition}
       />
     </>
   );

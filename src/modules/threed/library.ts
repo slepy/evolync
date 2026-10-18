@@ -79,12 +79,12 @@ export function filterSequences(sequences: SequenceListItem[], query: string): S
 }
 
 /** Techniques of the chosen body part (or all) whose title or body-part label matches the search. */
-export function filterTechniques(
-  techniques: TechniqueListItem[],
+export function filterTechniques<T extends TechniqueListItem>(
+  techniques: T[],
   query: string,
   filter: BodyPartFilter,
   label: (bodyPart: string) => string,
-): TechniqueListItem[] {
+): T[] {
   return techniques.filter(
     (tech) =>
       (filter === "all" || bodyPartFilterOf(tech.bodyPart) === filter) &&
