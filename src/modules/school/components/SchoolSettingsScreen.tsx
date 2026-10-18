@@ -6,8 +6,8 @@ import {
   SubScreenPage,
   TextField,
 } from "@/core/components";
-import { DEFAULT_CURRENCY, SUPPORTED_CURRENCIES } from "@/modules/core/components";
-import { useDirtyFlag } from "@/modules/core/hooks";
+import { DEFAULT_CURRENCY, SUPPORTED_CURRENCIES } from "@/core/utils/currencies";
+import { useDirtyFlag } from "@/core/hooks";
 import { Building2, CreditCard, MapPin } from "lucide-react-native";
 import React, { useState } from "react";
 import { Text, XStack, YStack } from "tamagui";

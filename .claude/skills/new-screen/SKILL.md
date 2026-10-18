@@ -107,11 +107,15 @@ File: `src/modules/{module}/components/{Feature}.tsx`
 
 ```typescript
 import React from "react";
-import { ScrollView, YStack, XStack, Text, H4, Button } from "tamagui";
-import { Plus } from "lucide-react-native";
 import { router } from "expo-router";
-import { BaseCard } from "@/modules/core/components";
-import { LoadingScreen } from "@/modules/core/components";
+import {
+  ListCard,
+  ListEmpty,
+  ListRow,
+  ListSection,
+  LoadingScreen,
+  SubScreenPage,
+} from "@/core/components";
 import { useFeature } from "../hooks";
 
 interface FeatureScreenProps {
@@ -119,37 +123,28 @@ interface FeatureScreenProps {
 }
 
 export const FeatureScreen: React.FC<FeatureScreenProps> = ({ parentId }) => {
-  const { items, isLoading, error } = useFeature(parentId);
+  const { items, isLoading } = useFeature(parentId);
 
   if (isLoading) return <LoadingScreen />;
 
   return (
-    <ScrollView>
-      <YStack padding="$4" gap="$3">
-        <H4>{t("featureTitle")}</H4>
-
-        {error && (
-          <Text color="$red10">{t(error)}</Text>
+    <SubScreenPage title={t("featureTitle")} context="school">
+      <ListSection title={t("featureTitle")} accent="school">
+        {items.length === 0 ? (
+          <ListEmpty text={t("noItemsYet")} />
+        ) : (
+          <ListCard>
+            {items.map((item) => (
+              <ListRow
+                key={item.id}
+                title={item.name}
+                onPress={() => router.push(`/route/${item.id}`)}
+              />
+            ))}
+          </ListCard>
         )}
-
-        {items.map((item) => (
-          <BaseCard
-            key={item.id}
-            onPress={() => router.push(`/route/${item.id}`)}
-          >
-            <XStack gap="$3" alignItems="center">
-              <Text fontWeight="bold">{item.name}</Text>
-            </XStack>
-          </BaseCard>
-        ))}
-
-        {items.length === 0 && (
-          <Text color="$gray10" textAlign="center">
-            {t("noItemsYet")}
-          </Text>
-        )}
-      </YStack>
-    </ScrollView>
+      </ListSection>
+    </SubScreenPage>
   );
 };
 ```
@@ -160,19 +155,18 @@ export { FeatureScreen } from "./FeatureScreen";
 ```
 
 **Component Rules:**
-- Use `BaseCard` for interactive cards (from `@/modules/core/components`)
+- Use `ListSection` + `ListCard` + `ListRow` for lists of interactive rows (from `@/core/components`)
 - Use `t()` for ALL user-facing text (globally available, no import)
 - Use `LoadingScreen` for loading states
 - Use `router.push()` / `router.back()` for navigation
 - Import from module barrel exports, not direct file paths
-- **ALWAYS** use `SubmitComponent` for submit/save buttons — never raw `Button` at the bottom of forms or sheets:
+- **ALWAYS** use `PrimaryButton` for submit/save buttons — never a raw `Button` or a module-local button. On a form screen pass it as the `footer` of `SubScreenPage` (pinned above the keyboard):
   ```typescript
-  import { SubmitComponent } from "@/modules/core/components";
-  // Place OUTSIDE ScrollView, at the bottom of the screen/sheet frame:
-  <SubmitComponent onPress={handleSubmit} isLoading={isLoading} title={t("save")} />
+  import { PrimaryButton, SubScreenPage } from "@/core/components";
+  <SubScreenPage title={t("featureTitle")} footer={<PrimaryButton label={t("save")} accent="school" onPress={handleSubmit} loading={isLoading} />}>
   ```
-- **Edit screens**: `SubmitComponent` must be wrapped in `{isDirty && ...}` — use `useDirtyFlag` hook from `@/modules/core/hooks`. See `dirty-flag` skill for full pattern.
-- **Create screens**: `SubmitComponent` always visible (or gated on required fields being filled).
+- **Edit screens**: render the footer only when `isDirty` — use `useDirtyFlag` from `@/core/hooks`. See `dirty-flag` skill for full pattern.
+- **Create screens**: the button is always visible (or gated on required fields being filled).
 
 ## Step 3: Route (Screen File)
 

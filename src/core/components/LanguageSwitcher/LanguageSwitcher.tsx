@@ -2,8 +2,8 @@ import React from "react";
 import { Globe } from "lucide-react-native";
 import { useTranslation } from "@/core/hooks/useTranslation";
 import { changeLanguage, getAvailableLanguages } from "@/core/i18n/config";
-import { ChoiceList } from "./ChoiceList";
-import { FormCard } from "./FormCard";
+import { ChoiceList } from "../ChoiceList";
+import { FormCard } from "../FormCard";
 
 type LanguageCode = "en" | "pl";
 

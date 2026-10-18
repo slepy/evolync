@@ -1,4 +1,4 @@
-import { formatPrice } from "@/modules/core/utils/formatters";
+import { formatPrice } from "@/core/utils/formatters";
 
 const localeTag = (): string => (t("locale") === "pl" ? "pl-PL" : "en-US");
 

@@ -2,7 +2,7 @@ import { database } from "@/database";
 import { sync } from "@/database/sync";
 import Product from "@/database/models/Product";
 import ProductVariant from "@/database/models/ProductVariant";
-import { uploadImage } from "@/modules/core/utils/uploadImage";
+import { uploadImage } from "@/core/utils/uploadImage";
 import { useStore } from "@/store";
 import { v4 as uuidv4 } from "uuid";
 

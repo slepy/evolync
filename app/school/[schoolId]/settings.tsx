@@ -1,6 +1,6 @@
 import School from "@/database/models/School";
 import SchoolSettings from "@/database/models/SchoolSettings";
-import { LoadingScreen } from "@/modules/core/components/LoadingScreen";
+import { LoadingScreen } from "@/core/components";
 import { useRequireOrganizationOwner } from "@/modules/organization/hooks/useRequireOrganizationOwner";
 import { SchoolSettingsScreen } from "@/modules/school/components";
 import { SchoolRepository, SchoolSettingsRepository } from "@/modules/school/repositories";

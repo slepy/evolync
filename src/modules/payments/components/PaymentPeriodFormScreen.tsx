@@ -9,7 +9,7 @@ import {
   TextField,
   ToggleRow,
 } from "@/core/components";
-import { DEFAULT_CURRENCY, SUPPORTED_CURRENCIES } from "@/modules/core/components";
+import { DEFAULT_CURRENCY, SUPPORTED_CURRENCIES } from "@/core/utils/currencies";
 import { SchoolSettingsRepository } from "@/modules/school/repositories";
 import { CreditCard } from "lucide-react-native";
 import React, { useEffect, useMemo, useState } from "react";

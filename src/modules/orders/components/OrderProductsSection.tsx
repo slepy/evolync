@@ -1,6 +1,6 @@
 import { ListDivider, ListImage, ListRow, ListSection, TrashButton } from "@/core/components";
 import { neutral } from "@/core/theme/tokens";
-import { formatPrice } from "@/modules/core/utils/formatters";
+import { formatPrice } from "@/core/utils/formatters";
 import { ShoppingBag } from "lucide-react-native";
 import React, { Fragment } from "react";
 import { Text, View, XStack, YStack } from "tamagui";

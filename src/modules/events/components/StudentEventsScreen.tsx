@@ -10,7 +10,7 @@ import {
   withAlpha,
 } from "@/core/components";
 import { EVENT_STATUS } from "@/database/models/Event";
-import { LoadingScreen } from "@/modules/core/components/LoadingScreen";
+import { LoadingScreen } from "@/core/components";
 import { localToday, timestampToDay } from "@/modules/trainings/types/helpers";
 import { CalendarDays, History } from "lucide-react-native";
 import React, { useState } from "react";

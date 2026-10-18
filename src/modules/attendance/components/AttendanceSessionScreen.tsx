@@ -13,8 +13,8 @@ import {
 import { DEFAULT_ATTENDANCE_STATUS, STATUS_CYCLE, type AttendanceStatus } from "@/database/models/AttendanceRecord";
 import type SchoolMember from "@/database/models/SchoolMember";
 import TrainingSession from "@/database/models/TrainingSession";
-import { LoadingScreen } from "@/modules/core/components/LoadingScreen";
-import { confirmDelete } from "@/modules/core/utils/confirmDelete";
+import { LoadingScreen } from "@/core/components";
+import { confirmDelete } from "@/core/utils/confirmDelete";
 import { StudentRepository } from "@/modules/students/repositories";
 import React, { useEffect, useMemo, useState } from "react";
 import { Text, YStack } from "tamagui";

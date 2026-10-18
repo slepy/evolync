@@ -8,7 +8,7 @@ import {
   TextField,
   TrashButton,
 } from "@/core/components";
-import { confirmDelete } from "@/modules/core/utils/confirmDelete";
+import { confirmDelete } from "@/core/utils/confirmDelete";
 import React, { useMemo, useState } from "react";
 import { Text, XStack, YStack } from "tamagui";
 import type { ProductDto } from "../types/dto";

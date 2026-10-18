@@ -8,7 +8,7 @@ import {
   StatusSummary,
   SubScreenPage,
 } from "@/core/components";
-import { LoadingScreen } from "@/modules/core/components/LoadingScreen";
+import { LoadingScreen } from "@/core/components";
 import { CreditCard, Wallet } from "lucide-react-native";
 import React from "react";
 import { Text, YStack } from "tamagui";

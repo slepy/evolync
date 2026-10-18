@@ -1,6 +1,6 @@
 import { ListCard, ListEmpty, ListIcon, ListRow, ListSection, SubScreenPage } from "@/core/components";
 import type EventType from "@/database/models/EventType";
-import { LoadingScreen } from "@/modules/core/components";
+import { LoadingScreen } from "@/core/components";
 import { CalendarDays } from "lucide-react-native";
 import React, { useState } from "react";
 import { useEventTypes } from "../hooks";

@@ -1,6 +1,6 @@
 import { ListCard, ListRow, ListSection, SubScreenPage } from "@/core/components";
 import type GradingRank from "@/database/models/GradingRank";
-import { LoadingScreen } from "@/modules/core/components";
+import { LoadingScreen } from "@/core/components";
 import { useStore } from "@/store";
 import { useLocalSearchParams } from "expo-router";
 import React, { useEffect, useState } from "react";

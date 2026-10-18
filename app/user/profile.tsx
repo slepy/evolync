@@ -5,8 +5,8 @@ import {
   toProfileMetadata,
   type ProfileValues,
 } from "@/modules/auth";
-import { signOut } from "@/modules/core/utils/signOutBridge";
-import { uploadImage } from "@/modules/core/utils/uploadImage";
+import { signOut } from "@/core/utils/signOutBridge";
+import { uploadImage } from "@/core/utils/uploadImage";
 import { sync } from "@/database/sync";
 import { useStore } from "@/store";
 import React from "react";

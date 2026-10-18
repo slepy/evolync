@@ -6,7 +6,7 @@ import { StudentRepository } from "../repositories";
 import {
   formatPhoneNumber,
   parsePhoneNumber,
-} from "@/modules/core/utils/phoneHelpers";
+} from "@/core/utils/phoneHelpers";
 import { PaymentCycleRepository } from "@/modules/payments/repositories/paymentCycleRepository";
 import { PaymentRecordRepository } from "@/modules/payments/repositories/paymentRecordRepository";
 import { EventRepository } from "@/modules/events/repositories/eventRepository";

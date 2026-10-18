@@ -6,7 +6,7 @@ import {
   TrashButton,
 } from "@/core/components";
 import type GradingRank from "@/database/models/GradingRank";
-import { confirmDelete } from "@/modules/core/utils/confirmDelete";
+import { confirmDelete } from "@/core/utils/confirmDelete";
 import React, { useEffect, useState } from "react";
 import { addRank, deleteRank, updateRank } from "../services/gradingService";
 import { createRankSchema } from "../validation";

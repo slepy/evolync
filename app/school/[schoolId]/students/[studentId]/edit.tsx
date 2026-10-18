@@ -1,6 +1,6 @@
 import type SchoolMember from "@/database/models/SchoolMember";
-import { LoadingScreen } from "@/modules/core/components/LoadingScreen";
-import { formatPhoneNumber, parsePhoneNumber } from "@/modules/core/utils/phoneHelpers";
+import { LoadingScreen } from "@/core/components";
+import { formatPhoneNumber, parsePhoneNumber } from "@/core/utils/phoneHelpers";
 import { useRequireOrganizationOwner } from "@/modules/organization/hooks/useRequireOrganizationOwner";
 import { StudentFormScreen } from "@/modules/students/components";
 import { StudentRepository } from "@/modules/students/repositories";

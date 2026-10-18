@@ -39,9 +39,8 @@ evolync/
 │       ├── sync.ts                        # Sync configuration
 │       └── hooks/
 │           └── useSync.ts                 # React hook for sync management
-└── src/modules/core/components/
-    ├── Header.tsx                         # Includes sync button in menu
-    └── SyncStatusBar.tsx                  # Shows sync status
+└── src/core/components/SyncedPill/
+    └── SyncedPill.tsx                     # Sync pill in screen headers (status + tap to sync)
 ```
 
 ## Setup Instructions

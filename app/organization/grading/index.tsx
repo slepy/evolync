@@ -1,4 +1,4 @@
-import { LoadingScreen } from "@/modules/core/components/LoadingScreen";
+import { LoadingScreen } from "@/core/components";
 import { GradingConfigScreen } from "@/modules/grading/components/GradingConfigScreen";
 import { useStore } from "@/store";
 import React from "react";

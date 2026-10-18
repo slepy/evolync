@@ -1,13 +1,13 @@
 ---
 name: dirty-flag
-description: Guide for implementing the one-way dirty flag pattern — showing SubmitComponent only when the user has made changes. Use when adding or editing edit screens with a conditional save button.
+description: Guide for implementing the one-way dirty flag pattern — showing the save PrimaryButton only when the user has made changes. Use when adding or editing edit screens with a conditional save button.
 ---
 
 # Dirty Flag — warunkowy przycisk zapisu
 
 ## Zasada
 
-`SubmitComponent` na ekranach **edit** pojawia się **tylko gdy użytkownik coś zmienił**.  
+`PrimaryButton` zapisu (w `footer` `SubScreenPage`) na ekranach **edit** pojawia się **tylko gdy użytkownik coś zmienił**.  
 Flaga jest **jednorazowa** — raz ustawiona na `true` zostaje `true` aż do zapisu, nawet jeśli użytkownik cofnął zmiany.
 
 Ekrany **create** — przycisk zawsze widoczny (lub gdy formularz jest poprawnie wypełniony).
@@ -16,8 +16,8 @@ Ekrany **create** — przycisk zawsze widoczny (lub gdy formularz jest poprawnie
 
 ## Hook `useDirtyFlag`
 
-Lokalizacja: `src/modules/core/hooks/useDirtyFlag.ts`  
-Eksport: `src/modules/core/hooks/index.ts`
+Lokalizacja: `src/core/hooks/useDirtyFlag.ts`  
+Eksport: `src/core/hooks/index.ts`
 
 ```ts
 import { useState, useCallback } from "react";
@@ -60,25 +60,27 @@ export const EventForm = forwardRef<EventFormHandle, Props>(
 ### W ekranie-rodzicu
 
 ```ts
-import { useDirtyFlag } from "@/modules/core/hooks";
+import { useDirtyFlag } from "@/core/hooks";
 
 const { isDirty, markDirty, reset } = useDirtyFlag();
 
-// JSX:
+// JSX (w `SubScreenPage`):
 <EventForm
   ref={formRef}
   onDirtyChange={(dirty) => { if (dirty) markDirty(); }}
   ...
 />
 
-{isDirty && (
-  <SubmitComponent
-    onPress={() => { formRef.current?.submit(); reset(); }}
-    isLoading={isLoading}
-    disabled={isLoading}
-    title={t("save")}
-  />
-)}
+// prop `SubScreenPage`:
+footer={
+  isDirty ? (
+    <PrimaryButton
+      label={t("save")}
+      onPress={() => { formRef.current?.submit(); reset(); }}
+      loading={isLoading}
+    />
+  ) : undefined
+}
 ```
 
 > `onDirtyChange` z RHF jest **dwukierunkowe** (wraca do `false` gdy user cofa zmiany).  
@@ -109,15 +111,10 @@ const handleSave = async () => {
   reset(); // chowa przycisk po zapisie
 };
 
-// JSX:
-{isDirty && (
-  <SubmitComponent
-    onPress={handleSave}
-    isLoading={isSaving}
-    disabled={isSaving}
-    title={t("save")}
-  />
-)}
+// JSX (prop `SubScreenPage`):
+footer={
+  isDirty ? <PrimaryButton label={t("save")} onPress={handleSave} loading={isSaving} /> : undefined
+}
 ```
 
 ---
@@ -142,4 +139,4 @@ const handleSave = async () => {
 
 - ❌ `setInterval` polling `formRef.current.isDirty` — nieefektywne, dwukierunkowe
 - ❌ `useMemo` porównujący aktualny stan z pierwotnym — dwukierunkowe (chowa przycisk gdy user cofnie zmiany)
-- ❌ `SubmitComponent` zawsze widoczny na ekranach edit
+- ❌ przycisk zapisu zawsze widoczny na ekranach edit

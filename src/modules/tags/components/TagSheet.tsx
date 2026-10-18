@@ -1,7 +1,7 @@
 import { FormSheet, PrimaryButton, TextField, TrashButton } from "@/core/components";
 import { moduleAccents } from "@/core/theme/tokens";
 import type Tag from "@/database/models/Tag";
-import { confirmDelete } from "@/modules/core/utils/confirmDelete";
+import { confirmDelete } from "@/core/utils/confirmDelete";
 import { useStore } from "@/store";
 import React, { useEffect, useState } from "react";
 import { createTag, deleteTag, updateTag } from "../services";

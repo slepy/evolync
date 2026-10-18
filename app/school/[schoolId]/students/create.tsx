@@ -1,4 +1,4 @@
-import { formatPhoneNumber } from "@/modules/core/utils/phoneHelpers";
+import { formatPhoneNumber } from "@/core/utils/phoneHelpers";
 import { useRequireOrganizationOwner } from "@/modules/organization/hooks/useRequireOrganizationOwner";
 import { StudentFormScreen } from "@/modules/students/components";
 import { createStudent } from "@/modules/students/services";

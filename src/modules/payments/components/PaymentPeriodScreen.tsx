@@ -13,8 +13,8 @@ import {
   ratePercent,
 } from "@/core/components";
 import PaymentCycle from "@/database/models/PaymentCycle";
-import { LoadingScreen } from "@/modules/core/components/LoadingScreen";
-import { SUPPORTED_CURRENCIES } from "@/modules/core/components";
+import { LoadingScreen } from "@/core/components";
+import { SUPPORTED_CURRENCIES } from "@/core/utils/currencies";
 import { neutral } from "@/core/theme/tokens";
 import { ChevronDown, ChevronUp, Wallet } from "lucide-react-native";
 import React, { useEffect, useState } from "react";

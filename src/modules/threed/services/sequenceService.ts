@@ -2,7 +2,7 @@ import { sync } from "@/database/sync";
 import { useStore } from "@/store";
 import type Sequence from "@/database/models/Sequence";
 import type SequenceStep from "@/database/models/SequenceStep";
-import { uploadImage } from "@/modules/core/utils/uploadImage";
+import { uploadImage } from "@/core/utils/uploadImage";
 import { TaggableRepository, setTagsForEntity } from "@/modules/tags";
 import { SequenceRepository, SequenceStepRepository } from "../repositories";
 import type { CreateSequenceDto, UpdateSequenceDto, AnyStepData } from "../types";

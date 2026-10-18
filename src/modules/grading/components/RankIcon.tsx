@@ -1,5 +1,5 @@
 import { neutral } from "@/core/theme/tokens";
-import { getContrastColor } from "@/modules/core/utils/colorHelper";
+import { getContrastColor } from "@/core/utils/colorHelper";
 import { Award } from "lucide-react-native";
 import React from "react";
 import { View } from "tamagui";

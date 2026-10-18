@@ -1,6 +1,6 @@
 import { resolveListAccent } from "@/core/components";
 import { threedScene } from "@/core/theme/tokens";
-import { LoadingScreen } from "@/modules/core/components";
+import { LoadingScreen } from "@/core/components";
 import { useLocalSearchParams } from "expo-router";
 import { ChevronLeft, ChevronRight } from "lucide-react-native";
 import React from "react";
