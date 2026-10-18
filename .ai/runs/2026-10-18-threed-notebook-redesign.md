@@ -65,8 +65,8 @@ Rebuild the 3D notebook screens on the shared core components so they match the 
 
 ### Phase 1: Library
 
-- [ ] 1.1 Sequence tags and list data
-- [ ] 1.2 Library screen
+- [x] 1.1 Sequence tags and list data — 0f26cd8
+- [x] 1.2 Library screen — 4a96b66
 
 ### Phase 2: Sequence and technique screens
 
