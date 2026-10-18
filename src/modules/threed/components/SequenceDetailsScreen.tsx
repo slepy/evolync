@@ -9,32 +9,26 @@ import {
   TagChip,
   TrashButton,
 } from "@/core/components";
-import { threedScene } from "@/core/theme/tokens";
 import { LoadingScreen } from "@/modules/core/components";
 import { confirmDelete } from "@/modules/core/utils/confirmDelete";
-import { LinearGradient } from "expo-linear-gradient";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { PenLine, Play } from "lucide-react-native";
-import React, { useEffect, useMemo } from "react";
+import React, { useEffect } from "react";
 import { Text, View, XStack, YStack } from "tamagui";
 import { useSequenceDetails } from "../hooks";
 import { deleteSequence, deleteStep } from "../services";
-import { stepBoneTransforms } from "../utils/dataCompat";
-import { PosePreview } from "./PosePreview";
-import { RoundButton } from "./RoundButton";
 
 const lime = resolveListAccent("threed");
 
 /**
- * Sequence (D6): title, description and tags, the first step on the real
- * model with Step 1 of N and View, Edit / View pills, numbered steps with
- * delete. A step row opens the editor on that step.
+ * Sequence (D6): title, description and tags, Edit / View pills, numbered
+ * steps with delete. No model here: the figure renders only in the viewer
+ * (View) and the editor (a step row opens it on that step).
  */
 export function SequenceDetailsScreen() {
   const { sequenceId } = useLocalSearchParams<{ sequenceId: string }>();
   const router = useRouter();
   const { sequence, tags, steps, isLoading } = useSequenceDetails(sequenceId);
-  const firstPose = useMemo(() => stepBoneTransforms(steps[0]?.data), [steps]);
 
   // Deleted here or on another device: back to the library.
   useEffect(() => {
@@ -78,30 +72,6 @@ export function SequenceDetailsScreen() {
           ) : null}
         </YStack>
 
-        <PosePreview boneTransforms={firstPose}>
-          {hasSteps ? (
-            <XStack
-              position="absolute"
-              left={14}
-              top={14}
-              height={30}
-              paddingHorizontal={12}
-              borderRadius={15}
-              alignItems="center"
-              backgroundColor={threedScene.scrim}
-            >
-              <Text fontSize={12} fontWeight="$button" color={lime.tint}>
-                {t("threedStepOf", { n: 1, total: steps.length })}
-              </Text>
-            </XStack>
-          ) : null}
-          {hasSteps ? (
-            <View position="absolute" right={14} bottom={14}>
-              <RoundButton variant="lime" icon={Play} filled label={t("view")} onPress={openViewer} />
-            </View>
-          ) : null}
-        </PosePreview>
-
         <XStack gap={10}>
           <ActionPill label={t("edit")} icon={PenLine} tint={lime.tint} fill={lime.fill} onPress={() => openEditor()} />
           <ActionPill label={t("view")} icon={Play} tint={lime.tint} fill={lime.fill} disabled={!hasSteps} onPress={openViewer} />
@@ -114,7 +84,7 @@ export function SequenceDetailsScreen() {
                 <ListRow
                   key={step.id}
                   title={t("threedStepNumber", { n: index + 1 })}
-                  leading={<StepNumber n={index + 1} current={index === 0} />}
+                  leading={<StepNumber n={index + 1} />}
                   trailing={
                     <TrashButton
                       size={40}
@@ -139,28 +109,13 @@ export function SequenceDetailsScreen() {
   );
 }
 
-/** 44px numbered square of a step row; the first step (the one in the preview) in the lime gradient. */
-function StepNumber({ n, current }: { n: number; current: boolean }) {
-  const label = (
-    <Text fontSize={16} fontWeight="$button" color={current ? lime.onGradient : lime.tint}>
-      {n}
-    </Text>
-  );
-  if (!current) {
-    return (
-      <View width={44} height={44} borderRadius={14} backgroundColor={lime.fill} alignItems="center" justifyContent="center">
-        {label}
-      </View>
-    );
-  }
+/** 44px numbered square of a step row in the lime fill. */
+function StepNumber({ n }: { n: number }) {
   return (
-    <LinearGradient
-      colors={[lime.from, lime.to]}
-      start={{ x: 0, y: 0 }}
-      end={{ x: 1, y: 1 }}
-      style={{ width: 44, height: 44, borderRadius: 14, alignItems: "center", justifyContent: "center" }}
-    >
-      {label}
-    </LinearGradient>
+    <View width={44} height={44} borderRadius={14} backgroundColor={lime.fill} alignItems="center" justifyContent="center">
+      <Text fontSize={16} fontWeight="$button" color={lime.tint}>
+        {n}
+      </Text>
+    </View>
   );
 }

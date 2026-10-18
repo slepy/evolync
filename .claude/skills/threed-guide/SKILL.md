@@ -14,12 +14,11 @@ src/modules/threed/
 ├── components/
 │   ├── ThreeDLibraryScreen.tsx   # D2–D4: Sequences / Techniques / Positions tabs (IconTabs)
 │   ├── SequenceCreateScreen.tsx  # D5: title, description, tags; Create opens the editor
-│   ├── SequenceDetailsScreen.tsx # D6: first step on the model (PosePreview), Edit / View, steps
+│   ├── SequenceDetailsScreen.tsx # D6: title, tags, Edit / View, steps (no model: it renders only in the viewer / editor)
 │   ├── TechniquePreviewScreen.tsx # D7: technique / starting position on a full-screen scene
 │   ├── SequenceEditorScreen.tsx  # D8: editor (camera pad, steps strip, tools, joint panel, hand editor)
 │   ├── SequenceViewerScreen.tsx  # D9: step progress card with previous / next
 │   ├── SceneScreen.tsx           # Full-screen 3D layout: header over the scene, card panel below
-│   ├── PosePreview.tsx           # Non-interactive model in a 22px card
 │   ├── CanvasErrorBoundary.tsx   # Message instead of a crash when GL / the model fails
 │   ├── JointPanel.tsx            # Selected joint: Rotate / Move, one AxisSlider per axis
 │   ├── AxisSlider.tsx            # Centered −range..+range slider with the value ("+24°")

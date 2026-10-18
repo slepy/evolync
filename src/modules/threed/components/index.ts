@@ -17,7 +17,6 @@ export type { HumanModelHandle } from "./HumanModel";
 export { BoneMarker } from "./BoneMarker";
 export { BoneMarkerGroup } from "./BoneMarkerGroup";
 export { AxisGizmo } from "./AxisGizmo";
-export { PosePreview } from "./PosePreview";
 export { SceneScreen } from "./SceneScreen";
 export { SequenceDetailsScreen } from "./SequenceDetailsScreen";
 export { TechniquePreviewScreen } from "./TechniquePreviewScreen";
