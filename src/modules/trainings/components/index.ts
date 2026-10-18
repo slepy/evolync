@@ -9,5 +9,4 @@ export { toSchoolAddressItems, pickSchoolAddress } from "./schoolAddress";
 export * from "./format";
 export * from "./trainingFormState";
 export { audienceLabel } from "./audienceLabel";
-export { countActiveWithinDays } from "./groupByDay";
 export { confirmAction, showError } from "./confirmAction";

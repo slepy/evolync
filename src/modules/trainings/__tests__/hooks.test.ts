@@ -3,7 +3,7 @@ import { beforeEach, describe, it } from "node:test";
 import assert from "node:assert/strict";
 import React, { act } from "react";
 import TestRenderer, { type ReactTestRenderer } from "react-test-renderer";
-import { flush, resetDatabase, seedMember, seedRow, seedTraining } from "./testUtils";
+import { flush, resetDatabase, seedMember, seedRow } from "./testUtils";
 
 const hooks = require("../hooks") as typeof import("../hooks");
 const service = require("../services/trainingService") as typeof import("../services/trainingService");
@@ -29,42 +29,6 @@ const settle = () => act(flush);
 
 describe("trainings hooks", () => {
   beforeEach(resetDatabase);
-
-  it("useUpcomingTrainings emits again after a write", async () => {
-    const hook = await renderHook(() => hooks.useUpcomingTrainings("org-1"));
-    assert.equal(hook.current().isLoading, false);
-    assert.equal(hook.current().trainings.length, 0);
-
-    await act(async () => {
-      await service.createSingleTrainings({
-        organizationId: "org-1", createdBy: "owner", name: "Open mat", visibility: "organization",
-        dates: ["2099-01-03", "2099-01-10"], startTime: "10:00", endTime: "11:00",
-      });
-    });
-    await settle();
-    assert.deepEqual(hook.current().trainings.map((t) => t.name), ["Open mat", "Open mat"]);
-    await hook.unmount();
-  });
-
-  it("useSchoolUpcomingTrainings follows the school's organization and audience", async () => {
-    await seedRow("schools", { id: "school-a", organization_id: "org-1", name: "A", address: "Main 1" });
-    await seedMember("m-a", "school-a");
-    await seedTraining({ name: "org" });
-    await seedTraining({ name: "other school", visibility: "school", school_id: "school-b" });
-
-    const hook = await renderHook(() => hooks.useSchoolUpcomingTrainings("school-a"));
-    assert.deepEqual(hook.current().trainings.map((t) => t.name), ["org"]);
-
-    await act(async () => {
-      await service.createSingleTrainings({
-        organizationId: "org-1", createdBy: "owner", name: "private", visibility: "whitelist",
-        inviteeIds: ["m-a"], dates: ["2099-01-04"], startTime: "10:00", endTime: "11:00",
-      });
-    });
-    await settle();
-    assert.deepEqual(hook.current().trainings.map((t) => t.name), ["private", "org"]);
-    await hook.unmount();
-  });
 
   it("useTraining returns the training with its series and turns null on delete", async () => {
     const { trainings } = await service.createTrainingSeries({

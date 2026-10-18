@@ -28,7 +28,7 @@ export const LoadingScreen: React.FC<LoadingScreenProps> = ({
   spinnerSize = 'large',
 }) => {
   return (
-      <YStack flex={1} alignItems="center" justifyContent="center" gap="$4">
+      <YStack flex={1} alignItems="center" justifyContent="center" gap="$4" backgroundColor="$neutralPage">
         {showLogo && <AppLogo size={logoSize} showText={false} showAccent={true} />}
         <Spinner size={spinnerSize} color={spinnerColor} />
       </YStack>
