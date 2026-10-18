@@ -1,4 +1,5 @@
 // --- UI-only components (no GL dependencies) ---
+export { ThreeDLibraryScreen } from "./ThreeDLibraryScreen";
 export { HandEditorTab } from "./HandEditorTab";
 export { HandEditorPanel } from "./HandEditorPanel";
 export { SequenceCard } from "./SequenceCard";

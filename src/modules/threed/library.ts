@@ -30,7 +30,7 @@ export const BODY_PART_FILTER_KEYS: Record<BodyPartFilter, string> = {
   arms: "threedFilterArms",
   hands: "threedFilterHands",
   legs: "threedFilterLegs",
-  spine: "threedFilterSpine",
+  spine: "threedBodySpine",
 };
 
 /**
