@@ -50,7 +50,9 @@ export function SequenceDetailsScreen() {
 
   const handleDelete = () =>
     // The effect above leaves the screen once the sequence is gone.
-    confirmDelete(t("threedDeleteSequence"), t("threedDeleteSequenceConfirm"), () => deleteSequence(sequence.id));
+    confirmDelete(t("threedDeleteSequence"), t("threedDeleteSequenceConfirm"), () => {
+      deleteSequence(sequence.id).catch((err) => console.error("[SequenceDetailsScreen] delete:", err));
+    });
 
   return (
     <SubScreenPage
@@ -117,7 +119,11 @@ export function SequenceDetailsScreen() {
                     <TrashButton
                       size={40}
                       label={t("threedDeleteStepNumber", { n: index + 1 })}
-                      onPress={() => confirmDelete(t("delete"), t("threedDeleteStepConfirm"), () => deleteStep(step.id))}
+                      onPress={() =>
+                        confirmDelete(t("delete"), t("threedDeleteStepConfirm"), () => {
+                          deleteStep(step.id).catch((err) => console.error("[SequenceDetailsScreen] delete step:", err));
+                        })
+                      }
                     />
                   }
                   onPress={() => openEditor(index)}

@@ -142,10 +142,10 @@ export function SequenceEditorScreen() {
     if (position) setHandCenter([position.x, position.y + 0.3, position.z]);
   };
 
+  // Back from the hand editor returns to the hand's joint panel (D10 → D8 joint).
   const closeHandEditor = () => {
     setHandEditor(false);
     setHandCenter(null);
-    handleDeselectAll();
   };
 
   const run = async (action: () => Promise<unknown>) => {
