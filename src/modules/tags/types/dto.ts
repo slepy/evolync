@@ -1,4 +1,4 @@
-export type TaggableType = "note_document" | "threed_technique";
+export type TaggableType = "note_document" | "threed_technique" | "threed_sequence";
 
 export interface TagDTO {
   id: string;

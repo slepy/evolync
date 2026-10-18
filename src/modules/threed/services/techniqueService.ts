@@ -35,3 +35,8 @@ export const updateTechnique = async (
   sync().catch(console.error);
   return technique;
 };
+
+export const deleteTechnique = async (techniqueId: string): Promise<void> => {
+  await TechniqueRepository.softDelete(techniqueId);
+  sync().catch(console.error);
+};

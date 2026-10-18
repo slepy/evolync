@@ -5,7 +5,7 @@ export {
   PushNotificationsSetting,
   PushPermissionPrompt,
 } from "./components";
-export { useNotifications, useOpenNotification, useUnreadNotificationCount } from "./hooks";
+export { useNotifications, useOpenNotification } from "./hooks";
 export { NotificationRepository } from "./repositories";
 export {
   markNotificationRead,

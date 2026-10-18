@@ -1,4 +1,3 @@
-export * from "./OrderStatusBadge";
 export * from "./OrdersScreen";
 export * from "./orderAccess";
 export * from "./orderListState";

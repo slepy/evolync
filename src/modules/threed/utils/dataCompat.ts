@@ -234,3 +234,13 @@ export function normalizeTechniqueDataV3(
   if (isV2TechniqueData(data)) return convertV2TechniqueToV3(data);
   return convertV1TechniqueToV3(data);
 }
+
+/** Main-actor bone transforms of a stored step (`sequence_steps.data`); empty for a blank or unreadable step. */
+export function stepBoneTransforms(data: string | null | undefined): BoneTransformMap {
+  if (!data) return {};
+  try {
+    return normalizeStepData(JSON.parse(data)).mainActor.boneTransforms ?? {};
+  } catch {
+    return {};
+  }
+}

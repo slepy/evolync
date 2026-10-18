@@ -31,12 +31,8 @@ export { Thumbnail } from "./Thumbnail";
 export type { ThumbnailProps } from "./Thumbnail";
 
 // Indicators
-export { StatusIndicator } from "./StatusIndicator";
-export type { StatusIndicatorProps } from "./StatusIndicator";
 
 // Stats
-export { MiniStat } from "./MiniStat";
-export type { MiniStatProps } from "./MiniStat";
 
 // Member
 export { CardInfo } from "./CardInfo";

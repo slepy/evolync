@@ -4,12 +4,14 @@ import type { AnyStepData, AnyTechniqueData } from "./data";
 export interface CreateSequenceDto {
   title: string;
   description?: string;
+  tagIds?: string[];
 }
 
 export interface UpdateSequenceDto {
   title?: string;
   description?: string;
   coverImageUrl?: string;
+  tagIds?: string[];
 }
 
 export interface CreateTechniqueDto {

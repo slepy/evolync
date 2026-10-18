@@ -1,26 +1,38 @@
-import React, { useState } from "react";
-import { Button, Text, YStack, XStack } from "tamagui";
-import { X } from "lucide-react-native";
-import { TextInput, SubmitComponent } from "@/modules/core/components";
+import { FormSheet, PrimaryButton, resolveListAccent, TextField } from "@/core/components";
+import { PersonStanding } from "lucide-react-native";
+import { useEffect, useState } from "react";
+import { Text, View, XStack, YStack } from "tamagui";
+import { bodyPartLabelKey } from "../library";
+import { FK_BODY_GROUPS, type FKBodyGroup } from "../types/fk";
 import { THREED_TITLE_MAX } from "../validation";
 
-interface SaveTechniqueSheetProps {
+const lime = resolveListAccent("threed");
+
+export interface SaveTechniqueSheetProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  bodyPart: string | null;
-  /** Saves the technique; a rejection keeps the sheet open with the error under the name. */
+  /** Body part of the selected joint; "fullbody" saves a starting position. */
+  bodyPart: FKBodyGroup;
+  /** Saves it; a rejection keeps the sheet open with the error under the name. */
   onSave: (title: string) => Promise<void> | void;
 }
 
-export const SaveTechniqueSheet: React.FC<SaveTechniqueSheetProps> = ({
-  open,
-  onOpenChange,
-  bodyPart,
-  onSave,
-}) => {
+/**
+ * New technique / starting position over the editor (D11): BODY PART it
+ * covers with its joint count, NAME, Save in 3D lime.
+ */
+export function SaveTechniqueSheet({ open, onOpenChange, bodyPart, onSave }: SaveTechniqueSheetProps) {
   const [title, setTitle] = useState("");
   const [error, setError] = useState<string | undefined>();
   const [saving, setSaving] = useState(false);
+  const position = bodyPart === "fullbody";
+
+  useEffect(() => {
+    if (open) {
+      setTitle("");
+      setError(undefined);
+    }
+  }, [open]);
 
   const handleSave = async () => {
     if (!title.trim() || saving) return;
@@ -28,7 +40,6 @@ export const SaveTechniqueSheet: React.FC<SaveTechniqueSheetProps> = ({
     setError(undefined);
     try {
       await onSave(title.trim());
-      setTitle("");
       onOpenChange(false);
     } catch (err) {
       console.error("[SaveTechniqueSheet] save:", err);
@@ -38,71 +49,54 @@ export const SaveTechniqueSheet: React.FC<SaveTechniqueSheetProps> = ({
     }
   };
 
-  if (!open) return null;
-
   return (
-    <YStack
-      position="absolute"
-      top={0}
-      left={0}
-      right={0}
-      bottom={0}
-      backgroundColor="$background"
-      zIndex={999}
-      flex={1}
+    <FormSheet
+      open={open}
+      onOpenChange={onOpenChange}
+      title={t(position ? "threedNewPosition" : "threedNewTechnique")}
+      footer={
+        <PrimaryButton label={t("save")} accent="threed" onPress={handleSave} disabled={!title.trim()} loading={saving} />
+      }
     >
-      {/* Content area with scrollable form */}
-      <YStack
-        flex={1}
-        padding="$4"
-        justifyContent="center"
-        alignItems="center"
-      >
-        <YStack
-          width="100%"
-          maxWidth={400}
-          gap="$4"
+      <YStack gap={8}>
+        <Text fontSize={12} fontWeight="$eyebrow" letterSpacing={0.8} textTransform="uppercase" color="$neutralMuted">
+          {t("threedBodyPart")}
+        </Text>
+        <XStack
+          alignItems="center"
+          gap={12}
+          height={52}
+          paddingHorizontal={14}
+          borderRadius={16}
+          borderWidth={1}
+          borderColor="$neutralRaisedBorder"
+          backgroundColor="$neutralCard"
         >
-          {/* Header with close button */}
-          <XStack justifyContent="space-between" alignItems="center">
-            <Text fontSize="$5" fontWeight="700" color="$textPrimary">
-              {t("threedSaveTechnique")}
-            </Text>
-            <Button
-              size="$2"
-              icon={<X size={20} />}
-              chromeless
-              onPress={() => onOpenChange(false)}
-            />
-          </XStack>
-
-          {bodyPart && (
-            <Text fontSize="$3" color="$textSecondary">
-              {bodyPart}
-            </Text>
-          )}
-
-          <TextInput
-            value={title}
-            onChangeText={(value) => {
-              setTitle(value);
-              setError(undefined);
-            }}
-            placeholder={t("threedTechniqueTitle")}
-            label={t("fieldName")}
-            maxLength={THREED_TITLE_MAX}
-            error={error}
-          />
-        </YStack>
+          <View width={32} height={32} borderRadius={10} backgroundColor={lime.fill} alignItems="center" justifyContent="center">
+            <PersonStanding size={18} color={lime.tint} strokeWidth={2.2} />
+          </View>
+          <Text flex={1} fontSize={15} fontWeight="$button" color="$neutralText" numberOfLines={1}>
+            {t(bodyPartLabelKey(bodyPart))}
+          </Text>
+          <Text fontSize={12.5} fontWeight="600" color="$neutralMuted">
+            {t("threedJointCount", { count: FK_BODY_GROUPS[bodyPart].length })}
+          </Text>
+        </XStack>
       </YStack>
-
-      {/* Submit button at bottom */}
-      <SubmitComponent
-        onPress={handleSave}
-        isLoading={saving}
-        disabled={!title.trim()}
-        title={t("save")}
+      <TextField
+        size="large"
+        label={t("fieldName")}
+        value={title}
+        onChangeText={(next) => {
+          setTitle(next);
+          setError(undefined);
+        }}
+        placeholder={t(position ? "threedPositionNamePlaceholder" : "threedTechniqueNamePlaceholder")}
+        accent="threed"
+        maxLength={THREED_TITLE_MAX}
+        error={error}
+        autoFocus
       />
-    </YStack>
+    </FormSheet>
   );
-};
+}

@@ -59,4 +59,3 @@ export type {
 
 // Tabs
 export { THREED_TAB } from "./tabs";
-export type { ThreeDTabValue, ThreeDTab } from "./tabs";

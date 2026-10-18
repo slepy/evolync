@@ -299,14 +299,15 @@ export class FKSystemManager {
     }
   }
 
-  /** Get world positions for all FK bones (for marker placement). */
+  /**
+   * World positions of all FK bones (for marker placement), read from the
+   * bones' world matrices. Call `scene.updateMatrixWorld()` first when the
+   * pose just changed; this no longer walks each bone's parents itself.
+   */
   getBoneWorldPositions(): Map<string, THREE.Vector3> {
     const positions = new Map<string, THREE.Vector3>();
-    const worldPos = new THREE.Vector3();
-
     for (const [name, bone] of this.boneMap) {
-      bone.getWorldPosition(worldPos);
-      positions.set(name, worldPos.clone());
+      positions.set(name, new THREE.Vector3().setFromMatrixPosition(bone.matrixWorld));
     }
     return positions;
   }

@@ -1,10 +1,10 @@
 import React, { useMemo } from "react";
 import * as THREE from "three";
+import { threedScene } from "@/core/theme/tokens";
 
-// Colors from tamagui.config.ts
-const COLOR_X = "#DC2626"; // imperialRed — X axis
-const COLOR_Y = "#059669"; // jadeGreen   — Y axis
-const COLOR_Z = "#1E40AF"; // darkBlue    — Z axis
+const COLOR_X = threedScene.axisX;
+const COLOR_Y = threedScene.axisY;
+const COLOR_Z = threedScene.axisZ;
 
 const SHAFT_RADIUS = 0.012;
 const SHAFT_LENGTH = 0.35;

@@ -1,6 +1,6 @@
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
-import { ALL_TAGS, filterNotes, formatNoteDate, tagsByNote, type NoteListItem } from "../noteList";
+import { ALL_TAGS, filterNotes, formatNoteDate, type NoteListItem } from "../noteList";
 
 const guard = { id: "t-guard", name: "Guard" };
 const sweeps = { id: "t-sweeps", name: "Sweeps" };
@@ -38,22 +38,6 @@ describe("filterNotes", () => {
   it("tag and search combine", () => {
     assert.deepEqual(ids(filterNotes(notes, "pendulum", guard.id)), ["n3"]);
     assert.deepEqual(ids(filterNotes(notes, "armbar", guard.id)), []);
-  });
-});
-
-describe("tagsByNote", () => {
-  it("groups links per note in tag-list order and skips deleted tags and duplicates", () => {
-    const map = tagsByNote(
-      [
-        { taggableId: "n1", tagId: sweeps.id },
-        { taggableId: "n1", tagId: guard.id },
-        { taggableId: "n1", tagId: guard.id },
-        { taggableId: "n2", tagId: "t-deleted" },
-      ],
-      [guard, sweeps, subs],
-    );
-    assert.deepEqual(map.get("n1"), [guard, sweeps]);
-    assert.equal(map.has("n2"), false);
   });
 });
 

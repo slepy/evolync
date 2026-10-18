@@ -1,355 +1,236 @@
-import React, { useState, useCallback } from "react";
-import { Text, XStack, YStack, Button, ScrollView } from "tamagui";
-import { AlertCircle, X } from "lucide-react-native";
-import * as THREE from "three"; // Used for quaternion/euler conversions in mirror
-
 import {
-  TextInput,
-  SubmitComponent,
-  BaseCard,
-} from "@/modules/core/components";
-import { HandEditorTab } from "./HandEditorTab";
-import { FK_BODY_GROUPS, FK_MIRROR_MAP } from "../types/fk";
-import type { FKBoneName, BoneTransformMap } from "../types/fk";
-import type { Quat, Vec3 } from "../types/data";
-import { useStore } from "@/store";
+  FormSheet,
+  ListCard,
+  ListEmpty,
+  ListIcon,
+  ListRow,
+  ListSection,
+  PrimaryButton,
+  resolveListAccent,
+  TextField,
+} from "@/core/components";
+import { LinearGradient } from "expo-linear-gradient";
+import { Hand } from "lucide-react-native";
+import { useState } from "react";
+import { ScrollView } from "react-native";
+import { Text, View, XStack, YStack } from "tamagui";
 import { useHandPresetsByUserAndSide } from "../hooks/useHandPresetsByUserAndSide";
+import { formatDeg, ROTATE_RANGE_DEG, quatToEulerDeg, withAxisDeg, type Axis } from "../jointAxes";
+import type { Quat } from "../types/data";
+import { FINGER_LABEL_KEYS, FINGER_TYPE, getFingerBone, type BoneTransformMap, type FingerType, type FKBoneName } from "../types/fk";
+import { THREED_TITLE_MAX } from "../validation";
+import { AxisSlider } from "./AxisSlider";
+import { AXIS_COLORS } from "./JointPanel";
 
-// =============================================================================
-// Props
-// =============================================================================
+const lime = resolveListAccent("threed");
+const SEGMENTS = [1, 2, 3] as const;
+type Part = "hand" | FingerType;
+const PARTS: Part[] = ["hand", ...Object.values(FINGER_TYPE)];
+/** Fingers bend on X and spread on Z (D10); the hand itself turns on all three. */
+const FINGER_AXES: Axis[] = ["x", "z"];
+const HAND_AXES: Axis[] = ["x", "y", "z"];
 
-interface HandEditorPanelProps {
-  selectedBone: FKBoneName | null;
+export interface HandEditorPanelProps {
+  side: "L" | "R";
   boneTransforms: BoneTransformMap;
-  onBoneSelect: (boneName: FKBoneName) => void;
-  onRotationChange: (boneName: string, quat: Quat) => void;
-  onPositionChange: (boneName: string, pos: Vec3) => void;
-  onDeselect: () => void;
-  onResetBone: (boneName: string) => void;
-  onSaveHandPreset: (presetName: string) => Promise<void>;
-  onApplyPreset: (boneTransforms: BoneTransformMap) => void;
+  onRotationChange: (bone: string, rotation: Quat) => void;
+  /** Saves every bone of this hand as a named preset. */
+  onSavePreset: (name: string) => Promise<void>;
+  onApplyPreset: (transforms: BoneTransformMap) => void;
 }
 
-// =============================================================================
-// Component
-// =============================================================================
-
-export const HandEditorPanel: React.FC<HandEditorPanelProps> = ({
-  selectedBone,
-  boneTransforms,
-  onBoneSelect,
-  onRotationChange,
-  onPositionChange,
-  onDeselect,
-  onResetBone,
-  onSaveHandPreset,
-  onApplyPreset,
-}) => {
-  const [isSaving, setIsSaving] = useState(false);
-  const [showSaveDialog, setShowSaveDialog] = useState(false);
-  const [showPresetsList, setShowPresetssList] = useState(false);
-  const [presetName, setPresetName] = useState("");
-  const [saveError, setSaveError] = useState<string | null>(null);
-  const [showSuccess, setShowSuccess] = useState(false);
-
-  const { user } = useStore();
-  const side: "L" | "R" = selectedBone?.includes("R") ? "R" : "L";
+/**
+ * Hand editor (D10): Hand / Thumb … Little, SEGMENT 1–3, X and Z sliders of
+ * the chosen bone, and the user's presets for this hand with Add new.
+ */
+export function HandEditorPanel({ side, boneTransforms, onRotationChange, onSavePreset, onApplyPreset }: HandEditorPanelProps) {
+  const [part, setPart] = useState<Part>("index");
+  const [segment, setSegment] = useState<1 | 2 | 3>(1);
+  const [saveOpen, setSaveOpen] = useState(false);
   const { presets } = useHandPresetsByUserAndSide(side);
 
-  const handleMirrorHand = useCallback(() => {
-    // Mirror all finger bones from one hand to the other
-    if (!selectedBone) return;
+  const bone: FKBoneName = part === "hand" ? (`DEF-hand${side}` as FKBoneName) : getFingerBone(part, segment, side);
+  const rotation = boneTransforms[bone]?.rotation;
+  const euler = quatToEulerDeg(rotation);
+  const handLabel = t(side === "R" ? "boneRightHand" : "boneLeftHand");
 
-    // Get all finger bones from source hand
-    const sourceGroup =
-      side === "L" ? FK_BODY_GROUPS.leftHand : FK_BODY_GROUPS.rightHand;
+  return (
+    <YStack gap={16}>
+      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ flexGrow: 0, marginRight: -20 }}>
+        <XStack role="radiogroup" aria-label={t("threedFinger")} gap={6} paddingRight={20}>
+          {PARTS.map((value) => (
+            <PartChip
+              key={value}
+              label={t(value === "hand" ? "threedHand" : FINGER_LABEL_KEYS[value])}
+              on={value === part}
+              onPress={() => setPart(value)}
+            />
+          ))}
+        </XStack>
+      </ScrollView>
 
-    // Copy transforms from source to target using FK_MIRROR_MAP for proper bone mapping
-    sourceGroup.forEach((sourceBone) => {
-      if (sourceBone in boneTransforms) {
-        // Use FK_MIRROR_MAP to find corresponding bone on other side
-        const targetBone = FK_MIRROR_MAP[sourceBone];
-        if (!targetBone) return;
+      {part !== "hand" ? (
+        <XStack alignItems="center" gap={8}>
+          <Text flex={1} fontSize={12} fontWeight="$eyebrow" letterSpacing={0.8} textTransform="uppercase" color="$neutralMuted">
+            {t("threedSegment")}
+          </Text>
+          {SEGMENTS.map((n) => {
+            const on = n === segment;
+            return (
+              <View
+                key={n}
+                role="radio"
+                aria-checked={on}
+                aria-label={t("threedSegmentNumber", { n })}
+                onPress={() => setSegment(n)}
+                pressStyle={{ opacity: 0.85 }}
+                width={40}
+                height={40}
+                borderRadius={20}
+                borderWidth={on ? 1.5 : 1}
+                borderColor={on ? lime.tint : "$neutralRaisedBorder"}
+                backgroundColor={on ? lime.fill : "$neutralPage"}
+                alignItems="center"
+                justifyContent="center"
+              >
+                <Text fontSize={14} fontWeight="$button" color={on ? lime.tint : "$neutralSoft"}>
+                  {n}
+                </Text>
+              </View>
+            );
+          })}
+        </XStack>
+      ) : null}
 
-        const sourceTransform = boneTransforms[sourceBone];
+      <YStack gap={6}>
+        {(part === "hand" ? HAND_AXES : FINGER_AXES).map((axis) => (
+          <AxisSlider
+            key={`${bone}-${axis}`}
+            axis={axis.toUpperCase()}
+            color={AXIS_COLORS[axis]}
+            value={euler[axis]}
+            range={ROTATE_RANGE_DEG}
+            format={formatDeg}
+            onChange={(deg) => onRotationChange(bone, withAxisDeg(rotation, axis, deg))}
+          />
+        ))}
+      </YStack>
 
-        // Convert quaternion to Euler angles, mirror them, convert back
-        // This properly accounts for the different rest poses of left/right hands
-        const sourceQuat = new THREE.Quaternion(
-          sourceTransform.rotation.x,
-          sourceTransform.rotation.y,
-          sourceTransform.rotation.z,
-          sourceTransform.rotation.w,
-        );
+      <ListSection
+        title={t("threedPresets")}
+        accent="threed"
+        action={{ label: t("addNew"), onPress: () => setSaveOpen(true) }}
+      >
+        {presets.length > 0 ? (
+          <ListCard aria-label={t("threedPresets")}>
+            {presets.map((preset) => (
+              <ListRow
+                key={preset.id}
+                title={preset.name}
+                subtitle={`${handLabel} · ${t("threedJointCount", { count: Object.keys(preset.presetData).length })}`}
+                leading={<ListIcon icon={Hand} accent="threed" size={44} />}
+                onPress={() => onApplyPreset(preset.presetData)}
+              />
+            ))}
+          </ListCard>
+        ) : (
+          <ListEmpty text={t("threedNoPresets")} hint={t("threedNoPresetsHint")} />
+        )}
+      </ListSection>
 
-        // Convert to Euler (XYZ order)
-        const euler = new THREE.Euler().setFromQuaternion(sourceQuat, "XYZ");
+      <SavePresetSheet open={saveOpen} onOpenChange={setSaveOpen} onSave={onSavePreset} />
+    </YStack>
+  );
+}
 
-        // Mirror: negate Y and Z rotations (keeps X as is for proper hand mirroring)
-        // This accounts for the left/right hand structural differences
-        euler.y = -euler.y;
-        euler.z = -euler.z;
+/** 36px finger chip: lime gradient when chosen, page fill otherwise. */
+function PartChip({ label, on, onPress }: { label: string; on: boolean; onPress: () => void }) {
+  const text = (
+    <Text fontSize={13} fontWeight="$button" color={on ? lime.onGradient : "$neutralSoft"}>
+      {label}
+    </Text>
+  );
+  return (
+    <View
+      role="radio"
+      aria-checked={on}
+      aria-label={label}
+      onPress={onPress}
+      pressStyle={{ opacity: 0.85 }}
+      height={36}
+      borderRadius={18}
+      overflow="hidden"
+      borderWidth={on ? 0 : 1}
+      borderColor="$neutralRaisedBorder"
+      backgroundColor={on ? undefined : "$neutralPage"}
+      justifyContent="center"
+    >
+      {on ? (
+        <LinearGradient
+          colors={[lime.from, lime.to]}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          style={{ height: 36, paddingHorizontal: 13, justifyContent: "center" }}
+        >
+          {text}
+        </LinearGradient>
+      ) : (
+        <View paddingHorizontal={13}>{text}</View>
+      )}
+    </View>
+  );
+}
 
-        // Convert back to quaternion
-        const mirrorQuat = new THREE.Quaternion().setFromEuler(euler);
+function SavePresetSheet({
+  open,
+  onOpenChange,
+  onSave,
+}: {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  onSave: (name: string) => Promise<void>;
+}) {
+  const [name, setName] = useState("");
+  const [error, setError] = useState<string | undefined>();
+  const [saving, setSaving] = useState(false);
 
-        const mirrorQuaternion = {
-          x: mirrorQuat.x,
-          y: mirrorQuat.y,
-          z: mirrorQuat.z,
-          w: mirrorQuat.w,
-        };
-        onRotationChange(targetBone, mirrorQuaternion);
-      }
-    });
-  }, [selectedBone, side, boneTransforms, onRotationChange]);
-
-  const handleSavePreset = async () => {
-    if (!presetName.trim() || !user) {
-      setSaveError(t("handPresetNameEmpty"));
-      return;
-    }
-
+  const handleSave = async () => {
+    if (!name.trim() || saving) return;
+    setSaving(true);
+    setError(undefined);
     try {
-      setIsSaving(true);
-      setSaveError(null);
-      await onSaveHandPreset(presetName);
-      setShowSuccess(true);
-      setPresetName("");
-      setShowSaveDialog(false);
-      // Auto-hide success message after 2 seconds
-      setTimeout(() => setShowSuccess(false), 2000);
+      await onSave(name.trim());
+      setName("");
+      onOpenChange(false);
     } catch (err) {
-      const errorMsg = err instanceof Error ? err.message : String(err);
-      console.error("[HandEditorPanel] Save preset error:", err);
-      // Try to translate error message if it's a translation key
-      setSaveError(t(errorMsg) || t("handPresetSaveError"));
+      console.error("[HandEditorPanel] save preset:", err);
+      setError(t(err instanceof Error ? err.message : "handPresetSaveError"));
     } finally {
-      setIsSaving(false);
+      setSaving(false);
     }
   };
 
-  const handleApplyPreset = useCallback(
-    (preset: (typeof presets)[0]) => {
-      try {
-        const transforms = preset.presetData;
-        // Convert BoneTransformMap to the format expected by onApplyPreset
-        onApplyPreset(transforms);
-        setShowPresetssList(false);
-        setShowSuccess(true);
-        setTimeout(() => setShowSuccess(false), 2000);
-      } catch (err) {
-        console.error("[HandEditorPanel] Apply preset error:", err);
-        setSaveError(t("handPresetSaveError"));
-      }
-    },
-    [onApplyPreset],
-  );
-
   return (
-    <YStack flex={1} backgroundColor="$background">
-      {/* Main hand editor */}
-      <YStack flex={1}>
-        <HandEditorTab
-          selectedBone={selectedBone}
-          boneTransforms={boneTransforms}
-          onBoneSelect={onBoneSelect}
-          onRotationChange={onRotationChange}
-          onPositionChange={onPositionChange}
-          onDeselect={onDeselect}
-          onResetBone={onResetBone}
-        />
-      </YStack>
-
-      {/* Hand-specific actions */}
-      <XStack
-        padding="$2"
-        gap="$2"
-        backgroundColor="$background"
-        flexWrap="wrap"
-        alignItems="center"
-        justifyContent="center"
-        borderTopWidth={1}
-        borderTopColor="$borderColor"
-      >
-        <Button
-          size="$3"
-          onPress={handleMirrorHand}
-          disabled={!selectedBone}
-          theme="active"
-        >
-          {side === "L" ? t("threedMirrorToRight") : t("threedMirrorToLeft")}
-        </Button>
-
-        {presets.length > 0 && (
-          <Button
-            size="$3"
-            onPress={() => setShowPresetssList(!showPresetsList)}
-            theme="active"
-          >
-            {t("threedApplyHandPreset")}
-          </Button>
-        )}
-
-        <Button
-          size="$3"
-          onPress={() => setShowSaveDialog(true)}
-          disabled={isSaving}
-          opacity={isSaving ? 0.6 : 1}
-        >
-          {t("threedSaveHandPreset")}
-        </Button>
-
-        <Button size="$3" variant="outlined" onPress={onDeselect}>
-          {t("threedCloseHandEditor")}
-        </Button>
-      </XStack>
-
-      {/* Presets list - shown when button is pressed */}
-      {showPresetsList && (
-        <YStack
-          position="absolute"
-          top={0}
-          left={0}
-          right={0}
-          bottom={0}
-          backgroundColor="$background"
-          zIndex={999}
-          flex={1}
-        >
-          {/* Header */}
-          <XStack
-            padding="$3"
-            alignItems="center"
-            justifyContent="space-between"
-            borderBottomWidth={1}
-            borderBottomColor="$borderColor"
-          >
-            <Text fontSize="$4" fontWeight="700">
-              {t("threedApplyHandPreset")}
-            </Text>
-            <Button
-              size="$2"
-              icon={<X size={20} />}
-              chromeless
-              onPress={() => setShowPresetssList(false)}
-            />
-          </XStack>
-
-          {/* Presets list */}
-          <ScrollView flex={1} padding="$2">
-            <YStack gap="$2">
-              {presets.map((preset) => (
-                <BaseCard
-                  key={preset.id}
-                  onPress={() => handleApplyPreset(preset)}
-                >
-                  <YStack padding="$3" gap="$1">
-                    <Text fontSize="$3" fontWeight="600">
-                      {preset.name}
-                    </Text>
-                    <Text fontSize="$2" color="$textSecondary">
-                      {new Date(preset.createdAt).toLocaleDateString()}
-                    </Text>
-                  </YStack>
-                </BaseCard>
-              ))}
-            </YStack>
-          </ScrollView>
-        </YStack>
-      )}
-
-      {/* Save preset fullscreen form */}
-      {showSaveDialog && (
-        <YStack
-          position="absolute"
-          top={0}
-          left={0}
-          right={0}
-          bottom={0}
-          backgroundColor="$background"
-          zIndex={999}
-          flex={1}
-        >
-          {/* Content area with form */}
-          <YStack
-            flex={1}
-            padding="$4"
-            justifyContent="center"
-            alignItems="center"
-          >
-            <YStack width="100%" maxWidth={400} gap="$4">
-              {/* Header with close button */}
-              <XStack justifyContent="space-between" alignItems="center">
-                <Text fontSize="$5" fontWeight="700" color="$textPrimary">
-                  {t("threedSaveHandPreset")}
-                </Text>
-                <Button
-                  size="$2"
-                  icon={<X size={20} />}
-                  chromeless
-                  onPress={() => setShowSaveDialog(false)}
-                />
-              </XStack>
-
-              <TextInput
-                value={presetName}
-                onChangeText={(text) => {
-                  setPresetName(text);
-                  setSaveError(null);
-                }}
-                placeholder={t("threedPresetNamePlaceholder")}
-                label={t("fieldName")}
-              />
-
-              {saveError && (
-                <XStack
-                  backgroundColor="$red2"
-                  paddingHorizontal="$3"
-                  paddingVertical="$2"
-                  borderRadius="$3"
-                  gap="$2"
-                  alignItems="center"
-                >
-                  <AlertCircle size={16} color="$red9" />
-                  <Text fontSize="$2" color="$red9" flex={1}>
-                    {saveError}
-                  </Text>
-                </XStack>
-              )}
-            </YStack>
-          </YStack>
-
-          {/* Submit button at bottom */}
-          <SubmitComponent
-            onPress={handleSavePreset}
-            isLoading={isSaving}
-            disabled={!presetName.trim() || isSaving}
-            title={t("save")}
-          />
-        </YStack>
-      )}
-
-      {/* Success message - optional toast notification */}
-      {showSuccess && (
-        <YStack
-          position="absolute"
-          bottom={20}
-          left={20}
-          right={20}
-          backgroundColor="$green9"
-          paddingHorizontal="$3"
-          paddingVertical="$2"
-          borderRadius="$3"
-          alignItems="center"
-          zIndex={999}
-        >
-          <Text fontSize="$3" color="white" fontWeight="600">
-            {t("handPresetSaveSuccess")}
-          </Text>
-        </YStack>
-      )}
-    </YStack>
+    <FormSheet
+      open={open}
+      onOpenChange={onOpenChange}
+      title={t("threedNewPreset")}
+      footer={<PrimaryButton label={t("save")} accent="threed" onPress={handleSave} disabled={!name.trim()} loading={saving} />}
+    >
+      <TextField
+        size="large"
+        label={t("fieldName")}
+        value={name}
+        onChangeText={(next) => {
+          setName(next);
+          setError(undefined);
+        }}
+        placeholder={t("threedPresetNamePlaceholder")}
+        accent="threed"
+        maxLength={THREED_TITLE_MAX}
+        error={error}
+        autoFocus
+      />
+    </FormSheet>
   );
-};
+}

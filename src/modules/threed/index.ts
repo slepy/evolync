@@ -8,9 +8,6 @@ export {
   HumanModel,
   BoneMarker,
   BoneMarkerGroup,
-  SequenceCard,
-  TechniqueCard,
-  TechniqueLibrarySheet,
   SaveTechniqueSheet,
 } from "./components";
 

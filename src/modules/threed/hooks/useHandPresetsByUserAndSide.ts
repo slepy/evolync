@@ -20,31 +20,15 @@ export const useHandPresetsByUserAndSide = (handSide: "L" | "R") => {
       "hand"
     ).subscribe({
       next: (result: BodyPosePreset[]) => {
-        // Filter presets by checking which hand bones are in the preset data
+        // A capital L / R marks the side in both bone namings: DEF-f_index01R
+        // now, DEF-fingerRIndex1 in older presets (so not endsWith).
         const filtered = result.filter((preset) => {
           try {
-            const data = preset.presetData;
-            // Check if preset contains bones for the selected hand side
-            // Hand bones follow pattern: DEF-handL, DEF-handR, DEF-fingerLIndex1, DEF-fingerRIndex1, etc.
-            const bonesInPreset = Object.keys(data);
-            const hasRightBones = bonesInPreset.some((bone) =>
-              bone.includes("R")
-            );
-            const hasLeftBones = bonesInPreset.some((bone) =>
-              bone.includes("L")
-            );
-
-            // If preset has right-side bones and we're looking for right side, include it
-            if (handSide === "R" && hasRightBones) return true;
-            // If preset has left-side bones and we're looking for left side, include it
-            if (handSide === "L" && hasLeftBones) return true;
-
-            return false;
+            return Object.keys(preset.presetData).some((bone) => bone.includes(handSide));
           } catch {
             return false;
           }
         });
-
         setPresets(filtered);
         setIsLoading(false);
       },

@@ -16,7 +16,7 @@ export { NotesListScreen, NoteCreateScreen, NoteDetailsScreen } from "./componen
 
 // ============================================================================
 // Logic
-export { ALL_TAGS, filterNotes, formatNoteDate, tagsByNote, type NoteListItem, type NoteTag } from "./noteList";
+export { ALL_TAGS, filterNotes, formatNoteDate, type NoteListItem, type NoteTag } from "./noteList";
 export { leaderOf, toggleDirection, planRowChanges, isNoteChanged, normalizeDraft, type EditableRow, type NoteDraft } from "./noteRows";
 
 // ============================================================================
