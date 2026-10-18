@@ -2,7 +2,7 @@ import { z } from 'zod';
 import {
   SUPPORTED_CURRENCIES,
   DEFAULT_CURRENCY,
-} from '@/modules/core/components/CurrencySelect';
+} from '@/core/utils/currencies';
 
 /**
  * Validation schema for creating a new school

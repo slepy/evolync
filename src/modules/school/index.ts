@@ -2,9 +2,6 @@
 // School Module Exports
 // ============================================================================
 
-// Components
-export { CreateSchoolForm } from './components';
-
 // Repositories
 export {
   SchoolRepository,

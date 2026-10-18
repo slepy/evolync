@@ -6,7 +6,7 @@ import {
   SubScreenPage,
 } from "@/core/components";
 import type Tag from "@/database/models/Tag";
-import { LoadingScreen } from "@/modules/core/components";
+import { LoadingScreen } from "@/core/components";
 import { useLocalSearchParams } from "expo-router";
 import { Tag as TagIcon } from "lucide-react-native";
 import React, { useEffect, useState } from "react";

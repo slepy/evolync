@@ -9,7 +9,7 @@ import {
   rateAccent,
   ratePercent,
 } from "@/core/components";
-import { LoadingScreen } from "@/modules/core/components/LoadingScreen";
+import { LoadingScreen } from "@/core/components";
 import { CalendarCheck, Users } from "lucide-react-native";
 import React from "react";
 import { Text } from "tamagui";

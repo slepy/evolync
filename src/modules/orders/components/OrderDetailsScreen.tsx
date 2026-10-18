@@ -9,8 +9,8 @@ import {
   resolveListAccent,
 } from "@/core/components";
 import { neutral } from "@/core/theme/tokens";
-import { LoadingScreen } from "@/modules/core/components";
-import { confirmDelete } from "@/modules/core/utils/confirmDelete";
+import { LoadingScreen } from "@/core/components";
+import { confirmDelete } from "@/core/utils/confirmDelete";
 import { useProducts } from "@/modules/inventory/hooks";
 import React, { useEffect, useState } from "react";
 import { Text, XStack, YStack } from "tamagui";

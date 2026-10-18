@@ -11,7 +11,7 @@ import {
 } from "@/core/components";
 import { danger, moduleAccents, neutral } from "@/core/theme/tokens";
 import { EVENT_STATUS } from "@/database/models/Event";
-import { formatPrice } from "@/modules/core/utils/formatters";
+import { formatPrice } from "@/core/utils/formatters";
 import { showError } from "@/modules/trainings/components/confirmAction";
 import { timestampToDay } from "@/modules/trainings/types/helpers";
 import { CalendarDays, MapPin, Pencil, RotateCcw, Shapes, XCircle } from "lucide-react-native";

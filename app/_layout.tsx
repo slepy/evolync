@@ -6,7 +6,7 @@ import "react-native-url-polyfill/auto";
 
 import "@/core/i18n/config"; // Initialize i18n immediately
 import { useAuth } from "@/modules/auth/hooks/useAuth";
-import { registerSignOutHandler } from "@/modules/core/utils/signOutBridge";
+import { registerSignOutHandler } from "@/core/utils/signOutBridge";
 import { useSyncStore } from "@/database/hooks/useSyncStore";
 import { NotificationResponseHandler } from "@/modules/notifications";
 import FontAwesome from "@expo/vector-icons/FontAwesome";

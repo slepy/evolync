@@ -46,7 +46,7 @@ Follow this workflow strictly. Do NOT skip steps. Use TodoWrite to track progres
    - Subscribe to `.observe()` from repositories
    - Return `{ data, isLoading, error, ...handlers }`
 2. Create components (`src/modules/{module}/components/`)
-   - Use `BaseCard` for cards
+   - Use the shared components from `@/core/components` (`ListSection` / `ListCard` / `ListRow` for lists)
    - Use `t()` for ALL text (no imports needed)
    - Use `LoadingScreen` for loading states
 3. Create route/screen (`app/{route}/`)
@@ -90,8 +90,7 @@ Present a summary of ALL changes:
 - **Soft deletes**: Always `Q.where("deleted_at", null)` in queries
 - **UUIDs**: Generate in repositories with `v4 as uuidv4`
 - **Translations**: Search for existing keys before adding new ones
-- **BaseCard**: Use for all interactive cards
-- **SubmitComponent**: Use for ALL submit/save buttons — never a raw `Button` at the bottom of forms/sheets. Place outside `ScrollView`, at the bottom of the screen/sheet frame. On **edit screens** wrap in `{isDirty && ...}` using `useDirtyFlag` from `@/modules/core/hooks` (see `dirty-flag` skill). On **create screens** always visible.
+- **PrimaryButton**: Use for ALL submit/save buttons — never a raw `Button` or a module-local button. On form screens pass it as the `footer` of `SubScreenPage` (or `FormSheet`). On **edit screens** render it only when dirty, using `useDirtyFlag` from `@/core/hooks` (see `dirty-flag` skill). On **create screens** always visible.
 - **Sync**: Fire-and-forget in services: `sync().catch(console.error)`
 
 ## Phase 2b: Update Edge Function Sync

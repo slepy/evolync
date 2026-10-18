@@ -1,6 +1,6 @@
 import { ListChip, TagChip, TrashButton } from "@/core/components";
-import { LoadingScreen } from "@/modules/core/components";
-import { confirmDelete } from "@/modules/core/utils/confirmDelete";
+import { LoadingScreen } from "@/core/components";
+import { confirmDelete } from "@/core/utils/confirmDelete";
 import { useEntityTags } from "@/modules/tags";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useMemo } from "react";

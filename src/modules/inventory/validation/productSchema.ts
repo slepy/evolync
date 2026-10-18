@@ -1,16 +1,12 @@
 import { z } from 'zod';
 
-/**
- * Supported currency codes (ISO 4217)
- * Commonly used currencies in the application
- */
-export const SUPPORTED_CURRENCIES = ['PLN', 'EUR', 'USD', 'GBP'] as const;
-export type SupportedCurrency = (typeof SUPPORTED_CURRENCIES)[number];
+import {
+  DEFAULT_CURRENCY,
+  SUPPORTED_CURRENCIES,
+  type SupportedCurrency,
+} from '@/core/utils/currencies';
 
-/**
- * Default currency for new products
- */
-export const DEFAULT_CURRENCY: SupportedCurrency = 'PLN';
+export { DEFAULT_CURRENCY, SUPPORTED_CURRENCIES, type SupportedCurrency };
 
 /**
  * Default stock quantity for new products

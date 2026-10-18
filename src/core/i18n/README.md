@@ -62,7 +62,7 @@ Alert.alert(t('error'), t('networkError'));
 For components that need to update when language changes:
 
 ```typescript
-import { useTranslation } from '@/modules/core';
+import { useTranslation } from '@/core/hooks';
 
 function LanguageAwareComponent() {
   const { t } = useTranslation();
@@ -110,7 +110,7 @@ Translations support variable interpolation:
 ### Changing Language
 
 ```typescript
-import { changeLanguage } from '@/core/i18n';
+import { changeLanguage } from '@/core/i18n/config';
 
 // Change to Polish
 await changeLanguage('pl');
@@ -122,7 +122,7 @@ await changeLanguage('en');
 ### Using the Language Switcher Component
 
 ```typescript
-import { LanguageSwitcher } from '@/core/i18n';
+import { LanguageSwitcher } from '@/core/components';
 
 // The Language card of the Settings tab (17A): English / Polski radio rows.
 function SettingsScreen() {
@@ -137,7 +137,7 @@ function SettingsScreen() {
 ### Getting Current Language
 
 ```typescript
-import { getCurrentLanguage, getAvailableLanguages } from '@/core/i18n';
+import { getCurrentLanguage, getAvailableLanguages } from '@/core/i18n/config';
 
 const currentLang = getCurrentLanguage(); // 'en' or 'pl'
 const languages = getAvailableLanguages(); // [{ code: 'en', label: 'English' }, { code: 'pl', label: 'Polski' }]

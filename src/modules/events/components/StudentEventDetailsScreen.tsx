@@ -12,7 +12,7 @@ import {
 import { moduleAccents } from "@/core/theme/tokens";
 import { EVENT_STATUS } from "@/database/models/Event";
 import { EVENT_PARTICIPANT_STATUS, type EventParticipantStatus } from "@/database/models/EventParticipant";
-import { formatPrice } from "@/modules/core/utils/formatters";
+import { formatPrice } from "@/core/utils/formatters";
 import { showError } from "@/modules/trainings/components/confirmAction";
 import { localToday, timestampToDay } from "@/modules/trainings/types/helpers";
 import { CalendarDays, MapPin, Shapes } from "lucide-react-native";

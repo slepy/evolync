@@ -1,5 +1,5 @@
 import { ListCard, ListIcon, ListRow, MainNav, TabPage } from "@/core/components";
-import { LanguageSwitcher } from "@/core/components/LanguageSwitcher";
+import { LanguageSwitcher } from "@/core/components";
 import { PushNotificationsSetting } from "@/modules/notifications";
 import { useRouter } from "expo-router";
 import { Ticket } from "lucide-react-native";

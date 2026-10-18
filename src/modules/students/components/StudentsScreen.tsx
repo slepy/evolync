@@ -14,7 +14,7 @@ import {
 } from "@/core/components";
 import { danger, moduleAccents } from "@/core/theme/tokens";
 import type SchoolJoinRequest from "@/database/models/SchoolJoinRequest";
-import { LoadingScreen } from "@/modules/core/components/LoadingScreen";
+import { LoadingScreen } from "@/core/components";
 import * as Clipboard from "expo-clipboard";
 import { LinearGradient } from "expo-linear-gradient";
 import { Check, QrCode, UserPlus, Users, X } from "lucide-react-native";

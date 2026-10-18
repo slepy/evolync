@@ -8,7 +8,7 @@ import {
   SubScreenPage,
   rateAccent,
 } from "@/core/components";
-import { LoadingScreen } from "@/modules/core/components/LoadingScreen";
+import { LoadingScreen } from "@/core/components";
 import { CreditCard } from "lucide-react-native";
 import React from "react";
 import { Text } from "tamagui";

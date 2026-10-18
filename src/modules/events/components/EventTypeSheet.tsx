@@ -1,6 +1,6 @@
 import { FormSheet, Notice, PrimaryButton, TextField, TrashButton } from "@/core/components";
 import type EventType from "@/database/models/EventType";
-import { confirmDelete } from "@/modules/core/utils/confirmDelete";
+import { confirmDelete } from "@/core/utils/confirmDelete";
 import { useStore } from "@/store";
 import React, { useEffect, useState } from "react";
 import { YStack } from "tamagui";

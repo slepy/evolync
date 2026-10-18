@@ -1,5 +1,5 @@
 import { ListCard, ListChip, ListImage, ListRow, ListSection, SubScreenPage } from "@/core/components";
-import { LoadingScreen } from "@/modules/core/components";
+import { LoadingScreen } from "@/core/components";
 import { useStore } from "@/store";
 import { useRouter } from "expo-router";
 import { Package } from "lucide-react-native";

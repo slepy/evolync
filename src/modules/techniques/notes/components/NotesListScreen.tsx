@@ -10,7 +10,7 @@ import {
   SubScreenPage,
   TagChip,
 } from "@/core/components";
-import { LoadingScreen } from "@/modules/core/components";
+import { LoadingScreen } from "@/core/components";
 import { useRouter } from "expo-router";
 import { BookOpen, FileText } from "lucide-react-native";
 import React, { useMemo, useState } from "react";

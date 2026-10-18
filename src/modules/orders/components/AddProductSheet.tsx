@@ -10,7 +10,7 @@ import {
   resolveListAccent,
 } from "@/core/components";
 import { neutral, warning } from "@/core/theme/tokens";
-import { formatPrice } from "@/modules/core/utils/formatters";
+import { formatPrice } from "@/core/utils/formatters";
 import type { ProductResponseDto } from "@/modules/inventory/types/dto";
 import { ChevronDown, Minus, Package, Plus } from "lucide-react-native";
 import React, { useEffect, useMemo, useState } from "react";

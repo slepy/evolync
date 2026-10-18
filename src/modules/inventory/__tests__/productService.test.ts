@@ -11,7 +11,7 @@ const stub = (request: string, exports: unknown) => {
 };
 stub("@/database/sync", { sync: async () => ({ success: true, timestamp: Date.now() }) });
 stub("@/config/supabase", { supabase: {} });
-stub("@/modules/core/utils/uploadImage", { uploadImage: async (uri: string) => uri });
+stub("@/core/utils/uploadImage", { uploadImage: async (uri: string) => uri });
 
 const service = require("../services/productService") as typeof import("../services/productService");
 

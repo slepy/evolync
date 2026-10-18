@@ -19,14 +19,14 @@ import {
   type StatusSummaryItem,
 } from "@/core/components";
 import { neutral } from "@/core/theme/tokens";
-import { DEFAULT_CURRENCY, SUPPORTED_CURRENCIES } from "@/modules/core/components";
+import { DEFAULT_CURRENCY, SUPPORTED_CURRENCIES } from "@/core/utils/currencies";
 import { STATUS_CYCLE as ATTENDANCE_CYCLE } from "@/database/models/AttendanceRecord";
 import type SchoolMember from "@/database/models/SchoolMember";
 import { ATTENDANCE_STATUS_STYLE, ATTENDANCE_SUMMARY_ORDER } from "@/modules/attendance/constants";
 import { useStudentAttendance } from "@/modules/attendance/hooks";
-import { LoadingScreen } from "@/modules/core/components/LoadingScreen";
-import { useDirtyFlag } from "@/modules/core/hooks";
-import { formatPrice } from "@/modules/core/utils/formatters";
+import { LoadingScreen } from "@/core/components";
+import { useDirtyFlag } from "@/core/hooks";
+import { formatPrice } from "@/core/utils/formatters";
 import { PARTICIPANT_STATUS_STYLE, PARTICIPANT_SUMMARY_ORDER } from "@/modules/events/constants";
 import { formatEventDates } from "@/modules/events/components/formatEventDates";
 import { useStudentEvents, useStudentEventStatuses } from "@/modules/events/hooks";

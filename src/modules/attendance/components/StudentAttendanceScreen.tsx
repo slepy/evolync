@@ -9,7 +9,7 @@ import {
   SubScreenPage,
   ratePercent,
 } from "@/core/components";
-import { LoadingScreen } from "@/modules/core/components/LoadingScreen";
+import { LoadingScreen } from "@/core/components";
 import { CalendarCheck } from "lucide-react-native";
 import React from "react";
 import { ATTENDANCE_STATUS_STYLE, ATTENDANCE_SUMMARY_ORDER } from "../constants";

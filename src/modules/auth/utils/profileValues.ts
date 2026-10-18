@@ -1,5 +1,5 @@
-import type { PhoneValue } from "@/modules/core/utils/phonePrefixes";
-import { formatPhoneNumber, parsePhoneNumber } from "@/modules/core/utils/phoneHelpers";
+import type { PhoneValue } from "@/core/utils/phonePrefixes";
+import { formatPhoneNumber, parsePhoneNumber } from "@/core/utils/phoneHelpers";
 
 /** Values of the Profile tab (P1 / P2). */
 export interface ProfileValues {

@@ -1,6 +1,6 @@
 import { FormCard, ListCard, ListIcon, ListRow, MainNav, PhoneField, PhotoField, PrimaryButton, TabPage, TextField } from "@/core/components";
-import { PHONE_PREFIXES } from "@/modules/core/utils/phonePrefixes";
-import { useDirtyFlag } from "@/modules/core/hooks";
+import { PHONE_PREFIXES } from "@/core/utils/phonePrefixes";
+import { useDirtyFlag } from "@/core/hooks";
 import { LogOut, Mail, User } from "lucide-react-native";
 import React, { useState } from "react";
 import { Alert } from "react-native";

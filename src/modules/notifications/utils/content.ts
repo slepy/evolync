@@ -1,4 +1,4 @@
-import { formatPrice } from "@/modules/core/utils/formatters";
+import { formatPrice } from "@/core/utils/formatters";
 import type { Locale } from "date-fns";
 import {
   NOTIFICATION_TYPE,

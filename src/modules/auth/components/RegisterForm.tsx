@@ -10,7 +10,7 @@ import { useRegister } from '../hooks/useRegister';
 import type { RegisterRequest } from '../types/registerDto';
 import { registerSchema, type RegisterFormValues } from '../validation/registerSchema';
 import { PasswordFields } from './PasswordFields';
-import { PHONE_PREFIXES } from '@/modules/core/components';
+import { PHONE_PREFIXES } from '@/core/utils/phonePrefixes';
 
 const student = contextColors.student;
 

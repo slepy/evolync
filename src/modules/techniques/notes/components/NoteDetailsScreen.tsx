@@ -1,7 +1,7 @@
 import { AlertBanner, PrimaryButton, SubScreenPage, TrashButton } from "@/core/components";
 import type TechniqueNoteRow from "@/database/models/TechniqueNoteRow";
-import { LoadingScreen } from "@/modules/core/components";
-import { confirmDelete } from "@/modules/core/utils/confirmDelete";
+import { LoadingScreen } from "@/core/components";
+import { confirmDelete } from "@/core/utils/confirmDelete";
 import { useEntityTags } from "@/modules/tags";
 import { useRouter } from "expo-router";
 import React, { useEffect, useMemo, useRef, useState } from "react";

@@ -1,6 +1,6 @@
 import { ListIcon, PhoneField, PrimaryButton, SubScreenPage, TextField } from "@/core/components";
-import { PHONE_PREFIXES } from "@/modules/core/components/PhoneInput";
-import { useDirtyFlag } from "@/modules/core/hooks";
+import { PHONE_PREFIXES } from "@/core/utils/phonePrefixes";
+import { useDirtyFlag } from "@/core/hooks";
 import { Info } from "lucide-react-native";
 import React, { useState } from "react";
 import { Text, XStack, YStack } from "tamagui";

@@ -153,7 +153,7 @@ export type { CreateRankDto, UpdateRankDto } from './dto';
 |---|---|
 | Used in exactly one component | Define it locally inside that component file |
 | Used in 2+ places within the same module | Create `{module}/utils/helpers.ts` |
-| Used across multiple modules | Add to `src/modules/core/utils/` |
+| Used across multiple modules | Add to `src/core/utils/` |
 
 ### Example: status label function
 
