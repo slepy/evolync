@@ -3,7 +3,7 @@ import { threedScene } from "@/core/theme/tokens";
 import { useLocalSearchParams } from "expo-router";
 import { FlipHorizontal2, Flag, Hand, Library, PersonStanding, RotateCcw, Save, Users } from "lucide-react-native";
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { PanResponder } from "react-native";
+import { PanResponder, useWindowDimensions } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Text, View, XStack, YStack } from "tamagui";
 import { useStore } from "@/store";
@@ -44,6 +44,7 @@ export function SequenceEditorScreen() {
   const { sequenceId, step } = useLocalSearchParams<{ sequenceId: string; step?: string }>();
   const insets = useSafeAreaInsets();
   const userId = useStore((s) => s.user?.id);
+  const { height: windowHeight } = useWindowDimensions();
   const editor = useSequenceEditor(sequenceId!);
   const { sequence, steps, isLoading } = useSequenceDetails(sequenceId);
   const { techniques } = useTechniques();
@@ -198,16 +199,12 @@ export function SequenceEditorScreen() {
   const jointName = selectedBone ? t(FK_BONE_DISPLAY_KEYS[selectedBone]) : "";
   const save = <PrimaryButton label={t("save")} accent="threed" loading={isSaving} onPress={() => run(saveCurrentStep)} />;
 
-  const panel = handEditor ? (
+  const panel = handEditor && selectedBone ? (
     <HandEditorPanel
-      selectedBone={selectedBone}
+      side={selectedBone.endsWith("R") ? "R" : "L"}
       boneTransforms={boneTransforms}
-      onBoneSelect={setSelectedBone}
       onRotationChange={handleBoneRotationChange}
-      onPositionChange={handleBonePositionChange}
-      onDeselect={closeHandEditor}
-      onResetBone={resetBone}
-      onSaveHandPreset={saveHandPresetFor}
+      onSavePreset={saveHandPresetFor}
       onApplyPreset={applyBoneTransforms}
     />
   ) : selectedBone ? (
@@ -340,6 +337,7 @@ export function SequenceEditorScreen() {
           </>
         }
         panel={panel}
+        panelMaxHeight={handEditor ? Math.round(windowHeight * 0.58) : undefined}
       />
 
       <TechniquePickerSheet

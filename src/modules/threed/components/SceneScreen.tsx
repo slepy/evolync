@@ -1,6 +1,7 @@
 import { SubScreenHeader, type SubScreenHeaderProps } from "@/core/components";
 import { threedScene } from "@/core/theme/tokens";
 import type { ReactNode } from "react";
+import { ScrollView } from "react-native";
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 import { View, YStack } from "tamagui";
 import { CanvasErrorBoundary } from "./CanvasErrorBoundary";
@@ -15,6 +16,8 @@ export interface SceneScreenProps {
   panel?: ReactNode;
   /** Panel gap; default 16. */
   panelGap?: number;
+  /** Scroll the panel past this height (D10 hand editor with its presets). */
+  panelMaxHeight?: number;
 }
 
 /**
@@ -22,7 +25,7 @@ export interface SceneScreenProps {
  * fills the screen, the sub-screen header floats on it, and a card panel with
  * 28px top corners comes up from the bottom.
  */
-export function SceneScreen({ header, scene, overlay, panel, panelGap = 16 }: SceneScreenProps) {
+export function SceneScreen({ header, scene, overlay, panel, panelGap = 16, panelMaxHeight }: SceneScreenProps) {
   const insets = useSafeAreaInsets();
   return (
     <YStack flex={1} backgroundColor={threedScene.background}>
@@ -38,17 +41,27 @@ export function SceneScreen({ header, scene, overlay, panel, panelGap = 16 }: Sc
       {panel ? (
         <YStack
           marginTop={-24}
-          gap={panelGap}
-          paddingHorizontal={20}
-          paddingTop={16}
-          paddingBottom={Math.max(insets.bottom, 12) + 16}
+          maxHeight={panelMaxHeight}
           borderTopLeftRadius="$header"
           borderTopRightRadius="$header"
           borderTopWidth={1}
           borderColor="$neutralCardBorder"
           backgroundColor="$neutralCard"
+          overflow="hidden"
         >
-          {panel}
+          <ScrollView
+            style={{ flexGrow: 0, flexShrink: 1 }}
+            scrollEnabled={panelMaxHeight !== undefined}
+            keyboardShouldPersistTaps="handled"
+            contentContainerStyle={{
+              gap: panelGap,
+              paddingHorizontal: 20,
+              paddingTop: 16,
+              paddingBottom: Math.max(insets.bottom, 12) + 16,
+            }}
+          >
+            {panel}
+          </ScrollView>
         </YStack>
       ) : null}
     </YStack>
