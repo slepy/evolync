@@ -6,7 +6,7 @@ import type { FKBoneName } from "../types/fk";
 import type { HumanModelHandle } from "./HumanModel";
 import { BoneMarker } from "./BoneMarker";
 
-// Finger bones are edited via HandEditorTab — exclude them from the 3D marker layer
+// Finger bones are edited in the hand editor (HandEditorPanel) — exclude them from the 3D marker layer
 // so the scene stays readable. DEF-handL / DEF-handR remain as entry points.
 const FINGER_BONES = new Set<string>([
   ...FK_BODY_GROUPS.leftHand,

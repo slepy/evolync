@@ -8,4 +8,3 @@ export { useTechniques } from "./useTechniques";
 export { useTechniqueById } from "./useTechniqueById";
 export { useStartingPositions } from "./useStartingPositions";
 export { useHandPresetsByUserAndSide } from "./useHandPresetsByUserAndSide";
-export { useThreeDScreen } from "./useThreeDScreen";

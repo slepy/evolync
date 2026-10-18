@@ -47,8 +47,8 @@ const defaultColor = theme.chineseCyan?.val ?? "#0891B2";`),
   });
 
   it("honors the per-file literal allowlist", () => {
-    assert.deepEqual(check(`<View backgroundColor="#000" />`, "app/techniques/threed/[sequenceId]/viewer.tsx"), []);
-    assert.equal(check(`<View backgroundColor="#000" />`).length, 1);
+    assert.deepEqual(check(`<View backgroundColor="#16A34A" />`, "app/auth/reset-password.tsx"), []);
+    assert.equal(check(`<View backgroundColor="#16A34A" />`).length, 1);
   });
 
   it("flags unknown color tokens", () => {

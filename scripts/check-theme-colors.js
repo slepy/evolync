@@ -35,23 +35,9 @@ const MIGRATED_TOKENS = [
 ];
 
 // Literals that are intentionally theme-independent, per file:
-// the 3D canvas and its overlays (spec Q3), scrims, on-accent white, data colors.
+// scrims, on-accent white, data colors. (3D scene colors come from `threedScene` tokens.)
 const ALLOWED_LITERALS = {
-  "app/techniques/threed/technique/[techniqueId].tsx": ["#000", "#fff"],
-  "app/techniques/threed/[sequenceId]/viewer.tsx": ["#000", "#fff"],
-  "app/techniques/threed/[sequenceId]/edit.tsx": ["#000", "#fff", "#cc3333", "white"],
-  "app/techniques/threed/[sequenceId]/_layout.tsx": ["#000"],
-  "app/techniques/threed/[sequenceId]/index.tsx": ["white"],
   "app/auth/reset-password.tsx": ["#16A34A"],
-  "src/modules/threed/components/BoneControlPanel.tsx": ["*"],
-  "src/modules/threed/components/BoneMarker.tsx": ["*"],
-  "src/modules/threed/components/BoneGizmo.tsx": ["*"],
-  "src/modules/threed/components/IKTargetGizmo.tsx": ["*"],
-  "src/modules/threed/components/AxisGizmo.tsx": ["*"],
-  "src/modules/threed/components/ThreeDCanvas.tsx": ["*"],
-  "src/modules/threed/components/HumanModel.tsx": ["*"],
-  "src/modules/threed/components/HandEditorPanel.tsx": ["white"],
-  "src/modules/threed/components/HandEditorTab.tsx": ["white"],
   "src/modules/grading/components/ColorPickerSheet.tsx": ["#FFFFFF"],
   "src/modules/grading/components/RankListItem.tsx": ["white"],
   "src/modules/core/components/SubmitComponent.tsx": ["black"],
