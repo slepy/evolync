@@ -1,0 +1,48 @@
+diff --git a/node_modules/lucide-react-native/dist/cjs/Icon.js b/node_modules/lucide-react-native/dist/cjs/Icon.js
+index 0d4ff6a..f8eaac6 100644
+--- a/node_modules/lucide-react-native/dist/cjs/Icon.js
++++ b/node_modules/lucide-react-native/dist/cjs/Icon.js
+@@ -52,6 +52,7 @@ const Icon = react.forwardRef(
+         ...defaultAttributes.default,
+         width: size,
+         height: size,
++        pointerEvents: "none",
+         ...customAttrs
+       },
+       [
+diff --git a/node_modules/lucide-react-native/dist/cjs/createLucideIcon.js b/node_modules/lucide-react-native/dist/cjs/createLucideIcon.js
+index ec7c43a..a557e38 100644
+--- a/node_modules/lucide-react-native/dist/cjs/createLucideIcon.js
++++ b/node_modules/lucide-react-native/dist/cjs/createLucideIcon.js
+@@ -53,6 +53,7 @@ const createLucideIcon = (iconName, iconNode) => {
+           ...defaultAttributes.default,
+           width: size,
+           height: size,
++          pointerEvents: "none",
+           "data-testid": dataTestId,
+           ...customAttrs
+         },
+diff --git a/node_modules/lucide-react-native/dist/esm/Icon.js b/node_modules/lucide-react-native/dist/esm/Icon.js
+index e05fffc..01adb0f 100644
+--- a/node_modules/lucide-react-native/dist/esm/Icon.js
++++ b/node_modules/lucide-react-native/dist/esm/Icon.js
+@@ -31,6 +31,7 @@ const Icon = forwardRef(
+         ...defaultAttributes,
+         width: size,
+         height: size,
++        pointerEvents: "none",
+         ...customAttrs
+       },
+       [
+diff --git a/node_modules/lucide-react-native/dist/esm/createLucideIcon.js b/node_modules/lucide-react-native/dist/esm/createLucideIcon.js
+index 4707e13..297d708 100644
+--- a/node_modules/lucide-react-native/dist/esm/createLucideIcon.js
++++ b/node_modules/lucide-react-native/dist/esm/createLucideIcon.js
+@@ -32,6 +32,7 @@ const createLucideIcon = (iconName, iconNode) => {
+           ...defaultAttributes,
+           width: size,
+           height: size,
++          pointerEvents: "none",
+           "data-testid": dataTestId,
+           ...customAttrs
+         },
