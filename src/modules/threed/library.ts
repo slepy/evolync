@@ -26,7 +26,7 @@ export const BODY_PART_FILTERS = ["all", "arms", "hands", "legs", "spine"] as co
 export type BodyPartFilter = (typeof BODY_PART_FILTERS)[number];
 
 export const BODY_PART_FILTER_KEYS: Record<BodyPartFilter, string> = {
-  all: "threedFilterAll",
+  all: "tagsAll",
   arms: "threedFilterArms",
   hands: "threedFilterHands",
   legs: "threedFilterLegs",
@@ -40,8 +40,8 @@ export const BODY_PART_FILTER_KEYS: Record<BodyPartFilter, string> = {
 const BODY_PART_LABEL_KEYS: Record<string, string> = {
   leftArm: "threedBodyLeftArm",
   rightArm: "threedBodyRightArm",
-  leftHand: "threedBodyLeftHand",
-  rightHand: "threedBodyRightHand",
+  leftHand: "boneLeftHand",
+  rightHand: "boneRightHand",
   leftLeg: "threedBodyLeftLeg",
   rightLeg: "threedBodyRightLeg",
   spine: "threedBodySpine",

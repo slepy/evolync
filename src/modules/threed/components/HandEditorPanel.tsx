@@ -52,7 +52,7 @@ export function HandEditorPanel({ side, boneTransforms, onRotationChange, onSave
   const bone: FKBoneName = part === "hand" ? (`DEF-hand${side}` as FKBoneName) : getFingerBone(part, segment, side);
   const rotation = boneTransforms[bone]?.rotation;
   const euler = quatToEulerDeg(rotation);
-  const handLabel = t(side === "R" ? "threedBodyRightHand" : "threedBodyLeftHand");
+  const handLabel = t(side === "R" ? "boneRightHand" : "boneLeftHand");
 
   return (
     <YStack gap={16}>
