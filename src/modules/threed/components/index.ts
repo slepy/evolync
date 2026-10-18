@@ -1,5 +1,6 @@
 // --- UI-only components (no GL dependencies) ---
 export { ThreeDLibraryScreen } from "./ThreeDLibraryScreen";
+export { RoundButton } from "./RoundButton";
 export { SequenceCreateScreen } from "./SequenceCreateScreen";
 export { CanvasErrorBoundary } from "./CanvasErrorBoundary";
 export { HandEditorTab } from "./HandEditorTab";
@@ -26,6 +27,7 @@ export { PosePreview } from "./PosePreview";
 export { SequenceDetailsScreen } from "./SequenceDetailsScreen";
 export { SceneScreen } from "./SceneScreen";
 export { TechniquePreviewScreen } from "./TechniquePreviewScreen";
+export { SequenceViewerScreen } from "./SequenceViewerScreen";
 export type { HumanModelHandle } from "./HumanModel";
 export { BoneMarker } from "./BoneMarker";
 export { BoneMarkerGroup } from "./BoneMarkerGroup";

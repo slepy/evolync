@@ -21,6 +21,7 @@ import { useSequenceDetails } from "../hooks";
 import { deleteSequence, deleteStep } from "../services";
 import { stepBoneTransforms } from "../utils/dataCompat";
 import { PosePreview } from "./PosePreview";
+import { RoundButton } from "./RoundButton";
 
 const lime = resolveListAccent("threed");
 
@@ -93,27 +94,8 @@ export function SequenceDetailsScreen() {
             </XStack>
           ) : null}
           {hasSteps ? (
-            <View
-              role="button"
-              aria-label={t("view")}
-              onPress={openViewer}
-              pressStyle={{ opacity: 0.85 }}
-              position="absolute"
-              right={14}
-              bottom={14}
-              width={52}
-              height={52}
-              borderRadius={26}
-              overflow="hidden"
-            >
-              <LinearGradient
-                colors={[lime.from, lime.to]}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 1 }}
-                style={{ flex: 1, alignItems: "center", justifyContent: "center" }}
-              >
-                <Play size={22} color={lime.onGradient} fill={lime.onGradient} strokeWidth={2.2} />
-              </LinearGradient>
+            <View position="absolute" right={14} bottom={14}>
+              <RoundButton variant="lime" icon={Play} filled label={t("view")} onPress={openViewer} />
             </View>
           ) : null}
         </PosePreview>

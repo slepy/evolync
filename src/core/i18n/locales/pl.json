@@ -526,6 +526,8 @@
   "threedMoveY": "Przesuń Y",
   "threedDepthZ": "Głęb. Z",
   "threedUpdateStep": "Zaktualizuj Krok",
+  "threedPreviousStep": "Poprzedni krok",
+  "threedNextStep": "Następny krok",
   "threedTechnique": "Technika",
   "threedPosition": "Pozycja startowa",
   "threedDeleteTechnique": "Usuń technikę",

@@ -504,6 +504,8 @@
   "threedMoveY": "Move Y",
   "threedDepthZ": "Depth Z",
   "threedUpdateStep": "Update Step",
+  "threedPreviousStep": "Previous step",
+  "threedNextStep": "Next step",
   "threedTechnique": "Technique",
   "threedPosition": "Starting position",
   "threedDeleteTechnique": "Delete technique",

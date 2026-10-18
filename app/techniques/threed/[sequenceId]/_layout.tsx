@@ -1,3 +1,4 @@
+import { threedScene } from "@/core/theme/tokens";
 import { Stack } from "expo-router";
 import { useTheme } from "tamagui";
 
@@ -12,11 +13,11 @@ export default function SequenceLayout() {
       }}
     >
       <Stack.Screen name="index" />
-      <Stack.Screen name="viewer" />
+      <Stack.Screen name="viewer" options={{ contentStyle: { backgroundColor: threedScene.background } }} />
       <Stack.Screen
         name="edit"
         options={{
-          contentStyle: { backgroundColor: "#000" },
+          contentStyle: { backgroundColor: threedScene.background },
           orientation: "default",
         }}
       />
