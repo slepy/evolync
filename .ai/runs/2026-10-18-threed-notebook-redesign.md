@@ -69,6 +69,8 @@ Rebuild the 3D notebook screens on the shared core components so they match the 
 
 ## Progress
 
+PR: #54
+
 > Convention: `- [ ]` pending, `- [x]` done. Append ` — <commit sha>` when a step lands. Do not rename step titles.
 
 ### Phase 1: Library
