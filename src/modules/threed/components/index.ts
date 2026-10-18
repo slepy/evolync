@@ -24,6 +24,8 @@ export type { FPSCameraControllerHandle } from "./FPSCameraController";
 export { HumanModel } from "./HumanModel";
 export { PosePreview } from "./PosePreview";
 export { SequenceDetailsScreen } from "./SequenceDetailsScreen";
+export { SceneScreen } from "./SceneScreen";
+export { TechniquePreviewScreen } from "./TechniquePreviewScreen";
 export type { HumanModelHandle } from "./HumanModel";
 export { BoneMarker } from "./BoneMarker";
 export { BoneMarkerGroup } from "./BoneMarkerGroup";

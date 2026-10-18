@@ -16,13 +16,15 @@ export interface SubScreenHeaderProps {
   onBack?: () => void;
   /** Right side; default the Sync pill. */
   right?: ReactNode;
+  /** 18px title for a header over a 3D scene (D8 editor: sequence title over "Step 2 of 6"). */
+  compact?: boolean;
 }
 
 /**
  * Header of a screen opened from a dashboard (7A, 8A, 9A): back chevron,
  * title, Sync pill on the right.
  */
-export function SubScreenHeader({ title, subtitle, onBack, right }: SubScreenHeaderProps) {
+export function SubScreenHeader({ title, subtitle, onBack, right, compact }: SubScreenHeaderProps) {
   const router = useRouter();
 
   return (
@@ -45,7 +47,13 @@ export function SubScreenHeader({ title, subtitle, onBack, right }: SubScreenHea
         <ChevronLeft size={22} color={neutral.text} strokeWidth={2.2} />
       </View>
       <YStack flex={1} minWidth={0} gap={1}>
-        <Text fontSize={22} fontWeight="$section" letterSpacing={-0.3} color="$neutralText" numberOfLines={1}>
+        <Text
+          fontSize={compact ? 18 : 22}
+          fontWeight="$section"
+          letterSpacing={compact ? 0 : -0.3}
+          color="$neutralText"
+          numberOfLines={1}
+        >
           {title}
         </Text>
         {subtitle ? (

@@ -314,6 +314,10 @@ export const threedScene = {
   control: "rgba(26,33,48,0.92)",
   /** Step chip over a preview (D6 "Step 1 of 6"). */
   scrim: "rgba(11,14,20,0.72)",
+  /** Axis gizmo and the joint panel's X / Y / Z values (D9). */
+  axisX: "#FF8A8A",
+  axisY: "#4ADE9F",
+  axisZ: "#8DB8FF",
 } as const;
 
 // ============================================================================
