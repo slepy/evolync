@@ -13,6 +13,7 @@ import type { GLTF } from "three-stdlib";
 import { FKSystemManager } from "../utils/fkSystem";
 import type { RestPoseData } from "../utils/fkSystem";
 import type { BoneTransformMap } from "../types/fk";
+import { threedScene } from "@/core/theme/tokens";
 
 export interface HumanModelHandle {
   getBoneWorldPositions: () => Map<string, THREE.Vector3>;
@@ -29,7 +30,7 @@ interface HumanModelProps {
 }
 
 export const HumanModel = forwardRef<HumanModelHandle, HumanModelProps>(
-  ({ modelSlot, color = "#4a90d9", boneTransforms, onRestPoseReady }, ref) => {
+  ({ modelSlot, color = threedScene.model, boneTransforms, onRestPoseReady }, ref) => {
     const gltf = useGLTF(
       require("../../../../assets/models/character.glb"),
     ) as GLTF & { animations: THREE.AnimationClip[] };

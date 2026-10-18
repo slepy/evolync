@@ -1,6 +1,7 @@
 // --- UI-only components (no GL dependencies) ---
 export { ThreeDLibraryScreen } from "./ThreeDLibraryScreen";
 export { SequenceCreateScreen } from "./SequenceCreateScreen";
+export { CanvasErrorBoundary } from "./CanvasErrorBoundary";
 export { HandEditorTab } from "./HandEditorTab";
 export { HandEditorPanel } from "./HandEditorPanel";
 export { SequenceCard } from "./SequenceCard";
@@ -21,6 +22,8 @@ export type { ThreeDCanvasHandle } from "./ThreeDCanvas";
 export { FPSCameraController } from "./FPSCameraController";
 export type { FPSCameraControllerHandle } from "./FPSCameraController";
 export { HumanModel } from "./HumanModel";
+export { PosePreview } from "./PosePreview";
+export { SequenceDetailsScreen } from "./SequenceDetailsScreen";
 export type { HumanModelHandle } from "./HumanModel";
 export { BoneMarker } from "./BoneMarker";
 export { BoneMarkerGroup } from "./BoneMarkerGroup";

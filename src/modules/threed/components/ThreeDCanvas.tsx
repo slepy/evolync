@@ -7,6 +7,7 @@ import React, {
 } from "react";
 import { Canvas, useThree, useFrame } from "@react-three/fiber";
 import * as THREE from "three";
+import { threedScene } from "@/core/theme/tokens";
 import { FPSCameraController } from "./FPSCameraController";
 import type { FPSCameraControllerHandle } from "./FPSCameraController";
 
@@ -121,6 +122,7 @@ export const ThreeDCanvas: React.FC<ThreeDCanvasProps> = ({
       gl={{ antialias: true }}
       onPointerMissed={onPointerMissed}
     >
+      <color attach="background" args={[threedScene.background]} />
       <ambientLight intensity={0.8} />
       <directionalLight position={[5, 10, 5]} intensity={1.2} />
       <FPSCameraController
@@ -136,9 +138,9 @@ export const ThreeDCanvas: React.FC<ThreeDCanvasProps> = ({
       {/* Floor plane */}
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0, 0]} receiveShadow>
         <planeGeometry args={[6, 6]} />
-        <meshStandardMaterial color="#aaaaaa" roughness={1} metalness={0} />
+        <meshStandardMaterial color={threedScene.floor} roughness={1} metalness={0} />
       </mesh>
-      <gridHelper args={[6, 12, "#888888", "#888888"]} position={[0, 0.001, 0]} />
+      <gridHelper args={[6, 12, threedScene.grid, threedScene.grid]} position={[0, 0.001, 0]} />
       <Suspense fallback={null}>{children}</Suspense>
     </Canvas>
   );

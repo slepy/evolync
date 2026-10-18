@@ -298,6 +298,25 @@ export const moduleAccents: Record<ModuleKey, ModuleAccent> = {
 };
 
 // ============================================================================
+// 3D scene (D2–D9): the real model on the dark page, lime joint markers
+// ============================================================================
+
+export const threedScene = {
+  /** Behind the model: the page color, so the scene blends into the screen. */
+  background: "#0B0E14",
+  /** Floor plane and its grid lines (card border). */
+  floor: "#0E121B",
+  grid: "#232B3B",
+  /** Main model and the partner (D8: coral). */
+  model: "#CBD5E1",
+  partner: "#FF8F8F",
+  /** Over-canvas buttons (camera pad): raised fill at 92%. */
+  control: "rgba(26,33,48,0.92)",
+  /** Step chip over a preview (D6 "Step 1 of 6"). */
+  scrim: "rgba(11,14,20,0.72)",
+} as const;
+
+// ============================================================================
 // Radii
 // ============================================================================
 

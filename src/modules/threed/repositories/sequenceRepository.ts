@@ -56,6 +56,10 @@ export const SequenceRepository = {
     });
   },
 
+  observeById(id: string) {
+    return database.get<Sequence>("sequences").findAndObserve(id);
+  },
+
   observeByUserId(userId: string) {
     const collection = database.get<Sequence>("sequences");
     return collection
