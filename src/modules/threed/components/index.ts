@@ -28,6 +28,7 @@ export { SequenceDetailsScreen } from "./SequenceDetailsScreen";
 export { SceneScreen } from "./SceneScreen";
 export { TechniquePreviewScreen } from "./TechniquePreviewScreen";
 export { SequenceViewerScreen } from "./SequenceViewerScreen";
+export { SequenceEditorScreen } from "./SequenceEditorScreen";
 export type { HumanModelHandle } from "./HumanModel";
 export { BoneMarker } from "./BoneMarker";
 export { BoneMarkerGroup } from "./BoneMarkerGroup";

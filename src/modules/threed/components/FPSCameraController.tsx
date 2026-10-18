@@ -7,6 +7,8 @@ export interface FPSCameraControllerHandle {
   rotateRight: () => void;
   rotateUp: () => void;
   rotateDown: () => void;
+  /** Drag on the scene: yaw and pitch by the given radians. */
+  orbit: (yaw: number, pitch: number) => void;
 }
 
 interface FPSCameraControllerProps {
@@ -51,6 +53,10 @@ export const FPSCameraController = forwardRef<
         pitchRef.current - ROTATION_STEP,
         MIN_PITCH,
       );
+    },
+    orbit: (yaw: number, pitch: number) => {
+      yawRef.current += yaw;
+      pitchRef.current = Math.min(MAX_PITCH, Math.max(MIN_PITCH, pitchRef.current + pitch));
     },
   }));
 

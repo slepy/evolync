@@ -18,6 +18,8 @@ export interface ThreeDCanvasHandle {
   rotateDown: () => void;
   rotateLeft: () => void;
   rotateRight: () => void;
+  /** Drag on the scene: yaw and pitch by the given radians. */
+  orbit: (yaw: number, pitch: number) => void;
 }
 
 const ZOOM_STEP = 0.5;
@@ -60,6 +62,9 @@ const CameraZoomAndRotationController = forwardRef<
     },
     rotateDown: () => {
       fpsControllerRef.current?.rotateDown();
+    },
+    orbit: (yaw: number, pitch: number) => {
+      fpsControllerRef.current?.orbit(yaw, pitch);
     },
   }));
 
@@ -114,6 +119,7 @@ export const ThreeDCanvas: React.FC<ThreeDCanvasProps> = ({
     rotateDown: () => innerRef.current?.rotateDown(),
     rotateLeft: () => innerRef.current?.rotateLeft(),
     rotateRight: () => innerRef.current?.rotateRight(),
+    orbit: (yaw: number, pitch: number) => innerRef.current?.orbit(yaw, pitch),
   }));
 
   return (

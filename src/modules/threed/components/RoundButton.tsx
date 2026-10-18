@@ -16,7 +16,7 @@ export interface RoundButtonProps {
    */
   variant?: "lime" | "card" | "control";
   /** Default 52. */
-  size?: 52 | 44;
+  size?: 52 | 44 | 40;
   disabled?: boolean;
   /** Play icon drawn filled (View). */
   filled?: boolean;
@@ -26,7 +26,7 @@ export interface RoundButtonProps {
 export function RoundButton({ icon: Icon, label, onPress, variant = "card", size = 52, disabled, filled }: RoundButtonProps) {
   const gradient = variant === "lime";
   const color = gradient ? lime.onGradient : neutral.text;
-  const glyph = <Icon size={size === 52 ? 22 : 20} color={color} fill={filled ? color : "none"} strokeWidth={2.2} />;
+  const glyph = <Icon size={size === 52 ? 22 : size === 44 ? 20 : 18} color={color} fill={filled ? color : "none"} strokeWidth={2.2} />;
   return (
     <View
       role="button"

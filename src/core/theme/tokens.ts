@@ -310,6 +310,8 @@ export const threedScene = {
   /** Main model and the partner (D8: coral). */
   model: "#CBD5E1",
   partner: "#FF8F8F",
+  /** Joint markers on the model (3D lime). */
+  marker: "#BEF264",
   /** Over-canvas buttons (camera pad): raised fill at 92%. */
   control: "rgba(26,33,48,0.92)",
   /** Step chip over a preview (D6 "Step 1 of 6"). */

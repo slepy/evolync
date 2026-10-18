@@ -1,6 +1,7 @@
 import React, { useMemo } from "react";
 import * as THREE from "three";
 import type { FKBoneName } from "../types/fk";
+import { threedScene } from "@/core/theme/tokens";
 
 interface BoneMarkerProps {
   boneName: FKBoneName;
@@ -39,9 +40,9 @@ export const BoneMarker: React.FC<BoneMarkerProps> = ({
       renderOrder={999}
     >
       <meshBasicMaterial
-        color={isSelected ? "#ff6600" : "#aaaaaa"}
+        color={threedScene.marker}
         transparent
-        opacity={isSelected ? 0.9 : 0.5}
+        opacity={isSelected ? 1 : 0.55}
         depthTest={false}
       />
     </mesh>
