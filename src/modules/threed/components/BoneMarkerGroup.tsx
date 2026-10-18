@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useRef, useState } from "react";
 import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 import { FK_BONES, FK_BODY_GROUPS } from "../types/fk";
@@ -15,6 +15,18 @@ const FINGER_BONES = new Set<string>([
 
 const MARKER_BONES = FK_BONES.filter((b) => !FINGER_BONES.has(b));
 
+/** Markers move only when a joint moves more than this (meters); camera turns move none. */
+const EPSILON = 1e-4;
+
+function samePositions(a: Map<string, THREE.Vector3>, b: Map<string, THREE.Vector3>): boolean {
+  if (a.size !== b.size) return false;
+  for (const [name, pos] of a) {
+    const other = b.get(name);
+    if (!other || other.distanceToSquared(pos) > EPSILON * EPSILON) return false;
+  }
+  return true;
+}
+
 interface BoneMarkerGroupProps {
   humanRef: React.RefObject<HumanModelHandle | null>;
   selectedBone: FKBoneName | null;
@@ -26,26 +38,19 @@ export const BoneMarkerGroup: React.FC<BoneMarkerGroupProps> = ({
   selectedBone,
   onSelectBone,
 }) => {
-  // Store bone world positions in a ref (updated each frame, no React re-render)
-  const positionsRef = useRef<Map<string, THREE.Vector3>>(new Map());
-  // Force re-render counter to update marker positions visually
-  const [, setTick] = React.useState(0);
-  const frameCounter = useRef(0);
+  const [positions, setPositions] = useState<Map<string, THREE.Vector3>>(() => new Map());
+  const latest = useRef(positions);
 
-  useFrame(() => {
+  // Runs only on rendered frames (the canvas draws on demand). React re-renders
+  // the markers only when a joint actually moved, not on every frame.
+  useFrame(({ scene }) => {
     if (!humanRef.current) return;
-
-    const positions = humanRef.current.getBoneWorldPositions();
-    positionsRef.current = positions;
-
-    // Trigger React re-render every 2 frames (~30fps for marker positions)
-    frameCounter.current++;
-    if (frameCounter.current % 2 === 0) {
-      setTick((t) => t + 1);
-    }
+    scene.updateMatrixWorld();
+    const next = humanRef.current.getBoneWorldPositions();
+    if (samePositions(latest.current, next)) return;
+    latest.current = next;
+    setPositions(next);
   });
-
-  const positions = positionsRef.current;
 
   return (
     <group>

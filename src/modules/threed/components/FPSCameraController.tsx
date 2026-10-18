@@ -9,6 +9,8 @@ export interface FPSCameraControllerHandle {
   rotateDown: () => void;
   /** Drag on the scene: yaw and pitch by the given radians. */
   orbit: (yaw: number, pitch: number) => void;
+  /** Move the camera closer (negative) or farther (positive), eased. */
+  zoomBy: (delta: number) => void;
 }
 
 interface FPSCameraControllerProps {
@@ -20,60 +22,87 @@ const ROTATION_STEP = 0.15; // Radians per rotation action (~8.6 degrees)
 const DEFAULT_CAMERA_DISTANCE = 3.5; // Distance from scene center
 const MAX_PITCH = Math.PI / 3; // 60 degrees up
 const MIN_PITCH = -Math.PI / 2.5; // -72 degrees down
+const MIN_DISTANCE = 1;
+const MAX_DISTANCE = 8;
 
+/**
+ * Orbit camera around the scene center: yaw, pitch and distance live here.
+ * The canvas renders on demand, so every change calls `invalidate()`, and the
+ * zoom easing keeps requesting frames only until it arrives.
+ */
 export const FPSCameraController = forwardRef<
   FPSCameraControllerHandle,
   FPSCameraControllerProps
 >(({ sceneCenter, cameraDistance = DEFAULT_CAMERA_DISTANCE }, ref) => {
-  const { camera } = useThree();
+  const { camera, invalidate } = useThree();
   const yawRef = useRef(0); // Horizontal rotation (radians)
   const pitchRef = useRef(0); // Vertical rotation (radians)
+  const distanceRef = useRef(cameraDistance);
+  const targetDistanceRef = useRef(cameraDistance);
   const sceneCenterRef = useRef(new THREE.Vector3(...sceneCenter));
 
-  // Update scene center when it changes
+  // A new center (partner on, hand editor) or default distance re-frames the scene.
   React.useEffect(() => {
     sceneCenterRef.current.set(sceneCenter[0], sceneCenter[1], sceneCenter[2]);
-  }, [sceneCenter]);
+    invalidate();
+  }, [sceneCenter, invalidate]);
+
+  React.useEffect(() => {
+    distanceRef.current = cameraDistance;
+    targetDistanceRef.current = cameraDistance;
+    invalidate();
+  }, [cameraDistance, invalidate]);
+
+  const pitchBy = (delta: number) => {
+    pitchRef.current = Math.min(MAX_PITCH, Math.max(MIN_PITCH, pitchRef.current + delta));
+  };
 
   useImperativeHandle(ref, () => ({
     rotateLeft: () => {
       yawRef.current += ROTATION_STEP;
+      invalidate();
     },
     rotateRight: () => {
       yawRef.current -= ROTATION_STEP;
+      invalidate();
     },
     rotateUp: () => {
-      pitchRef.current = Math.min(
-        pitchRef.current + ROTATION_STEP,
-        MAX_PITCH,
-      );
+      pitchBy(ROTATION_STEP);
+      invalidate();
     },
     rotateDown: () => {
-      pitchRef.current = Math.max(
-        pitchRef.current - ROTATION_STEP,
-        MIN_PITCH,
-      );
+      pitchBy(-ROTATION_STEP);
+      invalidate();
     },
     orbit: (yaw: number, pitch: number) => {
       yawRef.current += yaw;
-      pitchRef.current = Math.min(MAX_PITCH, Math.max(MIN_PITCH, pitchRef.current + pitch));
+      pitchBy(pitch);
+      invalidate();
+    },
+    zoomBy: (delta: number) => {
+      targetDistanceRef.current = Math.min(MAX_DISTANCE, Math.max(MIN_DISTANCE, targetDistanceRef.current + delta));
+      invalidate();
     },
   }));
 
   useFrame(() => {
-    // Calculate camera position based on yaw/pitch angles
-    const x =
-      sceneCenterRef.current.x +
-      Math.sin(yawRef.current) * Math.cos(pitchRef.current) * cameraDistance;
-    const y =
-      sceneCenterRef.current.y +
-      Math.sin(pitchRef.current) * cameraDistance;
-    const z =
-      sceneCenterRef.current.z +
-      Math.cos(yawRef.current) * Math.cos(pitchRef.current) * cameraDistance;
+    // Ease the distance toward the zoom target; keep frames coming until it lands.
+    const diff = targetDistanceRef.current - distanceRef.current;
+    if (Math.abs(diff) > 0.005) {
+      distanceRef.current += diff * 0.2;
+      invalidate();
+    } else {
+      distanceRef.current = targetDistanceRef.current;
+    }
 
-    camera.position.set(x, y, z);
-    camera.lookAt(sceneCenterRef.current); // Always look at scene center
+    const distance = distanceRef.current;
+    const center = sceneCenterRef.current;
+    camera.position.set(
+      center.x + Math.sin(yawRef.current) * Math.cos(pitchRef.current) * distance,
+      center.y + Math.sin(pitchRef.current) * distance,
+      center.z + Math.cos(yawRef.current) * Math.cos(pitchRef.current) * distance,
+    );
+    camera.lookAt(center); // Always look at scene center
     camera.updateMatrixWorld();
   });
 

@@ -1,12 +1,5 @@
-import React, {
-  Suspense,
-  useImperativeHandle,
-  forwardRef,
-  useRef,
-  useEffect,
-} from "react";
-import { Canvas, useThree, useFrame } from "@react-three/fiber";
-import * as THREE from "three";
+import React, { Suspense, useRef } from "react";
+import { Canvas } from "@react-three/fiber";
 import { threedScene } from "@/core/theme/tokens";
 import { FPSCameraController } from "./FPSCameraController";
 import type { FPSCameraControllerHandle } from "./FPSCameraController";
@@ -23,71 +16,12 @@ export interface ThreeDCanvasHandle {
 }
 
 const ZOOM_STEP = 0.5;
-const MIN_DISTANCE = 1;
-const MAX_DISTANCE = 8;
 
-/** Inner component that controls camera zoom and delegates rotation to FPSCameraController */
-const CameraZoomAndRotationController = forwardRef<
-  ThreeDCanvasHandle,
-  {
-    center: [number, number, number];
-    fpsControllerRef: React.RefObject<FPSCameraControllerHandle | null>;
-  }
->(({ center, fpsControllerRef }, ref) => {
-  const { camera } = useThree();
-  const targetDistance = useRef<number | null>(null);
-  const centerVec = useRef(new THREE.Vector3(...center));
-
-  useEffect(() => {
-    centerVec.current.set(center[0], center[1], center[2]);
-  }, [center]);
-
-  useImperativeHandle(ref, () => ({
-    zoomIn: () => {
-      const dist = camera.position.distanceTo(centerVec.current);
-      targetDistance.current = Math.max(MIN_DISTANCE, dist - ZOOM_STEP);
-    },
-    zoomOut: () => {
-      const dist = camera.position.distanceTo(centerVec.current);
-      targetDistance.current = Math.min(MAX_DISTANCE, dist + ZOOM_STEP);
-    },
-    rotateLeft: () => {
-      fpsControllerRef.current?.rotateLeft();
-    },
-    rotateRight: () => {
-      fpsControllerRef.current?.rotateRight();
-    },
-    rotateUp: () => {
-      fpsControllerRef.current?.rotateUp();
-    },
-    rotateDown: () => {
-      fpsControllerRef.current?.rotateDown();
-    },
-    orbit: (yaw: number, pitch: number) => {
-      fpsControllerRef.current?.orbit(yaw, pitch);
-    },
-  }));
-
-  useFrame(() => {
-    if (targetDistance.current === null) return;
-    const currentDist = camera.position.distanceTo(centerVec.current);
-    const diff = targetDistance.current - currentDist;
-    if (Math.abs(diff) < 0.01) {
-      targetDistance.current = null;
-      return;
-    }
-    const dir = camera.position.clone().sub(centerVec.current).normalize();
-    const newDist = THREE.MathUtils.lerp(
-      currentDist,
-      targetDistance.current,
-      0.15,
-    );
-    camera.position.copy(centerVec.current).add(dir.multiplyScalar(newDist));
-    camera.updateMatrixWorld();
-  });
-
-  return null;
-});
+/**
+ * Pixel ratio cap: the scene is drawn at most at 2× (3× phones and the iOS
+ * simulator, whose GL runs on the CPU, otherwise fill 2.25× more pixels).
+ */
+const MAX_DPR = 2;
 
 interface ThreeDCanvasProps {
   children: React.ReactNode;
@@ -109,23 +43,26 @@ export const ThreeDCanvas: React.FC<ThreeDCanvasProps> = ({
   cameraDistance,
   onPointerMissed,
 }) => {
-  const innerRef = useRef<ThreeDCanvasHandle>(null);
   const fpsControllerRef = useRef<FPSCameraControllerHandle>(null);
 
   React.useImperativeHandle(zoomRef, () => ({
-    zoomIn: () => innerRef.current?.zoomIn(),
-    zoomOut: () => innerRef.current?.zoomOut(),
-    rotateUp: () => innerRef.current?.rotateUp(),
-    rotateDown: () => innerRef.current?.rotateDown(),
-    rotateLeft: () => innerRef.current?.rotateLeft(),
-    rotateRight: () => innerRef.current?.rotateRight(),
-    orbit: (yaw: number, pitch: number) => innerRef.current?.orbit(yaw, pitch),
+    zoomIn: () => fpsControllerRef.current?.zoomBy(-ZOOM_STEP),
+    zoomOut: () => fpsControllerRef.current?.zoomBy(ZOOM_STEP),
+    rotateUp: () => fpsControllerRef.current?.rotateUp(),
+    rotateDown: () => fpsControllerRef.current?.rotateDown(),
+    rotateLeft: () => fpsControllerRef.current?.rotateLeft(),
+    rotateRight: () => fpsControllerRef.current?.rotateRight(),
+    orbit: (yaw: number, pitch: number) => fpsControllerRef.current?.orbit(yaw, pitch),
   }));
 
   return (
     <Canvas
       camera={{ position: [0, 1.5, 3], fov: 50 }}
       gl={{ antialias: true }}
+      // Draw only when something changed (pose, camera, markers): a still
+      // model costs no frames, which is most of the time on these screens.
+      frameloop="demand"
+      dpr={[1, MAX_DPR]}
       onPointerMissed={onPointerMissed}
     >
       <color attach="background" args={[threedScene.background]} />
@@ -135,11 +72,6 @@ export const ThreeDCanvas: React.FC<ThreeDCanvasProps> = ({
         ref={fpsControllerRef}
         sceneCenter={sceneCenter}
         cameraDistance={cameraDistance}
-      />
-      <CameraZoomAndRotationController
-        ref={innerRef}
-        center={sceneCenter}
-        fpsControllerRef={fpsControllerRef}
       />
       {/* Floor plane */}
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0, 0]} receiveShadow>
