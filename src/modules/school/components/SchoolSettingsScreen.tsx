@@ -13,13 +13,7 @@ import React, { useState } from "react";
 import { Text, XStack, YStack } from "tamagui";
 import type { CombinedSchoolSettingsFormValues } from "../validation";
 import { schoolSettingsFormSchema } from "../validation";
-
-export interface SchoolSettingsValues {
-  name: string;
-  address?: string;
-  defaultCurrency?: string;
-  defaultPaymentAmount?: number;
-}
+import type { SchoolSettingsValues } from "../types";
 
 interface SchoolSettingsScreenProps {
   initial: SchoolSettingsValues;

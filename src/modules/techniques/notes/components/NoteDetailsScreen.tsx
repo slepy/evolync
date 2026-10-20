@@ -19,11 +19,15 @@ const toEditable = (row: TechniqueNoteRow): EditableRow => ({
   direction: row.direction as AttackDirection,
 });
 
+export interface NoteDetailsScreenProps {
+  documentId: string;
+}
+
 /**
  * A note (T4): the same form as T3, trash in the header. Save in Notebook
  * cyan appears only once something differs from the saved note (T4A).
  */
-export function NoteDetailsScreen({ documentId }: { documentId: string }) {
+export function NoteDetailsScreen({ documentId }: NoteDetailsScreenProps) {
   const router = useRouter();
   const { document, isLoading: docLoading } = useNoteDocument(documentId);
   const { rows, isLoading: rowsLoading } = useNoteRows(documentId);

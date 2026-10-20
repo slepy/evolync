@@ -1,2 +1,2 @@
-export { SchoolSettingsScreen, type SchoolSettingsValues } from './SchoolSettingsScreen';
-export { JoinSchoolScreen, type JoinSchoolUser } from './JoinSchoolScreen';
+export { SchoolSettingsScreen } from './SchoolSettingsScreen';
+export { JoinSchoolScreen } from './JoinSchoolScreen';

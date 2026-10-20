@@ -2,7 +2,6 @@ export { TrainingFormScreen } from "./TrainingFormScreen";
 export { TrainingDetailsScreen } from "./TrainingDetailsScreen";
 export { SeriesRuleCard } from "./SeriesRuleCard";
 export { TrainingScopeSheet } from "./TrainingScopeSheet";
-export type { TrainingScopeAction } from "./TrainingScopeSheet";
 export { ExtendSeriesSheet } from "./ExtendSeriesSheet";
 export { SchoolAddressSheet } from "./SchoolAddressSheet";
 export { toSchoolAddressItems, pickSchoolAddress } from "./schoolAddress";

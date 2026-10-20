@@ -59,8 +59,12 @@ export const OrderStatusSheet: React.FC<OrderStatusSheetProps> = ({ open, onOpen
   );
 };
 
+interface StatusDotProps {
+  status: OrderStatus;
+}
+
 /** 12px dot in the status color (status rows and the STATUS field). */
-export function StatusDot({ status }: { status: OrderStatus }) {
+function StatusDot({ status }: StatusDotProps) {
   const a = resolveListAccent(ORDER_STATUS_STYLE[status].accent);
   return (
     <View width={36} height={36} borderRadius={12} backgroundColor={a.fill} alignItems="center" justifyContent="center" flexShrink={0}>

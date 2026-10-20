@@ -54,7 +54,12 @@ export const PaymentPeriodsScreen: React.FC<PaymentPeriodsScreenProps> = ({ scho
   );
 };
 
-function PeriodRow({ period, onPress }: { period: PaymentPeriodEntry; onPress: () => void }) {
+interface PeriodRowProps {
+  period: PaymentPeriodEntry;
+  onPress: () => void;
+}
+
+function PeriodRow({ period, onPress }: PeriodRowProps) {
   const { kind, title, range } = describePeriod(period.start, period.end, dateLocaleTag(t("locale")));
   const when = kind === "custom" ? t("paymentsCustomPeriod") : kind === "week" ? t("paymentsWeekPeriod") : range;
   const current = isCurrentPeriod(period.start, period.end, localDayKey(new Date()));

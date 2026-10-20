@@ -2,7 +2,7 @@ export { EventFormScreen } from "./EventFormScreen";
 export * from "./eventFormState";
 export { EventDetailsScreen } from "./EventDetailsScreen";
 export { EventParticipantsScreen } from "./EventParticipantsScreen";
-export { EventCancelSheet, type EventSheetAction } from "./EventCancelSheet";
+export { EventCancelSheet } from "./EventCancelSheet";
 export { ParticipantSummary } from "./ParticipantSummary";
 export { formatEventDates } from "./formatEventDates";
 export { StudentEventDetailsScreen } from "./StudentEventDetailsScreen";

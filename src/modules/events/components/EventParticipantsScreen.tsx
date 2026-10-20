@@ -1,12 +1,12 @@
-import { ListCard, ListRow, MemberAvatar, PrimaryButton, StatusButton, SubScreenPage, withAlpha } from "@/core/components";
+import { ListCard, ListRow, MemberAvatar, PrimaryButton, SubScreenPage } from "@/core/components";
 import React from "react";
 import { ActivityIndicator } from "react-native";
 import { Text, YStack } from "tamagui";
-import { nextParticipantStatus, PARTICIPANT_STATUS_STYLE } from "../constants";
+import { nextParticipantStatus } from "../constants";
 import { useEvent } from "../hooks/useEvent";
 import { useEventParticipants } from "../hooks/useEventParticipants";
-import type { EventParticipantStatus } from "@/database/models/EventParticipant";
 import { ParticipantSummary } from "./ParticipantSummary";
+import { ParticipantStatusButton } from "./ParticipantStatusButton";
 
 interface EventParticipantsScreenProps {
   eventId: string;
@@ -94,25 +94,3 @@ export const EventParticipantsScreen: React.FC<EventParticipantsScreenProps> = (
     </SubScreenPage>
   );
 };
-
-/** Status button of a participant (Paid wallet, Attending check, Absent x); a tap moves to the next status. */
-function ParticipantStatusButton({
-  status,
-  disabled,
-  onPress,
-}: {
-  status: EventParticipantStatus;
-  disabled?: boolean;
-  onPress: () => void;
-}) {
-  const { icon, tint, label } = PARTICIPANT_STATUS_STYLE[status];
-  return (
-    <StatusButton
-      icon={icon}
-      color={{ tint, fill: withAlpha(tint, 0.16) }}
-      label={t("statusChangeNow", { status: t(label) })}
-      disabled={disabled}
-      onPress={onPress}
-    />
-  );
-}

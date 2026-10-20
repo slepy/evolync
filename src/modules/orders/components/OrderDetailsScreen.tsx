@@ -217,7 +217,12 @@ export const OrderDetailsScreen: React.FC<OrderDetailsScreenProps> = ({ scope, o
   );
 };
 
-function OrderDate({ label, date }: { label: string; date: Date }) {
+interface OrderDateProps {
+  label: string;
+  date: Date;
+}
+
+function OrderDate({ label, date }: OrderDateProps) {
   return (
     <YStack flex={1} gap={2}>
       <Text fontSize={12} fontWeight="$button" color={neutral.placeholder}>

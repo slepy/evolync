@@ -3,8 +3,7 @@ import React, { useEffect, useState } from "react";
 import { Text, YStack } from "tamagui";
 import { TRAINING_EDIT_SCOPE, type TrainingEditScope } from "../types/enums";
 import { formatDay } from "./format";
-
-export type TrainingScopeAction = "edit" | "delete";
+import type { TrainingScopeAction } from "../types";
 
 interface TrainingScopeSheetProps {
   /** Which action asks; null keeps the sheet closed. */

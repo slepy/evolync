@@ -2,15 +2,14 @@ import { AlertBanner, AuthPage, AuthPrompt, PhoneField, PrimaryButton, TextField
 import { contextColors } from '@/core/theme/tokens';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from 'expo-router';
-import { Ticket } from 'lucide-react-native';
 import React, { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
-import { Text, View, XStack, YStack } from 'tamagui';
 import { useRegister } from '../hooks/useRegister';
 import type { RegisterRequest } from '../types/registerDto';
 import { registerSchema, type RegisterFormValues } from '../validation/registerSchema';
 import { PasswordFields } from './PasswordFields';
 import { PHONE_PREFIXES } from '@/core/utils/phonePrefixes';
+import { NextStepCard } from "./NextStepCard";
 
 const student = contextColors.student;
 
@@ -26,32 +25,6 @@ const registrationErrorMessage = (error: string): string | undefined => {
   if (error === 'errorRegistrationFailed') return undefined;
   return /^error[A-Z]\w*$/.test(error) ? t(error) : error;
 };
-
-/** "Next: your school code" card: what happens after the account exists. */
-const NextStepCard: React.FC = () => (
-  <XStack
-    alignItems="flex-start"
-    gap={12}
-    paddingVertical={14}
-    paddingHorizontal={16}
-    borderRadius="$card"
-    backgroundColor="$neutralCard"
-    borderWidth={1}
-    borderColor="$neutralCardBorder"
-  >
-    <View width={36} height={36} borderRadius={12} backgroundColor={student.fill} alignItems="center" justifyContent="center" flexShrink={0}>
-      <Ticket size={18} color={student.label} strokeWidth={2} />
-    </View>
-    <YStack flex={1} gap={3}>
-      <Text fontSize={14} fontWeight="$button" color="$neutralText">
-        {t('authNextSchoolCode')}
-      </Text>
-      <Text fontSize={13} lineHeight={19} fontWeight="$secondary" color="$neutralMuted">
-        {t('authNextSchoolCodeHint')}
-      </Text>
-    </YStack>
-  </XStack>
-);
 
 /**
  * New account screen (sign up → "I train in a school" board): optional name,

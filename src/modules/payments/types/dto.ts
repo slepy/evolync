@@ -73,3 +73,10 @@ export interface CycleWithPaymentsDto {
   cycle: PaymentCycleResponseDto;
   records: PaymentRecordResponseDto[];
 }
+
+/** Values edited in the 14C sheet; the amount stays text while typing. */
+export interface PaymentDraft {
+  amount: string;
+  currency: string;
+  method: PaymentMethod;
+}

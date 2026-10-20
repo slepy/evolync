@@ -1,1 +1,1 @@
-export type { CreateSchoolDto } from './dto';
+export type { CreateSchoolDto, JoinSchoolUser, SchoolSettingsValues } from './dto';

@@ -7,11 +7,15 @@ import { Text, YStack } from "tamagui";
 
 const school = contextColors.school.gradient;
 
+export interface NoSchoolCardProps {
+  onJoin: () => void;
+}
+
 /**
  * Header box of a student without a school (board 5): "You're not enrolled in
  * any school yet", the hint and the red "Join a school" button.
  */
-export function NoSchoolCard({ onJoin }: { onJoin: () => void }) {
+export function NoSchoolCard({ onJoin }: NoSchoolCardProps) {
   return (
     <YStack
       gap={18}

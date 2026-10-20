@@ -1,7 +1,8 @@
 import { differenceInCalendarDays, format, isSameMonth, isSameYear, type Locale } from "date-fns";
 import { dateFnsLocale } from "@/core/i18n/localeTags";
 
-type Translate = (key: string, options?: Record<string, unknown>) => string;
+/** `t` or a stand-in (tests). */
+export type Translate = (key: string, options?: Record<string, unknown>) => string;
 
 /** Day groups of the inbox (N1): TODAY, YESTERDAY, EARLIER. */
 export type InboxGroupKey = "today" | "yesterday" | "earlier";

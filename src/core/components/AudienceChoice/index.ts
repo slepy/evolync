@@ -1,8 +1,3 @@
-export {
-  AudienceChoice,
-  AUDIENCE,
-  type Audience,
-  type AudienceChoiceProps,
-  type AudienceMember,
-} from "./AudienceChoice";
+export { AudienceChoice, type AudienceChoiceProps } from "./AudienceChoice";
+export { AUDIENCE, type Audience, type AudienceMember } from "./audience";
 export { memberInitials } from "./initials";

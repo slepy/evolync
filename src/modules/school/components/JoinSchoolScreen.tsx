@@ -1,42 +1,22 @@
 import {
   AlertBanner,
   AuthIntro,
-  AuthPage,
   IntroIcon,
-  ListCard,
-  ListIcon,
-  ListRow,
   Notice,
   PrimaryButton,
-  StatusBadge,
-  StatusHero,
   StepList,
   SubScreenPage,
   TextField,
 } from "@/core/components";
-import { contextColors } from "@/core/theme/tokens";
-import type School from "@/database/models/School";
 import { useStore } from "@/store";
-import { Building2, Clock, Ticket } from "lucide-react-native";
-import React, { useEffect, useState } from "react";
+import { Ticket } from "lucide-react-native";
+import React, { useState } from "react";
 import { YStack } from "tamagui";
 import { useJoinSchool } from "../hooks";
-import { SchoolRepository } from "../repositories";
 import { joinSchoolErrorText } from "./joinSchoolError";
-
-/** The school's red button (No school "Join a school", Join, Done). */
-const SCHOOL_BUTTON = {
-  from: contextColors.school.gradient[0].color,
-  to: contextColors.school.gradient[1].color,
-  text: contextColors.school.fg,
-};
-
-export interface JoinSchoolUser {
-  id: string;
-  email: string;
-  displayName: string;
-  avatarUrl?: string;
-}
+import { SCHOOL_BUTTON } from "./schoolButton";
+import { JoinRequestSent } from "./JoinRequestSent";
+import type { JoinSchoolUser } from "../types";
 
 interface JoinSchoolScreenProps {
   user: JoinSchoolUser | null;
@@ -122,29 +102,3 @@ export const JoinSchoolScreen: React.FC<JoinSchoolScreenProps> = ({ user, onBack
     </SubScreenPage>
   );
 };
-
-/** Request sent (JoinSchoolSent): Pending hero, the school row with its Pending badge, Done. */
-function JoinRequestSent({ schoolId, onDone }: { schoolId: string; onDone: () => void }) {
-  const [school, setSchool] = useState<School | null>(null);
-
-  // The school usually belongs to another organization: fetched once when not synced yet.
-  useEffect(() => {
-    SchoolRepository.findByIdOrFetchFromSupabase(schoolId).then(setSchool).catch(console.error);
-  }, [schoolId]);
-
-  return (
-    <AuthPage context="school" footer={<PrimaryButton label={t("joinSchoolDone")} colors={SCHOOL_BUTTON} onPress={onDone} />}>
-      <YStack gap={26} paddingTop={130}>
-        <StatusHero icon={Clock} color="warning" title={t("joinSchoolSentTitle")} text={t("joinSchoolSentHint")} />
-        <ListCard aria-label={t("joinRequestsTitle")}>
-          <ListRow
-            title={school?.name ?? "…"}
-            subtitle={school?.address || undefined}
-            leading={<ListIcon icon={Building2} accent="school" size={44} />}
-            trailing={<StatusBadge label={t("statusPending")} color="warning" />}
-          />
-        </ListCard>
-      </YStack>
-    </AuthPage>
-  );
-}

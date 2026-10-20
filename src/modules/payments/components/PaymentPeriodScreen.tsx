@@ -4,7 +4,6 @@ import {
   ListCard,
   ListChip,
   ListEmpty,
-  ListIcon,
   ListRow,
   PrimaryButton,
   StatusButton,
@@ -15,11 +14,9 @@ import {
 import PaymentCycle from "@/database/models/PaymentCycle";
 import { LoadingScreen } from "@/core/components";
 import { SUPPORTED_CURRENCIES } from "@/core/utils/currencies";
-import { neutral } from "@/core/theme/tokens";
-import { ChevronDown, ChevronUp, Wallet } from "lucide-react-native";
 import React, { useEffect, useState } from "react";
 import { Text, XStack, YStack } from "tamagui";
-import { PAYMENT_STATUS_STYLE, PAYMENT_SUMMARY_ORDER } from "../constants";
+import { PAYMENT_METHOD_LABEL, PAYMENT_STATUS_STYLE, PAYMENT_SUMMARY_ORDER } from "../constants";
 import { usePaymentRecords, type PaymentWithMember } from "../hooks/usePaymentRecords";
 import {
   amountsByStatus,
@@ -32,9 +29,10 @@ import {
   storedDayKey,
 } from "../paymentPeriod";
 import { PaymentCycleRepository } from "../repositories";
-import { PaymentEditSheet, type PaymentDraft } from "./PaymentEditSheet";
+import type { PaymentDraft } from "../types";
+import { PaymentEditSheet } from "./PaymentEditSheet";
+import { AmountsToggle } from "./AmountsToggle";
 
-const METHOD_LABEL = { cash: "paymentsMethodCash", transfer: "paymentsMethodTransfer", other: "paymentsMethodOther" } as const;
 
 /** True when the edited values differ from the stored record. */
 const isChanged = (item: PaymentWithMember): boolean =>
@@ -195,7 +193,7 @@ export const PaymentPeriodScreen: React.FC<PaymentPeriodScreenProps> = ({ school
                   key={item.member.id}
                   size="md"
                   title={name}
-                  subtitle={item.status === "paid" ? `${amount} · ${t(METHOD_LABEL[item.method])}` : amount}
+                  subtitle={item.status === "paid" ? `${amount} · ${t(PAYMENT_METHOD_LABEL[item.method])}` : amount}
                   aria-label={t("paymentsEditPayment", { name })}
                   onPress={isSaving ? undefined : () => openEdit(item)}
                   leading={<MemberAvatar name={name} uri={item.member.avatarUrl} rankId={item.member.currentRankId} />}
@@ -252,29 +250,3 @@ export const PaymentPeriodScreen: React.FC<PaymentPeriodScreenProps> = ({ school
     </SubScreenPage>
   );
 };
-
-/** "Amounts" row under the summary legend (14B collapsed / 14B1 expanded). */
-function AmountsToggle({ open, onPress }: { open: boolean; onPress: () => void }) {
-  const Chevron = open ? ChevronUp : ChevronDown;
-  return (
-    <XStack
-      role="button"
-      aria-label={t("paymentsAmounts")}
-      aria-expanded={open}
-      onPress={onPress}
-      pressStyle={{ opacity: 0.85 }}
-      alignItems="center"
-      gap={8}
-      minHeight={44}
-      marginVertical={-6}
-      marginHorizontal={-4}
-      paddingHorizontal={4}
-    >
-      <ListIcon icon={Wallet} accent="payments" size={32} />
-      <Text flex={1} fontSize={14} fontWeight="$button" color="$neutralText">
-        {t("paymentsAmounts")}
-      </Text>
-      <Chevron size={18} color={neutral.muted} strokeWidth={2.2} />
-    </XStack>
-  );
-}

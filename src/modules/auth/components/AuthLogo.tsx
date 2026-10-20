@@ -4,8 +4,12 @@ import React from "react";
 import { StyleSheet } from "react-native";
 import { Text, View, YStack } from "tamagui";
 
+export interface AuthLogoProps {
+  subtitle: string;
+}
+
 /** Sign in header: 72px gradient "E" logo, "Evolync", one muted line under it. */
-export const AuthLogo: React.FC<{ subtitle: string }> = ({ subtitle }) => (
+export const AuthLogo: React.FC<AuthLogoProps> = ({ subtitle }) => (
   <YStack alignItems="center" gap={10} marginBottom={6}>
     <View
       role="img"

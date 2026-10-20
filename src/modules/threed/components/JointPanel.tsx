@@ -1,6 +1,6 @@
 import { resolveListAccent } from "@/core/components";
-import { neutral, threedScene } from "@/core/theme/tokens";
-import { Move, RotateCcw, RotateCw, X, type LucideIcon } from "lucide-react-native";
+import { threedScene } from "@/core/theme/tokens";
+import { Move, RotateCcw, RotateCw, X } from "lucide-react-native";
 import { Text, XStack, YStack } from "tamagui";
 import {
   AXES,
@@ -15,12 +15,14 @@ import type { Vec3 } from "../types/data";
 import type { BoneTransform } from "../types/fk";
 import { AxisSlider } from "./AxisSlider";
 import { RoundButton } from "./RoundButton";
+import { ModeOption } from "./ModeOption";
+import type { JointMode } from "../types/tabs";
 
 const lime = resolveListAccent("threed");
-export const AXIS_COLORS: Record<Axis, string> = { x: threedScene.axisX, y: threedScene.axisY, z: threedScene.axisZ };
-const ZERO: Vec3 = { x: 0, y: 0, z: 0 };
 
-export type JointMode = "rotate" | "move";
+export const AXIS_COLORS: Record<Axis, string> = { x: threedScene.axisX, y: threedScene.axisY, z: threedScene.axisZ };
+
+const ZERO: Vec3 = { x: 0, y: 0, z: 0 };
 
 export interface JointPanelProps {
   /** "Right forearm". */
@@ -106,44 +108,5 @@ export function JointPanel({ name, transform, mode, onModeChange, canMove, onRot
         )}
       </YStack>
     </YStack>
-  );
-}
-
-function ModeOption({
-  icon: Icon,
-  label,
-  on,
-  disabled,
-  onPress,
-}: {
-  icon: LucideIcon;
-  label: string;
-  on: boolean;
-  disabled?: boolean;
-  onPress: () => void;
-}) {
-  const color = on ? lime.tint : neutral.muted;
-  return (
-    <XStack
-      role="radio"
-      aria-checked={on}
-      aria-disabled={disabled}
-      aria-label={label}
-      onPress={disabled ? undefined : onPress}
-      pressStyle={disabled ? undefined : { opacity: 0.85 }}
-      opacity={disabled ? 0.45 : 1}
-      flex={1}
-      height={40}
-      borderRadius={18}
-      backgroundColor={on ? lime.fill : "transparent"}
-      alignItems="center"
-      justifyContent="center"
-      gap={6}
-    >
-      <Icon size={16} color={color} strokeWidth={2.2} />
-      <Text fontSize={14} fontWeight="$button" color={color}>
-        {label}
-      </Text>
-    </XStack>
   );
 }

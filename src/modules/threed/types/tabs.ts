@@ -8,3 +8,5 @@ export enum THREED_TAB {
   TECHNIQUES = "techniques",
   POSITIONS = "positions",
 }
+
+export type JointMode = "rotate" | "move";

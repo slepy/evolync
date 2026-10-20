@@ -35,6 +35,9 @@ export const STATUS_CONFIG: Record<
   },
 };
 
+/** Label key of a payment method ("Cash" in a paid row's subtitle). */
+export const PAYMENT_METHOD_LABEL = { cash: "paymentsMethodCash", transfer: "paymentsMethodTransfer", other: "paymentsMethodOther" } as const;
+
 export const STATUS_CYCLE: PaymentStatus[] = [
   PaymentStatusEnum.PENDING,
   PaymentStatusEnum.PAID,

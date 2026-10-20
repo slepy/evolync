@@ -48,13 +48,10 @@ import {
 import { SchoolRepository, SchoolSettingsRepository } from "@/modules/school/repositories";
 import { timestampToDay } from "@/modules/trainings/types/helpers";
 import {
-  Calendar,
   CalendarCheck,
   CalendarDays,
   CreditCard,
-  FileText,
   Mail,
-  MapPin,
   MoreVertical,
   Phone,
   ShoppingBag,
@@ -64,16 +61,17 @@ import { Alert, Linking } from "react-native";
 import { Text, View, XStack, YStack } from "tamagui";
 import { StudentRepository } from "../repositories";
 import { archiveStudent, assignRankToStudent, setStudentPaymentAmount } from "../services";
-import { MemberStatus, getDisplayStatus } from "../types";
+import { MemberStatus, getDisplayStatus, type StudentPaymentAmountDraft } from "../types";
 import { studentStatusPill } from "../studentList";
-import { StudentPaymentAmountSheet, type StudentPaymentAmountDraft } from "./StudentPaymentAmountSheet";
-import { StudentActionsSheet, StudentRankSheet } from "./StudentSheets";
+import { StudentPaymentAmountSheet } from "./StudentPaymentAmountSheet";
+import { StudentActionsSheet } from "./StudentActionsSheet";
+import { StudentRankSheet } from "./StudentRankSheet";
 import { STUDENT_PILL_COLOR } from "./studentStatusStyle";
+import { EventHistoryRow } from "./EventHistoryRow";
 
 type HistoryTab = "payments" | "attendance" | "orders" | "events";
 
 const METHOD_LABEL = { cash: "paymentsMethodCash", transfer: "paymentsMethodTransfer", other: "paymentsMethodOther" } as const;
-
 
 interface StudentDetailsScreenProps {
   schoolId: string;
@@ -563,7 +561,11 @@ function summaryItem(
   return { key, count, label: t(style.label), icon: style.icon, barColor: style.barColor, iconColor: style.tint };
 }
 
-function Hint({ text }: { text: string }) {
+interface HintProps {
+  text: string;
+}
+
+function Hint({ text }: HintProps) {
   return (
     <Text fontSize={13} fontWeight="$secondary" lineHeight={19} color="$neutralMuted">
       {text}
@@ -571,61 +573,17 @@ function Hint({ text }: { text: string }) {
   );
 }
 
-function ContactLine({ icon: Icon, text, onPress }: { icon: typeof Mail; text: string; onPress: () => void }) {
+interface ContactLineProps {
+  icon: typeof Mail;
+  text: string;
+  onPress: () => void;
+}
+
+function ContactLine({ icon: Icon, text, onPress }: ContactLineProps) {
   return (
     <XStack role="link" aria-label={text} onPress={onPress} pressStyle={{ opacity: 0.8 }} alignItems="center" gap={10}>
       <Icon size={16} color={neutral.muted} strokeWidth={2} />
       <Text flex={1} fontSize={14} fontWeight="600" color="$neutralText" numberOfLines={1}>
-        {text}
-      </Text>
-    </XStack>
-  );
-}
-
-/** Event row of 16E3: title with the price, date, place and the short note under it; status button on the right. */
-function EventHistoryRow({
-  title,
-  amount,
-  when,
-  place,
-  note,
-  status,
-}: {
-  title: string;
-  amount?: string;
-  when: string;
-  place?: string;
-  note?: string;
-  status: React.ReactNode;
-}) {
-  return (
-    <XStack alignItems="center" gap={12} paddingVertical={14} paddingHorizontal={16}>
-      <ListIcon icon={CalendarDays} accent="events" size={44} />
-      <YStack flex={1} minWidth={0} gap={4}>
-        <XStack alignItems="baseline" gap={8}>
-          <Text flex={1} fontSize={15} fontWeight="$rowTitle" color="$neutralText" numberOfLines={1}>
-            {title}
-          </Text>
-          {amount ? (
-            <Text fontSize={14} fontWeight="$button" color="$neutralText" flexShrink={0}>
-              {amount}
-            </Text>
-          ) : null}
-        </XStack>
-        <MetaLine icon={Calendar} text={when} weight="600" />
-        {place ? <MetaLine icon={MapPin} text={place} /> : null}
-        {note ? <MetaLine icon={FileText} text={note} italic /> : null}
-      </YStack>
-      {status}
-    </XStack>
-  );
-}
-
-function MetaLine({ icon: Icon, text, weight = "500", italic }: { icon: typeof Mail; text: string; weight?: "500" | "600"; italic?: boolean }) {
-  return (
-    <XStack alignItems="center" gap={6}>
-      <Icon size={13} color={neutral.muted} strokeWidth={2} />
-      <Text flex={1} fontSize={12.5} fontWeight={weight} fontStyle={italic ? "italic" : "normal"} color="$neutralMuted" numberOfLines={1}>
         {text}
       </Text>
     </XStack>

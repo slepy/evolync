@@ -1,7 +1,12 @@
 import { Text, YStack } from "tamagui";
 
+export interface ListEmptyProps {
+  text: string;
+  hint?: string;
+}
+
 /** Empty state in place of a list card: a card-shaped box with a muted line and an optional hint. */
-export function ListEmpty({ text, hint }: { text: string; hint?: string }) {
+export function ListEmpty({ text, hint }: ListEmptyProps) {
   return (
     <YStack
       gap={4}
