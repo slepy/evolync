@@ -10,9 +10,7 @@ import {
   type OrderCreatedPayload,
   type PaymentCreatedPayload,
 } from "../types";
-import { inboxDateLocale, shortDay, shortDayRange } from "./inbox";
-
-type Translate = (key: string, options?: Record<string, unknown>) => string;
+import { inboxDateLocale, shortDay, shortDayRange, type Translate } from "./inbox";
 
 /** `YYYY-MM-DD` → local Date at midnight (avoids the UTC shift of `new Date(iso)`). */
 const parseDay = (value: unknown): Date | null => {

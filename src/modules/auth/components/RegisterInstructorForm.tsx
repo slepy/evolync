@@ -9,7 +9,11 @@ import type { RegisterInstructorRequest } from '../types/registerDto';
 import { registerInstructorSchema, type RegisterInstructorFormValues } from '../validation/registerSchema';
 import { PasswordFields } from './PasswordFields';
 
-const SectionTitle: React.FC<{ children: string }> = ({ children }) => (
+interface SectionTitleProps {
+  children: string;
+}
+
+const SectionTitle: React.FC<SectionTitleProps> = ({ children }) => (
   <Text fontSize={18} fontWeight="$section" color="$neutralText" marginTop={6}>
     {children}
   </Text>

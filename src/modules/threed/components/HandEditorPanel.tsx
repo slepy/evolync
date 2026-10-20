@@ -1,15 +1,4 @@
-import {
-  FormSheet,
-  ListCard,
-  ListEmpty,
-  ListIcon,
-  ListRow,
-  ListSection,
-  PrimaryButton,
-  resolveListAccent,
-  TextField,
-} from "@/core/components";
-import { LinearGradient } from "expo-linear-gradient";
+import { ListCard, ListEmpty, ListIcon, ListRow, ListSection, resolveListAccent } from "@/core/components";
 import { Hand } from "lucide-react-native";
 import { useState } from "react";
 import { ScrollView } from "react-native";
@@ -18,16 +7,22 @@ import { useHandPresetsByUserAndSide } from "../hooks/useHandPresetsByUserAndSid
 import { formatDeg, ROTATE_RANGE_DEG, quatToEulerDeg, withAxisDeg, type Axis } from "../jointAxes";
 import type { Quat } from "../types/data";
 import { FINGER_LABEL_KEYS, FINGER_TYPE, getFingerBone, type BoneTransformMap, type FingerType, type FKBoneName } from "../types/fk";
-import { THREED_TITLE_MAX } from "../validation";
 import { AxisSlider } from "./AxisSlider";
 import { AXIS_COLORS } from "./JointPanel";
+import { PartChip } from "./HandPartChip";
+import { SavePresetSheet } from "./SavePresetSheet";
 
 const lime = resolveListAccent("threed");
+
 const SEGMENTS = [1, 2, 3] as const;
+
 type Part = "hand" | FingerType;
+
 const PARTS: Part[] = ["hand", ...Object.values(FINGER_TYPE)];
+
 /** Fingers bend on X and spread on Z (D10); the hand itself turns on all three. */
 const FINGER_AXES: Axis[] = ["x", "z"];
+
 const HAND_AXES: Axis[] = ["x", "y", "z"];
 
 export interface HandEditorPanelProps {
@@ -140,97 +135,5 @@ export function HandEditorPanel({ side, boneTransforms, onRotationChange, onSave
 
       <SavePresetSheet open={saveOpen} onOpenChange={setSaveOpen} onSave={onSavePreset} />
     </YStack>
-  );
-}
-
-/** 36px finger chip: lime gradient when chosen, page fill otherwise. */
-function PartChip({ label, on, onPress }: { label: string; on: boolean; onPress: () => void }) {
-  const text = (
-    <Text fontSize={13} fontWeight="$button" color={on ? lime.onGradient : "$neutralSoft"}>
-      {label}
-    </Text>
-  );
-  return (
-    <View
-      role="radio"
-      aria-checked={on}
-      aria-label={label}
-      onPress={onPress}
-      pressStyle={{ opacity: 0.85 }}
-      height={36}
-      borderRadius={18}
-      overflow="hidden"
-      borderWidth={on ? 0 : 1}
-      borderColor="$neutralRaisedBorder"
-      backgroundColor={on ? undefined : "$neutralPage"}
-      justifyContent="center"
-    >
-      {on ? (
-        <LinearGradient
-          colors={[lime.from, lime.to]}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 1 }}
-          style={{ height: 36, paddingHorizontal: 13, justifyContent: "center" }}
-        >
-          {text}
-        </LinearGradient>
-      ) : (
-        <View paddingHorizontal={13}>{text}</View>
-      )}
-    </View>
-  );
-}
-
-function SavePresetSheet({
-  open,
-  onOpenChange,
-  onSave,
-}: {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  onSave: (name: string) => Promise<void>;
-}) {
-  const [name, setName] = useState("");
-  const [error, setError] = useState<string | undefined>();
-  const [saving, setSaving] = useState(false);
-
-  const handleSave = async () => {
-    if (!name.trim() || saving) return;
-    setSaving(true);
-    setError(undefined);
-    try {
-      await onSave(name.trim());
-      setName("");
-      onOpenChange(false);
-    } catch (err) {
-      console.error("[HandEditorPanel] save preset:", err);
-      setError(t(err instanceof Error ? err.message : "handPresetSaveError"));
-    } finally {
-      setSaving(false);
-    }
-  };
-
-  return (
-    <FormSheet
-      open={open}
-      onOpenChange={onOpenChange}
-      title={t("threedNewPreset")}
-      footer={<PrimaryButton label={t("save")} accent="threed" onPress={handleSave} disabled={!name.trim()} loading={saving} />}
-    >
-      <TextField
-        size="large"
-        label={t("fieldName")}
-        value={name}
-        onChangeText={(next) => {
-          setName(next);
-          setError(undefined);
-        }}
-        placeholder={t("threedPresetNamePlaceholder")}
-        accent="threed"
-        maxLength={THREED_TITLE_MAX}
-        error={error}
-        autoFocus
-      />
-    </FormSheet>
   );
 }

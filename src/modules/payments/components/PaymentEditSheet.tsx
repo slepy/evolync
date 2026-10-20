@@ -3,13 +3,7 @@ import { PaymentMethod, type PaymentMethod as PaymentMethodValue } from "@/datab
 import React from "react";
 import { parseAmount } from "../paymentPeriod";
 import { XStack, YStack } from "tamagui";
-
-/** Values edited in the 14C sheet; the amount stays text while typing. */
-export interface PaymentDraft {
-  amount: string;
-  currency: string;
-  method: PaymentMethodValue;
-}
+import type { PaymentDraft } from "../types";
 
 const METHODS: { value: PaymentMethodValue; title: string; hint: string }[] = [
   { value: PaymentMethod.CASH, title: "paymentsMethodCash", hint: "paymentsMethodCashHint" },

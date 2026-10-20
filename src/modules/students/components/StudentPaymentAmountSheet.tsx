@@ -2,13 +2,7 @@ import { FormSheet, MemberAvatar, PrimaryButton, SelectField, TextField, ToggleR
 import { parseAmount } from "@/modules/payments/paymentPeriod";
 import React from "react";
 import { XStack, YStack } from "tamagui";
-
-/** Values edited in the sheet; the amount stays text while typing. */
-export interface StudentPaymentAmountDraft {
-  useDefault: boolean;
-  amount: string;
-  currency: string;
-}
+import type { StudentPaymentAmountDraft } from "../types";
 
 interface StudentPaymentAmountSheetProps {
   open: boolean;

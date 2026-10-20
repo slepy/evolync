@@ -10,14 +10,7 @@ import {
 import React, { useEffect, useMemo, useState } from "react";
 import { ScrollView } from "react-native";
 import { Text } from "tamagui";
-
-export interface StudentOption {
-  id: string;
-  name: string;
-  email?: string;
-  avatarUrl?: string;
-  rankId?: string;
-}
+import type { StudentOption } from "../types";
 
 interface StudentSelectSheetProps {
   open: boolean;

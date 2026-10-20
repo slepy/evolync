@@ -3,8 +3,7 @@ import { danger } from "@/core/theme/tokens";
 import { Ban } from "lucide-react-native";
 import React from "react";
 import { Text, XStack, YStack } from "tamagui";
-
-export type EventSheetAction = "cancel" | "delete";
+import type { EventSheetAction } from "../types";
 
 interface EventCancelSheetProps {
   /** Which action asks; null keeps the sheet closed. */

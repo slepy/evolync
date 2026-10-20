@@ -22,3 +22,5 @@ export const DASHBOARD_BADGE_DAYS = 7;
 
 export const TRAINING_NAME_MAX = 60;
 export const TRAINING_LOCATION_MAX = 300;
+
+export type TrainingScopeAction = "edit" | "delete";

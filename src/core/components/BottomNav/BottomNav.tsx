@@ -1,18 +1,9 @@
-import { contextColors, neutral, type PageContext } from "@/core/theme/tokens";
-import { LinearGradient } from "expo-linear-gradient";
-import type { LucideIcon } from "lucide-react-native";
-import { StyleSheet } from "react-native";
+import { type PageContext } from "@/core/theme/tokens";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { Text, View, XStack, YStack } from "tamagui";
-
-export interface BottomNavItem {
-  key: string;
-  icon: LucideIcon;
-  label: string;
-  onPress: () => void;
-  /** Red dot on the icon (unread alerts). */
-  dot?: boolean;
-}
+import { XStack } from "tamagui";
+import type { BottomNavItem } from "./types";
+import { ActivePill } from "./ActivePill";
+import { InactiveItem } from "./InactiveItem";
 
 export interface BottomNavProps {
   /** Colors the active pill: Organization amber, School red, Student blue, neutral white (5). */
@@ -23,6 +14,7 @@ export interface BottomNavProps {
 }
 
 const BAR_HEIGHT = 68;
+
 const BAR_GAP = 20;
 
 /** Bottom offset of the bar: 20px, or the home-indicator inset when larger. */
@@ -74,83 +66,5 @@ export function BottomNav({ context, items, activeKey }: BottomNavProps) {
         ),
       )}
     </XStack>
-  );
-}
-
-function ActivePill({ item, context }: { item: BottomNavItem; context: PageContext }) {
-  const Icon = item.icon;
-  const colors =
-    context === "neutral"
-      ? { from: neutral.text, to: neutral.text, fg: neutral.page }
-      : {
-          from: contextColors[context].gradient[0].color,
-          to: contextColors[context].gradient[contextColors[context].gradient.length - 1].color,
-          fg: contextColors[context].fg,
-        };
-
-  return (
-    <XStack
-      role="tab"
-      aria-selected
-      aria-label={item.label}
-      onPress={item.onPress}
-      pressStyle={{ opacity: 0.9 }}
-      height={50}
-      paddingHorizontal={18}
-      gap={8}
-      alignItems="center"
-      borderRadius={25}
-      overflow="hidden"
-    >
-      <LinearGradient
-        colors={[colors.from, colors.to]}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 1 }}
-        style={StyleSheet.absoluteFill}
-      />
-      <Icon size={20} color={colors.fg} strokeWidth={2.2} />
-      <Text fontSize={13} fontWeight="$button" color={colors.fg} numberOfLines={1}>
-        {item.label}
-      </Text>
-    </XStack>
-  );
-}
-
-function InactiveItem({ item }: { item: BottomNavItem }) {
-  const Icon = item.icon;
-
-  return (
-    <YStack
-      role="tab"
-      aria-selected={false}
-      aria-label={item.label}
-      onPress={item.onPress}
-      pressStyle={{ opacity: 0.7 }}
-      width={56}
-      height={56}
-      gap={4}
-      alignItems="center"
-      justifyContent="center"
-    >
-      <View>
-        <Icon size={22} color={neutral.muted} strokeWidth={2.2} />
-        {item.dot ? (
-          <View
-            position="absolute"
-            top={-3}
-            right={-4}
-            width={11}
-            height={11}
-            borderRadius={6}
-            borderWidth={2}
-            borderColor="$neutralRaised"
-            backgroundColor="$alertDot"
-          />
-        ) : null}
-      </View>
-      <Text fontSize={11} fontWeight="700" color="$neutralMuted" numberOfLines={1}>
-        {item.label}
-      </Text>
-    </YStack>
   );
 }

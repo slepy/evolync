@@ -109,8 +109,12 @@ export function SequenceDetailsScreen() {
   );
 }
 
+interface StepNumberProps {
+  n: number;
+}
+
 /** 44px numbered square of a step row in the lime fill. */
-function StepNumber({ n }: { n: number }) {
+function StepNumber({ n }: StepNumberProps) {
   return (
     <View width={44} height={44} borderRadius={14} backgroundColor={lime.fill} alignItems="center" justifyContent="center">
       <Text fontSize={16} fontWeight="$button" color={lime.tint}>

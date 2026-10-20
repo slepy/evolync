@@ -3,7 +3,7 @@ import { SchoolRepository } from "@/modules/school/repositories";
 import { useStore } from "@/store";
 import { useRouter } from "expo-router";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import type { ContextOption } from "./ContextSheet";
+import type { ContextOption } from "./types";
 import { buildContextOptions } from "./contextOptions";
 
 /**

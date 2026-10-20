@@ -34,3 +34,10 @@ export interface CreateStudentDto {
 export interface UpdateStudentStatusDto {
   status: MemberStatus;
 }
+
+/** Values edited in the sheet; the amount stays text while typing. */
+export interface StudentPaymentAmountDraft {
+  useDefault: boolean;
+  amount: string;
+  currency: string;
+}

@@ -7,3 +7,5 @@ export const MemberStatus = {
   REJECTED: 'rejected' as const,
   OFFLINE: 'offline' as const,
 };
+
+export type StudentsTab = "students" | "requests";

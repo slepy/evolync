@@ -2,8 +2,12 @@ import { warning } from "@/core/theme/tokens";
 import { Info } from "lucide-react-native";
 import { Text, XStack } from "tamagui";
 
+export interface NoticeProps {
+  text: string;
+}
+
 /** Amber status banner on top of a screen (N3 "This item is no longer available."). */
-export function Notice({ text }: { text: string }) {
+export function Notice({ text }: NoticeProps) {
   return (
     <XStack
       role="status"

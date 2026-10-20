@@ -38,6 +38,13 @@ This is the repo-specific review checklist `om-code-review` (and therefore `om-a
 - Cross-module imports go through a module's `index.ts` barrel export, not deep paths into another module's internals.
 - New module code follows the standard subfolder shape: `components/`, `hooks/`, `repositories/`, `services/`, `types/`, `validation/`, `database/`.
 
+### Component files
+
+- One exported component per file, named like the file. A private helper stays in the file only while it is small (a few lines of markup, no state); anything larger, or reused, gets its own file.
+- Props are a named `interface {Component}Props`, never an inline object type.
+- A type imported by a hook, service or another component (draft, view model, tab / action union) lives in the module's `types/` (`dto.ts`, `enums.ts`), or in the component folder's `types.ts` in `src/core/components`, never in a component file.
+- Split files never import each other in a cycle: shared constants go to their own file (`calendarColors.ts`, `schoolButton.ts`) or the module's `constants.ts`.
+
 ### WatermelonDB schema and migrations (`src/database/schema.ts`, `src/database/migrations.ts`, `src/modules/*/database/`)
 
 - A schema change (new table/column) bumps `appSchema({ version: N, ... })` in `src/database/schema.ts` and adds a matching step to `schemaMigrations` in `src/database/migrations.ts` — a PR that edits one without the other is a blocker.

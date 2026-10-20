@@ -10,17 +10,14 @@ import {
   SubScreenPage,
   ViewSwitch,
   memberInitials,
-  withAlpha,
 } from "@/core/components";
-import { danger, moduleAccents } from "@/core/theme/tokens";
 import type SchoolJoinRequest from "@/database/models/SchoolJoinRequest";
 import { LoadingScreen } from "@/core/components";
 import * as Clipboard from "expo-clipboard";
-import { LinearGradient } from "expo-linear-gradient";
-import { Check, QrCode, UserPlus, Users, X } from "lucide-react-native";
+import { QrCode, UserPlus, Users } from "lucide-react-native";
 import React, { useMemo, useState } from "react";
-import { Alert, StyleSheet } from "react-native";
-import { Text, View, XStack, YStack } from "tamagui";
+import { Alert } from "react-native";
+import { XStack, YStack } from "tamagui";
 import { useStudentsOverview } from "../hooks";
 import { rejectJoinRequest } from "../services";
 import { latestInvite, requestAge, studentStatusPill, visibleStudents } from "../studentList";
@@ -28,8 +25,9 @@ import { ApproveJoinRequestSheet } from "./ApproveJoinRequestSheet";
 import { InviteCodeCard } from "./InviteCodeCard";
 import { STUDENT_PILL_COLOR } from "./studentStatusStyle";
 import { intlLocaleTag } from "@/core/i18n/localeTags";
-
-export type StudentsTab = "students" | "requests";
+import { RejectButton } from "./RejectButton";
+import { ApproveButton } from "./ApproveButton";
+import type { StudentsTab } from "../types";
 
 interface StudentsScreenProps {
   schoolId: string;
@@ -40,9 +38,9 @@ interface StudentsScreenProps {
 }
 
 const localeTag = () => intlLocaleTag(t("locale"), "en-GB");
+
 const shortDate = (date: Date | number) =>
   new Date(date).toLocaleDateString(localeTag(), { day: "numeric", month: "short" });
-
 
 /** "2 h ago", "Yesterday", "3 Oct" */
 const requestAgeLabel = (sentAt: Date, now: Date): string => {
@@ -222,47 +220,3 @@ export const StudentsScreen: React.FC<StudentsScreenProps> = ({
     </SubScreenPage>
   );
 };
-
-/** 44px round reject button: red outline, x (16B). */
-function RejectButton({ label, onPress }: { label: string; onPress?: () => void }) {
-  return (
-    <View
-      role="button"
-      aria-label={label}
-      onPress={onPress}
-      pressStyle={{ opacity: 0.8 }}
-      width={44}
-      height={44}
-      borderRadius={22}
-      borderWidth={1}
-      borderColor={danger.border}
-      backgroundColor={danger.fill}
-      alignItems="center"
-      justifyContent="center"
-    >
-      <X size={20} color={danger.text} strokeWidth={2.4} />
-    </View>
-  );
-}
-
-/** 44px round approve button in the Students gradient, check (16B). */
-function ApproveButton({ label, onPress }: { label: string; onPress?: () => void }) {
-  const accent = moduleAccents.students;
-  return (
-    <View
-      role="button"
-      aria-label={label}
-      onPress={onPress}
-      pressStyle={{ opacity: 0.85 }}
-      width={44}
-      height={44}
-      borderRadius={22}
-      overflow="hidden"
-      alignItems="center"
-      justifyContent="center"
-    >
-      <LinearGradient colors={[accent.from, accent.to]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={StyleSheet.absoluteFill} />
-      <Check size={20} color={accent.buttonText} strokeWidth={2.8} />
-    </View>
-  );
-}

@@ -1,18 +1,16 @@
 export { ListSection, type ListSectionProps, type ListSectionAction } from "./ListSection";
-export { ListCard, ListDivider, type ListCardProps } from "./ListCard";
+export { ListCard, type ListCardProps } from "./ListCard";
+export { ListDivider } from "./ListDivider";
 export { ListRow, type ListRowProps, type ListRowSize } from "./ListRow";
-export {
-  ListIcon,
-  ListImage,
-  ListAvatar,
-  ListChip,
-  ListCheckbox,
-  ListCheck,
-  ListUnreadDot,
-  ListAddButton,
-  rankCornerSize,
-  type ListAvatarSize,
-} from "./ListParts";
+export { ListIcon } from "./ListIcon";
+export { ListImage } from "./ListImage";
+export { ListAvatar } from "./ListAvatar";
+export { ListChip } from "./ListChip";
+export { ListCheckbox } from "./ListCheckbox";
+export { ListCheck } from "./ListCheck";
+export { ListUnreadDot } from "./ListUnreadDot";
+export { ListAddButton } from "./ListAddButton";
+export { rankCornerSize, type ListAvatarSize } from "./avatar";
 export { resolveListAccent, withAlpha, type ListAccent, type ResolvedListAccent } from "./accent";
 export { rateAccent, ratePercent } from "./rateAccent";
 export { ListEmpty } from "./ListEmpty";

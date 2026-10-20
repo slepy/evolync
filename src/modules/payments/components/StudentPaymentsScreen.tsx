@@ -1,39 +1,23 @@
-import {
-  ListCard,
-  ListEmpty,
-  ListIcon,
-  ListRow,
-  ListSection,
-  StatusBadge,
-  StatusSummary,
-  SubScreenPage,
-} from "@/core/components";
+import { ListCard, ListEmpty, ListSection, StatusSummary, SubScreenPage } from "@/core/components";
 import { LoadingScreen } from "@/core/components";
-import { CreditCard, Wallet } from "lucide-react-native";
+import { Wallet } from "lucide-react-native";
 import React from "react";
-import { Text, YStack } from "tamagui";
 import { PAYMENT_STATUS_STYLE, PAYMENT_SUMMARY_ORDER } from "../constants";
-import { useStudentPayments, type StudentPaymentItem } from "../hooks/useStudentPayments";
-import {
-  amountsByStatus,
-  dateLocaleTag,
-  describePeriod,
-  formatAmount,
-  formatCurrencyAmounts,
-  isCurrentPeriod,
-  localDayKey,
-  storedDayKey,
-} from "../paymentPeriod";
-import { CurrentBadge } from "./CurrentBadge";
+import { useStudentPayments } from "../hooks/useStudentPayments";
+import { amountsByStatus, formatCurrencyAmounts } from "../paymentPeriod";
+import { PaymentRow } from "./PaymentRow";
 
-const METHOD_LABEL = { cash: "paymentsMethodCash", transfer: "paymentsMethodTransfer", other: "paymentsMethodOther" } as const;
+
+export interface StudentPaymentsScreenProps {
+  memberId: string | undefined;
+}
 
 /**
  * The student's own payments, read-only: Status summary of the billing
  * periods with the amount still to pay, then one row per period with the
  * amount over its status badge. Without a membership: the pending info.
  */
-export const StudentPaymentsScreen: React.FC<{ memberId: string | undefined }> = ({ memberId }) => {
+export const StudentPaymentsScreen: React.FC<StudentPaymentsScreenProps> = ({ memberId }) => {
   const { payments, stats, isLoading } = useStudentPayments(memberId);
 
   if (memberId && isLoading) return <LoadingScreen />;
@@ -77,29 +61,3 @@ export const StudentPaymentsScreen: React.FC<{ memberId: string | undefined }> =
     </SubScreenPage>
   );
 };
-
-/** "October 2026 CURRENT" / "1 – 31 Oct · Transfer"; amount over the status badge on the right. */
-function PaymentRow({ item }: { item: StudentPaymentItem }) {
-  const start = storedDayKey(item.cycle.periodStart);
-  const end = storedDayKey(item.cycle.periodEnd);
-  const { kind, title, range } = describePeriod(start, end, dateLocaleTag(t("locale")));
-  const when = kind === "custom" ? t("paymentsCustomPeriod") : kind === "week" ? t("paymentsWeekPeriod") : range;
-  const style = PAYMENT_STATUS_STYLE[item.status];
-
-  return (
-    <ListRow
-      title={title}
-      badge={isCurrentPeriod(start, end, localDayKey(new Date())) ? <CurrentBadge /> : undefined}
-      subtitle={item.status === "paid" ? `${when} · ${t(METHOD_LABEL[item.method])}` : when}
-      leading={<ListIcon icon={CreditCard} accent="payments" size={44} />}
-      trailing={
-        <YStack alignItems="flex-end" gap={5} flexShrink={0}>
-          <Text fontSize={14} fontWeight="$button" color="$neutralText" numberOfLines={1}>
-            {`${formatAmount(item.amount)} ${item.currency}`}
-          </Text>
-          <StatusBadge label={t(style.label)} color={{ tint: style.tint, fill: style.fill }} />
-        </YStack>
-      }
-    />
-  );
-}

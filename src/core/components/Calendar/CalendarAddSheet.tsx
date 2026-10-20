@@ -2,7 +2,7 @@ import { CalendarDays, Repeat } from "lucide-react-native";
 import { Text } from "tamagui";
 import { FormSheet } from "../FormSheet/FormSheet";
 import { ListCard } from "../List/ListCard";
-import { ListIcon } from "../List/ListParts";
+import { ListIcon } from "../List/ListIcon";
 import { ListRow } from "../List/ListRow";
 import type { CalendarSource } from "./useCalendarMonth";
 

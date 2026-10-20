@@ -188,8 +188,12 @@ export function ThreeDLibraryScreen() {
   );
 }
 
+interface HintProps {
+  text: string;
+}
+
 /** Muted centered line under a list (D3, D4). */
-function Hint({ text }: { text: string }) {
+function Hint({ text }: HintProps) {
   return (
     <Text fontSize="$secondary" fontWeight="$secondary" color="$neutralMuted" textAlign="center" marginTop={-8}>
       {text}

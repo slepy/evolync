@@ -1,17 +1,8 @@
-import { type ContextKey } from "@/core/theme/tokens";
 import { Building2, Plus } from "lucide-react-native";
 import { Sheet, Text, YStack } from "tamagui";
 import { ListCard, ListCheck, ListIcon, ListRow, ListSection } from "../List";
-import { ContextBadge } from "./ContextSwitcher";
-
-export interface ContextOption {
-  id: string;
-  /** Context the option opens: organization (Manage) or student (Train as student). */
-  context: ContextKey;
-  title: string;
-  /** "Organization · 3 schools", "Student · Poznań"… */
-  subtitle?: string;
-}
+import { ContextBadge } from "./ContextBadge";
+import type { ContextOption } from "./types";
 
 export interface ContextSheetProps {
   open: boolean;

@@ -29,3 +29,17 @@ export interface SchoolSettingsDto {
   defaultCurrency: string;
   defaultPaymentAmount: number;
 }
+
+export interface SchoolSettingsValues {
+  name: string;
+  address?: string;
+  defaultCurrency?: string;
+  defaultPaymentAmount?: number;
+}
+
+export interface JoinSchoolUser {
+  id: string;
+  email: string;
+  displayName: string;
+  avatarUrl?: string;
+}

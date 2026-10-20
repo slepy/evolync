@@ -7,25 +7,7 @@ import { FormSheet } from "../FormSheet";
 import { ListCard, ListCheck, ListCheckbox, ListIcon, ListRow, ListSection } from "../List";
 import { MemberAvatar } from "../MemberAvatar";
 import type { ListAccent } from "../List/accent";
-
-/** Who an event or a training is for (same values as their `visibility`). */
-export const AUDIENCE = {
-  ORGANIZATION: "organization",
-  SCHOOL: "school",
-  WHITELIST: "whitelist",
-} as const;
-
-export type Audience = (typeof AUDIENCE)[keyof typeof AUDIENCE];
-
-export interface AudienceMember {
-  id: string;
-  displayName: string;
-  schoolName?: string;
-  /** Profile photo shown instead of the initials. */
-  avatarUrl?: string;
-  /** Current rank: its belt color cuts the avatar corner. */
-  rankId?: string;
-}
+import { AUDIENCE, type Audience, type AudienceMember } from "./audience";
 
 export interface AudienceChoiceProps<T extends Audience> {
   /** "Who is it for?" (trainings) / "Who can see it?" (events). */

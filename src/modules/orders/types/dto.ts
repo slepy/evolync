@@ -27,3 +27,11 @@ export interface CartItem {
   currency: string;
   imageUrl?: string;
 }
+
+export interface StudentOption {
+  id: string;
+  name: string;
+  email?: string;
+  avatarUrl?: string;
+  rankId?: string;
+}

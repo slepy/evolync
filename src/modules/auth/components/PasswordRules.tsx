@@ -19,11 +19,15 @@ const ruleLabel = (key: PasswordRuleKey): string => {
   }
 };
 
+export interface PasswordRulesProps {
+  password: string;
+}
+
 /**
  * Rule chips under a password field (sign up, new password): met rules are
  * green with a check, the rest outlined with an empty ring.
  */
-export const PasswordRules: React.FC<{ password: string }> = ({ password }) => (
+export const PasswordRules: React.FC<PasswordRulesProps> = ({ password }) => (
   <XStack role="list" aria-label={t("passwordRules")} flexWrap="wrap" gap={6}>
     {passwordRuleStates(password).map(({ key, met }) => (
       <XStack

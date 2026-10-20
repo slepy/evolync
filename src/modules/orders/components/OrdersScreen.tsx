@@ -1,11 +1,9 @@
 import {
-  MemberAvatar,
   ListCard,
   ListImage,
   ListRow,
   ListSection,
   PrimaryButton,
-  StatusBadge,
   StatusFilter,
   SubScreenPage,
   ViewSwitch,
@@ -18,7 +16,6 @@ import { Alert } from "react-native";
 import { Text, YStack } from "tamagui";
 import type { OrderListEntry } from "../hooks/useOrdersList";
 import { canAddOrder, type OrdersScope } from "./orderAccess";
-import { formatOrderDay, formatOrderTotals } from "./orderFormat";
 import {
   ORDER_STATUSES,
   ORDER_STATUS_STYLE,
@@ -33,6 +30,7 @@ import {
   type OrderStatusChip,
   type ShoppingChip,
 } from "./orderListState";
+import { OrderRow } from "./OrderRow";
 
 type OrdersTab = "orders" | "shopping";
 
@@ -197,40 +195,11 @@ export const OrdersScreen: React.FC<OrdersScreenProps> = ({
   );
 };
 
-function OrderRow({ scope, entry, onPress }: { scope: OrdersScope; entry: OrderListEntry; onPress: () => void }) {
-  const style = ORDER_STATUS_STYLE[entry.status];
-  const statusChip = <StatusBadge label={t(style.label)} color={style.accent} />;
-  const firstItem = entry.items[0];
-  const total = formatOrderTotals(entry.totalsByCurrency);
-
-  if (scope === "student") {
-    return (
-      <ListRow
-        title={
-          entry.items.length === 1 && firstItem
-            ? firstItem.productName
-            : t("ordersItemsCount", { count: entry.itemCount })
-        }
-        subtitle={[formatOrderDay(entry.createdAt), total].filter(Boolean).join(" · ")}
-        leading={<ListImage uri={firstItem?.imageUrl} icon={ShoppingBag} accent="orders" />}
-        trailing={statusChip}
-        onPress={onPress}
-      />
-    );
-  }
-
-  return (
-    <ListRow
-      title={entry.memberName}
-      subtitle={[t("ordersItemsCount", { count: entry.itemCount }), formatOrderDay(entry.createdAt)].join(" · ")}
-      leading={<MemberAvatar size={48} name={entry.memberName} uri={entry.memberAvatarUrl} rankId={entry.memberRankId} />}
-      trailing={statusChip}
-      onPress={onPress}
-    />
-  );
+interface EmptyCardProps {
+  text: string;
 }
 
-function EmptyCard({ text }: { text: string }) {
+function EmptyCard({ text }: EmptyCardProps) {
   return (
     <YStack padding={20} borderRadius="$card" borderWidth={1} borderColor="$neutralCardBorder" backgroundColor="$neutralCard">
       <Text fontSize="$secondary" fontWeight="$secondary" color="$neutralMuted" textAlign="center">

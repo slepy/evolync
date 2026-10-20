@@ -35,7 +35,8 @@ import { confirmAction, showError } from "./confirmAction";
 import { ExtendSeriesSheet } from "./ExtendSeriesSheet";
 import { formatDay } from "./format";
 import { seriesRulesSummary } from "./trainingFormState";
-import { TrainingScopeSheet, type TrainingScopeAction } from "./TrainingScopeSheet";
+import type { TrainingScopeAction } from "../types";
+import { TrainingScopeSheet } from "./TrainingScopeSheet";
 
 interface TrainingDetailsScreenProps {
   trainingId: string;

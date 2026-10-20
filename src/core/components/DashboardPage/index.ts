@@ -1,6 +1,2 @@
-export {
-  DashboardPage,
-  DashboardHeader,
-  type DashboardPageProps,
-  type DashboardHeaderProps,
-} from "./DashboardPage";
+export { DashboardPage, type DashboardPageProps } from "./DashboardPage";
+export { DashboardHeader, type DashboardHeaderProps } from "./DashboardHeader";

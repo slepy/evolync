@@ -1,5 +1,6 @@
 export { Calendar, type CalendarProps } from "./Calendar";
-export { CalendarView, type CalendarViewProps, type CalendarRow } from "./CalendarView";
+export { CalendarView, type CalendarViewProps } from "./CalendarView";
+export type { CalendarRow } from "./types";
 export { CalendarAddSheet, type CalendarAddSheetProps } from "./CalendarAddSheet";
 export {
   useCalendarMonth,

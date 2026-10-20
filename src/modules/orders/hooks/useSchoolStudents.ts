@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { StudentRepository } from "@/modules/students/repositories";
-import type { StudentOption } from "../components/StudentSelectSheet";
+import type { StudentOption } from "../types";
 
 /** Active members of a school for the STUDENT field of a new order (12E1), by name. */
 export const useSchoolStudents = (schoolId: string | undefined) => {
