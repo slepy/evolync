@@ -4,7 +4,7 @@ export const createPaymentCycleSchema = z.object({
   schoolId: z.string().min(1, "paymentValidationSchoolRequired"),
   periodStart: z.string().min(1, "paymentValidationDateRequired"),
   periodEnd: z.string().min(1, "paymentValidationDateRequired"),
-  notes: z.string().max(500, "paymentValidationNotesTooLong").optional(),
+  notes: z.string().max(500, "notesTooLong").optional(),
   amount: z.number().nonnegative("paymentValidationAmountNegative").optional(),
   currency: z.string().min(1, "paymentValidationCurrencyRequired").optional(),
 })

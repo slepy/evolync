@@ -103,7 +103,7 @@ const SchoolDashboardComponent: React.FC<SchoolDashboardProps> = ({
         <ModuleTile
           module="orders"
           icon={ShoppingBag}
-          title={t("ordersTitle")}
+          title={t("orders")}
           subtitle={subtitle(subtitles.orders)}
           href={`/school/${schoolId}/orders` as any}
           addHref={`/school/${schoolId}/orders/create` as any}

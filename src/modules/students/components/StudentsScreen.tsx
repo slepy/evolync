@@ -27,6 +27,7 @@ import { latestInvite, requestAge, studentStatusPill, visibleStudents } from "..
 import { ApproveJoinRequestSheet } from "./ApproveJoinRequestSheet";
 import { InviteCodeCard } from "./InviteCodeCard";
 import { STUDENT_PILL_COLOR } from "./studentStatusStyle";
+import { intlLocaleTag } from "@/core/i18n/localeTags";
 
 export type StudentsTab = "students" | "requests";
 
@@ -38,7 +39,7 @@ interface StudentsScreenProps {
   onNewInvite: () => void;
 }
 
-const localeTag = () => (t("locale") === "pl" ? "pl-PL" : "en-GB");
+const localeTag = () => intlLocaleTag(t("locale"), "en-GB");
 const shortDate = (date: Date | number) =>
   new Date(date).toLocaleDateString(localeTag(), { day: "numeric", month: "short" });
 
@@ -54,7 +55,7 @@ const requestAgeLabel = (sentAt: Date, now: Date): string => {
     case "hours":
       return t("syncHoursAgo", { hours: age.count });
     case "yesterday":
-      return t("timeYesterday");
+      return t("yesterday");
     default:
       return shortDate(sentAt);
   }

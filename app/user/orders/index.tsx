@@ -13,7 +13,7 @@ export default function UserOrdersScreen() {
 
   if (!membership) {
     return (
-      <SubScreenPage title={t("ordersTitle")}>
+      <SubScreenPage title={t("orders")}>
         <Text fontSize={15} fontWeight="$secondary" color="$neutralMuted" textAlign="center">
           {t("pendingMembershipInfo")}
         </Text>

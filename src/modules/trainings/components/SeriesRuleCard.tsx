@@ -109,7 +109,7 @@ export const SeriesRuleCard: React.FC<SeriesRuleCardProps> = ({ rule, onChange, 
       <XStack gap={12}>
         <DateTimeField
           mode="time"
-          label={t("trainingsStartTime")}
+          label={t("start")}
           value={rule.startTime}
           onChange={(startTime) => onChange({ ...rule, startTime })}
           accent="trainings"
@@ -118,7 +118,7 @@ export const SeriesRuleCard: React.FC<SeriesRuleCardProps> = ({ rule, onChange, 
         />
         <DateTimeField
           mode="time"
-          label={t("trainingsEndTime")}
+          label={t("end")}
           value={rule.endTime}
           onChange={(endTime) => onChange({ ...rule, endTime })}
           accent="trainings"

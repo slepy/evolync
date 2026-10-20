@@ -1,5 +1,5 @@
 import { differenceInCalendarDays, format, isSameMonth, isSameYear, type Locale } from "date-fns";
-import { enUS, pl } from "date-fns/locale";
+import { dateFnsLocale } from "@/core/i18n/localeTags";
 
 type Translate = (key: string, options?: Record<string, unknown>) => string;
 
@@ -19,7 +19,7 @@ interface InboxItem {
 }
 
 /** date-fns locale of the app language. */
-export const inboxDateLocale = (language: string): Locale => (language === "pl" ? pl : enUS);
+export const inboxDateLocale = (language: string): Locale => dateFnsLocale(language);
 
 export function inboxGroupKey(createdAt: Date, now: Date): InboxGroupKey {
   const days = differenceInCalendarDays(now, createdAt);

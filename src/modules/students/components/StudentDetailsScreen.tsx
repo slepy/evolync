@@ -209,7 +209,7 @@ export const StudentDetailsScreen: React.FC<StudentDetailsScreenProps> = ({
     Alert.alert(t("studentArchiveTitle"), t("studentArchiveMessage"), [
       { text: t("cancel"), style: "cancel" },
       {
-        text: t("studentArchiveConfirm"),
+        text: t("archive"),
         style: "destructive",
         onPress: async () => {
           try {
@@ -226,7 +226,7 @@ export const StudentDetailsScreen: React.FC<StudentDetailsScreenProps> = ({
 
   return (
     <SubScreenPage
-      title={t("studentTitle")}
+      title={t("student")}
       context="school"
       right={
         <XStack alignItems="center" gap={8}>
@@ -311,13 +311,13 @@ export const StudentDetailsScreen: React.FC<StudentDetailsScreenProps> = ({
         </YStack>
 
         <IconTabs
-          aria-label={t("studentTitle")}
+          aria-label={t("student")}
           active={tab}
           onChange={setTab}
           tabs={[
             { key: "payments", icon: CreditCard, label: t("paymentsTitle"), accent: "payments" },
             { key: "attendance", icon: CalendarCheck, label: t("attendanceTitle"), accent: "attendance" },
-            { key: "orders", icon: ShoppingBag, label: t("ordersTitle"), accent: "orders" },
+            { key: "orders", icon: ShoppingBag, label: t("orders"), accent: "orders" },
             { key: "events", icon: CalendarDays, label: t("eventsTitle"), accent: "events" },
           ]}
         />

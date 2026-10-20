@@ -25,7 +25,7 @@ import { useEffect, useState } from "react";
 import { View } from "react-native";
 import { PortalProvider } from "@tamagui/portal";
 import { TamaguiProvider } from "tamagui";
-import i18n from "@/core/i18n/config";
+import i18n, { languageReady } from "@/core/i18n/config";
 import config, { themeColors } from "../tamagui.config";
 
 export {
@@ -67,13 +67,19 @@ export default function RootLayout() {
     if (error) throw error;
   }, [error]);
 
+  // The stored language is applied before the first screen, so it never flashes in English.
+  const [languageLoaded, setLanguageLoaded] = useState(false);
   useEffect(() => {
-    if (loaded) {
+    languageReady.then(() => setLanguageLoaded(true));
+  }, []);
+
+  useEffect(() => {
+    if (loaded && languageLoaded) {
       SplashScreen.hideAsync();
     }
-  }, [loaded]);
+  }, [loaded, languageLoaded]);
 
-  if (!loaded) {
+  if (!loaded || !languageLoaded) {
     return null;
   }
 

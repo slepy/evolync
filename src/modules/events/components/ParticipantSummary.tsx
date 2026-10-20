@@ -18,7 +18,7 @@ export const ParticipantSummary: React.FC<ParticipantSummaryProps> = ({ counts, 
       subtitle={t("eventsComingCount", { count: counts.paid + counts.attending })}
       accent="events"
       onPress={onManage}
-      actionLabel={onManage ? t("eventsManage") : undefined}
+      actionLabel={onManage ? t("manage") : undefined}
       items={PARTICIPANT_SUMMARY_ORDER.map((status) => {
         const style = PARTICIPANT_STATUS_STYLE[status];
         return {

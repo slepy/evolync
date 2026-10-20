@@ -1,4 +1,5 @@
 import type { AttendanceStatus } from "@/database/models/AttendanceRecord";
+import { intlLocaleTag } from "@/core/i18n/localeTags";
 
 /** Present / total of one session. */
 export interface SessionCounts {
@@ -16,7 +17,7 @@ export interface SessionMonthGroup<S> {
 }
 
 /** BCP-47 tag of the app language; day-first English, as on the boards. */
-export const dateLocaleTag = (language: string): string => (language === "pl" ? "pl-PL" : "en-GB");
+export const dateLocaleTag = (language: string): string => intlLocaleTag(language, "en-GB");
 
 const capitalize = (text: string): string => text.charAt(0).toLocaleUpperCase() + text.slice(1);
 

@@ -32,7 +32,7 @@ POST (after commit) → `send-push` → Expo Push API → device.
 ## Behaviour
 
 - Tokens come from `push_tokens` (`enabled`, not deleted) for the recipient.
-- Text is rendered per token locale (`en`/`pl`) from `templates.ts`; keep it in
+- Text is rendered per token locale (`en`/`pl`/`hu`) from `templates.ts`; keep it in
   line with the `notification*` keys in `src/core/i18n/locales`.
 - More than 3 notifications for one recipient within 60 s: the 4th sends one
   "You have N+ new notifications" push, later ones in the window are skipped.

@@ -54,7 +54,7 @@ Follow this workflow strictly. Do NOT skip steps. Use TodoWrite to track progres
 
 ## Phase 5: Translations
 
-1. Search existing keys in `en.json` and `pl.json` (use Grep to find duplicates!)
+1. Search existing keys in `en.json` / `pl.json` / `hu.json` (use Grep to find duplicates!)
 2. Add ONLY new keys to BOTH files simultaneously
 3. Verify all `t()` calls in new code have matching keys
 

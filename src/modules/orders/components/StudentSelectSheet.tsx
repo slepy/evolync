@@ -44,7 +44,7 @@ export const StudentSelectSheet: React.FC<StudentSelectSheetProps> = ({ open, on
   );
 
   return (
-    <FormSheet open={open} onOpenChange={onOpenChange} title={t("ordersStudent")}>
+    <FormSheet open={open} onOpenChange={onOpenChange} title={t("student")}>
       {students.length > SEARCH_FROM ? (
         <SearchField value={query} onChangeText={setQuery} placeholder={t("ordersSearchStudents")} accent="orders" />
       ) : null}
@@ -54,7 +54,7 @@ export const StudentSelectSheet: React.FC<StudentSelectSheetProps> = ({ open, on
         </Text>
       ) : (
         <ScrollView style={{ maxHeight: 420 }} keyboardShouldPersistTaps="handled">
-          <ListCard role="group" aria-label={t("ordersStudent")}>
+          <ListCard role="group" aria-label={t("student")}>
             {visible.map((student) => {
               const selected = student.id === value;
               return (

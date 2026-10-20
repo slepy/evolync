@@ -1,5 +1,5 @@
 import { format, isSameDay } from "date-fns";
-import { pl, enUS } from "date-fns/locale";
+import { dateFnsLocale, intlLocaleTag } from "@/core/i18n/localeTags";
 
 /**
  * Shared formatting utilities
@@ -8,12 +8,12 @@ import { pl, enUS } from "date-fns/locale";
 /**
  * Gets the date-fns locale based on the current app locale
  */
-const getLocale = () => (t("locale") === "pl" ? pl : enUS);
+const getLocale = () => dateFnsLocale(t("locale"));
 
 /**
  * Gets the Intl locale string based on the current app locale
  */
-const getIntlLocale = () => (t("locale") === "pl" ? "pl-PL" : "en-US");
+const getIntlLocale = () => intlLocaleTag(t("locale"));
 
 /**
  * Formats a price with the given currency using the current locale

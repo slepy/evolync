@@ -1,5 +1,6 @@
 import { matchesSearch } from "@/core/components/SearchField/matchesSearch";
 import type { EntityTag } from "@/modules/tags";
+import { intlLocaleTag } from "@/core/i18n/localeTags";
 
 /** Value of the "All" chip of the tag filter. */
 export const ALL_TAGS = "all";
@@ -25,5 +26,5 @@ export function filterNotes(notes: NoteListItem[], query: string, tagId: string)
 
 /** "2 Oct" / "2 paź" under a note title. */
 export function formatNoteDate(date: Date, language: string): string {
-  return date.toLocaleDateString(language.startsWith("pl") ? "pl-PL" : "en-GB", { day: "numeric", month: "short" });
+  return date.toLocaleDateString(intlLocaleTag(language, "en-GB"), { day: "numeric", month: "short" });
 }

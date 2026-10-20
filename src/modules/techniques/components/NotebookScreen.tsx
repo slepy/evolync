@@ -20,7 +20,7 @@ export function NotebookScreen() {
       <ListSection title={t("notebookWaysToWrite")}>
         <ListCard aria-label={t("notebookWaysToWrite")}>
           <ListRow
-            title={t("techniquesModeNotes")}
+            title={t("notesTitle")}
             subtitle={t("techniquesModeNotesDesc")}
             leading={<ListIcon icon={BookOpen} accent="notebook" />}
             trailing={isLoading ? undefined : <ListChip label={String(notes.length)} accent="notebook" />}

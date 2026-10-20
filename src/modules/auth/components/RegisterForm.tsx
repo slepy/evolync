@@ -146,7 +146,7 @@ export const RegisterForm: React.FC = () => {
         render={({ field }) => (
           <PhoneField
             accent="student"
-            label={t('authPhoneOptional')}
+            label={t('phoneOptional')}
             prefix={field.value?.prefix ?? '+48'}
             number={field.value?.number ?? ''}
             onChange={field.onChange}

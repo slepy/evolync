@@ -90,8 +90,8 @@ export function ContextSheet({
           </YStack>
 
           {manage.length > 0 ? (
-            <ListSection title={t("dashboardManage")} variant="label">
-              <ListCard role="group" aria-label={t("dashboardManage")}>
+            <ListSection title={t("manage")} variant="label">
+              <ListCard role="group" aria-label={t("manage")}>
                 {manage.map(renderRow)}
               </ListCard>
             </ListSection>

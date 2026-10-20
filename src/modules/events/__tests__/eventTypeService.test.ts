@@ -65,7 +65,7 @@ describe("eventTypeService", () => {
 
   it("rejects empty, too long and duplicate names", async () => {
     await create("Camp");
-    await rejectsWith(create("   "), "eventTypeValidationNameRequired");
+    await rejectsWith(create("   "), "nameRequired");
     await rejectsWith(create("x".repeat(41)), "eventTypeValidationNameTooLong");
     await rejectsWith(create("camp"), "eventTypeValidationNameTaken");
   });

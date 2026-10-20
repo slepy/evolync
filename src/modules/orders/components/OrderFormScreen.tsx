@@ -73,7 +73,7 @@ export const OrderFormScreen: React.FC<OrderFormScreenProps> = ({ scope, schoolI
     >
       {staff ? (
         <SelectField
-          label={t("ordersStudent")}
+          label={t("student")}
           value={student?.name}
           placeholder={t("ordersChooseStudent")}
           leading={

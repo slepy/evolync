@@ -15,7 +15,7 @@ export class EventTypeInUseError extends Error {
 /** Trimmed, valid and unique name; throws the translation key of the problem. */
 const checkedName = async (organizationId: string, name: string, exceptId?: string): Promise<string> => {
   const parsed = eventTypeSchema.safeParse({ name });
-  if (!parsed.success) throw new Error(parsed.error.issues[0]?.message ?? "eventTypeValidationNameRequired");
+  if (!parsed.success) throw new Error(parsed.error.issues[0]?.message ?? "nameRequired");
   const types = await EventTypeRepository.findByOrganizationId(organizationId);
   if (isEventTypeNameTaken(parsed.data.name, types, exceptId)) throw new Error("eventTypeValidationNameTaken");
   return parsed.data.name;

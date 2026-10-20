@@ -8,9 +8,9 @@ export const createTrainingSessionSchema = z.object({
     .string()
     .refine(
       (val) => !isNaN(Date.parse(val)),
-      "attendanceValidationInvalidDate"
+      "invalidDate"
     ),
-  notes: z.string().max(500, "attendanceValidationNotesTooLong").optional(),
+  notes: z.string().max(500, "notesTooLong").optional(),
 });
 
 export type CreateTrainingSessionFormValues = z.infer<

@@ -15,9 +15,9 @@ export const CONTEXT_ICONS: Record<SwitcherContext, LucideIcon> = {
 };
 
 const KICKER_KEYS: Record<ContextKey, string> = {
-  organization: "contextOrganization",
+  organization: "organization",
   school: "contextSchool",
-  student: "contextStudent",
+  student: "student",
 };
 
 /**

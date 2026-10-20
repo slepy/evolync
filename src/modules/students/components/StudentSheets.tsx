@@ -77,7 +77,7 @@ export const StudentActionsSheet: React.FC<StudentActionsSheetProps> = ({ open, 
       <ListRow
         size="md"
         danger
-        title={t("studentArchiveAction")}
+        title={t("archive")}
         subtitle={t("studentArchiveHint")}
         leading={
           <View

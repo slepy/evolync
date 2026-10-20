@@ -7,7 +7,7 @@ export const tagSchema = z.object({
   name: z
     .string()
     .trim()
-    .min(1, "tagsValidationNameRequired")
+    .min(1, "nameRequired")
     .max(TAG_NAME_MAX, "tagsValidationNameTooLong"),
 });
 

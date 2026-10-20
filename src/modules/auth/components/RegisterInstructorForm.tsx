@@ -107,7 +107,7 @@ export const RegisterInstructorForm: React.FC = () => {
         disabled={isLoading}
       />
 
-      <SectionTitle>{t('authOrganizationSection')}</SectionTitle>
+      <SectionTitle>{t('organization')}</SectionTitle>
       <Controller
         control={control}
         name="organization_name"

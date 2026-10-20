@@ -27,7 +27,7 @@ const CLOCK_TICK_MS = 60_000;
 
 const GROUP_LABEL: Record<InboxGroupKey, string> = {
   today: "notificationsGroupToday",
-  yesterday: "notificationsGroupYesterday",
+  yesterday: "yesterday",
   earlier: "notificationsGroupEarlier",
 };
 

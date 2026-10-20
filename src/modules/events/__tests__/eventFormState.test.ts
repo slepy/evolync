@@ -48,7 +48,7 @@ describe("validateEventForm", () => {
 
   it("asks for a type", () => {
     const result = validateEventForm({ ...initialEventForm("2099-03-07", TODAY), name: "Camp" });
-    assert.ok(!result.ok && result.errors.typeId === "eventValidationTypeRequired");
+    assert.ok(!result.ok && result.errors.typeId === "chooseType");
   });
 
   it("accepts a decimal comma in the price", () => {
@@ -67,7 +67,7 @@ describe("validateEventForm", () => {
     const result = validateEventForm(form);
     assert.ok(!result.ok);
     if (!result.ok) {
-      assert.equal(result.errors.name, "eventValidationNameRequired");
+      assert.equal(result.errors.name, "nameRequired");
       assert.equal(result.errors.price, "eventValidationPriceMustBePositive");
     }
     const audience = validateEventForm({ ...form, name: "Camp", price: "", endDate: form.startDate });
@@ -110,7 +110,7 @@ describe("eventToForm / hasEventChanges", () => {
     const initial = eventToForm(event, [MEMBER_A]);
     assert.equal(initial.typeId, "");
     const result = validateEventForm(initial);
-    assert.ok(!result.ok && result.errors.typeId === "eventValidationTypeRequired");
+    assert.ok(!result.ok && result.errors.typeId === "chooseType");
     const typed = { ...initial, typeId: TYPE };
     assert.equal(hasEventChanges(typed, initial), true);
     assert.ok(validateEventForm(typed).ok);

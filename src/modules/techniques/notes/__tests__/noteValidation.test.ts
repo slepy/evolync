@@ -17,7 +17,7 @@ describe("note title validation", () => {
   });
 
   it("returns translation keys for an empty or too long title", () => {
-    assert.equal(titleError("   "), "noteTitleRequired");
+    assert.equal(titleError("   "), "titleRequired");
     assert.equal(titleError("x".repeat(NOTE_TITLE_MAX + 1)), "notesValidationTitleTooLong");
     assert.equal(titleError("x".repeat(NOTE_TITLE_MAX)), null);
   });

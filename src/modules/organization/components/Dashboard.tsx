@@ -132,11 +132,11 @@ function DashboardInner({ organization, schools }: OrganizationDashboardProps) {
           ) : null}
         </ListSection>
 
-        <ModuleTileGrid title={t("dashboardManage")}>
+        <ModuleTileGrid title={t("manage")}>
           <ModuleTile
             module="orders"
             icon={ShoppingBag}
-            title={t("ordersTitle")}
+            title={t("orders")}
             subtitle={
               pendingOrders > 0
                 ? t("dashboardTileOrdersPending", { count: pendingOrders })
@@ -147,7 +147,7 @@ function DashboardInner({ organization, schools }: OrganizationDashboardProps) {
           <ModuleTile
             module="products"
             icon={Package}
-            title={t("dashboardTileProductsTitle")}
+            title={t("products")}
             subtitle={t("dashboardTileProducts")}
             href="/organization/inventory"
             addHref="/organization/inventory/create"

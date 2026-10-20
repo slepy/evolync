@@ -57,7 +57,7 @@ export const OrderProductsSection: React.FC<OrderProductsSectionProps> = ({
 
   return (
     <ListSection
-      title={t("ordersSelectProducts")}
+      title={t("products")}
       subtitle={count > 0 ? t("ordersItemsCount", { count }) : undefined}
       accent="orders"
       action={editable && onAddProduct ? { label: t("addNew"), onPress: onAddProduct } : undefined}
@@ -66,7 +66,7 @@ export const OrderProductsSection: React.FC<OrderProductsSectionProps> = ({
         <YStack
           overflow="hidden"
           role="list"
-          aria-label={t("ordersSelectProducts")}
+          aria-label={t("products")}
           borderRadius="$card"
           borderWidth={1}
           borderColor="$neutralCardBorder"

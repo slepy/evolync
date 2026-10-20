@@ -159,7 +159,7 @@ export const OrderDetailsScreen: React.FC<OrderDetailsScreenProps> = ({ scope, o
         ) : null}
         <XStack
           role={changeStatus ? "button" : undefined}
-          aria-label={changeStatus ? t("ordersChangeStatusNow", { status: t(statusStyle.label) }) : undefined}
+          aria-label={changeStatus ? t("statusChangeNow", { status: t(statusStyle.label) }) : undefined}
           onPress={changeStatus ? () => setSheet("status") : undefined}
           pressStyle={changeStatus ? { opacity: 0.85 } : undefined}
           alignItems="center"

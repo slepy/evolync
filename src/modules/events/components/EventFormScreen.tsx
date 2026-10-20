@@ -143,7 +143,7 @@ export const EventFormScreen: React.FC<EventFormScreenProps> = ({
             <SelectField
               label={t("eventsTypeLabel")}
               value={form.typeId ? typeName : undefined}
-              placeholder={t("eventsTypePlaceholder")}
+              placeholder={t("chooseType")}
               onPress={() => setTypeOpen(true)}
               open={typeOpen}
               accent="events"
@@ -165,7 +165,7 @@ export const EventFormScreen: React.FC<EventFormScreenProps> = ({
             autoCapitalize="sentences"
           />
           <TextField
-            label={t("eventsLocationOptional")}
+            label={t("locationOptional")}
             value={form.address}
             onChangeText={(address) => update({ address })}
             placeholder={t("eventsAddressPlaceholder")}
@@ -178,7 +178,7 @@ export const EventFormScreen: React.FC<EventFormScreenProps> = ({
             <XStack gap={12}>
               <DateTimeField
                 mode="date"
-                label={t("eventsStart")}
+                label={t("start")}
                 value={form.startDate}
                 format={formatShortDay}
                 min={minStart}
@@ -189,7 +189,7 @@ export const EventFormScreen: React.FC<EventFormScreenProps> = ({
               />
               <DateTimeField
                 mode="date"
-                label={t("eventsEnd")}
+                label={t("end")}
                 value={form.endDate}
                 format={formatShortDay}
                 min={form.startDate}

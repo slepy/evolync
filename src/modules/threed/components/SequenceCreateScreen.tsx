@@ -6,7 +6,7 @@ import { Text, YStack } from "tamagui";
 import { createSequence } from "../services";
 import { THREED_DESCRIPTION_MAX, THREED_TITLE_MAX } from "../validation";
 
-const TITLE_ERRORS = ["threedValidationTitleRequired", "threedValidationTitleTooLong"];
+const TITLE_ERRORS = ["titleRequired", "threedValidationTitleTooLong"];
 
 /** New sequence (D5): TITLE, DESCRIPTION, TAGS, Create in 3D lime; the editor then opens on step 1. */
 export function SequenceCreateScreen() {

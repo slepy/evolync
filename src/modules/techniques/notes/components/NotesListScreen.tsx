@@ -58,7 +58,7 @@ export function NotesListScreen() {
           accent="tags"
           value={activeTagId}
           onChange={setTagId}
-          options={[{ value: ALL_TAGS, label: t("tagsAll") }, ...tags.map((tag) => ({ value: tag.id, label: tag.name }))]}
+          options={[{ value: ALL_TAGS, label: t("all") }, ...tags.map((tag) => ({ value: tag.id, label: tag.name }))]}
         />
       ) : null}
 

@@ -207,7 +207,7 @@ export type { CreateModelDto } from "./types";
 
 Use the `/add-translations` skill or manually:
 1. Search existing keys in `src/core/i18n/locales/en.json` for duplicates
-2. Add new keys to BOTH `en.json` AND `pl.json`
+2. Add new keys to `en.json`, `pl.json` AND `hu.json`
 3. Use `t("keyName")` in components (no import needed)
 
 ## Common UI Patterns

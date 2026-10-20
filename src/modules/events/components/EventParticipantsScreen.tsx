@@ -110,7 +110,7 @@ function ParticipantStatusButton({
     <StatusButton
       icon={icon}
       color={{ tint, fill: withAlpha(tint, 0.16) }}
-      label={t("eventsChangeStatus", { status: t(label) })}
+      label={t("statusChangeNow", { status: t(label) })}
       disabled={disabled}
       onPress={onPress}
     />

@@ -78,9 +78,9 @@ export const OrdersScreen: React.FC<OrdersScreenProps> = ({
   const tabs = student ? null : (
     <ViewSwitch
       accent="orders"
-      aria-label={t("ordersTitle")}
+      aria-label={t("orders")}
       active={tab === "orders" ? "first" : "second"}
-      first={{ icon: ShoppingBag, label: t("ordersTabOrders"), onPress: () => setTab("orders") }}
+      first={{ icon: ShoppingBag, label: t("orders"), onPress: () => setTab("orders") }}
       second={{
         icon: ClipboardList,
         label: t("ordersTabShoppingList"),
@@ -100,7 +100,7 @@ export const OrdersScreen: React.FC<OrdersScreenProps> = ({
 
   return (
     <SubScreenPage
-      title={t("ordersTitle")}
+      title={t("orders")}
       subtitle={subtitle}
       footer={
         tab === "shopping" && shoppingList.length > 0 ? (
@@ -117,7 +117,7 @@ export const OrdersScreen: React.FC<OrdersScreenProps> = ({
           onChange={setStatus}
           options={(["all", ...ORDER_STATUSES] as OrderStatusChip[]).map((chip) => ({
             value: chip,
-            label: chip === "all" ? t("ordersFilterAll") : t(ORDER_STATUS_STYLE[chip].label),
+            label: chip === "all" ? t("all") : t(ORDER_STATUS_STYLE[chip].label),
             color: chip === "all" ? undefined : ORDER_STATUS_STYLE[chip].accent,
             count: counts[chip],
           }))}
@@ -145,12 +145,12 @@ export const OrdersScreen: React.FC<OrdersScreenProps> = ({
 
       {tab === "orders" ? (
         <ListSection
-          title={student ? t("ordersYourOrders") : t("ordersTitle")}
+          title={student ? t("ordersYourOrders") : t("orders")}
           accent="orders"
           action={canAddOrder(scope) && onAdd ? { label: t("addNew"), onPress: onAdd } : undefined}
         >
           {filtered.length > 0 ? (
-            <ListCard aria-label={t("ordersTitle")}>
+            <ListCard aria-label={t("orders")}>
               {filtered.map((entry) => (
                 <OrderRow key={entry.orderId} scope={scope} entry={entry} onPress={() => onOrderPress(entry)} />
               ))}

@@ -1,6 +1,7 @@
 import { formatPrice } from "@/core/utils/formatters";
+import { intlLocaleTag } from "@/core/i18n/localeTags";
 
-const localeTag = (): string => (t("locale") === "pl" ? "pl-PL" : "en-US");
+const localeTag = (): string => intlLocaleTag(t("locale"));
 
 /** "12 Mar" (list rows). */
 export const formatOrderDay = (date: Date): string =>
