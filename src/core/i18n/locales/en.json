@@ -57,7 +57,6 @@
 
   "required": "This field is required",
   "invalidEmail": "Invalid email address",
-  "emailRequired": "Email is required",
   "passwordMinLength": "Password must be at least {{count}} characters",
   "passwordComplexity": "Password must contain uppercase, lowercase, digit, and special character (@$!%*?&)",
   "passwordsMustMatch": "Passwords don’t match",
@@ -436,7 +435,6 @@
   "status": "Status",
 
   "back": "Back",
-  "next": "Next",
   "view": "View",
 
   "techniquesNotebook": "Technique Notebook",

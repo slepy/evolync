@@ -57,7 +57,6 @@
 
   "required": "Ez a mező kötelező",
   "invalidEmail": "Érvénytelen e-mail-cím",
-  "emailRequired": "Az e-mail-cím megadása kötelező",
   "passwordMinLength": "A jelszónak legalább {{count}} karakterből kell állnia",
   "passwordComplexity": "A jelszónak tartalmaznia kell nagybetűt, kisbetűt, számjegyet és speciális karaktert (@$!%*?&)",
   "passwordsMustMatch": "A jelszavak nem egyeznek",
@@ -436,7 +435,6 @@
   "status": "Állapot",
 
   "back": "Vissza",
-  "next": "Tovább",
   "view": "Megtekintés",
 
   "techniquesNotebook": "Technikai jegyzetfüzet",

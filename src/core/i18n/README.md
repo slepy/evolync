@@ -36,7 +36,7 @@ function MyComponent() {
 
 // Works in utility functions too!
 function validateEmail(email: string) {
-  if (!email) throw new Error(t('emailRequired'));
+  if (!email) throw new Error(t('required'));
 }
 
 // Works in alerts
@@ -222,7 +222,7 @@ t('invalidKey')   // ❌ TypeScript error
 ## Best Practices
 
 1. **Always use translation keys** - Never hardcode user-facing text
-2. **Use descriptive keys** - Keys should be self-documenting (e.g., `emailRequired` not `err1`)
+2. **Use descriptive keys** - Keys should be self-documenting (e.g., `amountRequired` not `err1`)
 3. **Flat structure** - Use simple keys like `save` or prefixed keys like `errorNetworkError`
 4. **Keep translations atomic** - Each key should represent a single piece of text
 5. **Use interpolation** - For dynamic content, use `{{variable}}` syntax

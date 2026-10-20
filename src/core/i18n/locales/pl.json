@@ -59,7 +59,6 @@
 
   "required": "To pole jest wymagane",
   "invalidEmail": "Nieprawidłowy adres email",
-  "emailRequired": "Email jest wymagany",
   "passwordMinLength": "Hasło musi mieć co najmniej {{count}} znaków",
   "passwordComplexity": "Hasło musi zawierać dużą i małą literę, cyfrę oraz znak specjalny (@$!%*?&)",
   "passwordsMustMatch": "Hasła się różnią",
@@ -458,7 +457,6 @@
   "status": "Status",
 
   "back": "Wstecz",
-  "next": "Następny",
   "view": "Podgląd",
 
   "techniquesNotebook": "Notatnik Technik",

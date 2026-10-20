@@ -51,6 +51,18 @@ describe("translation keys used in code", () => {
     });
   }
 
+  it("every en.json key is referenced in code (t() call, schema message or key map)", () => {
+    const code = [...sources(path.join(ROOT, "src")), ...sources(path.join(ROOT, "app"))]
+      .map((file) => withoutComments(readFileSync(file, "utf8")))
+      .join("\n");
+    // Built at runtime: trainingsWeekdayLong${weekday}, trainingsWeekOfMonth${week}…
+    const dynamic = /^trainings(WeekdayLong|WeekdayShort|WeekOfMonthOrdinal|WeekOfMonth)(\d|Last)$/;
+    const unused = [...new Set(Object.keys(en).map((key) => key.replace(/_(one|other)$/, "")))]
+      .filter((key) => key !== "locale" && !dynamic.test(key))
+      .filter((key) => !new RegExp(`["'\`]${key}["'\`]`).test(code));
+    assert.deepEqual(unused, [], "unused keys: remove them from en.json, pl.json and hu.json");
+  });
+
   it("hu.json has exactly the keys of en.json", () => {
     const enKeys = Object.keys(en).sort();
     assert.deepEqual(Object.keys(hu).sort(), enKeys);

@@ -19,7 +19,7 @@ Use Grep to search `src/core/i18n/locales/en.json` for:
 - Common prefixes: `status`, `error`, `validation`, `btn`, `label`
 
 **Common keys that already exist:**
-- Actions: `save`, `cancel`, `delete`, `edit`, `create`, `add`, `addNew`, `close`, `back`, `next`, `confirm`, `continue`, `restore`, `archive`, `manage`, `copy`, `search`, `change`
+- Actions: `save`, `cancel`, `delete`, `edit`, `create`, `add`, `addNew`, `close`, `back`, `confirm`, `continue`, `restore`, `archive`, `manage`, `copy`, `search`, `change`
 - Shared labels: `all`, `start`, `end`, `from`, `student`, `organization`, `orders`, `products`, `settings`, `profile`, `actions`, `status`, `yesterday`, `language`, `locationOptional`, `phoneOptional`
 - Status labels: `statusPaid`, `statusAttending`, `statusAbsent`, `statusActive`, `statusPending`, `statusCancelled`, `statusChangeNow`
 - Error messages: `errorLoadingFailed`, `errorCreateFailed`, `errorUpdateFailed`
