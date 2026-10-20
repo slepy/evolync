@@ -40,7 +40,7 @@ export const EventListView: React.FC<EventListViewProps> = ({ organizationId, in
   const { events, types, typeNames, isLoading } = useEventList(organizationId, range.from, range.to);
 
   const options = useMemo(
-    () => eventTypeFilterOptions(events, types, range, { all: t("eventsListAllTypes"), none: t("eventsListNoType") }),
+    () => eventTypeFilterOptions(events, types, range, { all: t("all"), none: t("eventsListNoType") }),
     [events, types, range],
   );
   // A chosen type that is gone (deleted, "No type" no longer offered) falls back to All.
@@ -63,7 +63,7 @@ export const EventListView: React.FC<EventListViewProps> = ({ organizationId, in
         <XStack gap={12}>
           <DateTimeField
             mode="date"
-            label={t("eventsListFrom")}
+            label={t("from")}
             value={range.from}
             format={formatShortDay}
             onChange={(from) => setRange((r) => withFromDay(r, from))}

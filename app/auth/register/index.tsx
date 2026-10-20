@@ -34,7 +34,7 @@ export default function RegisterScreen() {
           type="student"
           title={t('authAccountTypeStudent')}
           description={t('authAccountTypeStudentDescription')}
-          chips={[t('authRoleStudent')]}
+          chips={[t('student')]}
           onPress={() => router.push('/auth/register/user' as any)}
         />
       </YStack>

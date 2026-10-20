@@ -34,7 +34,7 @@ export const ProductsScreen: React.FC = () => {
   if (isLoading || !organization) return <LoadingScreen />;
 
   return (
-    <SubScreenPage title={t("dashboardTileProductsTitle")}>
+    <SubScreenPage title={t("products")}>
       <ListSection
         title={t("inventoryYourProducts")}
         accent="products"

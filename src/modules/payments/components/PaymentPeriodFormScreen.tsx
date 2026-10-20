@@ -145,7 +145,7 @@ export const PaymentPeriodFormScreen: React.FC<PaymentPeriodFormScreenProps> = (
           <XStack gap={12}>
             <YStack flex={1} minWidth={0}>
               <DateTimeField
-                label={t("paymentsStart")}
+                label={t("start")}
                 mode="date"
                 value={custom.start}
                 onChange={setCustomDay("start")}
@@ -155,7 +155,7 @@ export const PaymentPeriodFormScreen: React.FC<PaymentPeriodFormScreenProps> = (
             </YStack>
             <YStack flex={1} minWidth={0}>
               <DateTimeField
-                label={t("paymentsEnd")}
+                label={t("end")}
                 mode="date"
                 value={custom.end}
                 onChange={setCustomDay("end")}

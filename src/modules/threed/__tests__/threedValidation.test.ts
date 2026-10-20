@@ -21,7 +21,7 @@ const errorOf = (fn: () => unknown) => {
 describe("threed validation", () => {
   it("trims the title before checking it, so spaces alone are rejected", () => {
     assert.equal(validated(createSequenceSchema, { title: "  Guard pass " }).title, "Guard pass");
-    assert.equal(errorOf(() => validated(createSequenceSchema, { title: "   " })), "threedValidationTitleRequired");
+    assert.equal(errorOf(() => validated(createSequenceSchema, { title: "   " })), "titleRequired");
   });
 
   it("throws the translation key of the first problem", () => {
@@ -36,7 +36,7 @@ describe("threed validation", () => {
   });
 
   it("has the title keys in both locales", () => {
-    for (const key of ["threedValidationTitleRequired", "threedValidationTitleTooLong", "threedValidationInvalidBodyPart"]) {
+    for (const key of ["titleRequired", "threedValidationTitleTooLong", "threedValidationInvalidBodyPart"]) {
       assert.equal(typeof (en as Record<string, string>)[key], "string", `en: ${key}`);
       assert.equal(typeof (pl as Record<string, string>)[key], "string", `pl: ${key}`);
     }

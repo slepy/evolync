@@ -60,7 +60,7 @@ State the root cause clearly before proceeding.
 - Read the modified code to confirm correctness
 - Run `npm run typecheck` — fix any errors introduced by this fix (pre-existing errors in unrelated files, and Deno edge function `.ts` extension/`Deno` errors under `supabase/functions/`, are expected and can be ignored)
 - Check if the fix could affect related features
-- Check translations if UI text was changed (both `en.json` and `pl.json`)
+- Check translations if UI text was changed (`en.json`, `pl.json` and `hu.json`)
 
 ## Step 7: Summary
 

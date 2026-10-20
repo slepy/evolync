@@ -1,12 +1,13 @@
+import { intlLocaleTag } from "@/core/i18n/localeTags";
 import { dayToTimestamp } from "../NextUp/pickNextUp";
 
 /**
  * Date labels for the Calendar screen. Days are "YYYY-MM-DD" (UTC midnight),
  * formatted in UTC so the device time zone never shifts them. `locale` is
- * the app language ("en" / "pl").
+ * the app language ("en" / "pl" / "hu").
  */
 
-const intlLocale = (locale: string) => (locale === "pl" ? "pl-PL" : "en-GB");
+const intlLocale = (locale: string) => intlLocaleTag(locale, "en-GB");
 
 const capitalize = (value: string) => value.charAt(0).toUpperCase() + value.slice(1);
 

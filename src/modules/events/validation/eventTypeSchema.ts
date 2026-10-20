@@ -7,7 +7,7 @@ export const eventTypeSchema = z.object({
   name: z
     .string()
     .trim()
-    .min(1, "eventTypeValidationNameRequired")
+    .min(1, "nameRequired")
     .max(EVENT_TYPE_NAME_MAX, "eventTypeValidationNameTooLong"),
 });
 

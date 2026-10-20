@@ -37,7 +37,7 @@ export function buildContextOptions({ organization, memberships, schools }: Cont
       id: m.memberId,
       context: "student",
       title: school?.name ?? "…",
-      subtitle: school?.address ? t("contextStudentAt", { place: school.address }) : t("contextStudent"),
+      subtitle: school?.address ? t("contextStudentAt", { place: school.address }) : t("student"),
     };
   });
 

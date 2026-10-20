@@ -3,9 +3,11 @@ import assert from "node:assert/strict";
 import { shouldRegisterForPush, shouldShowPushRationale, toPushLocale } from "../utils/push";
 
 describe("toPushLocale", () => {
-  it("maps Polish variants to pl and everything else to en", () => {
+  it("maps Polish and Hungarian variants and everything else to en", () => {
     assert.equal(toPushLocale("pl"), "pl");
     assert.equal(toPushLocale("pl-PL"), "pl");
+    assert.equal(toPushLocale("hu"), "hu");
+    assert.equal(toPushLocale("hu-HU"), "hu");
     assert.equal(toPushLocale("en-US"), "en");
     assert.equal(toPushLocale("de"), "en");
     assert.equal(toPushLocale(undefined), "en");

@@ -246,7 +246,7 @@ export const TrainingDetailsScreen: React.FC<TrainingDetailsScreenProps> = ({
             {t("trainingsErrorPastReadOnly")}
           </Text>
         ) : (
-          <ListSection title={t("trainingsActions")}>
+          <ListSection title={t("actions")}>
             <YStack gap={12}>
               <XStack gap={10}>
                 {!isCancelled ? (
@@ -260,7 +260,7 @@ export const TrainingDetailsScreen: React.FC<TrainingDetailsScreenProps> = ({
                   />
                 ) : null}
                 <ActionPill
-                  label={isCancelled ? t("trainingsRestore") : t("trainingsCancel")}
+                  label={isCancelled ? t("restore") : t("trainingsCancel")}
                   icon={isCancelled ? RotateCcw : XCircle}
                   tint={isCancelled ? neutral.synced : danger.text}
                   fill={isCancelled ? neutral.syncedFill : danger.fill}

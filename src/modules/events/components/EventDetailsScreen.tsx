@@ -160,13 +160,13 @@ export const EventDetailsScreen: React.FC<EventDetailsScreenProps> = ({
           <ParticipantSummary counts={counts} onManage={onManageParticipants} />
         </ListSection>
 
-        <ListSection title={t("eventsActions")}>
+        <ListSection title={t("actions")}>
           <XStack gap={10}>
             {!isCancelled ? (
               <ActionPill label={t("edit")} icon={Pencil} tint={EVENTS.from} fill={EVENTS.fill} disabled={busy} onPress={onEdit} />
             ) : null}
             <ActionPill
-              label={isCancelled ? t("eventsRestore") : t("cancel")}
+              label={isCancelled ? t("restore") : t("cancel")}
               icon={isCancelled ? RotateCcw : XCircle}
               tint={isCancelled ? neutral.synced : danger.text}
               fill={isCancelled ? neutral.syncedFill : danger.fill}

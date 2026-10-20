@@ -155,6 +155,6 @@ After creating the module, register it in:
 2. **Barrel exports everywhere** - every subfolder has `index.ts`
 3. **Import from barrels** - use `import { X } from "../repositories"` not `"../repositories/XRepository"`
 4. **`core` is shared** - generic components, hooks, utils go in `src/core/` (`components/`, `hooks/`, `utils/`); there is no `src/modules/core`
-5. **Translations** - always add to both `en.json` and `pl.json`, search for duplicates first
+5. **Translations** - always add to `en.json`, `pl.json` and `hu.json`, search for duplicates first
 6. **Offline-first** - all reads from WatermelonDB, never from Supabase directly
 7. **Sync after mutations** - services call `sync().catch(console.error)` after create/update/delete

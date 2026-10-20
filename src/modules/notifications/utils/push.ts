@@ -1,8 +1,12 @@
 /** Push text languages the server renders (see send-push templates). */
-export type PushLocale = "en" | "pl";
+export type PushLocale = "en" | "pl" | "hu";
 
-export const toPushLocale = (language: string | null | undefined): PushLocale =>
-  (language ?? "").toLowerCase().startsWith("pl") ? "pl" : "en";
+export const toPushLocale = (language: string | null | undefined): PushLocale => {
+  const code = (language ?? "").toLowerCase();
+  if (code.startsWith("pl")) return "pl";
+  if (code.startsWith("hu")) return "hu";
+  return "en";
+};
 
 export type PushPermission = "granted" | "denied" | "undetermined";
 

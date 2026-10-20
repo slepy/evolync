@@ -1,4 +1,4 @@
-import { AuthPage, AuthPrompt, LaunchScreen } from '@/core/components';
+import { AuthPage, AuthPrompt, LanguagePicker, LaunchScreen } from '@/core/components';
 import { AuthLogo } from '@/modules/auth/components/AuthLogo';
 import { LoginForm } from '@/modules/auth/components/LoginForm';
 import { useAuth } from '@/modules/auth/hooks/useAuth';
@@ -37,6 +37,7 @@ export default function LoginScreen() {
 
   return (
     <AuthPage
+      corner={<LanguagePicker />}
       bottom={
         <AuthPrompt text={t('authNoAccount')} action={t('authSignUp')} onPress={() => router.push('/auth/register' as any)} />
       }

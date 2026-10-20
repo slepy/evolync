@@ -77,8 +77,8 @@ export function MainNav({ home: homeProp, context }: MainNavProps) {
       onPress: go(NAV_HREF.alerts),
       dot: hasAlertDot(unread),
     },
-    { key: "profile", icon: UserRound, label: t("navProfile"), onPress: go(NAV_HREF.profile) },
-    { key: "settings", icon: Settings, label: t("navSettings"), onPress: go(NAV_HREF.settings) },
+    { key: "profile", icon: UserRound, label: t("profile"), onPress: go(NAV_HREF.profile) },
+    { key: "settings", icon: Settings, label: t("settings"), onPress: go(NAV_HREF.settings) },
   ];
 
   return <BottomNav context={context ?? home} items={items} activeKey={activeNavKey(pathname)} />;

@@ -3,6 +3,7 @@ import { moduleAccents } from "@/core/theme/tokens";
 import React, { useMemo, useState } from "react";
 import { Text, View, XStack, YStack } from "tamagui";
 import { INVITE_VALIDITY_DAYS, inviteExpiry, type InviteValidityDays } from "../studentList";
+import { intlLocaleTag } from "@/core/i18n/localeTags";
 
 interface InviteCreateScreenProps {
   /** Creates the code valid until `expiresAt`; a thrown error is shown above the button. */
@@ -20,7 +21,7 @@ export const InviteCreateScreen: React.FC<InviteCreateScreenProps> = ({ onSubmit
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState<string | undefined>();
   const now = useMemo(() => new Date(), []);
-  const localeTag = t("locale") === "pl" ? "pl-PL" : "en-GB";
+  const localeTag = intlLocaleTag(t("locale"), "en-GB");
   const day = (date: Date) => date.toLocaleDateString(localeTag, { day: "numeric", month: "short" });
 
   const handleCreate = async () => {

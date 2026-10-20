@@ -73,7 +73,7 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({ initial, email, on
 
   return (
     <TabPage
-      title={t("navProfile")}
+      title={t("profile")}
       gap={16}
       nav={isDirty ? undefined : <MainNav />}
       footer={
@@ -117,7 +117,7 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({ initial, email, on
           error={errors.fullName}
         />
         <PhoneField
-          label={t("authPhoneOptional")}
+          label={t("phoneOptional")}
           prefix={phone.prefix}
           number={phone.number}
           onChange={(value) => {

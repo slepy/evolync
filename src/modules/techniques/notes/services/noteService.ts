@@ -12,10 +12,10 @@ export interface NoteInput {
   rows: EditableRow[];
 }
 
-/** Trimmed, valid title; throws the translation key of the problem ("noteTitleRequired"…). */
+/** Trimmed, valid title; throws the translation key of the problem ("titleRequired"…). */
 const validTitle = (title: string): string => {
   const parsed = createNoteDocumentSchema.safeParse({ title });
-  if (!parsed.success) throw new Error(parsed.error.issues[0]?.message ?? "noteTitleRequired");
+  if (!parsed.success) throw new Error(parsed.error.issues[0]?.message ?? "titleRequired");
   return parsed.data.title;
 };
 

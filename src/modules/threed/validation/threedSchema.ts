@@ -16,18 +16,18 @@ const jsonObject = z.record(z.any()).refine(
 );
 
 export const createSequenceSchema = z.object({
-  title: z.string().trim().min(1, "threedValidationTitleRequired").max(THREED_TITLE_MAX, "threedValidationTitleTooLong"),
+  title: z.string().trim().min(1, "titleRequired").max(THREED_TITLE_MAX, "threedValidationTitleTooLong"),
   description: z.string().max(THREED_DESCRIPTION_MAX, "threedValidationDescriptionTooLong").optional(),
 });
 
 export const updateSequenceSchema = z.object({
-  title: z.string().trim().min(1, "threedValidationTitleRequired").max(THREED_TITLE_MAX, "threedValidationTitleTooLong").optional(),
+  title: z.string().trim().min(1, "titleRequired").max(THREED_TITLE_MAX, "threedValidationTitleTooLong").optional(),
   description: z.string().max(THREED_DESCRIPTION_MAX, "threedValidationDescriptionTooLong").optional(),
   coverImageUrl: z.string().optional(),
 });
 
 export const createTechniqueSchema = z.object({
-  title: z.string().trim().min(1, "threedValidationTitleRequired").max(THREED_TITLE_MAX, "threedValidationTitleTooLong"),
+  title: z.string().trim().min(1, "titleRequired").max(THREED_TITLE_MAX, "threedValidationTitleTooLong"),
   description: z.string().max(THREED_DESCRIPTION_MAX, "threedValidationDescriptionTooLong").optional(),
   bodyPart: z.string().refine((v) => VALID_BODY_PARTS.includes(v as never), {
     message: "threedValidationInvalidBodyPart",
@@ -36,7 +36,7 @@ export const createTechniqueSchema = z.object({
 });
 
 export const updateTechniqueSchema = z.object({
-  title: z.string().trim().min(1, "threedValidationTitleRequired").max(THREED_TITLE_MAX, "threedValidationTitleTooLong").optional(),
+  title: z.string().trim().min(1, "titleRequired").max(THREED_TITLE_MAX, "threedValidationTitleTooLong").optional(),
   description: z.string().max(THREED_DESCRIPTION_MAX, "threedValidationDescriptionTooLong").optional(),
   data: z.string().optional(),
 });

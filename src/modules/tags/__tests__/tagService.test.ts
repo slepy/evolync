@@ -32,13 +32,13 @@ describe("tagSchema", () => {
 
   it("returns translation keys as messages", () => {
     const empty = tagSchema.safeParse({ name: "   " });
-    assert.equal(empty.success ? null : empty.error.issues[0].message, "tagsValidationNameRequired");
+    assert.equal(empty.success ? null : empty.error.issues[0].message, "nameRequired");
     const long = tagSchema.safeParse({ name: "x".repeat(TAG_NAME_MAX + 1) });
     assert.equal(long.success ? null : long.error.issues[0].message, "tagsValidationNameTooLong");
   });
 
   it("has every message key in both locales", () => {
-    for (const key of ["tagsValidationNameRequired", "tagsValidationNameTooLong", "tagsValidationNameTaken"]) {
+    for (const key of ["nameRequired", "tagsValidationNameTooLong", "tagsValidationNameTaken"]) {
       assert.equal(typeof (en as Record<string, string>)[key], "string", `en: ${key}`);
       assert.equal(typeof (pl as Record<string, string>)[key], "string", `pl: ${key}`);
     }
@@ -67,7 +67,7 @@ describe("tagService", () => {
   });
 
   it("rejects an empty or too long name", async () => {
-    await rejectsWith(create("   "), "tagsValidationNameRequired");
+    await rejectsWith(create("   "), "nameRequired");
     await rejectsWith(create("x".repeat(TAG_NAME_MAX + 1)), "tagsValidationNameTooLong");
   });
 
@@ -89,6 +89,6 @@ describe("tagService", () => {
     const sweep = await create("Sweep");
     assert.equal((await service.updateTag(guard.id, { name: " GUARD " })).name, "GUARD");
     await rejectsWith(service.updateTag(sweep.id, { name: "guard" }), "tagsValidationNameTaken");
-    await rejectsWith(service.updateTag(sweep.id, { name: "" }), "tagsValidationNameRequired");
+    await rejectsWith(service.updateTag(sweep.id, { name: "" }), "nameRequired");
   });
 });

@@ -1,7 +1,8 @@
 import { dayToTimestamp } from "../types/helpers";
+import { intlLocaleTag } from "@/core/i18n/localeTags";
 
 /** BCP-47 tag for the active app language. */
-export const localeTag = (): string => (t("locale") === "pl" ? "pl-PL" : "en-US");
+export const localeTag = (): string => intlLocaleTag(t("locale"));
 
 /** Formats a "YYYY-MM-DD" day; days are UTC-midnight, so format in UTC. */
 export const formatDay = (

@@ -1,5 +1,6 @@
 import { matchesSearch } from "@/core/components/SearchField/matchesSearch";
 import type { EntityTag } from "@/modules/tags";
+import { intlLocaleTag } from "@/core/i18n/localeTags";
 
 /** One row of "Your sequences" (D2): steps · date, tags under it. */
 export interface SequenceListItem {
@@ -26,7 +27,7 @@ export const BODY_PART_FILTERS = ["all", "arms", "hands", "legs", "spine"] as co
 export type BodyPartFilter = (typeof BODY_PART_FILTERS)[number];
 
 export const BODY_PART_FILTER_KEYS: Record<BodyPartFilter, string> = {
-  all: "tagsAll",
+  all: "all",
   arms: "threedFilterArms",
   hands: "threedFilterHands",
   legs: "threedFilterLegs",
@@ -101,5 +102,5 @@ export function countStepsBySequence(steps: Array<{ sequenceId: string }>): Map<
 
 /** "2 Oct" / "2 paź" under a sequence or technique title. */
 export function formatThreeDDate(date: Date, language: string): string {
-  return date.toLocaleDateString(language.startsWith("pl") ? "pl-PL" : "en-GB", { day: "numeric", month: "short" });
+  return date.toLocaleDateString(intlLocaleTag(language, "en-GB"), { day: "numeric", month: "short" });
 }

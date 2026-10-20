@@ -161,7 +161,7 @@ export function StudentDashboard() {
           <ModuleTile
             module="orders"
             icon={ShoppingBag}
-            title={t("ordersTitle")}
+            title={t("orders")}
             subtitle={t("dashboardStudentTileOrders")}
             href="/user/orders"
             addHref="/user/orders/create"

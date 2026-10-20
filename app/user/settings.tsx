@@ -9,7 +9,7 @@ export default function SettingsScreen() {
   const router = useRouter();
 
   return (
-    <TabPage title={t("settingsTitle")} gap={16} nav={<MainNav />}>
+    <TabPage title={t("settings")} gap={16} nav={<MainNav />}>
       <PushNotificationsSetting />
       <LanguageSwitcher />
       <ListCard aria-label={t("noSchoolJoin")}>

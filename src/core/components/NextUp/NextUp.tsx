@@ -2,6 +2,7 @@ import type { ContextKey } from "@/core/theme/tokens";
 import { NextUpCard } from "./NextUpCard";
 import { addDays, dayToTimestamp, localToday, type NextUpItem } from "./pickNextUp";
 import { useNextUp, type NextUpScope, type NextUpSource } from "./useNextUp";
+import { intlLocaleTag } from "@/core/i18n/localeTags";
 
 export interface NextUpProps {
   scope: NextUpScope | undefined;
@@ -23,7 +24,7 @@ const CONTEXT_BY_SCOPE: Record<NextUpScope["kind"], ContextKey> = {
 export function formatNextUpDay(day: string, today: string = localToday()): string {
   if (day === today) return t("nextUpToday");
   if (day === addDays(today, 1)) return t("nextUpTomorrow");
-  return new Date(dayToTimestamp(day)).toLocaleDateString(t("locale") === "pl" ? "pl-PL" : "en-US", {
+  return new Date(dayToTimestamp(day)).toLocaleDateString(intlLocaleTag(t("locale")), {
     weekday: "short",
     day: "numeric",
     month: "short",

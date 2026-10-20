@@ -173,7 +173,7 @@ export function CalendarView({
 
 function FilterChips({ value, onChange }: { value: CalendarFilter; onChange: (filter: CalendarFilter) => void }) {
   const chips: { key: CalendarFilter; label: string; tint: string; fill: string; marker?: "round" | "square" }[] = [
-    { key: "all", label: t("tagsAll"), tint: neutral.text, fill: withAlpha(neutral.text, 0.1) },
+    { key: "all", label: t("all"), tint: neutral.text, fill: withAlpha(neutral.text, 0.1) },
     { key: "events", label: t("eventsTitle"), tint: EVENT.from, fill: EVENT.fill, marker: "round" },
     { key: "trainings", label: t("trainingsTitle"), tint: TRAINING.tint, fill: TRAINING.fill, marker: "square" },
   ];

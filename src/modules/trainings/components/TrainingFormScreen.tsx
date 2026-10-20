@@ -241,7 +241,7 @@ export const TrainingFormScreen: React.FC<TrainingFormScreenProps> = ({
               <XStack gap={12}>
                 <DateTimeField
                   mode="date"
-                  label={t("trainingsFrom")}
+                  label={t("from")}
                   value={form.startDate}
                   format={formatShortDay}
                   min={minDay}
@@ -292,7 +292,7 @@ export const TrainingFormScreen: React.FC<TrainingFormScreenProps> = ({
             <XStack gap={12}>
               <DateTimeField
                 mode="time"
-                label={t("trainingsStartTime")}
+                label={t("start")}
                 value={form.startTime}
                 onChange={(startTime) => update({ startTime })}
                 accent="trainings"
@@ -301,7 +301,7 @@ export const TrainingFormScreen: React.FC<TrainingFormScreenProps> = ({
               />
               <DateTimeField
                 mode="time"
-                label={t("trainingsEndTime")}
+                label={t("end")}
                 value={form.endTime}
                 onChange={(endTime) => update({ endTime })}
                 accent="trainings"
@@ -313,7 +313,7 @@ export const TrainingFormScreen: React.FC<TrainingFormScreenProps> = ({
 
           <YStack gap={8}>
             <TextField
-              label={t("trainingsLocationOptional")}
+              label={t("locationOptional")}
               value={form.location}
               onChangeText={(location) => update({ location })}
               placeholder={t("trainingsLocationPlaceholder")}

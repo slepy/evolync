@@ -58,7 +58,10 @@ Primary instance: `import { supabase } from '@/config/supabase';`
 - `t()` is available **globally** - NO IMPORTS needed
 - **NEVER hardcode user-facing text** - always use `t("key")`
 - **CRITICAL:** Before adding new keys, search `en.json`/`pl.json` for existing duplicates
-- Add keys to BOTH `en.json` AND `pl.json` simultaneously
+- **One key per shared word:** text that reads the same everywhere uses the simple common key (`save`, `cancel`, `all`, `start`, `student`, `nameRequired`…), never a module copy (`ordersSave`); a module prefix only for text of that screen
+- Add keys to `en.json`, `pl.json` AND `hu.json` simultaneously (languages: English default, Polski, Magyar)
+- The chosen language lives only on the device (AsyncStorage), never in the database; sign in picks it with `LanguagePicker` in the `AuthPage` `corner`, Settings with `LanguageSwitcher`
+- Dates and numbers: `intlLocaleTag` / `dateFnsLocale` from `@/core/i18n/localeTags`, never `language === "pl" ? …`
 - Location: `src/core/i18n/locales/`
 
 ### Shared Components and Design Tokens

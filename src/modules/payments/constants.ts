@@ -79,6 +79,6 @@ export const PAYMENT_STATUS_STYLE: Record<
     fill: neutral.tintFill,
     barColor: neutral.control,
     label: "statusCancelled",
-    amountsLabel: "paymentsAmountsCancelled",
+    amountsLabel: "statusCancelled",
   },
 };

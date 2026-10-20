@@ -55,11 +55,11 @@ export const createEventSchema = z
   .object({
     name: z
       .string()
-      .min(1, "eventValidationNameRequired")
+      .min(1, "nameRequired")
       .max(200, "eventValidationNameTooLong"),
     typeId: z
-      .string({ required_error: "eventValidationTypeRequired" })
-      .uuid({ message: "eventValidationTypeRequired" }),
+      .string({ required_error: "chooseType" })
+      .uuid({ message: "chooseType" }),
     shortNote: z.string().max(300, "eventValidationShortNoteTooLong").optional(),
     address: z.string().max(500, "eventValidationAddressTooLong").optional(),
     startDate: z.string().refine(
@@ -76,8 +76,8 @@ export const createEventSchema = z
     ),
     currency: z
       .string()
-      .min(1, "eventValidationCurrencyRequired")
-      .max(10, "eventValidationCurrencyTooLong"),
+      .min(1, "currencyRequired")
+      .max(10, "currencyRequired"),
     visibility: eventVisibilitySchema,
     schoolId: z.string().uuid().optional(),
     whitelistedMemberIds: z.array(z.string().uuid()).optional(),
@@ -127,11 +127,11 @@ export const updateEventSchema = z
   .object({
     name: z
       .string()
-      .min(1, "eventValidationNameRequired")
+      .min(1, "nameRequired")
       .max(200, "eventValidationNameTooLong")
       .optional(),
     // The form always sends it (an edit requires a type, A3).
-    typeId: z.string().uuid({ message: "eventValidationTypeRequired" }).optional(),
+    typeId: z.string().uuid({ message: "chooseType" }).optional(),
     shortNote: z.string().max(300, "eventValidationShortNoteTooLong").optional(),
     address: z.string().max(500, "eventValidationAddressTooLong").optional(),
     startDate: z
@@ -154,8 +154,8 @@ export const updateEventSchema = z
     ).optional(),
     currency: z
       .string()
-      .min(1, "eventValidationCurrencyRequired")
-      .max(10, "eventValidationCurrencyTooLong")
+      .min(1, "currencyRequired")
+      .max(10, "currencyRequired")
       .optional(),
     visibility: eventVisibilitySchema.optional(),
     schoolId: z.string().uuid().optional(),

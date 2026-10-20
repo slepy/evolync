@@ -202,7 +202,7 @@ Deno.test("only INSERT webhooks with a notification record are handled", () => {
   assert(parseWebhookRecord({ type: "INSERT", record: notification() }));
 });
 
-Deno.test("templates render every type in both locales without 'undefined'", () => {
+Deno.test("templates render every type in every locale without 'undefined'", () => {
   const payloads: Record<string, Record<string, unknown>> = {
     order_created: { studentName: "Ola", itemCount: 2 },
     join_request_created: { displayName: "Jan", schoolName: "Dojo" },
@@ -211,7 +211,7 @@ Deno.test("templates render every type in both locales without 'undefined'", () 
     event_assigned: { eventName: "Cup", startDate: "2026-12-01" },
   };
   for (const [type, payload] of Object.entries(payloads)) {
-    for (const locale of ["en", "pl"] as const) {
+    for (const locale of ["en", "pl", "hu"] as const) {
       for (const p of [payload, {}]) {
         const { title, body } = renderPush(type, p, locale);
         assert(title && body, `${type}/${locale} renders`);

@@ -1,28 +1,37 @@
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
-import * as Localization from 'expo-localization';
 import { storage } from '../storage';
+import type { Language, LanguageCode } from './types';
 
 import en from './locales/en.json';
+import hu from './locales/hu.json';
 import pl from './locales/pl.json';
 
+// Device-local only: the chosen language is never stored in the database.
 const LANGUAGE_STORAGE_KEY = '@evolync:language';
 
-// Get device locale or default to 'en'
-const getDeviceLanguage = (): string => {
-  const deviceLocale = Localization.getLocales()[0]?.languageCode;
-  return deviceLocale === 'pl' ? 'pl' : 'en';
-};
+export const DEFAULT_LANGUAGE: LanguageCode = 'en';
 
-// Initialize i18n SYNCHRONOUSLY with device language
-// AsyncStorage language preference is loaded in background and applied later
+// Each language labelled in its own language, short code for the sign in corner.
+const LANGUAGES: Language[] = [
+  { code: 'en', label: 'English', short: 'EN' },
+  { code: 'pl', label: 'Polski', short: 'PL' },
+  { code: 'hu', label: 'Magyar', short: 'HU' },
+];
+
+export const isLanguageCode = (value: unknown): value is LanguageCode =>
+  LANGUAGES.some((lang) => lang.code === value);
+
+// Initialize i18n SYNCHRONOUSLY in English until the user picks a language;
+// the stored choice is applied by `languageReady` before the splash hides.
 i18n.use(initReactI18next).init({
   resources: {
     en: { translation: en },
     pl: { translation: pl },
+    hu: { translation: hu },
   },
-  lng: getDeviceLanguage(),
-  fallbackLng: 'en',
+  lng: DEFAULT_LANGUAGE,
+  fallbackLng: DEFAULT_LANGUAGE,
   interpolation: {
     escapeValue: false, // React Native already escapes values
   },
@@ -38,23 +47,20 @@ i18n.use(initReactI18next).init({
   return params ? i18n.t(key, params) : i18n.t(key);
 };
 
-// Load stored language preference in background and apply if different from device default
-// Wrapped in setTimeout to ensure storage is fully initialized
-setTimeout(() => {
-  storage
-    .getItem(LANGUAGE_STORAGE_KEY)
-    .then((storedLanguage) => {
-      if (storedLanguage && storedLanguage !== i18n.language) {
-        i18n.changeLanguage(storedLanguage);
-      }
-    })
-    .catch((error) => {
-      console.warn('Failed to load stored language preference:', error);
-    });
-}, 0);
+/** Resolves once the stored language (if any) is applied; the root layout waits for it. */
+export const languageReady: Promise<void> = new Promise<void>((resolve) => setTimeout(resolve, 0))
+  .then(() => storage.getItem(LANGUAGE_STORAGE_KEY))
+  .then(async (storedLanguage) => {
+    if (isLanguageCode(storedLanguage) && storedLanguage !== i18n.language) {
+      await i18n.changeLanguage(storedLanguage);
+    }
+  })
+  .catch((error) => {
+    console.warn('Failed to load stored language preference:', error);
+  });
 
 // Change language and persist choice
-export const changeLanguage = async (language: 'en' | 'pl') => {
+export const changeLanguage = async (language: LanguageCode) => {
   try {
     await storage.setItem(LANGUAGE_STORAGE_KEY, language);
     await i18n.changeLanguage(language);
@@ -69,9 +75,6 @@ export const getCurrentLanguage = (): string => {
 };
 
 // Get available languages
-export const getAvailableLanguages = () => [
-  { code: 'en', label: 'English' },
-  { code: 'pl', label: 'Polski' },
-];
+export const getAvailableLanguages = (): Language[] => LANGUAGES;
 
 export default i18n;

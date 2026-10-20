@@ -6,7 +6,7 @@ import { isTagNameTaken, tagSchema } from "../validation/tagSchema";
 /** Trimmed, valid and unique name; throws the translation key of the problem. */
 const checkedName = async (userId: string, name: string, exceptId?: string): Promise<string> => {
   const parsed = tagSchema.safeParse({ name });
-  if (!parsed.success) throw new Error(parsed.error.issues[0]?.message ?? "tagsValidationNameRequired");
+  if (!parsed.success) throw new Error(parsed.error.issues[0]?.message ?? "nameRequired");
   const tags = await TagRepository.findByUserId(userId);
   if (isTagNameTaken(parsed.data.name, tags, exceptId)) throw new Error("tagsValidationNameTaken");
   return parsed.data.name;

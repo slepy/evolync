@@ -4,8 +4,9 @@ This directory contains the internationalization (i18n) configuration for the Ev
 
 ## Supported Languages
 
-- **English (en)** - Default language
+- **English (en)** - Default language (always, until the user picks another one)
 - **Polish (pl)** - Polski
+- **Hungarian (hu)** - Magyar
 
 ## Setup
 
@@ -112,8 +113,9 @@ Translations support variable interpolation:
 ```typescript
 import { changeLanguage } from '@/core/i18n/config';
 
-// Change to Polish
+// Change to Polish / Hungarian
 await changeLanguage('pl');
+await changeLanguage('hu');
 
 // Change to English
 await changeLanguage('en');
@@ -124,7 +126,7 @@ await changeLanguage('en');
 ```typescript
 import { LanguageSwitcher } from '@/core/components';
 
-// The Language card of the Settings tab (17A): English / Polski radio rows.
+// The Language card of the Settings tab (17A): English / Polski / Magyar radio rows.
 function SettingsScreen() {
   return (
     <View>
@@ -134,13 +136,17 @@ function SettingsScreen() {
 }
 ```
 
+On the sign in screen the language is picked from the corner pill
+(`LanguagePicker`, short code "EN" / "PL" / "HU", sheet with the list):
+`<AuthPage corner={<LanguagePicker />}>`.
+
 ### Getting Current Language
 
 ```typescript
 import { getCurrentLanguage, getAvailableLanguages } from '@/core/i18n/config';
 
-const currentLang = getCurrentLanguage(); // 'en' or 'pl'
-const languages = getAvailableLanguages(); // [{ code: 'en', label: 'English' }, { code: 'pl', label: 'Polski' }]
+const currentLang = getCurrentLanguage(); // 'en', 'pl' or 'hu'
+const languages = getAvailableLanguages(); // [{ code: 'en', label: 'English', short: 'EN' }, …]
 ```
 
 ## Translation Files
@@ -149,6 +155,7 @@ Translation files are located in `src/core/i18n/locales/`:
 
 - `en.json` - English translations
 - `pl.json` - Polish translations
+- `hu.json` - Hungarian translations
 
 ### Translation Structure
 
@@ -158,25 +165,31 @@ Translations use a **flat structure** - all keys are at the root level:
 {
   "appName": "Evolync",
   "save": "Save",
-  "signIn": "Sign In",
   "email": "Email",
   "password": "Password",
-  "errorInvalidCredentials": "Invalid login credentials",
-  "tabOne": "Tab One",
+  "errorInvalidCredentialsMessage": "Invalid email or password.",
+  "eventsCreateTitle": "New event",
   "language": "Language"
 }
 ```
 
 **Naming Convention:**
 
-- Simple keys for common words: `save`, `cancel`, `email`
-- Prefixed keys for specific contexts: `errorInvalidCredentials`, `tabOne`
+- **One key per shared word.** A word or message that reads the same everywhere
+  has one simple key used by every module: `save`, `cancel`, `delete`, `edit`,
+  `all`, `start`, `end`, `from`, `student`, `organization`, `actions`, `manage`,
+  `restore`, `archive`, `yesterday`, `nameRequired`, `titleRequired`,
+  `chooseType`, `currencyRequired`, `notesTooLong`, `locationOptional`. Never add
+  `ordersSave` / `trainingsActions` copies.
+- Module prefix only when the text belongs to that screen: `eventsCreateTitle`,
+  `trainingsCancel` ("Cancel" a training — "Odwołaj" in Polish, not "Anuluj").
+- If two keys would have the same text in every language, they are one key.
 - Keep keys descriptive and self-documenting
 
 ## Adding New Translations
 
-1. Add the translation key to both `en.json` and `pl.json`
-2. Use descriptive, hierarchical keys (e.g., `feature.action` or `feature.element`)
+1. Search the locales for an existing key with the same text first and reuse it
+2. Add the translation key to `en.json`, `pl.json` and `hu.json` (`usedKeys.test.ts` checks all three)
 3. Keep translations consistent across languages
 4. Test both languages to ensure proper display
 
@@ -213,12 +226,13 @@ t('invalidKey')   // ❌ TypeScript error
 3. **Flat structure** - Use simple keys like `save` or prefixed keys like `errorNetworkError`
 4. **Keep translations atomic** - Each key should represent a single piece of text
 5. **Use interpolation** - For dynamic content, use `{{variable}}` syntax
-6. **Test both languages** - Ensure UI looks good in both English and Polish
-7. **Consider text length** - Polish text is often longer than English
+6. **Test every language** - Ensure UI looks good in English, Polish and Hungarian
+7. **Consider text length** - Polish and Hungarian text is often longer than English
+8. **Format dates and numbers with `localeTags`** - `intlLocaleTag(language)` / `dateFnsLocale(language)`, never `language === "pl" ? …`
 
 ## Offline Support
 
-Language preferences are stored locally using AsyncStorage and work offline. The selected language persists across app restarts.
+The chosen language is stored only on the device (AsyncStorage, `@evolync:language`), never in the database. It persists across app restarts and is applied before the splash screen hides (`languageReady`). Without a stored choice the app starts in English, whatever the device language.
 
 ## Adding a New Language
 
@@ -229,7 +243,7 @@ To add support for a new language:
 3. Update `src/core/i18n/config.ts`:
    - Import the new language file
    - Add it to the `resources` object
-   - Update `getDeviceLanguage()` if needed
-   - Update `getAvailableLanguages()` to include the new language
+   - Add it to `LANGUAGES` (code, own-language label, short code)
 4. Update the `LanguageCode` type in `src/core/i18n/types.ts`
-5. Update the `changeLanguage` function signature if needed
+5. Add it to `src/core/i18n/localeTags.ts` (Intl tag, date-fns locale) and to `usedKeys.test.ts`
+6. Push text: `toPushLocale` (notifications), `supabase/functions/send-push/templates.ts`, and the `push_tokens.locale` check + `register_push_token` in a migration

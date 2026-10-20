@@ -40,7 +40,7 @@ describe("buildContextOptions", () => {
     });
 
     assert.equal(withAddress.subtitle, "contextStudentAt");
-    assert.equal(withoutAddress.subtitle, "contextStudent");
+    assert.equal(withoutAddress.subtitle, "student");
   });
 
   it("has no Manage row without an organization", () => {
@@ -55,6 +55,6 @@ describe("buildContextOptions", () => {
       schools,
     });
     assert.equal(option.title, "…");
-    assert.equal(option.subtitle, "contextStudent");
+    assert.equal(option.subtitle, "student");
   });
 });

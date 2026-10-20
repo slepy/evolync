@@ -81,7 +81,7 @@ export const StudentFormScreen: React.FC<StudentFormScreenProps> = ({ initial, o
     >
       <YStack gap={18}>
         <TextField
-          label={t("studentNameLabel")}
+          label={t("fullName")}
           value={name}
           onChangeText={(value) => {
             setName(value);

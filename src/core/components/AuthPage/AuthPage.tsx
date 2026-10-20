@@ -20,6 +20,8 @@ export interface AuthPageProps {
   bottom?: ReactNode;
   /** Glow of a context instead of the brand one (Join a school "Request sent": school red). */
   context?: ContextKey;
+  /** Top right corner of a screen without a back header (sign in: `LanguagePicker`). */
+  corner?: ReactNode;
 }
 
 /**
@@ -27,7 +29,7 @@ export interface AuthPageProps {
  * reset): dark page with the orange brand glow, optional back header,
  * content 18px apart, optional pinned footer button.
  */
-export function AuthPage({ title, onBack, children, footer, bottom, context }: AuthPageProps) {
+export function AuthPage({ title, onBack, children, footer, bottom, context, corner }: AuthPageProps) {
   return (
     <YStack flex={1} backgroundColor="$neutralPage">
       <LinearGradient
@@ -45,13 +47,20 @@ export function AuthPage({ title, onBack, children, footer, bottom, context }: A
               </YStack>
             </YStack>
           ) : null}
+          {corner && !title ? (
+            <XStack paddingHorizontal={20} paddingTop={12} justifyContent="flex-end">
+              <XStack width="100%" maxWidth={500} alignSelf="center" justifyContent="flex-end">
+                {corner}
+              </XStack>
+            </XStack>
+          ) : null}
           <ScrollView
             flex={1}
             keyboardShouldPersistTaps="handled"
             contentContainerStyle={{
               flexGrow: 1,
               paddingHorizontal: 20,
-              paddingTop: title ? 24 : 40,
+              paddingTop: title ? 24 : corner ? 10 : 40,
               paddingBottom: footer ? 16 : 8,
             }}
           >

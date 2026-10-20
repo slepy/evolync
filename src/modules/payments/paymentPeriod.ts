@@ -1,4 +1,5 @@
 import type { PaymentStatus } from "@/database/models/PaymentRecord";
+import { intlLocaleTag } from "@/core/i18n/localeTags";
 
 /** "YYYY-MM-DD" */
 export type DayKey = string;
@@ -9,7 +10,7 @@ export type PeriodKind = "month" | "week" | "year" | "custom";
 export type PeriodPreset = "this_month" | "this_week" | "this_year" | "custom";
 
 /** BCP-47 tag of the app language; day-first English, as on the boards. */
-export const dateLocaleTag = (language: string): string => (language === "pl" ? "pl-PL" : "en-GB");
+export const dateLocaleTag = (language: string): string => intlLocaleTag(language, "en-GB");
 
 const pad = (n: number) => String(n).padStart(2, "0");
 
