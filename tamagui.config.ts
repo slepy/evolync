@@ -253,10 +253,7 @@ const darkSemantic: typeof lightSemantic = {
 };
 
 /** Raw values for non-Tamagui consumers (navigation theme, root views). */
-export const themeColors = {
-  light: { background: "#F8FAFC", ...lightSemantic },
-  dark: { background: neutral.page, ...darkSemantic },
-};
+export const themeColors = { background: neutral.page, ...darkSemantic };
 
 type BaseThemes = typeof config.themes;
 type SemanticThemes = {
@@ -286,21 +283,6 @@ const tamaguiConfig = createTamagui({
   },
   themes: {
     ...themes,
-    light: {
-      ...themes.light,
-      background: "#F8FAFC",
-      backgroundHover: "#F1F5F9",
-      backgroundPress: "#E2E8F0",
-      backgroundFocus: "#E2E8F0",
-      color: "#0F172A",
-      colorHover: "#1E293B",
-      colorPress: "#334155",
-      colorFocus: "#334155",
-      borderColor: "#E2E8F0",
-      borderColorHover: "#CBD5E1",
-      borderColorPress: "#94A3B8",
-      borderColorFocus: "#94A3B8",
-    },
     dark: {
       ...themes.dark,
       background: neutral.page,
@@ -317,7 +299,7 @@ const tamaguiConfig = createTamagui({
       borderColorFocus: "#3A4458",
     },
   },
-  defaultTheme: "light",
+  defaultTheme: "dark",
 });
 
 export type AppConfig = typeof tamaguiConfig;

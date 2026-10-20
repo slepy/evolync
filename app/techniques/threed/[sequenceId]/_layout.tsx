@@ -1,15 +1,12 @@
-import { threedScene } from "@/core/theme/tokens";
+import { neutral, threedScene } from "@/core/theme/tokens";
 import { Stack } from "expo-router";
-import { useTheme } from "tamagui";
 
 export default function SequenceLayout() {
-  const theme = useTheme();
-
   return (
     <Stack
       screenOptions={{
         headerShown: false,
-        contentStyle: { backgroundColor: theme.background.val },
+        contentStyle: { backgroundColor: neutral.page },
       }}
     >
       <Stack.Screen name="index" />

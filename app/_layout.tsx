@@ -10,7 +10,7 @@ import { registerSignOutHandler } from "@/core/utils/signOutBridge";
 import { useSyncStore } from "@/database/hooks/useSyncStore";
 import { NotificationResponseHandler } from "@/modules/notifications";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
-import { DarkTheme, DefaultTheme, ThemeProvider } from "@react-navigation/native";
+import { DarkTheme, ThemeProvider } from "@react-navigation/native";
 import { useFonts } from "expo-font";
 import {
   Manrope_500Medium,
@@ -21,19 +21,29 @@ import {
 import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { StatusBar } from "expo-status-bar";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { View } from "react-native";
 import { PortalProvider } from "@tamagui/portal";
 import { TamaguiProvider } from "tamagui";
 import i18n from "@/core/i18n/config";
-import { useResolvedTheme } from "@/core/theme";
-
-import config, { themeColors as appThemeColors } from "../tamagui.config";
+import config, { themeColors } from "../tamagui.config";
 
 export {
   // Catch any errors thrown by the Layout component.
   ErrorBoundary,
 } from "expo-router";
+
+// The app is dark-only: the navigation theme is the page color, never the OS scheme.
+const navigationTheme = {
+  ...DarkTheme,
+  colors: {
+    ...DarkTheme.colors,
+    background: themeColors.background,
+    card: themeColors.surface,
+    text: themeColors.textPrimary,
+    border: themeColors.borderSubtle,
+  },
+};
 
 export const unstable_settings = {
   initialRouteName: "index",
@@ -89,27 +99,11 @@ function RootLayoutNav() {
     return () => i18n.off("languageChanged", handler);
   }, []);
 
-  const resolvedTheme = useResolvedTheme();
-  const themeColors = appThemeColors[resolvedTheme];
-  const navigationTheme = useMemo(() => {
-    const base = resolvedTheme === "dark" ? DarkTheme : DefaultTheme;
-    return {
-      ...base,
-      colors: {
-        ...base.colors,
-        background: themeColors.background,
-        card: themeColors.surface,
-        text: themeColors.textPrimary,
-        border: themeColors.borderSubtle,
-      },
-    };
-  }, [resolvedTheme, themeColors]);
-
   return (
     <PortalProvider shouldAddRootHost>
-      <TamaguiProvider config={config} defaultTheme={resolvedTheme}>
+      <TamaguiProvider config={config} defaultTheme="dark">
         <ThemeProvider value={navigationTheme}>
-          <StatusBar style={resolvedTheme === "dark" ? "light" : "dark"} />
+          <StatusBar style="light" />
           <View
             style={{
               flex: 1,

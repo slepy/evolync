@@ -26,7 +26,6 @@ export {
   getNotificationRoute,
   getNotificationContent,
   getNotificationEntityRef,
-  formatUnreadBadge,
   parsePushData,
 } from "./utils";
 export { NOTIFICATION_TYPE } from "./types";

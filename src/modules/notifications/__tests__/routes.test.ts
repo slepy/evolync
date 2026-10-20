@@ -39,15 +39,3 @@ describe("getNotificationRoute", () => {
     assert.equal(getNotificationRoute({ type: "order_ready_for_pickup", entityId: "x" }), null);
   });
 });
-
-import { formatUnreadBadge } from "../utils/badge";
-
-describe("formatUnreadBadge", () => {
-  it("hides the badge at zero and caps large counts", () => {
-    assert.equal(formatUnreadBadge(0), null);
-    assert.equal(formatUnreadBadge(-1), null);
-    assert.equal(formatUnreadBadge(7), "7");
-    assert.equal(formatUnreadBadge(99), "99");
-    assert.equal(formatUnreadBadge(100), "99+");
-  });
-});

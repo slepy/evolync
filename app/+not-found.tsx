@@ -1,20 +1,18 @@
-import { Link, Stack } from "expo-router";
-import { Text, YStack } from "tamagui";
+import { EmptyState } from "@/core/components";
+import { router, Stack } from "expo-router";
+import { House, SearchX } from "lucide-react-native";
+import { YStack } from "tamagui";
 
 export default function NotFoundScreen() {
   return (
     <>
-      <Stack.Screen options={{ title: "Oops!" }} />
-      <YStack flex={1} alignItems="center" justifyContent="center" padding="$5">
-        <Text fontSize="$6" fontWeight="700">
-          This screen doesn't exist.
-        </Text>
-
-        <Link href="/" style={{ marginTop: 15, paddingVertical: 15 }}>
-          <Text fontSize="$3" color="$blue10">
-            Go to home screen!
-          </Text>
-        </Link>
+      <Stack.Screen options={{ title: t("errorNotFound") }} />
+      <YStack flex={1} backgroundColor="$neutralPage">
+        <EmptyState
+          icon={SearchX}
+          title={t("errorNotFound")}
+          action={{ label: t("navHome"), icon: House, onPress: () => router.replace("/") }}
+        />
       </YStack>
     </>
   );
