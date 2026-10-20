@@ -1,4 +1,4 @@
-import type { ContextOption } from "./ContextSheet";
+import type { ContextOption } from "./types";
 
 export const orgOptionId = (organizationId: string) => `org:${organizationId}`;
 

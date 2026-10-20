@@ -4,7 +4,8 @@ import { useStore } from "@/store";
 import { usePathname, useRouter, type Href } from "expo-router";
 import { Bell, House, NotebookPen, Settings, UserRound } from "lucide-react-native";
 import { useEffect, useState } from "react";
-import { BottomNav, type BottomNavItem } from "./BottomNav";
+import { BottomNav } from "./BottomNav";
+import type { BottomNavItem } from "./types";
 import {
   activeNavKey,
   hasAlertDot,

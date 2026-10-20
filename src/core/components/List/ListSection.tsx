@@ -1,16 +1,13 @@
-import { Plus, type LucideIcon } from "lucide-react-native";
+import type { LucideIcon } from "lucide-react-native";
 import type { ReactNode } from "react";
-import { Text, View, XStack, YStack } from "tamagui";
-import { resolveListAccent, type ListAccent } from "./accent";
-import { ListChip } from "./ListParts";
+import { Text, XStack, YStack } from "tamagui";
+import type { ListAccent } from "./accent";
+import { ListChip } from "./ListChip";
+import type { ListSectionAction } from "./types";
+import { SectionActionPill } from "./SectionActionPill";
+import { SectionIconButton } from "./SectionIconButton";
 
-export interface ListSectionAction {
-  /** "Add new", "Mark all as read", "Copy"… */
-  label: string;
-  onPress: () => void;
-  /** Default: plus. */
-  icon?: LucideIcon;
-}
+export type { ListSectionAction };
 
 export interface ListSectionProps {
   title: string;
@@ -75,53 +72,5 @@ export function ListSection({
       </XStack>
       {children}
     </YStack>
-  );
-}
-
-function SectionIconButton({ action, accent }: { action: ListSectionAction & { icon: LucideIcon }; accent: ListAccent }) {
-  const a = resolveListAccent(accent);
-  const Icon = action.icon;
-
-  return (
-    <View
-      role="button"
-      aria-label={action.label}
-      onPress={action.onPress}
-      pressStyle={{ opacity: 0.8 }}
-      width={44}
-      height={44}
-      borderRadius={22}
-      backgroundColor={a.fill}
-      alignItems="center"
-      justifyContent="center"
-    >
-      <Icon size={20} color={a.tint} strokeWidth={2.2} />
-    </View>
-  );
-}
-
-function SectionActionPill({ action, accent }: { action: ListSectionAction; accent: ListAccent }) {
-  const a = resolveListAccent(accent);
-  const Icon = action.icon ?? Plus;
-
-  return (
-    <XStack
-      role="button"
-      aria-label={action.label}
-      onPress={action.onPress}
-      pressStyle={{ opacity: 0.8 }}
-      alignItems="center"
-      gap={6}
-      height={40}
-      paddingLeft={12}
-      paddingRight={16}
-      borderRadius="$pill"
-      backgroundColor={a.fill}
-    >
-      <Icon size={16} color={a.label} strokeWidth={2.8} />
-      <Text fontSize="$button" fontWeight="$button" color={a.label}>
-        {action.label}
-      </Text>
-    </XStack>
   );
 }

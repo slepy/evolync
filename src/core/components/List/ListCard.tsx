@@ -1,5 +1,6 @@
 import { Children, Fragment, isValidElement, type ReactNode } from "react";
-import { View, YStack } from "tamagui";
+import { YStack } from "tamagui";
+import { ListDivider } from "./ListDivider";
 
 export interface ListCardProps {
   /** `ListRow`s. A 1px divider inset 16px is drawn between them, never after the last one. */
@@ -34,8 +35,4 @@ export function ListCard({ children, role = "list", "aria-label": ariaLabel }: L
       ))}
     </YStack>
   );
-}
-
-export function ListDivider() {
-  return <View height={1} marginHorizontal={16} backgroundColor="$neutralCardBorder" />;
 }

@@ -2,7 +2,7 @@ import type { ContextKey } from "@/core/theme/tokens";
 import { LayoutGrid, List } from "lucide-react-native";
 import { useMemo, useState, type ReactNode } from "react";
 import { localToday } from "../NextUp/pickNextUp";
-import { SubScreenPage } from "../SubScreen/SubScreen";
+import { SubScreenPage } from "../SubScreen/SubScreenPage";
 import { ViewSwitch } from "../ViewSwitch/ViewSwitch";
 import { CalendarAddSheet } from "./CalendarAddSheet";
 import { formatDayTitle, formatMonth, formatShortDay, weekdayLabels } from "./calendarFormat";
@@ -16,7 +16,8 @@ import {
   type CalendarFilter,
   type CalendarItem,
 } from "./calendarMonth";
-import { CalendarView, type CalendarRow } from "./CalendarView";
+import { CalendarView } from "./CalendarView";
+import type { CalendarRow } from "./types";
 import {
   useCalendarMonth,
   type CalendarMonthData,
