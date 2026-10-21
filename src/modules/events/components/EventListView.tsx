@@ -18,7 +18,7 @@ import { ActivityIndicator } from "react-native";
 import { Text, XStack, YStack } from "tamagui";
 import { useEventList } from "../hooks/useEventList";
 import { EventRowParticipants } from "./EventRowParticipants";
-import { eventTypeFilterOptions, filterEventList, withFromDay } from "./eventList";
+import { eventTypeFilterOptions, filterEventList, toggleExpandedId, withFromDay } from "./eventList";
 import { formatEventDates } from "./formatEventDates";
 
 const formatShortDay = (day: string) => formatDay(day, { day: "numeric", month: "short", year: "numeric" });
@@ -53,14 +53,6 @@ export const EventListView: React.FC<EventListViewProps> = ({ organizationId, in
     () => filterEventList(events, { ...range, typeId: activeType || null }),
     [events, range, activeType],
   );
-
-  const toggleExpanded = (eventId: string) =>
-    setExpandedIds((ids) => {
-      const next = new Set(ids);
-      if (next.has(eventId)) next.delete(eventId);
-      else next.add(eventId);
-      return next;
-    });
 
   return (
     <YStack gap={18}>
@@ -127,7 +119,7 @@ export const EventListView: React.FC<EventListViewProps> = ({ organizationId, in
                         <ExpandButton
                           expanded={expanded}
                           label={t(expanded ? "eventsHideParticipants" : "eventsShowParticipants")}
-                          onPress={() => toggleExpanded(event.id)}
+                          onPress={() => setExpandedIds((ids) => toggleExpandedId(ids, event.id))}
                         />
                       </XStack>
                     }

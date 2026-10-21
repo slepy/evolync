@@ -4,6 +4,7 @@ import {
   eventTypeFilterOptions,
   filterEventList,
   NO_EVENT_TYPE,
+  toggleExpandedId,
   withFromDay,
   type EventListSource,
 } from "../components/eventList";
@@ -86,5 +87,21 @@ describe("withFromDay", () => {
   it("moves TO along when FROM passes it", () => {
     assert.deepEqual(withFromDay(MARCH, "2099-03-10"), { from: "2099-03-10", to: "2099-03-31" });
     assert.deepEqual(withFromDay(MARCH, "2099-04-10"), { from: "2099-04-10", to: "2099-04-10" });
+  });
+});
+
+describe("toggleExpandedId", () => {
+  it("expands a collapsed row and keeps the others", () => {
+    assert.deepEqual([...toggleExpandedId(new Set(["a"]), "b")], ["a", "b"]);
+  });
+
+  it("collapses an expanded row", () => {
+    assert.deepEqual([...toggleExpandedId(new Set(["a", "b"]), "a")], ["b"]);
+  });
+
+  it("returns a new set without changing the previous one", () => {
+    const ids = new Set(["a"]);
+    assert.notEqual(toggleExpandedId(ids, "a"), ids);
+    assert.deepEqual([...ids], ["a"]);
   });
 });
