@@ -327,6 +327,8 @@
   "eventsShortNotePlaceholder": "Rövid infó a listában (pl. felszerelés szükséges)",
   "eventsAddressPlaceholder": "Add meg az esemény címét",
   "eventsParticipants": "Résztvevők",
+  "eventsShowParticipants": "Résztvevők megjelenítése",
+  "eventsHideParticipants": "Résztvevők elrejtése",
   "actions": "Műveletek",
   "eventsCancelEvent": "Esemény lemondása",
   "eventsDeleteTitle": "Esemény törlése",

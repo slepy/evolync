@@ -327,6 +327,8 @@
   "eventsShortNotePlaceholder": "Brief info visible on list (e.g., Gear required)",
   "eventsAddressPlaceholder": "Enter event address",
   "eventsParticipants": "Participants",
+  "eventsShowParticipants": "Show participants",
+  "eventsHideParticipants": "Hide participants",
   "actions": "Actions",
   "eventsCancelEvent": "Cancel event",
   "eventsDeleteTitle": "Delete Event",

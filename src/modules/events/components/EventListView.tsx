@@ -1,6 +1,7 @@
 import {
   ChipFilter,
   DateTimeField,
+  ExpandButton,
   ListCard,
   ListEmpty,
   ListIcon,
@@ -16,6 +17,7 @@ import React, { useMemo, useState } from "react";
 import { ActivityIndicator } from "react-native";
 import { Text, XStack, YStack } from "tamagui";
 import { useEventList } from "../hooks/useEventList";
+import { EventRowParticipants } from "./EventRowParticipants";
 import { eventTypeFilterOptions, filterEventList, withFromDay } from "./eventList";
 import { formatEventDates } from "./formatEventDates";
 
@@ -31,12 +33,14 @@ interface EventListViewProps {
 /**
  * List view of the organization calendar: FROM / TO and type chips in a
  * filters card, then the events overlapping the range ("N events"), each row
- * `dates · type · place` with a Cancelled badge. Filters live as long as the
- * view; trainings are not listed (they have no type).
+ * `dates · type · place` with a Cancelled badge; its chevron expands the
+ * participants with their status, a tap on the row opens the details.
+ * Filters live as long as the view; trainings are not listed (they have no type).
  */
 export const EventListView: React.FC<EventListViewProps> = ({ organizationId, initialRange, onEventPress }) => {
   const [range, setRange] = useState(initialRange);
   const [typeFilter, setTypeFilter] = useState("");
+  const [expandedIds, setExpandedIds] = useState<ReadonlySet<string>>(new Set());
   const { events, types, typeNames, isLoading } = useEventList(organizationId, range.from, range.to);
 
   const options = useMemo(
@@ -49,6 +53,14 @@ export const EventListView: React.FC<EventListViewProps> = ({ organizationId, in
     () => filterEventList(events, { ...range, typeId: activeType || null }),
     [events, range, activeType],
   );
+
+  const toggleExpanded = (eventId: string) =>
+    setExpandedIds((ids) => {
+      const next = new Set(ids);
+      if (next.has(eventId)) next.delete(eventId);
+      else next.add(eventId);
+      return next;
+    });
 
   return (
     <YStack gap={18}>
@@ -96,6 +108,7 @@ export const EventListView: React.FC<EventListViewProps> = ({ organizationId, in
               {listed.map((event) => {
                 const cancelled = event.status === EVENT_STATUS.CANCELLED;
                 const typeName = event.typeId ? typeNames.get(event.typeId) : undefined;
+                const expanded = expandedIds.has(event.id);
                 return (
                   <ListRow
                     key={event.id}
@@ -108,9 +121,21 @@ export const EventListView: React.FC<EventListViewProps> = ({ organizationId, in
                       .filter(Boolean)
                       .join(" · ")}
                     leading={<ListIcon icon={CalendarDays} accent="events" />}
-                    trailing={cancelled ? <StatusBadge label={t("statusCancelled")} color="danger" /> : undefined}
+                    trailing={
+                      <XStack alignItems="center" gap={4} flexShrink={0}>
+                        {cancelled ? <StatusBadge label={t("statusCancelled")} color="danger" /> : null}
+                        <ExpandButton
+                          expanded={expanded}
+                          label={t(expanded ? "eventsHideParticipants" : "eventsShowParticipants")}
+                          onPress={() => toggleExpanded(event.id)}
+                        />
+                      </XStack>
+                    }
+                    expanded={expanded}
                     onPress={() => onEventPress(event.id)}
-                  />
+                  >
+                    {expanded ? <EventRowParticipants eventId={event.id} /> : null}
+                  </ListRow>
                 );
               })}
             </ListCard>
