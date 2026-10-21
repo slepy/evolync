@@ -4,6 +4,7 @@ import {
   amountsByStatus,
   countPaymentStatuses,
   countPeriods,
+  currentPeriodsFirst,
   dateLocaleTag,
   describePeriod,
   formatAmount,
@@ -69,6 +70,32 @@ describe("isCurrentPeriod", () => {
   it("includes both ends", () => {
     assert.equal(isCurrentPeriod("2026-10-01", "2026-10-31", "2026-10-31"), true);
     assert.equal(isCurrentPeriod("2026-10-01", "2026-10-31", "2026-11-01"), false);
+  });
+});
+
+describe("currentPeriodsFirst", () => {
+  const range = (p: { start: string; end: string }) => p;
+
+  it("puts current periods on top and keeps the order of both groups", () => {
+    const periods = [
+      { id: "nov", start: "2026-11-01", end: "2026-11-30" },
+      { id: "oct", start: "2026-10-01", end: "2026-10-31" },
+      { id: "sep", start: "2026-09-01", end: "2026-09-30" },
+      { id: "year", start: "2026-01-01", end: "2026-12-31" },
+      { id: "2025", start: "2025-01-01", end: "2025-12-31" },
+    ];
+    assert.deepEqual(
+      currentPeriodsFirst(periods, range, "2026-10-21").map((p) => p.id),
+      ["oct", "year", "nov", "sep", "2025"],
+    );
+  });
+
+  it("leaves a list without a current period unchanged", () => {
+    const periods = [
+      { id: "sep", start: "2026-09-01", end: "2026-09-30" },
+      { id: "aug", start: "2026-08-01", end: "2026-08-31" },
+    ];
+    assert.deepEqual(currentPeriodsFirst(periods, range, "2026-10-21"), periods);
   });
 });
 

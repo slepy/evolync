@@ -1,7 +1,7 @@
 import PaymentCycle from "@/database/models/PaymentCycle";
 import PaymentRecord from "@/database/models/PaymentRecord";
 import { useEffect, useMemo, useState } from "react";
-import { countPeriods, storedDayKey, type DayKey } from "../paymentPeriod";
+import { countPeriods, currentPeriodsFirst, localDayKey, storedDayKey, type DayKey } from "../paymentPeriod";
 import { PaymentCycleRepository, PaymentRecordRepository } from "../repositories";
 
 export interface PaymentPeriodEntry {
@@ -13,7 +13,7 @@ export interface PaymentPeriodEntry {
 }
 
 /**
- * Billing periods of a school, newest first, with paid / total counts (14A).
+ * Billing periods of a school, current ones on top, then newest first, with paid / total counts (14A).
  * Periods and records are observed side by side; the list waits for both so
  * a chip never flashes "0/0".
  */
@@ -44,13 +44,14 @@ export const usePaymentPeriodList = (schoolId: string | undefined) => {
 
   const periods = useMemo<PaymentPeriodEntry[]>(() => {
     const counts = countPeriods(records ?? []);
-    return (cycles ?? []).map((cycle) => ({
+    const entries = (cycles ?? []).map((cycle) => ({
       cycle,
       start: storedDayKey(cycle.periodStart),
       end: storedDayKey(cycle.periodEnd),
       paid: counts[cycle.id]?.paid ?? 0,
       total: counts[cycle.id]?.total ?? 0,
     }));
+    return currentPeriodsFirst(entries, (entry) => entry, localDayKey(new Date()));
   }, [cycles, records]);
 
   return { periods, isLoading: cycles === null || records === null, error };

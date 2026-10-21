@@ -87,6 +87,19 @@ export function describePeriod(start: DayKey, end: DayKey, locale: string) {
 /** Today falls inside the period (14A "CURRENT"). */
 export const isCurrentPeriod = (start: DayKey, end: DayKey, today: DayKey): boolean => start <= today && today <= end;
 
+/** Current periods on top of a payments list; both groups keep their order (newest first). */
+export function currentPeriodsFirst<T>(
+  items: readonly T[],
+  range: (item: T) => { start: DayKey; end: DayKey },
+  today: DayKey,
+): T[] {
+  const isCurrent = (item: T) => {
+    const { start, end } = range(item);
+    return isCurrentPeriod(start, end, today);
+  };
+  return [...items.filter(isCurrent), ...items.filter((item) => !isCurrent(item))];
+}
+
 /** Start and end of a preset around `today` (weeks start on Monday). */
 export function periodPresetRange(preset: Exclude<PeriodPreset, "custom">, today: DayKey): { start: DayKey; end: DayKey } {
   const { y, m } = parts(today);
