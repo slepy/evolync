@@ -30,5 +30,5 @@ Current billing periods (today inside the period, the "CURRENT" badge) appear at
 
 ### Phase 1: Current periods on top
 
-- [ ] 1.1 Add currentPeriodsFirst helper with tests
-- [ ] 1.2 Sort current periods first in both payment hooks
+- [x] 1.1 Add currentPeriodsFirst helper with tests — 948ee44
+- [x] 1.2 Sort current periods first in both payment hooks — 948ee44
