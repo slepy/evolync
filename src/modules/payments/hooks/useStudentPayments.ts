@@ -9,6 +9,7 @@ import {
   PaymentRecordRepository,
 } from "../repositories";
 import { bulkUpdatePaymentRecords } from "../services";
+import { currentPeriodsFirst, localDayKey, storedDayKey } from "../paymentPeriod";
 
 /**
  * Plain object representation of payment cycle for display
@@ -124,6 +125,14 @@ export const useStudentPayments = (studentId: string | undefined) => {
         items.sort(
           (a, b) => b.cycle.periodEnd.getTime() - a.cycle.periodEnd.getTime(),
         );
+        const sorted = currentPeriodsFirst(
+          items,
+          (item) => ({
+            start: storedDayKey(item.cycle.periodStart),
+            end: storedDayKey(item.cycle.periodEnd),
+          }),
+          localDayKey(new Date()),
+        );
 
         // Original data always reflects the latest committed (DB) state
         originalDataRef.current.clear();
@@ -136,7 +145,7 @@ export const useStudentPayments = (studentId: string | undefined) => {
           });
         });
 
-        setPayments(items);
+        setPayments(sorted);
       } catch (err) {
         console.error("[useStudentPayments] Error loading:", err);
       } finally {
