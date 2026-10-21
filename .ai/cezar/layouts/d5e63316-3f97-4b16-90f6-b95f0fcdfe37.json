@@ -1,0 +1,59 @@
+{
+  "layouts": [
+    {
+      "name": "Chat",
+      "columns": [
+        {
+          "view": "session",
+          "width": 100
+        }
+      ]
+    },
+    {
+      "name": "Changes",
+      "columns": [
+        {
+          "view": "changes",
+          "width": 100
+        }
+      ]
+    },
+    {
+      "name": "Commits",
+      "columns": [
+        {
+          "view": "commits",
+          "width": 100
+        }
+      ]
+    },
+    {
+      "name": "Files",
+      "columns": [
+        {
+          "view": "files",
+          "width": 100
+        }
+      ]
+    },
+    {
+      "name": "Preview",
+      "columns": [
+        {
+          "view": "browser",
+          "width": 100
+        }
+      ]
+    },
+    {
+      "name": "Graph",
+      "columns": [
+        {
+          "view": "graph",
+          "width": 100
+        }
+      ]
+    }
+  ],
+  "active": "Preview"
+}
