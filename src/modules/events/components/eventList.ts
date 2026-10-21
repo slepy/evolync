@@ -62,3 +62,11 @@ export const withFromDay = (range: { from: string; to: string }, from: string) =
   from,
   to: range.to < from ? from : range.to,
 });
+
+/** Expanded rows after a tap on a row's chevron: the id is added or removed. */
+export function toggleExpandedId(ids: ReadonlySet<string>, id: string): ReadonlySet<string> {
+  const next = new Set(ids);
+  if (next.has(id)) next.delete(id);
+  else next.add(id);
+  return next;
+}

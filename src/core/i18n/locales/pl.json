@@ -339,6 +339,8 @@
   "eventsShortNotePlaceholder": "Zwięzła informacja widoczna na liście (np. Wymagane ochraniacze)",
   "eventsAddressPlaceholder": "Wpisz adres wydarzenia",
   "eventsParticipants": "Uczestnicy",
+  "eventsShowParticipants": "Pokaż uczestników",
+  "eventsHideParticipants": "Ukryj uczestników",
   "actions": "Akcje",
   "eventsCancelEvent": "Anuluj wydarzenie",
   "eventsDeleteTitle": "Usuń wydarzenie",

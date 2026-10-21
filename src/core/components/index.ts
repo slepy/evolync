@@ -27,6 +27,7 @@ export * from "./ViewSwitch";
 export * from "./StatusFilter";
 export * from "./StatusBadge";
 export * from "./StatusButton";
+export * from "./ExpandButton";
 export * from "./AuthPage";
 export * from "./AlertBanner";
 export * from "./MemberAvatar";
