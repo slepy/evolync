@@ -26,6 +26,8 @@ Current billing periods (today inside the period, the "CURRENT" badge) appear at
 
 ## Progress
 
+PR: #59
+
 > Convention: `- [ ]` pending, `- [x]` done. Append ` — <commit sha>` when a step lands. Do not rename step titles.
 
 ### Phase 1: Current periods on top
