@@ -26,3 +26,9 @@ automation-poll.lock.guard/
 automation-mutation.lock.guard/
 automation-mutation.lock
 ui-state.json
+lifecycle/
+config.lifecycle.lock/
+config.json.*.tmp
+layouts/
+mcp.local.json
+mcp.local.json.cez-tmp-*

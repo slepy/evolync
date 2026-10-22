@@ -41,7 +41,13 @@
       "columns": [
         {
           "view": "browser",
-          "width": 100
+          "width": 100,
+          "browser": {
+            "tabs": [
+              ""
+            ],
+            "active": 0
+          }
         }
       ]
     },
@@ -55,5 +61,5 @@
       ]
     }
   ],
-  "active": "Graph"
+  "active": "Chat"
 }
