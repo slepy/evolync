@@ -1,5 +1,5 @@
 import { neutral } from "@/core/theme/tokens";
-import { ChevronDown } from "lucide-react-native";
+import { ChevronDown, ChevronUp } from "lucide-react-native";
 import { XStack } from "tamagui";
 
 export interface ExpandButtonProps {
@@ -15,6 +15,7 @@ export interface ExpandButtonProps {
  * own `onPress`.
  */
 export function ExpandButton({ expanded, label, onPress }: ExpandButtonProps) {
+  const Chevron = expanded ? ChevronUp : ChevronDown;
   return (
     <XStack
       role="button"
@@ -33,12 +34,8 @@ export function ExpandButton({ expanded, label, onPress }: ExpandButtonProps) {
       justifyContent="center"
       flexShrink={0}
     >
-      <ChevronDown
-        size={20}
-        color={neutral.muted}
-        strokeWidth={2.2}
-        style={expanded ? { transform: [{ rotate: "180deg" }] } : undefined}
-      />
+      {/* An icon, not a rotated one: react-native-svg rotates around its top-left corner and the chevron leaves the view. */}
+      <Chevron size={20} color={neutral.muted} strokeWidth={2.2} />
     </XStack>
   );
 }
