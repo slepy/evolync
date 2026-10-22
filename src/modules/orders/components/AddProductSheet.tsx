@@ -11,7 +11,7 @@ import {
 import { neutral } from "@/core/theme/tokens";
 import { formatPrice } from "@/core/utils/formatters";
 import type { ProductResponseDto } from "@/modules/inventory/types/dto";
-import { ChevronDown, Package } from "lucide-react-native";
+import { ChevronDown, ChevronUp, Package } from "lucide-react-native";
 import React, { useEffect, useMemo, useState } from "react";
 import { ScrollView } from "react-native";
 import { v4 as uuidv4 } from "uuid";
@@ -163,12 +163,11 @@ export const AddProductSheet: React.FC<AddProductSheetProps> = ({
                   trailing={
                     <XStack alignItems="center" gap={12} flexShrink={0}>
                       {inOrder > 0 ? <ListChip label={`×${inOrder}`} accent="orders" /> : null}
-                      <ChevronDown
-                        size={18}
-                        color={neutral.muted}
-                        strokeWidth={2.2}
-                        style={expanded ? { transform: [{ rotate: "180deg" }] } : undefined}
-                      />
+                      {expanded ? (
+                        <ChevronUp size={18} color={neutral.muted} strokeWidth={2.2} />
+                      ) : (
+                        <ChevronDown size={18} color={neutral.muted} strokeWidth={2.2} />
+                      )}
                     </XStack>
                   }
                   accent="orders"
