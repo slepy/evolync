@@ -36,3 +36,15 @@ export const studentFieldMode = (
   if (!choosesStudent(scope)) return "none";
   return fixedStudentId ? "fixed" : "choose";
 };
+
+/**
+ * Where the Event row of order details (12D) leads: the organization's event
+ * details for the owner, the student's own event details for a student; a
+ * school screen opened by someone who does not own the organization has no
+ * event details to open.
+ */
+export const orderEventTarget = (scope: OrdersScope, ownsOrganization: boolean): "organization" | "user" | null => {
+  if (scope === "student") return "user";
+  if (scope === "organization") return "organization";
+  return ownsOrganization ? "organization" : null;
+};

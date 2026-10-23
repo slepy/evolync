@@ -8,5 +8,12 @@ export default function OrganizationOrderDetailsScreen() {
   useRequireOrganizationOwner();
   const { orderId } = useLocalSearchParams<{ orderId: string }>();
   const router = useRouter();
-  return <OrderDetailsScreen scope="organization" orderId={orderId} onDone={() => router.back()} />;
+  return (
+    <OrderDetailsScreen
+      scope="organization"
+      orderId={orderId}
+      onDone={() => router.back()}
+      onOpenEvent={(eventId) => router.push({ pathname: "/organization/events/[eventId]", params: { eventId } })}
+    />
+  );
 }

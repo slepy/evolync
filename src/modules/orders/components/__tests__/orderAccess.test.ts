@@ -7,6 +7,7 @@ import {
   canEditOrder,
   choosesStudent,
   studentFieldMode,
+  orderEventTarget,
 } from "@/modules/orders/components/orderAccess";
 import { ORDER_STATUSES } from "@/modules/orders/components/orderListState";
 
@@ -51,5 +52,17 @@ describe("studentFieldMode", () => {
   it("shows no STUDENT field to a student", () => {
     assert.equal(studentFieldMode("student", undefined), "none");
     assert.equal(studentFieldMode("student", "member-1"), "none");
+  });
+});
+
+describe("orderEventTarget", () => {
+  it("opens the organization's event for the owner, the own event for a student", () => {
+    assert.equal(orderEventTarget("organization", true), "organization");
+    assert.equal(orderEventTarget("school", true), "organization");
+    assert.equal(orderEventTarget("student", false), "user");
+  });
+
+  it("opens nothing from a school screen of someone who does not own the organization", () => {
+    assert.equal(orderEventTarget("school", false), null);
   });
 });

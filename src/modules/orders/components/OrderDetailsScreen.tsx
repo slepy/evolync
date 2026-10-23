@@ -1,6 +1,8 @@
 import {
   MemberAvatar,
   ListCard,
+  ListChip,
+  ListIcon,
   ListRow,
   PrimaryButton,
   StatusBadge,
@@ -9,6 +11,9 @@ import {
   resolveListAccent,
 } from "@/core/components";
 import { neutral } from "@/core/theme/tokens";
+import { formatEventDates } from "@/modules/events/components/formatEventDates";
+import { timestampToDay } from "@/modules/trainings/types/helpers";
+import { CalendarDays } from "lucide-react-native";
 import { LoadingScreen } from "@/core/components";
 import { confirmDelete } from "@/core/utils/confirmDelete";
 import { useProducts } from "@/modules/inventory/hooks";
@@ -33,6 +38,8 @@ interface OrderDetailsScreenProps {
   memberId?: string;
   /** After Save and after Delete. */
   onDone: () => void;
+  /** Opens the event of an event order; without it the Event row does nothing. */
+  onOpenEvent?: (eventId: string) => void;
 }
 
 const toCart = (items: OrderItemDetails[]): CartItem[] =>
@@ -56,7 +63,13 @@ const toCart = (items: OrderItemDetails[]): CartItem[] =>
  * the student sees their own order and changes or deletes it only while it is
  * placed. Save appears after a change.
  */
-export const OrderDetailsScreen: React.FC<OrderDetailsScreenProps> = ({ scope, orderId, memberId, onDone }) => {
+export const OrderDetailsScreen: React.FC<OrderDetailsScreenProps> = ({
+  scope,
+  orderId,
+  memberId,
+  onDone,
+  onOpenEvent,
+}) => {
   const { orderDetails, isLoading, isUpdating, error, updateStatus, updateItems, deleteOrder } =
     useOrderDetails(orderId);
   const organizationId = useOrganizationIdOfSchool(orderDetails?.order.schoolId);
@@ -89,7 +102,7 @@ export const OrderDetailsScreen: React.FC<OrderDetailsScreenProps> = ({ scope, o
     );
   }
 
-  const { order, member, items } = orderDetails;
+  const { order, member, event, items } = orderDetails;
   const currentStatus = status ?? order.status;
   const editable = canEditOrder(scope, order.status);
   const statusChanged = currentStatus !== order.status;
@@ -155,6 +168,18 @@ export const OrderDetailsScreen: React.FC<OrderDetailsScreenProps> = ({ scope, o
             title={memberName}
             subtitle={member?.email && member.email !== memberName ? member.email : undefined}
             leading={<MemberAvatar size={48} name={memberName} uri={member?.avatarUrl} rankId={member?.currentRankId} />}
+          />
+        ) : null}
+        {event ? (
+          <ListRow
+            size="md"
+            title={event.name}
+            aria-label={`${t("event")}, ${event.name}`}
+            subtitle={`${t("event")} · ${formatEventDates(timestampToDay(event.startDate), timestampToDay(event.endDate))}`}
+            badge={event.cancelled ? <ListChip accent="danger" label={t("statusCancelled")} /> : undefined}
+            leading={<ListIcon icon={CalendarDays} accent="events" size={44} />}
+            onPress={onOpenEvent ? () => onOpenEvent(event.id) : undefined}
+            role={onOpenEvent ? "link" : undefined}
           />
         ) : null}
         <XStack
