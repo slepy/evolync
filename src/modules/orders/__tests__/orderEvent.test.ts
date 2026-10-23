@@ -1,6 +1,6 @@
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
-import { orderEvent } from "../hooks/useOrdersList";
+import { orderEvent } from "../components/orderListState";
 
 describe("orderEvent", () => {
   const names = new Map([["e1", "Summer grading"]]);

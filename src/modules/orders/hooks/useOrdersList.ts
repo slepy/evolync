@@ -8,7 +8,7 @@ import { ProductRepository, ProductVariantRepository } from "@/modules/inventory
 import { SchoolRepository } from "@/modules/school/repositories";
 import { StudentRepository } from "@/modules/students/repositories";
 import type { OrdersScope } from "../components/orderAccess";
-import type { ShoppingListSource } from "../components/orderListState";
+import { orderEvent, type ShoppingListSource } from "../components/orderListState";
 import { cartItemCount, cartTotals } from "../components/orderCart";
 import { OrderItemRepository, OrderRepository } from "../repositories";
 import type { OrderStatus } from "../types";
@@ -53,16 +53,6 @@ const ordersOf = (source: OrdersListSource): Observable<Order[]> | null => {
       return source.memberId ? OrderRepository.observeListByMemberId(source.memberId) : null;
   }
 };
-
-/**
- * The event of an order for its row: the id always, the name only when the
- * event is on the device (a student who left the event no longer has it).
- */
-export const orderEvent = (
-  eventId: string | null | undefined,
-  eventNameById: Map<string, string>,
-): Pick<OrderListEntry, "eventId" | "eventName"> =>
-  eventId ? { eventId, eventName: eventNameById.get(eventId) } : {};
 
 /** Members, schools, products and events of the orders, each loaded once. */
 export const toOrderListEntries = async (orders: Order[], items: OrderItem[]): Promise<OrderListEntry[]> => {
