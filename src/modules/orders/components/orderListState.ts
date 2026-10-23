@@ -21,6 +21,16 @@ export const ORDER_STATUS_STYLE: Record<OrderStatus, { label: string; hint: stri
   completed: { label: "statusCompleted", hint: "ordersStatusHintCompleted", accent: "trainings" },
 };
 
+/**
+ * The event of an order for its row: the id always, the name only when the
+ * event is on the device (a student who left the event no longer has it).
+ */
+export const orderEvent = (
+  eventId: string | null | undefined,
+  eventNameById: Map<string, string>,
+): { eventId?: string; eventName?: string } =>
+  eventId ? { eventId, eventName: eventNameById.get(eventId) } : {};
+
 /** Counts for the status chips: every status plus "all". */
 export const countOrdersByStatus = (orders: Array<{ status: OrderStatus }>): Record<OrderStatusChip, number> => {
   const counts = { all: orders.length } as Record<OrderStatusChip, number>;

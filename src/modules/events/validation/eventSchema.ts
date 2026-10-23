@@ -81,6 +81,7 @@ export const createEventSchema = z
     visibility: eventVisibilitySchema,
     schoolId: z.string().uuid().optional(),
     whitelistedMemberIds: z.array(z.string().uuid()).optional(),
+    examsPlanned: z.boolean().default(false),
   })
   .refine(
     (data) => {
@@ -161,6 +162,7 @@ export const updateEventSchema = z
     schoolId: z.string().uuid().optional(),
     whitelistedMemberIds: z.array(z.string().uuid()).optional(),
     status: eventStatusSchema.optional(),
+    examsPlanned: z.boolean().optional(),
   })
   .refine(
     (data) => {

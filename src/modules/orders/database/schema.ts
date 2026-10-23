@@ -14,6 +14,7 @@ export const ordersSchema = [
       { name: "school_id", type: "string", isIndexed: true },
       { name: "school_member_id", type: "string", isIndexed: true },
       { name: "status", type: "string" },
+      { name: "event_id", type: "string", isOptional: true, isIndexed: true },
       { name: "created_at", type: "number" },
       { name: "updated_at", type: "number" },
       { name: "deleted_at", type: "number", isOptional: true },

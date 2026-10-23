@@ -175,7 +175,7 @@ export const EventParticipantRepository = {
         Q.where("event_id", eventId),
         Q.where("deleted_at", null)
       )
-      .observeWithColumns(["status"]);
+      .observeWithColumns(["status", "takes_exam"]);
   },
 
   observeByMemberId(schoolMemberId: string) {
@@ -185,6 +185,6 @@ export const EventParticipantRepository = {
         Q.where("school_member_id", schoolMemberId),
         Q.where("deleted_at", null)
       )
-      .observeWithColumns(["status"]);
+      .observeWithColumns(["status", "takes_exam"]);
   },
 };

@@ -3,12 +3,12 @@ import { Text, XStack } from "tamagui";
 import { resolveListAccent, type ListAccent } from "./accent";
 import type { ListSectionAction } from "./types";
 
-interface SectionActionPillProps {
+export interface SectionActionPillProps {
   action: ListSectionAction;
   accent: ListAccent;
 }
 
-/** Pill button on the right of a `ListSection` header ("Add new"). */
+/** Pill button on the right of a `ListSection` header ("Add new"), or under a row (10D1 "Add order"). */
 export function SectionActionPill({ action, accent }: SectionActionPillProps) {
   const a = resolveListAccent(accent);
   const Icon = action.icon ?? Plus;
@@ -16,7 +16,7 @@ export function SectionActionPill({ action, accent }: SectionActionPillProps) {
   return (
     <XStack
       role="button"
-      aria-label={action.label}
+      aria-label={action.ariaLabel ?? action.label}
       onPress={action.onPress}
       pressStyle={{ opacity: 0.8 }}
       alignItems="center"

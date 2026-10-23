@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import Order from "@/database/models/Order";
+import { EventRepository } from "@/modules/events/repositories";
 import { OrderRepository, OrderItemRepository } from "../repositories";
 import {
   ProductVariantRepository,
@@ -15,6 +16,8 @@ export interface MemberOrderWithDetails {
   itemCount: number;
   totalsByCurrency: Record<string, number>;
   productName?: string;
+  /** Name of the event the order was placed for, when it is on the device. */
+  eventName?: string;
 }
 
 // ============================================================================
@@ -72,11 +75,14 @@ export const useMemberOrders = (memberId: string | undefined) => {
             }
           }
 
+          const event = order.eventId ? await EventRepository.findById(order.eventId) : null;
+
           ordersWithDetails.push({
             order,
             itemCount,
             totalsByCurrency,
             productName,
+            eventName: event && !event.deletedAt ? event.name : undefined,
           });
         }
 

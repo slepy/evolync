@@ -6,4 +6,6 @@ export interface ListSectionAction {
   onPress: () => void;
   /** Default: plus. */
   icon?: LucideIcon;
+  /** Accessible label when the visible one is not enough ("Add order, Anna Kowalska"). */
+  ariaLabel?: string;
 }

@@ -1,3 +1,5 @@
+import { EVENT_STATUS } from "@/database/models/Event";
+import { EventRepository } from "@/modules/events/repositories";
 import { useCallback, useEffect, useState } from "react";
 import Order from "@/database/models/Order";
 import type { OrderStatus } from "../types";
@@ -30,9 +32,19 @@ export interface OrderItemDetails {
   currency: string;
 }
 
+/** The event an order was placed for, when it is on the device. */
+export interface OrderEventDetails {
+  id: string;
+  name: string;
+  startDate: Date;
+  endDate: Date;
+  cancelled: boolean;
+}
+
 export interface OrderDetails {
   order: Order;
   member?: SchoolMember;
+  event?: OrderEventDetails;
   items: OrderItemDetails[];
   totalsByCurrency: Record<string, number>;
 }
@@ -81,6 +93,8 @@ export const useOrderDetails = (orderId: string | undefined) => {
 
         // Get member name via repository
         const member = await StudentRepository.findById(order.schoolMemberId);
+        // The event the order was placed for (gone when deleted or not visible)
+        const event = order.eventId ? await EventRepository.findById(order.eventId) : null;
         // Get order items with product details via repositories
         const orderItems = await OrderItemRepository.findByOrderId(orderId);
 
@@ -136,6 +150,15 @@ export const useOrderDetails = (orderId: string | undefined) => {
         setOrderDetails({
           order,
           member: member ?? undefined,
+          event: event
+            ? {
+                id: event.id,
+                name: event.name,
+                startDate: event.startDate,
+                endDate: event.endDate,
+                cancelled: event.status === EVENT_STATUS.CANCELLED,
+              }
+            : undefined,
           items: itemDetails,
           totalsByCurrency,
         });

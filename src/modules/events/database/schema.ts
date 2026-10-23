@@ -25,6 +25,7 @@ export const eventsSchema = [
       { name: "currency", type: "string" },
       { name: "visibility", type: "string" }, // 'organization', 'school', 'whitelist'
       { name: "status", type: "string" }, // 'active', 'cancelled'
+      { name: "exams_planned", type: "boolean" },
       { name: "created_by", type: "string" },
       { name: "created_at", type: "number" },
       { name: "updated_at", type: "number" },
@@ -38,6 +39,7 @@ export const eventsSchema = [
       { name: "school_member_id", type: "string", isIndexed: true },
       { name: "status", type: "string" }, // 'absent', 'attending', 'paid'
       { name: "status_changed_by", type: "string", isOptional: true },
+      { name: "takes_exam", type: "boolean" },
       { name: "created_at", type: "number" },
       { name: "updated_at", type: "number" },
       { name: "deleted_at", type: "number", isOptional: true },

@@ -23,6 +23,8 @@ export default class EventParticipant extends Model {
   @field("school_member_id") schoolMemberId!: string;
   @field("status") status!: EventParticipantStatus;
   @field("status_changed_by") statusChangedBy?: string;
+  /** Only meaningful while the event has exams planned; kept when they are switched off. */
+  @field("takes_exam") takesExam!: boolean;
 
   @relation("events", "event_id") event!: Event;
   @relation("school_members", "school_member_id") schoolMember!: SchoolMember;

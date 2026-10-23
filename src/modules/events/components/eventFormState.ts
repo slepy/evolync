@@ -24,6 +24,8 @@ export interface EventFormState {
   visibility: EventVisibility;
   schoolId?: string;
   inviteeIds: string[];
+  /** Participants can be marked as taking the exam (10D). */
+  examsPlanned: boolean;
 }
 
 /** Field path → translation key ("name", "endDate", "inviteeIds"…). */
@@ -45,6 +47,7 @@ export interface EventLike {
   currency: string;
   visibility: EventVisibility;
   schoolId?: string | null;
+  examsPlanned?: boolean | null;
 }
 
 /**
@@ -64,6 +67,7 @@ export const initialEventForm = (day?: string, today: string = localToday()): Ev
     currency: EVENT_DEFAULT_CURRENCY,
     visibility: EVENT_VISIBILITY.ORGANIZATION,
     inviteeIds: [],
+    examsPlanned: false,
   };
 };
 
@@ -80,6 +84,7 @@ export const eventToForm = (event: EventLike, inviteeIds: string[] = []): EventF
   visibility: event.visibility,
   schoolId: event.visibility === EVENT_VISIBILITY.SCHOOL ? event.schoolId ?? undefined : undefined,
   inviteeIds: event.visibility === EVENT_VISIBILITY.WHITELIST ? inviteeIds : [],
+  examsPlanned: !!event.examsPlanned,
 });
 
 const optional = (value: string): string | undefined => value.trim() || undefined;
@@ -98,6 +103,7 @@ export const toSchemaInput = (form: EventFormState) => ({
   schoolId: form.visibility === EVENT_VISIBILITY.SCHOOL ? form.schoolId : undefined,
   whitelistedMemberIds:
     form.visibility === EVENT_VISIBILITY.WHITELIST ? [...form.inviteeIds].sort() : undefined,
+  examsPlanned: form.examsPlanned,
 });
 
 /** Maps a schema path to the field showing the error. */

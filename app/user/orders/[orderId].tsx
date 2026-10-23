@@ -8,5 +8,13 @@ export default function UserOrderDetailsScreen() {
   const { orderId } = useLocalSearchParams<{ orderId: string }>();
   const router = useRouter();
   const membership = useStore((state) => state.getActiveMembership());
-  return <OrderDetailsScreen scope="student" orderId={orderId} memberId={membership?.memberId} onDone={() => router.back()} />;
+  return (
+    <OrderDetailsScreen
+      scope="student"
+      orderId={orderId}
+      memberId={membership?.memberId}
+      onDone={() => router.back()}
+      onOpenEvent={(eventId) => router.push({ pathname: "/user/events/[eventId]", params: { eventId } })}
+    />
+  );
 }

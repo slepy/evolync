@@ -7,6 +7,7 @@ import {
   SelectField,
   SubScreenPage,
   TextField,
+  ToggleRow,
   type AudienceMember,
 } from "@/core/components";
 import { formatDay } from "@/modules/trainings/components/format";
@@ -47,7 +48,7 @@ interface EventFormScreenProps {
 
 /**
  * New event (10A) and edit (10B): NAME, TYPE, SHORT NOTE, LOCATION, START / END
- * with the day count, PRICE / CURRENCY, "Who can see it?", Create / Save
+ * with the day count, PRICE / CURRENCY, "Exams planned", "Who can see it?", Create / Save
  * pinned at the bottom in the Events amber.
  */
 export const EventFormScreen: React.FC<EventFormScreenProps> = ({
@@ -229,6 +230,25 @@ export const EventFormScreen: React.FC<EventFormScreenProps> = ({
               />
             </YStack>
           </XStack>
+
+          <YStack
+            paddingVertical={8}
+            paddingHorizontal={16}
+            borderRadius={16}
+            borderWidth={1}
+            borderColor="$neutralRaisedBorder"
+            backgroundColor="$neutralCard"
+          >
+            <ToggleRow
+              title={t("eventsExamsPlanned")}
+              hint={t("eventsExamsPlannedHint")}
+              label={t("eventsExamsPlanned")}
+              checked={form.examsPlanned}
+              onChange={(examsPlanned) => update({ examsPlanned })}
+              accent="events"
+              disabled={isSaving}
+            />
+          </YStack>
 
           <AudienceChoice
             title={t("eventsAudienceTitle")}

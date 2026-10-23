@@ -8,7 +8,7 @@
  */
 
 import { SyncContext, SyncPullChanges } from "./types.ts";
-import { convertToSupabaseRecord, convertToWatermelonRecord } from "./utils.ts";
+import { ORGANIZATION_PUSH_TABLES, convertToSupabaseRecord, convertToWatermelonRecord } from "./utils.ts";
 import { pushThreeDChanges, pullThreeDChanges } from "./sync-threed.ts";
 import { pushNotesChanges, pullNotesChanges } from "./sync-notes.ts";
 import { pushTagsChanges, pullTagsChanges } from "./sync-tags.ts";
@@ -35,26 +35,7 @@ export async function syncOrganization(ctx: SyncContext): Promise<SyncPullChange
   console.log(`[SYNC:ORGANIZATION] Syncing organization: ${organizationId}`);
 
   // Define table processing order to respect foreign key dependencies
-  const tablesToSync = [
-    "organizations",
-    "organization_gradings",
-    "schools",
-    "school_settings",
-    "school_invites",
-    "school_join_requests",
-    "school_members",
-    "products",
-    "product_variants",
-    "orders",
-    "order_items",
-    "payment_cycles",
-    "payment_records",
-    "training_sessions",
-    "attendance_records",
-    "event_types",
-    "events",
-    "event_participants",
-  ];
+  const tablesToSync = ORGANIZATION_PUSH_TABLES;
 
   // ===========================================================================
   // PUSH: Apply incoming changes from client to Supabase

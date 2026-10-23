@@ -23,3 +23,28 @@ export const canChangeOrderStatus = (scope: OrdersScope): boolean => scope !== "
 
 /** New order (12E) asks for the student only when staff creates it. */
 export const choosesStudent = (scope: OrdersScope): boolean => scope !== "student";
+
+/**
+ * The STUDENT field of New order (12E): staff choose the student, unless the
+ * student is fixed (10D Add order: locked field); a student orders for
+ * themselves (no field).
+ */
+export const studentFieldMode = (
+  scope: OrdersScope,
+  fixedStudentId: string | undefined,
+): "choose" | "fixed" | "none" => {
+  if (!choosesStudent(scope)) return "none";
+  return fixedStudentId ? "fixed" : "choose";
+};
+
+/**
+ * Where the Event row of order details (12D) leads: the organization's event
+ * details for the owner, the student's own event details for a student; a
+ * school screen opened by someone who does not own the organization has no
+ * event details to open.
+ */
+export const orderEventTarget = (scope: OrdersScope, ownsOrganization: boolean): "organization" | "user" | null => {
+  if (scope === "student") return "user";
+  if (scope === "organization") return "organization";
+  return ownsOrganization ? "organization" : null;
+};

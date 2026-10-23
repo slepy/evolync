@@ -23,6 +23,7 @@ describe("initialEventForm", () => {
     assert.equal(form.endDate, "2099-03-07");
     assert.equal(form.currency, "PLN");
     assert.equal(form.visibility, EVENT_VISIBILITY.ORGANIZATION);
+    assert.equal(form.examsPlanned, false);
   });
 
   it("falls back to today for past or bad days", () => {
@@ -128,6 +129,16 @@ describe("eventToForm / hasEventChanges", () => {
     assert.equal(hasEventChanges({ ...initial, name: "Winter Camp " }, initial), false);
     assert.equal(hasEventChanges({ ...initial, price: "900" }, initial), true);
     assert.equal(hasEventChanges({ ...initial, inviteeIds: [MEMBER_A] }, initial), true);
+  });
+
+  it("reads a missing Exams planned as off; switching it is a change that validates", () => {
+    const initial = eventToForm({ ...event, typeId: TYPE }, [MEMBER_A]);
+    assert.equal(initial.examsPlanned, false);
+    assert.equal(eventToForm({ ...event, examsPlanned: true }).examsPlanned, true);
+    const on = { ...initial, examsPlanned: true };
+    assert.equal(hasEventChanges(on, initial), true);
+    const result = validateEventForm(on);
+    assert.ok(result.ok && result.values.examsPlanned === true);
   });
 });
 

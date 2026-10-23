@@ -53,6 +53,7 @@ export const useUpdateEvent = (eventId: string | undefined, organizationId?: str
           visibility: formData.visibility,
           schoolId: formData.schoolId,
           status: formData.status,
+          examsPlanned: formData.examsPlanned,
         };
 
         const event = await updateEvent(eventId, dto);

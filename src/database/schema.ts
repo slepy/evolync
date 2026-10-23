@@ -15,7 +15,7 @@ import { trainingsSchema } from "@/modules/trainings/database/schema";
 import { appSchema } from "@nozbe/watermelondb";
 
 export default appSchema({
-  version: 22,
+  version: 23,
   tables: [
     ...attendanceSchema,
     ...authSchema,
