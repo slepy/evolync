@@ -19,6 +19,7 @@ export interface OrderListEntry {
   schoolName?: string;
   status: OrderStatus;
   createdAt: Date;
+  memberId: string;
   memberName: string;
   memberAvatarUrl?: string;
   memberRankId?: string;
@@ -50,7 +51,7 @@ const ordersOf = (source: OrdersListSource): Observable<Order[]> | null => {
 };
 
 /** Members, schools and products of the orders, each loaded once. */
-const toEntries = async (orders: Order[], items: OrderItem[]): Promise<OrderListEntry[]> => {
+export const toOrderListEntries = async (orders: Order[], items: OrderItem[]): Promise<OrderListEntry[]> => {
   const memberIds = [...new Set(orders.map((o) => o.schoolMemberId))];
   const schoolIds = [...new Set(orders.map((o) => o.schoolId))];
   const variantIds = [...new Set(items.map((i) => i.productVariantId))];
@@ -82,6 +83,7 @@ const toEntries = async (orders: Order[], items: OrderItem[]): Promise<OrderList
       schoolName: schoolById.get(order.schoolId)?.name,
       status: order.status,
       createdAt: order.createdAt,
+      memberId: order.schoolMemberId,
       memberName: member?.displayName || member?.email || t("unknownMember"),
       memberAvatarUrl: member?.avatarUrl,
       memberRankId: member?.currentRankId,
@@ -132,7 +134,7 @@ export const useOrdersList = (source: OrdersListSource) => {
           orders.length === 0
             ? of([] as OrderListEntry[])
             : combineLatest([of(orders), OrderItemRepository.observeByOrderIds(orders.map((o) => o.id))]).pipe(
-                switchMap(([list, items]) => from(toEntries(list, items))),
+                switchMap(([list, items]) => from(toOrderListEntries(list, items))),
               ),
         ),
       )

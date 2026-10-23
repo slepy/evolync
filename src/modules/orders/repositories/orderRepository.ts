@@ -130,6 +130,18 @@ export const OrderRepository = {
       .observeWithColumns(["status", "updated_at"]);
   },
 
+  /** Orders placed for an event (10D), newest first; re-emits on status changes too. */
+  observeByEventId(eventId: string) {
+    return database
+      .get<Order>("orders")
+      .query(
+        Q.where("event_id", eventId),
+        Q.where("deleted_at", null),
+        Q.sortBy("created_at", Q.desc)
+      )
+      .observeWithColumns(["status", "updated_at"]);
+  },
+
   observeCountBySchoolIds(schoolIds: string[], status: string) {
     const ordersCollection = database.get<Order>("orders");
     return ordersCollection
