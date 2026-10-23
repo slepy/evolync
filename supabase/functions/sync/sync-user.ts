@@ -14,7 +14,13 @@
  */
 
 import { SyncContext, SyncPullChanges } from "./types.ts";
-import { convertToSupabaseRecord, convertToWatermelonRecord, ownMembershipPush } from "./utils.ts";
+import {
+  convertToSupabaseRecord,
+  convertToWatermelonRecord,
+  ownMembershipPush,
+  studentOrderPush,
+  studentParticipantPush,
+} from "./utils.ts";
 import { pushThreeDChanges, pullThreeDChanges } from "./sync-threed.ts";
 import { pushNotesChanges, pullNotesChanges } from "./sync-notes.ts";
 import { pushTagsChanges, pullTagsChanges } from "./sync-tags.ts";
@@ -69,10 +75,14 @@ export async function syncUser(ctx: SyncContext): Promise<SyncPullChanges> {
           return ownMembershipPush(records, userId);
 
         case "orders":
+          return studentOrderPush(records);
+
+        case "event_participants":
+          return studentParticipantPush(records);
+
         case "order_items":
         case "payment_records":
         case "attendance_records":
-        case "event_participants":
           // These will be validated by foreign key constraints in Supabase
           // If user tries to insert data they don't own, FK constraint will fail
           return records;

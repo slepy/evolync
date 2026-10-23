@@ -119,6 +119,47 @@ export function ownMembershipPush(records: any[], userId: string): any[] {
 }
 
 /**
+ * A student's pushed event_participants rows without takes_exam: only the
+ * owner marks who takes the exam (10D), a student keeps the server value.
+ */
+export function studentParticipantPush(records: any[]): any[] {
+  return records.map(({ takes_exam: _takesExam, ...r }: any) => r);
+}
+
+/**
+ * A student's pushed orders without event_id: only orders created by the
+ * owner from an event (10D Add order) belong to it.
+ */
+export function studentOrderPush(records: any[]): any[] {
+  return records.map(({ event_id: _eventId, ...r }: any) => r);
+}
+
+/**
+ * Push order of an organization owner's tables, parents before the rows that
+ * reference them (orders.event_id → events → event_types).
+ */
+export const ORGANIZATION_PUSH_TABLES = [
+  "organizations",
+  "organization_gradings",
+  "schools",
+  "school_settings",
+  "school_invites",
+  "school_join_requests",
+  "school_members",
+  "products",
+  "product_variants",
+  "event_types",
+  "events",
+  "event_participants",
+  "orders",
+  "order_items",
+  "payment_cycles",
+  "payment_records",
+  "training_sessions",
+  "attendance_records",
+];
+
+/**
  * Tables to pull in full: a client that gained a column through a schema
  * migration (e.g. events.type_id at v22) holds its rows without that column,
  * so unchanged rows are sent again (as updates) to fill it in.
