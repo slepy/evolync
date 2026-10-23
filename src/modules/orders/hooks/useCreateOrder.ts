@@ -21,7 +21,8 @@ export const useCreateOrder = () => {
     async (
       schoolId: string,
       memberId: string,
-      items: CreateOrderItemDto[]
+      items: CreateOrderItemDto[],
+      eventId?: string
     ): Promise<Order | null> => {
       if (items.length === 0) {
         setError(t("errorNoItems"));
@@ -32,12 +33,12 @@ export const useCreateOrder = () => {
         setIsLoading(true);
         setError(null);
 
-        const order = await createOrderWithItems(schoolId, memberId, items);
+        const order = await createOrderWithItems(schoolId, memberId, items, eventId);
 
         return order;
       } catch (err) {
         const errorMessage =
-          err instanceof Error ? err.message : t("errorCreateFailed");
+          err instanceof Error ? t(err.message) : t("errorCreateFailed");
         setError(errorMessage);
         console.error("Error creating order:", err);
         return null;
