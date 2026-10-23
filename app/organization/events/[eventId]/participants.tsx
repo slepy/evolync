@@ -61,7 +61,7 @@ export default function EventParticipantsRoute() {
                 })
               }
               onOpenOrder={openOrder}
-              onChangeStatus={(order) => setStatusOrder({ order, name })}
+              onChangeStatus={examsPlanned ? (order) => setStatusOrder({ order, name }) : undefined}
             />
           );
         }}

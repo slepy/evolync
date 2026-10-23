@@ -9,7 +9,7 @@ import {
 import { useRequireOrganizationOwner } from "@/modules/organization/hooks/useRequireOrganizationOwner";
 import { LoadingScreen } from "@/core/components";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import React, { useMemo } from "react";
+import React, { useEffect, useMemo } from "react";
 import { v4 as uuidv4 } from "uuid";
 
 /**
@@ -36,7 +36,13 @@ export default function EventOrderCreateScreen() {
   // A new draft gets its id (the future order id) once.
   const newDraftId = useMemo(() => uuidv4(), []);
 
-  if (!member || !event || (draftId && !draft)) return <LoadingScreen />;
+  const draftGone = !!draftId && !draft;
+  // The draft was saved or dropped meanwhile: nothing left to edit here.
+  useEffect(() => {
+    if (draftGone) router.back();
+  }, [draftGone, router]);
+
+  if (!member || !event || draftGone) return <LoadingScreen />;
 
   return (
     <OrderFormScreen

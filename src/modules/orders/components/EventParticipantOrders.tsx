@@ -13,7 +13,8 @@ export interface EventParticipantOrdersProps {
   showAdd: boolean;
   onAddOrder: () => void;
   onOpenOrder: (order: EventOrderRowData) => void;
-  onChangeStatus: (order: EventOrderRowData) => void;
+  /** Opens the status sheet; without it the badge is read-only (exams switched off, Q3). */
+  onChangeStatus?: (order: EventOrderRowData) => void;
 }
 
 /**
@@ -71,10 +72,10 @@ export const EventParticipantOrders: React.FC<EventParticipantOrdersProps> = ({
                   </YStack>
                 </XStack>
                 <XStack
-                  role="button"
-                  aria-label={t("statusChangeNow", { status: t(style.label) })}
-                  onPress={() => onChangeStatus(order)}
-                  pressStyle={{ opacity: 0.85 }}
+                  role={onChangeStatus ? "button" : undefined}
+                  aria-label={onChangeStatus ? t("statusChangeNow", { status: t(style.label) }) : undefined}
+                  onPress={onChangeStatus ? () => onChangeStatus(order) : undefined}
+                  pressStyle={onChangeStatus ? { opacity: 0.85 } : undefined}
                   minHeight={44}
                   paddingHorizontal={4}
                   alignItems="center"
