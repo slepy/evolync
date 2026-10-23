@@ -14,7 +14,7 @@ import { EVENT_STATUS } from "@/database/models/Event";
 import { formatPrice } from "@/core/utils/formatters";
 import { showError } from "@/modules/trainings/components/confirmAction";
 import { timestampToDay } from "@/modules/trainings/types/helpers";
-import { CalendarDays, MapPin, Pencil, RotateCcw, Shapes, XCircle } from "lucide-react-native";
+import { CalendarDays, GraduationCap, MapPin, Pencil, RotateCcw, Shapes, XCircle } from "lucide-react-native";
 import React, { useState } from "react";
 import { ActivityIndicator } from "react-native";
 import { Text, XStack, YStack } from "tamagui";
@@ -108,6 +108,9 @@ export const EventDetailsScreen: React.FC<EventDetailsScreenProps> = ({
               {event.name}
             </Text>
             <ListChip accent="events" label={t("eventsDaysCount", { count: days })} />
+            {event.examsPlanned ? (
+              <ListChip accent="events" icon={GraduationCap} label={t("eventsExamsPlanned")} />
+            ) : null}
             {isCancelled ? <ListChip accent="danger" label={t("statusCancelled")} /> : null}
           </XStack>
           {event.shortNote ? (
