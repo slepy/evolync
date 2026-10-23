@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Event type</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+button,input,textarea{font-family:inherit}
+button{cursor:pointer}
+a{text-decoration:none}
+</style>
+</helmet>
+<div style="position: relative; width: 390px; height: 844px; box-sizing: border-box; overflow: hidden; background: #0B0E14; color: #F4F6FA; font-family: 'Manrope', sans-serif">
+
+<div style="opacity: 0.35; padding: 56px 20px 0; display: flex; flex-direction: column; gap: 18px">
+<div style="display: flex; align-items: center; gap: 12px"><span style="width: 44px; height: 44px; border-radius: 22px; border: 1px solid #2A3345; background: #131823"></span><span style="font-size: 22px; font-weight: 800">New event</span></div>
+<div style="display: flex; flex-direction: column; gap: 8px"><span style="font-size: 12px; font-weight: 800; letter-spacing: 0.8px; color: #A7B1C6">NAME</span><span style="height: 52px; border-radius: 16px; border: 1px solid #2A3345"></span></div>
+<div style="display: flex; flex-direction: column; gap: 8px"><span style="font-size: 12px; font-weight: 800; letter-spacing: 0.8px; color: #A7B1C6">TYPE</span><span style="height: 56px; border-radius: 16px; border: 1.5px solid #FBBF24; background: #131823"></span></div>
+</div>
+<div style="position: absolute; inset: 0; background: rgba(0,0,0,0.5)"></div>
+
+<div style="position: absolute; left: 0; right: 0; bottom: 0; display: flex; flex-direction: column; gap: 16px; padding: 12px 20px 32px; border-radius: 28px 28px 0 0; background: #1A2130; border-top: 1px solid #2A3345; box-shadow: 0 -12px 40px rgba(0,0,0,0.5)">
+<span style="align-self: center; width: 44px; height: 5px; border-radius: 3px; background: #3A4458"></span>
+<div style="display: flex; align-items: center; gap: 12px"><span style="flex-grow: 1; font-size: 20px; font-weight: 800">Event type</span><a href="#" aria-label="Manage event types" style="width: 44px; height: 44px; border-radius: 22px; border: 1px solid #2A3345; background: #131823; color: #F4F6FA; display: flex; align-items: center; justify-content: center; flex-shrink: 0"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 7h-9M14 17H5"></path><circle cx="17" cy="17" r="3"></circle><circle cx="7" cy="7" r="3"></circle></svg></a><a href="EventCreate.dc.html" aria-label="Close" style="width: 44px; height: 44px; border-radius: 22px; border: 1px solid #2A3345; background: #131823; color: #F4F6FA; display: flex; align-items: center; justify-content: center; flex-shrink: 0"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"></path></svg></a></div>
+
+<div role="radiogroup" aria-label="Event type" style="display: flex; flex-direction: column; border-radius: 22px; background: #131823; border: 1px solid #232B3B; overflow: hidden">
+<sc-for list="{{ types }}" as="o" hint-placeholder-count="4">
+<sc-if value="{{ o.notFirst }}" hint-placeholder-val="{{ false }}"><div style="height: 1px; background: #232B3B; margin: 0 16px"></div></sc-if>
+<button role="radio" aria-checked="{{ o.on }}" onClick="{{ o.pick }}" style="display: flex; align-items: center; gap: 12px; width: 100%; min-height: 56px; padding: 10px 16px; border: 0; background: transparent; color: #F4F6FA; text-align: left">
+<span style="width: 36px; height: 36px; border-radius: 12px; background: rgba(245,181,61,0.16); color: #F5B53D; display: flex; align-items: center; justify-content: center; flex-shrink: 0"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2v4M16 2v4"></path><rect width="18" height="18" x="3" y="4" rx="2"></rect><path d="M3 10h18M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01M16 18h.01"></path></svg></span>
+<span style="flex-grow: 1; min-width: 0; font-size: 15px; font-weight: 800">{{ o.name }}</span>
+<sc-if value="{{ o.isOn }}" hint-placeholder-val="{{ false }}"><span style="width: 24px; height: 24px; border-radius: 8px; background: linear-gradient(135deg, #FBBF24 0%, #D97706 100%); color: #1B1203; display: flex; align-items: center; justify-content: center; flex-shrink: 0"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg></span></sc-if>
+<sc-if value="{{ o.isOff }}" hint-placeholder-val="{{ true }}"><span style="width: 24px; height: 24px; box-sizing: border-box; border-radius: 8px; border: 1.5px solid #3A4458; flex-shrink: 0"></span></sc-if>
+</button>
+</sc-for>
+</div>
+
+<div style="display: flex"><a href="#" style="display: flex; align-items: center; justify-content: center; gap: 8px; height: 52px; padding: 0 22px; border-radius: 26px; background: rgba(251,191,36,0.16); color: #FBBF24; font-size: 15px; font-weight: 800"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5v14"></path></svg>Add new</a></div>
+</div>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+constructor(props) {
+super(props);
+this.state = { sel: 'Seminar' };
+}
+renderVals() {
+const names = ['Camp', 'Exam', 'Seminar', 'Tournament'];
+const types = names.map((name, i) => {
+const on = name === this.state.sel;
+return { notFirst: i > 0, name, on: on ? 'true' : 'false', isOn: on, isOff: !on, pick: () => this.setState({ sel: name }) };
+});
+return { types };
+}
+}
+</script>
+</body>
+</html>
