@@ -67,12 +67,12 @@ Exam results / promotions (Q7), attaching existing orders to an event (Q6), stud
 
 ### Phase 2: Event-linked orders
 
-- [ ] 2.1 Order eventId, repository, schema
-- [ ] 2.2 Event order drafts store
-- [ ] 2.3 Commit service
-- [ ] 2.4 useEventOrders
-- [ ] 2.5 EventParticipantOrders and participants route
-- [ ] 2.6 Create route and OrderFormScreen event mode
-- [ ] 2.7 Event on order lists
-- [ ] 2.8 Event on order details
-- [ ] 2.9 Validation gate
+- [x] 2.1 Order eventId, repository, schema — d9c12e2
+- [x] 2.2 Event order drafts store — d9c12e2
+- [x] 2.3 Commit service — fa3ff10
+- [x] 2.4 useEventOrders — bb96b41
+- [x] 2.5 EventParticipantOrders and participants route — bb96b41
+- [x] 2.6 Create route and OrderFormScreen event mode — bb96b41
+- [x] 2.7 Event on order lists — e197f4b
+- [x] 2.8 Event on order details — 26cfbfe
+- [x] 2.9 Validation gate — 26cfbfe
