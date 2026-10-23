@@ -375,3 +375,24 @@ export const bulkSaveParticipantStatuses = async (
     console.error("[bulkSaveParticipantStatuses] Sync failed:", err);
   });
 };
+
+/**
+ * Marks whether a participant takes the exam (10D). Stored right away, unlike
+ * the participation statuses that wait for Save.
+ */
+export const setParticipantTakesExam = async (
+  participantId: string,
+  takesExam: boolean
+): Promise<void> => {
+  const participant = await database.get<EventParticipant>("event_participants").find(participantId);
+
+  await database.write(async () => {
+    await participant.update((r) => {
+      r.takesExam = takesExam;
+    });
+  });
+
+  sync().catch((err) => {
+    console.error("[setParticipantTakesExam] Sync failed:", err);
+  });
+};

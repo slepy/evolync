@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import EventParticipant from "@/database/models/EventParticipant";
 import {
   EVENT_PARTICIPANT_STATUS,
@@ -8,7 +8,13 @@ import SchoolMember from "@/database/models/SchoolMember";
 import { useStore } from "@/store";
 import { EventParticipantRepository } from "../repositories";
 import { StudentRepository } from "@/modules/students/repositories";
-import { bulkSaveParticipantStatuses } from "../services";
+import { bulkSaveParticipantStatuses, setParticipantTakesExam } from "../services";
+import {
+  draftStatus,
+  pruneStatusDrafts,
+  withStatusDraft,
+  type ParticipantStatusDrafts,
+} from "../components/participantDrafts";
 
 /**
  * Extended participant with member info and local status
@@ -16,7 +22,15 @@ import { bulkSaveParticipantStatuses } from "../services";
 export interface ParticipantWithMember {
   participant: EventParticipant;
   member: SchoolMember;
+  /** The unsaved draft status when there is one, else the stored status. */
   status: EventParticipantStatus;
+  /** Stored right away (10D), never a draft. */
+  takesExam: boolean;
+}
+
+interface ParticipantRow {
+  participant: EventParticipant;
+  member: SchoolMember;
 }
 
 export interface ParticipantCounts {
@@ -29,14 +43,17 @@ export interface ParticipantCounts {
  * Hook for managing event participants
  *
  * Features:
- * - Local state management for status changes (like useAttendance)
+ * - Local draft statuses (like useAttendance), kept when the database re-emits
+ *   (a Takes exam write must not reset unsaved statuses)
  * - Reactive to local database changes via repositories
  * - Save all statuses at once via service
  * - Counts are calculated from local state for editing, updated immediately from DB
  */
 export const useEventParticipants = (eventId: string | undefined, refreshKey?: number) => {
-  // Local participant state (editable)
-  const [participantList, setParticipantList] = useState<ParticipantWithMember[]>([]);
+  // Participants with their members, as stored
+  const [rows, setRows] = useState<ParticipantRow[]>([]);
+  // Unsaved statuses by participant id
+  const [drafts, setDrafts] = useState<ParticipantStatusDrafts>({});
   // DB-sourced counts (updated synchronously from observer)
   const [dbCounts, setDbCounts] = useState<ParticipantCounts>({
     absent: 0,
@@ -56,7 +73,8 @@ export const useEventParticipants = (eventId: string | undefined, refreshKey?: n
   // Load participant data via repositories
   useEffect(() => {
     if (!eventId) {
-      setParticipantList([]);
+      setRows([]);
+      setDrafts({});
       setDbCounts({ absent: 0, attending: 0, paid: 0 });
       setIsLoading(false);
       return;
@@ -69,24 +87,20 @@ export const useEventParticipants = (eventId: string | undefined, refreshKey?: n
     const updateList = () => {
       const memberById = new Map(currentMembers.map((m) => [m.id, m]));
 
-      const list: ParticipantWithMember[] = currentParticipants
+      const list: ParticipantRow[] = currentParticipants
         .map((participant) => {
           const member = memberById.get(participant.schoolMemberId);
-          if (!member) return null;
-          return {
-            participant,
-            member,
-            status: participant.status,
-          };
+          return member ? { participant, member } : null;
         })
-        .filter((item): item is ParticipantWithMember => item !== null);
+        .filter((item): item is ParticipantRow => item !== null);
 
       // Sort by display name
       list.sort((a, b) =>
         (a.member.displayName || "").localeCompare(b.member.displayName || "")
       );
 
-      setParticipantList(list);
+      setRows(list);
+      setDrafts((prev) => pruneStatusDrafts(prev, currentParticipants));
       setIsLoading(false);
     };
 
@@ -127,14 +141,37 @@ export const useEventParticipants = (eventId: string | undefined, refreshKey?: n
     };
   }, [eventId, refreshKey]);
 
-  // Toggle participant status locally (updates local state only)
+  const participantList: ParticipantWithMember[] = useMemo(
+    () =>
+      rows.map((row) => ({
+        ...row,
+        status: draftStatus(row.participant, drafts),
+        takesExam: !!row.participant.takesExam,
+      })),
+    [rows, drafts]
+  );
+  const hasStatusChanges = participantList.some((item) => item.status !== item.participant.status);
+
+  // Toggle participant status locally (a draft until Save)
   const toggleStatus = useCallback(
     (participantId: string, newStatus: EventParticipantStatus) => {
-      setParticipantList((prev) =>
-        prev.map((item) =>
-          item.participant.id === participantId ? { ...item, status: newStatus } : item
-        )
-      );
+      const row = rows.find((r) => r.participant.id === participantId);
+      if (!row) return;
+      setDrafts((prev) => withStatusDraft(prev, row.participant, newStatus));
+    },
+    [rows]
+  );
+
+  // Takes exam is stored right away (10D), unlike the statuses
+  const setTakesExam = useCallback(
+    async (participantId: string, takesExam: boolean) => {
+      setError(null);
+      try {
+        await setParticipantTakesExam(participantId, takesExam);
+      } catch (err) {
+        console.error("[useEventParticipants] Takes exam error:", err);
+        setError(t("errorSaveFailed"));
+      }
     },
     []
   );
@@ -202,7 +239,9 @@ export const useEventParticipants = (eventId: string | undefined, refreshKey?: n
     isLoading,
     isSaving,
     error,
+    hasStatusChanges,
     toggleStatus,
+    setTakesExam,
     saveAll,
     refresh,
   };
