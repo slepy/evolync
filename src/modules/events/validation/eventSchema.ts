@@ -57,9 +57,7 @@ export const createEventSchema = z
       .string()
       .min(1, "nameRequired")
       .max(200, "eventValidationNameTooLong"),
-    typeId: z
-      .string({ required_error: "chooseType" })
-      .uuid({ message: "chooseType" }),
+    typeId: z.string().uuid({ message: "chooseType" }).optional(),
     shortNote: z.string().max(300, "eventValidationShortNoteTooLong").optional(),
     address: z.string().max(500, "eventValidationAddressTooLong").optional(),
     startDate: z.string().refine(
@@ -131,7 +129,6 @@ export const updateEventSchema = z
       .min(1, "nameRequired")
       .max(200, "eventValidationNameTooLong")
       .optional(),
-    // The form always sends it (an edit requires a type, A3).
     typeId: z.string().uuid({ message: "chooseType" }).optional(),
     shortNote: z.string().max(300, "eventValidationShortNoteTooLong").optional(),
     address: z.string().max(500, "eventValidationAddressTooLong").optional(),

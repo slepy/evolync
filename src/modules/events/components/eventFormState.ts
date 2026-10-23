@@ -10,7 +10,7 @@ import { createEventSchema, type CreateEventFormValues } from "../validation";
 
 export interface EventFormState {
   name: string;
-  /** Chosen event type; empty until picked (events created before types). */
+  /** Chosen event type; empty means none (the type is optional). */
   typeId: string;
   shortNote: string;
   address: string;

@@ -47,9 +47,9 @@ describe("validateEventForm", () => {
     }
   });
 
-  it("asks for a type", () => {
+  it("saves an event without a type", () => {
     const result = validateEventForm({ ...initialEventForm("2099-03-07", TODAY), name: "Camp" });
-    assert.ok(!result.ok && result.errors.typeId === "chooseType");
+    assert.ok(result.ok && result.values.typeId === undefined);
   });
 
   it("accepts a decimal comma in the price", () => {
@@ -107,11 +107,10 @@ describe("eventToForm / hasEventChanges", () => {
     assert.deepEqual(form.inviteeIds, [MEMBER_A]);
   });
 
-  it("an event saved before types asks for one, and picking it is a change", () => {
+  it("an event without a type stays valid, and picking one is a change", () => {
     const initial = eventToForm(event, [MEMBER_A]);
     assert.equal(initial.typeId, "");
-    const result = validateEventForm(initial);
-    assert.ok(!result.ok && result.errors.typeId === "chooseType");
+    assert.ok(validateEventForm(initial).ok);
     const typed = { ...initial, typeId: TYPE };
     assert.equal(hasEventChanges(typed, initial), true);
     assert.ok(validateEventForm(typed).ok);
