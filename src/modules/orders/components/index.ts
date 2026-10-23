@@ -11,3 +11,4 @@ export * from "./StudentSelectSheet";
 export * from "./OrderFormScreen";
 export * from "./EventParticipantOrders";
 export * from "./eventOrderDrafts";
+export * from "./OrderEventLine";

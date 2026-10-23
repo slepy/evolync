@@ -35,6 +35,7 @@ import { useGradingRanks } from "@/modules/grading/hooks/useGradingRanks";
 import { ORDER_STATUS_STYLE } from "@/modules/orders/components/orderListState";
 import { formatOrderDay, formatOrderTotals } from "@/modules/orders/components/orderFormat";
 import { useMemberOrders } from "@/modules/orders/hooks/useMemberOrders";
+import { OrderEventLine } from "@/modules/orders/components/OrderEventLine";
 import { PAYMENT_STATUS_STYLE, PAYMENT_SUMMARY_ORDER } from "@/modules/payments/constants";
 import { useStudentPayments } from "@/modules/payments/hooks/useStudentPayments";
 import {
@@ -439,6 +440,7 @@ export const StudentDetailsScreen: React.FC<StudentDetailsScreenProps> = ({
                       size="md"
                       title={item.itemCount === 1 && item.productName ? item.productName : t("ordersItemsCount", { count: item.itemCount })}
                       subtitle={[t("ordersItemsCount", { count: item.itemCount }), formatOrderDay(item.order.createdAt)].join(" · ")}
+                      meta={item.eventName ? <OrderEventLine name={item.eventName} /> : undefined}
                       leading={<ListIcon icon={ShoppingBag} accent="orders" size={44} />}
                       trailing={
                         <YStack alignItems="flex-end" gap={5} flexShrink={0}>

@@ -4,6 +4,7 @@ import type { OrderListEntry } from "../hooks/useOrdersList";
 import type { OrdersScope } from "./orderAccess";
 import { formatOrderDay, formatOrderTotals } from "./orderFormat";
 import { ORDER_STATUS_STYLE } from "./orderListState";
+import { OrderEventLine } from "./OrderEventLine";
 
 export interface OrderRowProps {
   scope: OrdersScope;
@@ -16,6 +17,7 @@ export function OrderRow({ scope, entry, onPress }: OrderRowProps) {
   const statusChip = <StatusBadge label={t(style.label)} color={style.accent} />;
   const firstItem = entry.items[0];
   const total = formatOrderTotals(entry.totalsByCurrency);
+  const eventLine = entry.eventName ? <OrderEventLine name={entry.eventName} /> : undefined;
 
   if (scope === "student") {
     return (
@@ -26,6 +28,7 @@ export function OrderRow({ scope, entry, onPress }: OrderRowProps) {
             : t("ordersItemsCount", { count: entry.itemCount })
         }
         subtitle={[formatOrderDay(entry.createdAt), total].filter(Boolean).join(" · ")}
+        meta={eventLine}
         leading={<ListImage uri={firstItem?.imageUrl} icon={ShoppingBag} accent="orders" />}
         trailing={statusChip}
         onPress={onPress}
@@ -37,6 +40,7 @@ export function OrderRow({ scope, entry, onPress }: OrderRowProps) {
     <ListRow
       title={entry.memberName}
       subtitle={[t("ordersItemsCount", { count: entry.itemCount }), formatOrderDay(entry.createdAt)].join(" · ")}
+      meta={eventLine}
       leading={<MemberAvatar size={48} name={entry.memberName} uri={entry.memberAvatarUrl} rankId={entry.memberRankId} />}
       trailing={statusChip}
       onPress={onPress}

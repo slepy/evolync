@@ -3,6 +3,7 @@ import { combineLatest, from, of, type Observable } from "rxjs";
 import { switchMap } from "rxjs/operators";
 import type Order from "@/database/models/Order";
 import type OrderItem from "@/database/models/OrderItem";
+import { EventRepository } from "@/modules/events/repositories";
 import { ProductRepository, ProductVariantRepository } from "@/modules/inventory/repositories";
 import { SchoolRepository } from "@/modules/school/repositories";
 import { StudentRepository } from "@/modules/students/repositories";
@@ -23,6 +24,9 @@ export interface OrderListEntry {
   memberName: string;
   memberAvatarUrl?: string;
   memberRankId?: string;
+  /** The event the order was placed for; no name when it is not on the device (deleted, not visible). */
+  eventId?: string;
+  eventName?: string;
   itemCount: number;
   totalsByCurrency: Record<string, number>;
   items: ShoppingListSource[];
@@ -50,17 +54,30 @@ const ordersOf = (source: OrdersListSource): Observable<Order[]> | null => {
   }
 };
 
-/** Members, schools and products of the orders, each loaded once. */
+/**
+ * The event of an order for its row: the id always, the name only when the
+ * event is on the device (a student who left the event no longer has it).
+ */
+export const orderEvent = (
+  eventId: string | null | undefined,
+  eventNameById: Map<string, string>,
+): Pick<OrderListEntry, "eventId" | "eventName"> =>
+  eventId ? { eventId, eventName: eventNameById.get(eventId) } : {};
+
+/** Members, schools, products and events of the orders, each loaded once. */
 export const toOrderListEntries = async (orders: Order[], items: OrderItem[]): Promise<OrderListEntry[]> => {
   const memberIds = [...new Set(orders.map((o) => o.schoolMemberId))];
   const schoolIds = [...new Set(orders.map((o) => o.schoolId))];
   const variantIds = [...new Set(items.map((i) => i.productVariantId))];
+  const eventIds = [...new Set(orders.flatMap((o) => (o.eventId ? [o.eventId] : [])))];
 
-  const [members, schools, variants] = await Promise.all([
+  const [members, schools, variants, events] = await Promise.all([
     StudentRepository.findByIds(memberIds),
     Promise.all(schoolIds.map((id) => SchoolRepository.findById(id))),
     Promise.all(variantIds.map((id) => ProductVariantRepository.findById(id, true))),
+    EventRepository.findByIds(eventIds),
   ]);
+  const eventNameById = new Map(events.map((e) => [e.id, e.name]));
   const productIds = [...new Set(variants.flatMap((v) => (v ? [v.productId] : [])))];
   const products = await Promise.all(productIds.map((id) => ProductRepository.findById(id, true)));
 
@@ -87,6 +104,7 @@ export const toOrderListEntries = async (orders: Order[], items: OrderItem[]): P
       memberName: member?.displayName || member?.email || t("unknownMember"),
       memberAvatarUrl: member?.avatarUrl,
       memberRankId: member?.currentRankId,
+      ...orderEvent(order.eventId, eventNameById),
       itemCount: cartItemCount(orderItems),
       totalsByCurrency: cartTotals(orderItems),
       items: orderItems.map((item) => {
