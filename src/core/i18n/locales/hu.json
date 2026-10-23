@@ -259,7 +259,6 @@
   "ordersAddOrder": "Rendelés hozzáadása",
   "ordersAddOrderLabel": "Rendelés hozzáadása, {{name}}",
   "ordersForEvent": "A(z) {{name}} eseményre",
-  "ordersUnsaved": "Nincs mentve",
   "event": "Esemény",
   "errorOrderEventNotAllowed": "Ez a tanuló nem vizsgázik ezen az eseményen.",
   "ordersDetailsTitle": "Rendelés",

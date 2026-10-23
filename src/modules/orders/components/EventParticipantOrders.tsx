@@ -1,4 +1,4 @@
-import { ListChip, SectionActionPill, StatusBadge } from "@/core/components";
+import { SectionActionPill, StatusBadge } from "@/core/components";
 import { formatPrice } from "@/core/utils/formatters";
 import React from "react";
 import { Text, View, XStack, YStack } from "tamagui";
@@ -20,7 +20,7 @@ export interface EventParticipantOrdersProps {
 /**
  * Event orders of one participant (10D1): compact rows on the page fill
  * (product or "N items", a total per currency, the status badge that opens
- * the status sheet), unsaved drafts marked, then Add order in the orders accent.
+ * the status sheet), then Add order in the orders accent.
  */
 export const EventParticipantOrders: React.FC<EventParticipantOrdersProps> = ({
   name,
@@ -57,12 +57,9 @@ export const EventParticipantOrders: React.FC<EventParticipantOrdersProps> = ({
                   alignItems="center"
                   gap={8}
                 >
-                  <XStack flex={1} minWidth={0} alignItems="center" gap={6}>
-                    <Text flexShrink={1} fontSize={14} fontWeight="$button" color="$neutralText" numberOfLines={1}>
-                      {title}
-                    </Text>
-                    {order.draft ? <ListChip accent="orders" label={t("ordersUnsaved")} /> : null}
-                  </XStack>
+                  <Text flex={1} minWidth={0} fontSize={14} fontWeight="$button" color="$neutralText" numberOfLines={1}>
+                    {title}
+                  </Text>
                   <YStack alignItems="flex-end" gap={1} flexShrink={0}>
                     {Object.entries(order.totalsByCurrency).map(([currency, amount]) => (
                       <Text key={currency} fontSize={13.5} fontWeight="$button" color="$neutralText" numberOfLines={1}>

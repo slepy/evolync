@@ -259,7 +259,6 @@
   "ordersAddOrder": "Add order",
   "ordersAddOrderLabel": "Add order, {{name}}",
   "ordersForEvent": "For the event {{name}}",
-  "ordersUnsaved": "Unsaved",
   "event": "Event",
   "errorOrderEventNotAllowed": "This student doesn't take the exam at this event.",
   "ordersDetailsTitle": "Order",

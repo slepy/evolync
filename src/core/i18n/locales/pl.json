@@ -261,7 +261,6 @@
   "ordersAddOrder": "Dodaj zamówienie",
   "ordersAddOrderLabel": "Dodaj zamówienie, {{name}}",
   "ordersForEvent": "Na wydarzenie {{name}}",
-  "ordersUnsaved": "Niezapisane",
   "event": "Wydarzenie",
   "errorOrderEventNotAllowed": "Ten uczeń nie zdaje egzaminu na tym wydarzeniu.",
   "ordersDetailsTitle": "Zamówienie",
