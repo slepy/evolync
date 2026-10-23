@@ -10,6 +10,7 @@ export { ListCheckbox } from "./ListCheckbox";
 export { ListCheck } from "./ListCheck";
 export { ListUnreadDot } from "./ListUnreadDot";
 export { ListAddButton } from "./ListAddButton";
+export { SectionActionPill, type SectionActionPillProps } from "./SectionActionPill";
 export { rankCornerSize, type ListAvatarSize } from "./avatar";
 export { resolveListAccent, withAlpha, type ListAccent, type ResolvedListAccent } from "./accent";
 export { rateAccent, ratePercent } from "./rateAccent";

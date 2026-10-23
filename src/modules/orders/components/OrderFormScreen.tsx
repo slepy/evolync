@@ -1,4 +1,4 @@
-import { MemberAvatar, PrimaryButton, SelectField, SubScreenPage } from "@/core/components";
+import { MemberAvatar, PrimaryButton, SelectField, SubScreenPage, TextField } from "@/core/components";
 import { useProducts } from "@/modules/inventory/hooks";
 import React, { useState } from "react";
 import { Text, YStack } from "tamagui";
@@ -7,7 +7,7 @@ import { useOrganizationIdOfSchool } from "../hooks/useOrganizationIdOfSchool";
 import { useSchoolStudents } from "../hooks/useSchoolStudents";
 import type { CartItem } from "../types/dto";
 import { AddProductSheet } from "./AddProductSheet";
-import { choosesStudent, type OrdersScope } from "./orderAccess";
+import { choosesStudent, studentFieldMode, type OrdersScope } from "./orderAccess";
 import { toOrderItemDto } from "./orderCart";
 import { OrderProductsSection } from "./OrderProductsSection";
 import { StudentSelectSheet } from "./StudentSelectSheet";
@@ -17,6 +17,18 @@ interface OrderFormScreenProps {
   schoolId: string | undefined;
   /** Student scope: the ordering member (no STUDENT field). */
   memberId?: string;
+  /** Staff scope: the student is fixed (STUDENT shown locked, 10D Add order). */
+  fixedStudent?: { id: string; name: string };
+  /** The event the order is for: "For the event {name}" under STUDENT. */
+  event?: { id: string; name: string };
+  /** Products to start from (editing an event order draft). */
+  initialCart?: CartItem[];
+  /**
+   * Keeps the order instead of storing it (10D: event orders are stored with
+   * the participants Save). Without it Create stores the order right away.
+   * A draft being edited may be emptied: it is then removed.
+   */
+  onSubmitDraft?: (studentId: string, cart: CartItem[]) => void;
   onCreated: () => void;
 }
 
@@ -25,15 +37,27 @@ interface OrderFormScreenProps {
  * the student orders for themselves; products come from Add product (12F).
  * Create is active once there is a student and at least one product.
  */
-export const OrderFormScreen: React.FC<OrderFormScreenProps> = ({ scope, schoolId, memberId, onCreated }) => {
+export const OrderFormScreen: React.FC<OrderFormScreenProps> = ({
+  scope,
+  schoolId,
+  memberId,
+  fixedStudent,
+  event,
+  initialCart,
+  onSubmitDraft,
+  onCreated,
+}) => {
+  const mode = studentFieldMode(scope, fixedStudent?.id);
   const staff = choosesStudent(scope);
-  const students = useSchoolStudents(staff ? schoolId : undefined);
+  const students = useSchoolStudents(mode === "choose" ? schoolId : undefined);
   const organizationId = useOrganizationIdOfSchool(schoolId);
   const { products } = useProducts(organizationId ?? "");
   const { createOrder, isLoading, error } = useCreateOrder();
 
-  const [studentId, setStudentId] = useState<string | undefined>(staff ? undefined : memberId);
-  const [cart, setCart] = useState<CartItem[]>([]);
+  const [studentId, setStudentId] = useState<string | undefined>(
+    mode === "fixed" ? fixedStudent?.id : staff ? undefined : memberId,
+  );
+  const [cart, setCart] = useState<CartItem[]>(initialCart ?? []);
   const [sheet, setSheet] = useState<"student" | "product" | null>(null);
   const [focusProductId, setFocusProductId] = useState<string | null>(null);
 
@@ -43,11 +67,17 @@ export const OrderFormScreen: React.FC<OrderFormScreenProps> = ({ scope, schoolI
   };
 
   const student = students.find((s) => s.id === studentId);
-  const canCreate = !!schoolId && !!studentId && cart.length > 0;
+  const editingDraft = !!onSubmitDraft && !!initialCart?.length;
+  const canCreate = !!schoolId && !!studentId && (cart.length > 0 || editingDraft);
 
   const handleCreate = async () => {
     if (!schoolId || !studentId) return;
-    const order = await createOrder(schoolId, studentId, cart.map(toOrderItemDto));
+    if (onSubmitDraft) {
+      onSubmitDraft(studentId, cart);
+      onCreated();
+      return;
+    }
+    const order = await createOrder(schoolId, studentId, cart.map(toOrderItemDto), event?.id);
     if (order) onCreated();
   };
 
@@ -62,7 +92,7 @@ export const OrderFormScreen: React.FC<OrderFormScreenProps> = ({ scope, schoolI
             </Text>
           ) : null}
           <PrimaryButton
-            label={t("create")}
+            label={editingDraft ? t("save") : t("create")}
             accent="orders"
             onPress={handleCreate}
             loading={isLoading}
@@ -71,7 +101,15 @@ export const OrderFormScreen: React.FC<OrderFormScreenProps> = ({ scope, schoolI
         </YStack>
       }
     >
-      {staff ? (
+      {mode === "fixed" ? (
+        <TextField
+          label={t("student")}
+          value={fixedStudent?.name ?? ""}
+          onChangeText={() => {}}
+          locked
+          hint={event ? t("ordersForEvent", { name: event.name }) : undefined}
+        />
+      ) : mode === "choose" ? (
         <SelectField
           label={t("student")}
           value={student?.name}
@@ -97,7 +135,7 @@ export const OrderFormScreen: React.FC<OrderFormScreenProps> = ({ scope, schoolI
         emptyText={t("ordersAddProductsHint")}
       />
 
-      {staff ? (
+      {mode === "choose" ? (
         <StudentSelectSheet
           open={sheet === "student"}
           onOpenChange={(open) => setSheet(open ? "student" : null)}

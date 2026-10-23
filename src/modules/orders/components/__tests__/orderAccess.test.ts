@@ -6,6 +6,7 @@ import {
   canDeleteOrder,
   canEditOrder,
   choosesStudent,
+  studentFieldMode,
 } from "@/modules/orders/components/orderAccess";
 import { ORDER_STATUSES } from "@/modules/orders/components/orderListState";
 
@@ -37,5 +38,18 @@ describe("orderAccess", () => {
     assert.equal(canChangeOrderStatus("organization"), true);
     assert.equal(choosesStudent("student"), false);
     assert.equal(choosesStudent("school"), true);
+  });
+});
+
+describe("studentFieldMode", () => {
+  it("lets staff choose the student unless it is fixed by the event", () => {
+    assert.equal(studentFieldMode("school", undefined), "choose");
+    assert.equal(studentFieldMode("organization", undefined), "choose");
+    assert.equal(studentFieldMode("school", "member-1"), "fixed");
+  });
+
+  it("shows no STUDENT field to a student", () => {
+    assert.equal(studentFieldMode("student", undefined), "none");
+    assert.equal(studentFieldMode("student", "member-1"), "none");
   });
 });
