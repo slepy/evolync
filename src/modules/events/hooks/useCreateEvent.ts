@@ -50,6 +50,7 @@ export const useCreateEvent = (organizationId: string | undefined) => {
           currency: formData.currency,
           visibility: formData.visibility,
           createdBy: user.id,
+          examsPlanned: formData.examsPlanned,
         };
 
         const event = await createEvent(dto);

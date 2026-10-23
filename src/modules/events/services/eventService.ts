@@ -45,6 +45,7 @@ export const createEvent = async (data: CreateEventDto): Promise<Event> => {
     currency: data.currency,
     visibility: data.visibility,
     status: EVENT_STATUS.ACTIVE,
+    examsPlanned: data.examsPlanned ?? false,
     createdBy: data.createdBy,
   });
 
@@ -117,6 +118,7 @@ export const updateEvent = async (
     ...(data.visibility !== undefined && { visibility: data.visibility }),
     ...(data.schoolId !== undefined && { schoolId: data.schoolId }),
     ...(data.status !== undefined && { status: data.status }),
+    ...(data.examsPlanned !== undefined && { examsPlanned: data.examsPlanned }),
   };
 
   const updated = await EventRepository.update(eventId, updateData);

@@ -20,6 +20,7 @@ export interface CreateEventDto {
   currency: string;
   visibility: EventVisibility;
   createdBy: string;
+  examsPlanned?: boolean;
 }
 
 /**
@@ -37,6 +38,7 @@ export interface UpdateEventDto {
   visibility?: EventVisibility;
   schoolId?: string;
   status?: EventStatus;
+  examsPlanned?: boolean;
 }
 
 /**
@@ -74,6 +76,7 @@ export interface EventResponseDto {
   currency: string;
   visibility: EventVisibility;
   status: EventStatus;
+  examsPlanned: boolean;
   createdBy: string;
   createdAt: Date;
   updatedAt: Date;
