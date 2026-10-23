@@ -49,6 +49,8 @@ export default class Event extends Model {
   @field("currency") currency!: string;
   @field("visibility") visibility!: EventVisibility;
   @field("status") status!: EventStatus;
+  /** Participants can be marked as taking the exam (a missing value reads as false). */
+  @field("exams_planned") examsPlanned!: boolean;
   @field("created_by") createdBy!: string;
 
   @relation("organizations", "organization_id") organization!: Organization;

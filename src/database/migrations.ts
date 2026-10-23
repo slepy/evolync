@@ -8,6 +8,23 @@ import {
 export default schemaMigrations({
   migrations: [
     {
+      toVersion: 23,
+      steps: [
+        addColumns({
+          table: "events",
+          columns: [{ name: "exams_planned", type: "boolean" }],
+        }),
+        addColumns({
+          table: "event_participants",
+          columns: [{ name: "takes_exam", type: "boolean" }],
+        }),
+        addColumns({
+          table: "orders",
+          columns: [{ name: "event_id", type: "string", isOptional: true, isIndexed: true }],
+        }),
+      ],
+    },
+    {
       toVersion: 22,
       steps: [
         createTable({

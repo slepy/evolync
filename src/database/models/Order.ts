@@ -17,11 +17,14 @@ export default class Order extends Model {
     schools: { type: "belongs_to" as const, key: "school_id" },
     school_members: { type: "belongs_to" as const, key: "school_member_id" },
     order_items: { type: "has_many" as const, foreignKey: "order_id" },
+    events: { type: "belongs_to" as const, key: "event_id" },
   };
 
   @field("school_id") schoolId!: string;
   @field("school_member_id") schoolMemberId!: string;
   @field("status") status!: OrderStatus;
+  /** The event the order was placed for (set at creation from 10D, never changed). */
+  @field("event_id") eventId?: string;
 
   @relation("schools", "school_id") school!: School;
   @relation("school_members", "school_member_id") schoolMember!: SchoolMember;
