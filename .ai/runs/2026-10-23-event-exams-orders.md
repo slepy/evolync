@@ -58,12 +58,12 @@ Exam results / promotions (Q7), attaching existing orders to an event (Q6), stud
 
 ### Phase 1: Exam flags
 
-- [ ] 1.1 Schema v23, models, Supabase migration
-- [ ] 1.2 Sync guards and push order
-- [ ] 1.3 Event form Exams planned toggle
-- [ ] 1.4 Details chip
-- [ ] 1.5 Draft-preserving participants hook
-- [ ] 1.6 Takes exam switch
+- [x] 1.1 Schema v23, models, Supabase migration — 516751c
+- [x] 1.2 Sync guards and push order — 1ac10ef
+- [x] 1.3 Event form Exams planned toggle — fe69cc9
+- [x] 1.4 Details chip — f0b3db1
+- [x] 1.5 Draft-preserving participants hook — cf294ea
+- [x] 1.6 Takes exam switch — 38b447a
 
 ### Phase 2: Event-linked orders
 
