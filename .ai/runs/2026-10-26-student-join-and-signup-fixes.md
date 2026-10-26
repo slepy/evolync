@@ -75,8 +75,8 @@ A student learns in Alerts that their join request was approved and sees the new
 
 ### Phase 3: Atomic instructor sign-up
 
-- [ ] 3.1 Migration: sign-up trigger creates the organization
-- [ ] 3.2 Client: metadata sign-up and orphaned-account recovery
+- [x] 3.1 Migration: sign-up trigger creates the organization — 7ae0535
+- [x] 3.2 Client: metadata sign-up and orphaned-account recovery — 0120911
 
 ### Phase 4: Localized validation messages
 
