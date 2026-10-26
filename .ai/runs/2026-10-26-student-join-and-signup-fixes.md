@@ -55,9 +55,9 @@ A student learns in Alerts that their join request was approved and sees the new
 
 ## Risks
 
-- Deploy order: migrations before the app build that stops calling the RPC (an old trigger would ignore the metadata and leave no organization). The recovery path covers a missed order (retry completes the setup).
-- `deno` is not installed locally: Deno tests for the sync function are written but may not run here.
-- SQL tests need Docker; when unavailable they are recorded as not run.
+- Deploy order: the previous `handle_new_user_signup` already reads the same `organization_name` / `school_name` metadata keys, so an app build that ships before the migration still gets its organization (only without the clean rollback). If the remote trigger was dropped by hand, the recovery path completes the account on the next sign-up attempt.
+- Deploy: two migrations (`20261026000000`, `20261026000100`, above the remote's latest `20261016000100`), the `sync` and `send-push` edge functions.
+- Deno and SQL tests run through Docker (`run-deno-tests.sh`, `run-sql-tests.sh`).
 
 ## Progress
 
@@ -80,6 +80,6 @@ A student learns in Alerts that their join request was approved and sees the new
 
 ### Phase 4: Localized validation messages
 
-- [ ] 4.1 localizedSchema helper
-- [ ] 4.2 Convert validation modules
-- [ ] 4.3 Re-validate shown errors on language change
+- [x] 4.1 localizedSchema helper — 9478ac7
+- [x] 4.2 Convert validation modules — a8c4606
+- [x] 4.3 Re-validate shown errors on language change — 14b0031
