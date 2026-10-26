@@ -70,8 +70,8 @@ A student learns in Alerts that their join request was approved and sees the new
 
 ### Phase 2: School appears right away
 
-- [ ] 2.1 Sync: full pull of school-scoped tables after a membership change
-- [ ] 2.2 Client membership watcher
+- [x] 2.1 Sync: full pull of school-scoped tables after a membership change — 2819b8a
+- [x] 2.2 Client membership watcher — 1998757
 
 ### Phase 3: Atomic instructor sign-up
 
