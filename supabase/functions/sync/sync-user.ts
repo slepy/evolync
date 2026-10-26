@@ -17,6 +17,8 @@ import { SyncContext, SyncPullChanges } from "./types.ts";
 import {
   convertToSupabaseRecord,
   convertToWatermelonRecord,
+  MEMBER_SCHOOL_TABLES,
+  membershipChangedSince,
   ownMembershipPush,
   studentOrderPush,
   studentParticipantPush,
@@ -175,7 +177,7 @@ export async function syncUser(ctx: SyncContext): Promise<SyncPullChanges> {
 
   const { data: memberships, error: memberError } = await supabaseClient
     .from("school_members")
-    .select("school_id, id, status, created_at")
+    .select("school_id, id, status, created_at, updated_at")
     .eq("user_id", userId)
     .is("deleted_at", null);
 
@@ -184,6 +186,7 @@ export async function syncUser(ctx: SyncContext): Promise<SyncPullChanges> {
   }
 
   const schoolIds = (memberships || []).map((m: any) => m.school_id);
+  const membershipChanged = membershipChangedSince(memberships || [], lastPulledAt);
   const memberIds = (memberships || []).map((m: any) => m.id);
 
   console.log(`[SYNC:USER] ========================================`);
@@ -217,7 +220,9 @@ export async function syncUser(ctx: SyncContext): Promise<SyncPullChanges> {
     tableName: string,
     filterFn?: (query: any) => any,
   ) => {
-    const fullPull = (ctx.columnMigratedTables ?? []).includes(tableName);
+    const fullPull =
+      (ctx.columnMigratedTables ?? []).includes(tableName) ||
+      (membershipChanged && MEMBER_SCHOOL_TABLES.includes(tableName));
     let query = supabaseClient.from(tableName).select("*").is("deleted_at", null);
     if (!fullPull) {
       query = query.or(`created_at.gte.${lastPulledDate},updated_at.gte.${lastPulledDate}`);
@@ -440,9 +445,7 @@ export async function syncUser(ctx: SyncContext): Promise<SyncPullChanges> {
       memberIds,
       schoolIds,
       organizationIds,
-      newMembership: (memberships || []).some(
-        (m: any) => m.created_at && new Date(m.created_at).getTime() > lastPulledAt,
-      ),
+      newMembership: membershipChanged,
     }),
   );
 

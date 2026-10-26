@@ -169,3 +169,37 @@ export function columnMigratedTables(
 ): string[] {
   return [...new Set((migration?.columns ?? []).filter((c) => c.columns.length > 0).map((c) => c.table))];
 }
+
+/** Tables a member pulls for the schools they belong to. */
+export const MEMBER_SCHOOL_TABLES = [
+  "schools",
+  "school_settings",
+  "school_members",
+  "payment_cycles",
+  "payment_records",
+  "training_sessions",
+  "attendance_records",
+  "orders",
+  "order_items",
+  "products",
+  "product_variants",
+  "events",
+  "event_participants",
+];
+
+/**
+ * The user's own membership was created or changed since the last pull
+ * (join request approved, offline member activated, re-activated): a newly
+ * visible school's existing rows (the school, its settings, cycles, members,
+ * events) are older than lastPulledAt, so MEMBER_SCHOOL_TABLES are pulled in
+ * full once. A first pull is already full.
+ */
+export function membershipChangedSince(
+  memberships: { created_at?: string | null; updated_at?: string | null }[],
+  lastPulledAt: number | null | undefined,
+): boolean {
+  if (!lastPulledAt) return false;
+  return memberships.some((m) =>
+    [m.created_at, m.updated_at].some((value) => !!value && new Date(value).getTime() > lastPulledAt),
+  );
+}

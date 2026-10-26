@@ -1,8 +1,10 @@
 // Run: supabase/functions/run-deno-tests.sh (or `deno test supabase/functions`)
 import { assertEquals } from "https://deno.land/std@0.224.0/assert/mod.ts";
 import {
+  MEMBER_SCHOOL_TABLES,
   ORGANIZATION_PUSH_TABLES,
   columnMigratedTables,
+  membershipChangedSince,
   ownMembershipPush,
   studentOrderPush,
   studentParticipantPush,
@@ -60,4 +62,30 @@ Deno.test("an owner pushes event types and events before the orders that referen
   assertEquals(at("events") < at("orders"), true);
   assertEquals(at("orders") < at("order_items"), true);
   assertEquals(at("school_members") < at("event_participants"), true);
+});
+
+Deno.test("a membership created or changed since the last pull pulls the school tables in full", () => {
+  const lastPulledAt = Date.parse("2026-10-20T10:00:00Z");
+  const old = { created_at: "2026-09-01T10:00:00Z", updated_at: "2026-09-01T10:00:00Z" };
+
+  assertEquals(membershipChangedSince([old], lastPulledAt), false);
+  // Approved as a new member.
+  assertEquals(
+    membershipChangedSince([old, { created_at: "2026-10-21T08:00:00Z", updated_at: "2026-10-21T08:00:00Z" }], lastPulledAt),
+    true,
+  );
+  // An offline member activated with the user's account: an old row, updated now.
+  assertEquals(
+    membershipChangedSince([{ created_at: "2026-09-01T10:00:00Z", updated_at: "2026-10-21T08:00:00Z" }], lastPulledAt),
+    true,
+  );
+  // The first pull is already full.
+  assertEquals(membershipChangedSince([{ created_at: "2026-10-21T08:00:00Z" }], 0), false);
+  assertEquals(membershipChangedSince([], lastPulledAt), false);
+});
+
+Deno.test("the school tables pulled in full cover the newly visible school's data", () => {
+  for (const table of ["schools", "school_settings", "school_members", "payment_cycles", "events", "products"]) {
+    assertEquals(MEMBER_SCHOOL_TABLES.includes(table), true, table);
+  }
 });
