@@ -16,7 +16,6 @@ export interface RegisterInstructorRequest {
 export interface RegisterInstructorResponse {
   user_id: string;
   organization_id: string;
-  school_id: string;
 }
 
 /**
