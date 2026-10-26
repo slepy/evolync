@@ -65,8 +65,8 @@ A student learns in Alerts that their join request was approved and sees the new
 
 ### Phase 1: Approval notification
 
-- [ ] 1.1 Migration: approval notification trigger + SQL test
-- [ ] 1.2 Client type, content, route, translations, push template
+- [x] 1.1 Migration: approval notification trigger + SQL test — 54c7537
+- [x] 1.2 Client type, content, route, translations, push template — 02eef77
 
 ### Phase 2: School appears right away
 
