@@ -27,6 +27,7 @@ describe("getNotificationAudience", () => {
     assert.equal(getNotificationAudience("event_rsvp_attending"), "owner");
     assert.equal(getNotificationAudience("payment_created"), "student");
     assert.equal(getNotificationAudience("event_assigned"), "student");
+    assert.equal(getNotificationAudience("join_request_approved"), "student");
     assert.equal(getNotificationAudience("future_type"), null);
   });
 });

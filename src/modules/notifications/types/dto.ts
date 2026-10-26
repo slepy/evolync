@@ -36,12 +36,19 @@ export interface EventAssignedPayload {
   eventId?: string;
 }
 
+/** N6 — student: join request approved. */
+export interface JoinRequestApprovedPayload {
+  schoolName?: string;
+  schoolId?: string;
+}
+
 export interface NotificationPayloadByType {
   order_created: OrderCreatedPayload;
   join_request_created: JoinRequestCreatedPayload;
   event_rsvp_attending: EventRsvpAttendingPayload;
   payment_created: PaymentCreatedPayload;
   event_assigned: EventAssignedPayload;
+  join_request_approved: JoinRequestApprovedPayload;
 }
 
 /** The fields routing and rendering need — satisfied by the Notification model and push data. */

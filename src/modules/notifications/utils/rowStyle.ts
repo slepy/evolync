@@ -4,6 +4,7 @@ import {
   CalendarCheck,
   CalendarPlus,
   CreditCard,
+  School,
   ShoppingBag,
   UserPlus,
   type LucideIcon,
@@ -23,6 +24,7 @@ const STYLES: Record<string, NotificationRowStyle> = {
   [NOTIFICATION_TYPE.EVENT_RSVP_ATTENDING]: { icon: CalendarCheck, accent: "events" },
   [NOTIFICATION_TYPE.PAYMENT_CREATED]: { icon: CreditCard, accent: "payments" },
   [NOTIFICATION_TYPE.EVENT_ASSIGNED]: { icon: CalendarPlus, accent: "events" },
+  [NOTIFICATION_TYPE.JOIN_REQUEST_APPROVED]: { icon: School, accent: "school" },
 };
 
 const FALLBACK: NotificationRowStyle = { icon: Bell, accent: "neutral" };

@@ -35,6 +35,13 @@ describe("getNotificationRoute", () => {
     assert.equal(getNotificationRoute({ type: "event_assigned", entityId: "x" }), "/user/events");
   });
 
+  it("N6 join approval → the student dashboard", () => {
+    assert.equal(
+      getNotificationRoute({ type: "join_request_approved", entityId: "m1", schoolId: "s1" }),
+      "/user/dashboard",
+    );
+  });
+
   it("unknown types have no route", () => {
     assert.equal(getNotificationRoute({ type: "order_ready_for_pickup", entityId: "x" }), null);
   });

@@ -14,6 +14,7 @@ export function getNotificationAudience(type: NotificationTarget["type"]): Notif
       return "owner";
     case NOTIFICATION_TYPE.PAYMENT_CREATED:
     case NOTIFICATION_TYPE.EVENT_ASSIGNED:
+    case NOTIFICATION_TYPE.JOIN_REQUEST_APPROVED:
       return "student";
     default:
       return null;
