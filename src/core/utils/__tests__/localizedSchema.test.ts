@@ -14,7 +14,7 @@ describe("localizedSchema", () => {
 
   before(async () => {
     await i18n.init({ resources: messages, lng: "pl", fallbackLng: "en" });
-    (globalThis as any).t = (key: string) => i18n.t(key);
+    (globalThis as any).t = (key: string) => (i18n.t as (k: string) => string)(key);
   });
 
   after(() => {
