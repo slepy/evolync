@@ -9,6 +9,7 @@ import { useAuth } from "@/modules/auth/hooks/useAuth";
 import { registerSignOutHandler } from "@/core/utils/signOutBridge";
 import { useSyncStore } from "@/database/hooks/useSyncStore";
 import { NotificationResponseHandler } from "@/modules/notifications";
+import { useOwnMembershipsWatcher } from "@/modules/school";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { DarkTheme, ThemeProvider } from "@react-navigation/native";
 import { useFonts } from "expo-font";
@@ -88,6 +89,7 @@ export default function RootLayout() {
 
 function RootLayoutNav() {
   useSyncStore({ autoSyncOnline: true, autoSyncOnForeground: true });
+  useOwnMembershipsWatcher();
 
   // Register the real sign-out implementation for the shared Header component
   // to call via the core-owned bridge, so `core` never imports `auth` directly.

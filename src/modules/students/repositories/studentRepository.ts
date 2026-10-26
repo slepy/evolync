@@ -203,6 +203,18 @@ export const StudentRepository = {
     return membersCollection.findAndObserve(id);
   },
 
+  /** The user's own active memberships, in any school. */
+  observeActiveByUserId(userId: string) {
+    const membersCollection = database.get<SchoolMember>("school_members");
+    return membersCollection
+      .query(
+        Q.where("user_id", userId),
+        Q.where("status", MemberStatus.ACTIVE),
+        Q.where("deleted_at", null),
+      )
+      .observeWithColumns(["status", "user_id"]);
+  },
+
   observeBySchoolIds(schoolIds: string[]) {
     const membersCollection = database.get<SchoolMember>("school_members");
     if (schoolIds.length === 0) {
