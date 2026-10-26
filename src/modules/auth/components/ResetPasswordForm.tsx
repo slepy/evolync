@@ -3,6 +3,7 @@ import type { AuthError } from "@/store";
 import { zodResolver } from "@hookform/resolvers/zod";
 import React from "react";
 import { Controller, useForm } from "react-hook-form";
+import { useRevalidateOnLanguageChange } from "@/core/hooks";
 import { Text, XStack } from "tamagui";
 import { OTP_MAX_LENGTH, OTP_MIN_LENGTH, resetPasswordSchema, type ResetPasswordFormValues } from "../validation/resetPasswordSchema";
 import { CodeField } from "./CodeField";
@@ -35,12 +36,14 @@ export const ResetPasswordForm: React.FC<ResetPasswordFormProps> = ({
   const {
     control,
     handleSubmit,
+    trigger,
     formState: { errors },
   } = useForm<ResetPasswordFormValues>({
     resolver: zodResolver(resetPasswordSchema),
     mode: "onChange",
     defaultValues: { code: "", password: "", confirmPassword: "" },
   });
+  useRevalidateOnLanguageChange(errors, trigger);
 
   const handleSave = handleSubmit((data) => onSubmit(data.code, data.password));
 
