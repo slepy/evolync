@@ -1,3 +1,4 @@
+const path = require('path');
 const { getDefaultConfig } = require('expo/metro-config');
 
 const config = getDefaultConfig(__dirname);
@@ -14,6 +15,8 @@ config.resolver.sourceExts = config.resolver.sourceExts.filter(
 config.resolver.blockList = [
   /node_modules\/@nozbe\/watermelondb\/adapters\/sqlite\/sqlite-node\/.*/,
   /node_modules\/better-sqlite3\/.*/,
+  // Documentation site (VitePress) with its own node_modules
+  new RegExp(`^${path.join(__dirname, 'docs', path.sep).replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}`),
 ];
 
 // Add resolver for platform-specific extensions
