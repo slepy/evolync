@@ -13,6 +13,7 @@ import {
   PULL_TIMESTAMP_MARGIN_MS,
   convertToSupabaseRecord,
   convertToWatermelonRecord,
+  fetchTableChangesIn,
 } from "./utils.ts";
 import { pushThreeDChanges, pullThreeDChanges } from "./sync-threed.ts";
 import { pushNotesChanges, pullNotesChanges } from "./sync-notes.ts";
@@ -70,6 +71,58 @@ export async function syncOrganization(ctx: SyncContext): Promise<SyncPullChange
     if (tableName === "event_types") {
       created = ownEventTypesPush(created, organizationId);
       updated = ownEventTypesPush(updated, organizationId);
+    }
+
+    // Update existing records first: a soft delete frees a unique slot (one live
+    // training session per school per day) before a created row takes it.
+    if (updated.length > 0) {
+      if (tableName === "payment_records") {
+        const cycleIds = [...new Set(updated.map((r: any) => r.payment_cycle_id))];
+
+        const { data: existingCycles } = await supabaseClient
+          .from("payment_cycles")
+          .select("id")
+          .in("id", cycleIds)
+          .is("deleted_at", null);
+
+        const existingCycleIds = new Set(
+          (existingCycles || []).map((c: any) => c.id),
+        );
+
+        for (const record of updated) {
+          if (!existingCycleIds.has(record.payment_cycle_id)) {
+            console.log(
+              `[SYNC:ORGANIZATION] Skipping update for payment_record ${record.id}`,
+            );
+            continue;
+          }
+
+          const supabaseRecord = convertToSupabaseRecord(record, tableName);
+          const { error } = await supabaseClient
+            .from(tableName)
+            .update(supabaseRecord)
+            .eq("id", record.id);
+
+          if (error) {
+            throw new Error(`Failed to update ${tableName}: ${error.message}`);
+          }
+        }
+      } else {
+        for (const record of updated) {
+          const supabaseRecord = convertToSupabaseRecord(record, tableName);
+          let updateQuery = supabaseClient
+            .from(tableName)
+            .update(supabaseRecord)
+            .eq("id", record.id);
+          // Only the organization's own types (never re-homes a foreign one).
+          if (tableName === "event_types") updateQuery = updateQuery.eq("organization_id", organizationId);
+          const { error } = await updateQuery;
+
+          if (error) {
+            throw new Error(`Failed to update ${tableName}: ${error.message}`);
+          }
+        }
+      }
     }
 
     // Insert created records
@@ -157,57 +210,6 @@ export async function syncOrganization(ctx: SyncContext): Promise<SyncPullChange
 
         if (error) {
           throw new Error(`Failed to insert to ${tableName}: ${error.message}`);
-        }
-      }
-    }
-
-    // Update existing records
-    if (updated.length > 0) {
-      if (tableName === "payment_records") {
-        const cycleIds = [...new Set(updated.map((r: any) => r.payment_cycle_id))];
-
-        const { data: existingCycles } = await supabaseClient
-          .from("payment_cycles")
-          .select("id")
-          .in("id", cycleIds)
-          .is("deleted_at", null);
-
-        const existingCycleIds = new Set(
-          (existingCycles || []).map((c: any) => c.id),
-        );
-
-        for (const record of updated) {
-          if (!existingCycleIds.has(record.payment_cycle_id)) {
-            console.log(
-              `[SYNC:ORGANIZATION] Skipping update for payment_record ${record.id}`,
-            );
-            continue;
-          }
-
-          const supabaseRecord = convertToSupabaseRecord(record, tableName);
-          const { error } = await supabaseClient
-            .from(tableName)
-            .update(supabaseRecord)
-            .eq("id", record.id);
-
-          if (error) {
-            throw new Error(`Failed to update ${tableName}: ${error.message}`);
-          }
-        }
-      } else {
-        for (const record of updated) {
-          const supabaseRecord = convertToSupabaseRecord(record, tableName);
-          let updateQuery = supabaseClient
-            .from(tableName)
-            .update(supabaseRecord)
-            .eq("id", record.id);
-          // Only the organization's own types (never re-homes a foreign one).
-          if (tableName === "event_types") updateQuery = updateQuery.eq("organization_id", organizationId);
-          const { error } = await updateQuery;
-
-          if (error) {
-            throw new Error(`Failed to update ${tableName}: ${error.message}`);
-          }
         }
       }
     }
@@ -394,9 +396,7 @@ export async function syncOrganization(ctx: SyncContext): Promise<SyncPullChange
 
   // Product variants
   if (productIds.length > 0) {
-    pullChanges.product_variants = await fetchTableChanges("product_variants", (q) =>
-      q.in("product_id", productIds),
-    );
+    pullChanges.product_variants = await fetchTableChangesIn(fetchTableChanges, "product_variants", "product_id", productIds);
   } else {
     pullChanges.product_variants = { created: [], updated: [], deleted: [] };
   }
@@ -410,9 +410,7 @@ export async function syncOrganization(ctx: SyncContext): Promise<SyncPullChange
   const orderIds = (orgOrders || []).map((o: any) => o.id);
 
   if (orderIds.length > 0) {
-    pullChanges.order_items = await fetchTableChanges("order_items", (q) =>
-      q.in("order_id", orderIds),
-    );
+    pullChanges.order_items = await fetchTableChangesIn(fetchTableChanges, "order_items", "order_id", orderIds);
   } else {
     pullChanges.order_items = { created: [], updated: [], deleted: [] };
   }
@@ -426,9 +424,7 @@ export async function syncOrganization(ctx: SyncContext): Promise<SyncPullChange
   const paymentCycleIds = (orgPaymentCycles || []).map((c: any) => c.id);
 
   if (paymentCycleIds.length > 0) {
-    pullChanges.payment_records = await fetchTableChanges("payment_records", (q) =>
-      q.in("payment_cycle_id", paymentCycleIds),
-    );
+    pullChanges.payment_records = await fetchTableChangesIn(fetchTableChanges, "payment_records", "payment_cycle_id", paymentCycleIds);
   } else {
     pullChanges.payment_records = { created: [], updated: [], deleted: [] };
   }
@@ -442,9 +438,7 @@ export async function syncOrganization(ctx: SyncContext): Promise<SyncPullChange
   const sessionIds = (orgSessions || []).map((s: any) => s.id);
 
   if (sessionIds.length > 0) {
-    pullChanges.attendance_records = await fetchTableChanges("attendance_records", (q) =>
-      q.in("training_session_id", sessionIds),
-    );
+    pullChanges.attendance_records = await fetchTableChangesIn(fetchTableChanges, "attendance_records", "training_session_id", sessionIds);
   } else {
     pullChanges.attendance_records = { created: [], updated: [], deleted: [] };
   }
@@ -465,9 +459,7 @@ export async function syncOrganization(ctx: SyncContext): Promise<SyncPullChange
   const eventIds = (orgEvents || []).map((e: any) => e.id);
 
   if (eventIds.length > 0) {
-    pullChanges.event_participants = await fetchTableChanges("event_participants", (q) =>
-      q.in("event_id", eventIds),
-    );
+    pullChanges.event_participants = await fetchTableChangesIn(fetchTableChanges, "event_participants", "event_id", eventIds);
   } else {
     pullChanges.event_participants = { created: [], updated: [], deleted: [] };
   }
