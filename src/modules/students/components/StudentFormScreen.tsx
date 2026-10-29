@@ -41,7 +41,11 @@ export const StudentFormScreen: React.FC<StudentFormScreenProps> = ({ initial, o
     const result = studentSchema.safeParse({ displayName: name, email: email.trim(), phoneNumber: phone });
     if (!result.success) {
       const next: Partial<Record<Field, string>> = {};
-      for (const issue of result.error.issues) next[issue.path[0] as Field] ??= t(issue.message);
+      // Messages are translation keys; a length limit fills in its {{count}}.
+      for (const issue of result.error.issues) {
+        const count = issue.code === "too_big" ? issue.maximum : issue.code === "too_small" ? issue.minimum : undefined;
+        next[issue.path[0] as Field] ??= t(issue.message, count === undefined ? undefined : { count: Number(count) });
+      }
       setErrors(next);
       return;
     }
