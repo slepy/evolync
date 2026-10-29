@@ -17,6 +17,7 @@ import { SyncContext, SyncPullChanges } from "./types.ts";
 import {
   convertToSupabaseRecord,
   convertToWatermelonRecord,
+  fetchTableChangesIn,
   MEMBER_SCHOOL_TABLES,
   membershipChangedSince,
   ownMembershipPush,
@@ -316,8 +317,8 @@ export async function syncUser(ctx: SyncContext): Promise<SyncPullChanges> {
 
   // Fetch payment records for their memberships
   if (memberIds.length > 0 && paymentCycleIds.length > 0) {
-    pullChanges.payment_records = await fetchTableChanges("payment_records", (q) =>
-      q.in("school_member_id", memberIds).in("payment_cycle_id", paymentCycleIds),
+    pullChanges.payment_records = await fetchTableChangesIn(fetchTableChanges, "payment_records", "payment_cycle_id", paymentCycleIds, (q) =>
+      q.in("school_member_id", memberIds),
     );
   } else {
     pullChanges.payment_records = { created: [], updated: [], deleted: [] };
@@ -338,8 +339,8 @@ export async function syncUser(ctx: SyncContext): Promise<SyncPullChanges> {
 
   // Fetch attendance records for their memberships
   if (memberIds.length > 0 && sessionIds.length > 0) {
-    pullChanges.attendance_records = await fetchTableChanges("attendance_records", (q) =>
-      q.in("school_member_id", memberIds).in("training_session_id", sessionIds),
+    pullChanges.attendance_records = await fetchTableChangesIn(fetchTableChanges, "attendance_records", "training_session_id", sessionIds, (q) =>
+      q.in("school_member_id", memberIds),
     );
   } else {
     pullChanges.attendance_records = { created: [], updated: [], deleted: [] };
@@ -365,9 +366,7 @@ export async function syncUser(ctx: SyncContext): Promise<SyncPullChanges> {
 
   // Fetch order items
   if (orderIds.length > 0) {
-    pullChanges.order_items = await fetchTableChanges("order_items", (q) =>
-      q.in("order_id", orderIds),
-    );
+    pullChanges.order_items = await fetchTableChangesIn(fetchTableChanges, "order_items", "order_id", orderIds);
   } else {
     pullChanges.order_items = { created: [], updated: [], deleted: [] };
   }
@@ -387,9 +386,7 @@ export async function syncUser(ctx: SyncContext): Promise<SyncPullChanges> {
     const productIds = (products || []).map((p: any) => p.id);
 
     if (productIds.length > 0) {
-      pullChanges.product_variants = await fetchTableChanges("product_variants", (q) =>
-        q.in("product_id", productIds),
-      );
+      pullChanges.product_variants = await fetchTableChangesIn(fetchTableChanges, "product_variants", "product_id", productIds);
     } else {
       pullChanges.product_variants = { created: [], updated: [], deleted: [] };
     }

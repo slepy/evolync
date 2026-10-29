@@ -108,6 +108,54 @@ export function convertToWatermelonRecord(record: any, tableName: string): any {
   return watermelonRecord;
 }
 
+type TableChanges = { created: any[]; updated: any[]; deleted: string[] };
+
+/**
+ * Ids per `.in()` filter. PostgREST takes filters in the URL, so a filter
+ * over every session / cycle / order of an organization outgrows the URL
+ * limit as data accumulates and the pull fails (after the push was applied).
+ */
+export const IN_FILTER_CHUNK = 100;
+
+/** `ids` split into parts of at most `size`. */
+export function chunkIds<T>(ids: T[], size: number = IN_FILTER_CHUNK): T[][] {
+  const parts: T[][] = [];
+  for (let i = 0; i < ids.length; i += size) parts.push(ids.slice(i, i + size));
+  return parts;
+}
+
+/** One table's pull changes from the changes of its id chunks. */
+export function mergeTableChanges(parts: TableChanges[]): TableChanges {
+  return {
+    created: parts.flatMap((p) => p.created),
+    updated: parts.flatMap((p) => p.updated),
+    deleted: parts.flatMap((p) => p.deleted),
+  };
+}
+
+/**
+ * `fetchTableChanges` for the rows whose `column` is one of `ids`, one
+ * request per chunk of ids; `filterFn` adds the table's other filters.
+ */
+export async function fetchTableChangesIn(
+  fetchTableChanges: (tableName: string, filterFn?: (query: any) => any) => Promise<TableChanges>,
+  tableName: string,
+  column: string,
+  ids: string[],
+  filterFn?: (query: any) => any,
+): Promise<TableChanges> {
+  const parts: TableChanges[] = [];
+  for (const part of chunkIds(ids)) {
+    parts.push(
+      await fetchTableChanges(tableName, (q) => {
+        const filtered = q.in(column, part);
+        return filterFn ? filterFn(filtered) : filtered;
+      }),
+    );
+  }
+  return mergeTableChanges(parts);
+}
+
 /**
  * A user's pushed school_members rows: only their own membership records,
  * without the payment amount columns (the fee is set by the instructor).

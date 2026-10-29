@@ -3,7 +3,9 @@ import { assertEquals } from "https://deno.land/std@0.224.0/assert/mod.ts";
 import {
   MEMBER_SCHOOL_TABLES,
   ORGANIZATION_PUSH_TABLES,
+  chunkIds,
   columnMigratedTables,
+  fetchTableChangesIn,
   membershipChangedSince,
   ownMembershipPush,
   studentOrderPush,
@@ -88,4 +90,32 @@ Deno.test("the school tables pulled in full cover the newly visible school's dat
   for (const table of ["schools", "school_settings", "school_members", "payment_cycles", "events", "products"]) {
     assertEquals(MEMBER_SCHOOL_TABLES.includes(table), true, table);
   }
+});
+
+Deno.test("ids are split into parts of at most 100", () => {
+  const ids = Array.from({ length: 250 }, (_, i) => `s${i}`);
+  assertEquals(chunkIds(ids).map((part) => part.length), [100, 100, 50]);
+  assertEquals(chunkIds([]), []);
+});
+
+Deno.test("a pull over many session ids filters each chunk and merges the changes", async () => {
+  const ids = Array.from({ length: 150 }, (_, i) => `s${i}`);
+  const calls: Array<Array<[string, unknown]>> = [];
+  const fetchTableChanges = async (_table: string, filterFn?: (q: any) => any) => {
+    const filters: Array<[string, unknown]> = [];
+    const query = { in: (column: string, values: unknown) => (filters.push([column, values]), query) };
+    filterFn?.(query);
+    calls.push(filters);
+    const part = filters[0][1] as string[];
+    return { created: [{ id: part[0] }], updated: [], deleted: [part[part.length - 1]] };
+  };
+
+  const result = await fetchTableChangesIn(fetchTableChanges, "attendance_records", "training_session_id", ids, (q) =>
+    q.in("school_member_id", ["m1"]),
+  );
+
+  assertEquals(calls.length, 2);
+  assertEquals(calls[1][0], ["training_session_id", ids.slice(100)]);
+  assertEquals(calls[1][1], ["school_member_id", ["m1"]]);
+  assertEquals(result, { created: [{ id: "s0" }, { id: "s100" }], updated: [], deleted: ["s99", "s149"] });
 });

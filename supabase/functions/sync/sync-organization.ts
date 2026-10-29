@@ -8,7 +8,12 @@
  */
 
 import { SyncContext, SyncPullChanges } from "./types.ts";
-import { ORGANIZATION_PUSH_TABLES, convertToSupabaseRecord, convertToWatermelonRecord } from "./utils.ts";
+import {
+  ORGANIZATION_PUSH_TABLES,
+  convertToSupabaseRecord,
+  convertToWatermelonRecord,
+  fetchTableChangesIn,
+} from "./utils.ts";
 import { pushThreeDChanges, pullThreeDChanges } from "./sync-threed.ts";
 import { pushNotesChanges, pullNotesChanges } from "./sync-notes.ts";
 import { pushTagsChanges, pullTagsChanges } from "./sync-tags.ts";
@@ -385,9 +390,7 @@ export async function syncOrganization(ctx: SyncContext): Promise<SyncPullChange
 
   // Product variants
   if (productIds.length > 0) {
-    pullChanges.product_variants = await fetchTableChanges("product_variants", (q) =>
-      q.in("product_id", productIds),
-    );
+    pullChanges.product_variants = await fetchTableChangesIn(fetchTableChanges, "product_variants", "product_id", productIds);
   } else {
     pullChanges.product_variants = { created: [], updated: [], deleted: [] };
   }
@@ -401,9 +404,7 @@ export async function syncOrganization(ctx: SyncContext): Promise<SyncPullChange
   const orderIds = (orgOrders || []).map((o: any) => o.id);
 
   if (orderIds.length > 0) {
-    pullChanges.order_items = await fetchTableChanges("order_items", (q) =>
-      q.in("order_id", orderIds),
-    );
+    pullChanges.order_items = await fetchTableChangesIn(fetchTableChanges, "order_items", "order_id", orderIds);
   } else {
     pullChanges.order_items = { created: [], updated: [], deleted: [] };
   }
@@ -417,9 +418,7 @@ export async function syncOrganization(ctx: SyncContext): Promise<SyncPullChange
   const paymentCycleIds = (orgPaymentCycles || []).map((c: any) => c.id);
 
   if (paymentCycleIds.length > 0) {
-    pullChanges.payment_records = await fetchTableChanges("payment_records", (q) =>
-      q.in("payment_cycle_id", paymentCycleIds),
-    );
+    pullChanges.payment_records = await fetchTableChangesIn(fetchTableChanges, "payment_records", "payment_cycle_id", paymentCycleIds);
   } else {
     pullChanges.payment_records = { created: [], updated: [], deleted: [] };
   }
@@ -433,9 +432,7 @@ export async function syncOrganization(ctx: SyncContext): Promise<SyncPullChange
   const sessionIds = (orgSessions || []).map((s: any) => s.id);
 
   if (sessionIds.length > 0) {
-    pullChanges.attendance_records = await fetchTableChanges("attendance_records", (q) =>
-      q.in("training_session_id", sessionIds),
-    );
+    pullChanges.attendance_records = await fetchTableChangesIn(fetchTableChanges, "attendance_records", "training_session_id", sessionIds);
   } else {
     pullChanges.attendance_records = { created: [], updated: [], deleted: [] };
   }
@@ -456,9 +453,7 @@ export async function syncOrganization(ctx: SyncContext): Promise<SyncPullChange
   const eventIds = (orgEvents || []).map((e: any) => e.id);
 
   if (eventIds.length > 0) {
-    pullChanges.event_participants = await fetchTableChanges("event_participants", (q) =>
-      q.in("event_id", eventIds),
-    );
+    pullChanges.event_participants = await fetchTableChangesIn(fetchTableChanges, "event_participants", "event_id", eventIds);
   } else {
     pullChanges.event_participants = { created: [], updated: [], deleted: [] };
   }
