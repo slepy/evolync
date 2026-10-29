@@ -4,6 +4,7 @@ import {
   MEMBER_SCHOOL_TABLES,
   ORGANIZATION_PUSH_TABLES,
   columnMigratedTables,
+  convertToSupabaseRecord,
   membershipChangedSince,
   ownMembershipPush,
   studentOrderPush,
@@ -88,4 +89,13 @@ Deno.test("the school tables pulled in full cover the newly visible school's dat
   for (const table of ["schools", "school_settings", "school_members", "payment_cycles", "events", "products"]) {
     assertEquals(MEMBER_SCHOOL_TABLES.includes(table), true, table);
   }
+});
+
+Deno.test("a pushed record leaves updated_at to the server, so other users' pulls see it", () => {
+  const pushed = convertToSupabaseRecord(
+    { id: "p1", status: "paid", created_at: 1_700_000_000_000, updated_at: 1_700_000_000_000, _status: "created" },
+    "payment_records",
+  );
+
+  assertEquals(pushed, { id: "p1", status: "paid", created_at: "2023-11-14T22:13:20.000Z" });
 });
