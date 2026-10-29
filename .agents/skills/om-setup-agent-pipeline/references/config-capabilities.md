@@ -11,6 +11,8 @@ committed configs keep working.
 | `agentsMd.template` | `null` | `om-create-agents-md`; repo-relative authoring template. |
 | `smartTest.map` | `".ai/test-map.json"` | `om-smart-test`; affected-unit map. |
 | `smartTest.suites` | absent | `om-smart-test`; named test suite definitions; absent derives from `validation.commands`. |
+| `reviewSweep.maxParallel` | `1` | `om-review-prs --subagents` only; positive integer concurrency limit, overridden by `--parallel N`. Unflagged sweeps ignore it. |
+| `reviewSweep.coordinationRoot` | `null` | `om-review-prs --subagents` only; existing absolute shared directory, or automatic repository-specific local storage when absent/null. |
 | `paths.specTemplate` | `null` | `om-pre-implement-spec`; repo-relative spec template. |
 | `paths.ejectLedger` | `".ai/ejected.json"` | `om-eject-and-customize`; provenance ledger. |
 | `knowledge.sources` | `[]` | `om-framework-context`; canonical knowledge-source entries. |
@@ -18,6 +20,8 @@ committed configs keep working.
 | `securityChecklist` | `null` | `om-auto-sec-report-pr`; repo-local security checklist. |
 | `securityReport.publish` | `"local"` | Security-report skills; `"pr"` is an explicit publication opt-in. |
 | `securityReport.disclosure` | `"withhold-live"` | Security-report skills; public disclosure policy. |
+| `dependencyAudit.minSeverity` | `"high"` | `om-auto-audit-dependencies`; issue threshold (`low`, `moderate`, `high`, `critical`); CLI overrides it. |
+| `dependencyAudit.ignore` | `[]` | `om-auto-audit-dependencies`; accepted-risk objects with advisory `id`, required `reason`, optional inclusive UTC `until` date; malformed/expired entries do not apply. |
 | `help.data` | `[".ai/help/*.md"]` | `om-help`; repository routing data. |
 | `help.skillRoots` | `[]` | `om-help`; extra installed-skill roots. |
 | `judge.criteria` | `".ai/judge-criteria.md"` | `om-judge-agent-session`; evaluation criteria. |
@@ -43,10 +47,17 @@ committed configs keep working.
 | `platform.tierMap` | `[]` | Path-prefix to license-tier mapping. |
 | `ux.healthReport` | `null` | `om-ux-review-pr`; optional repo-relative health snapshot. |
 | `design.provider` | `null` | `om-figma-design-with-ds`; design-tool descriptor name. |
+| `prTitleTemplate` | `"{prefix}({area}): {summary}{issueRef}"` | PR-opening skills (`om-open-pr`, `om-auto-create-pr`, `om-auto-create-pr-loop`, `om-auto-fix-issue`, `om-auto-review-pr` fork flow); placeholders `{prefix}`, `{area}`, `{summary}`, `{issue}`, `{issueRef}`, `{ticketKey}`, e.g. `"[{issue}] {prefix}({area}): {summary}"`. |
+| `ticketKeyPattern` | absent | PR-opening skills; ERE whose first match in the head branch name fills `{ticketKey}` (e.g. `"[A-Z][A-Z0-9]+-[0-9]+"`). |
 
 ## Default-loading snippet
 
 Load only the slots the executing skill uses, with these exact backward-compatible defaults:
+
+For `reviewSweep`, load the validated defaults only in the flagged sweep's own
+preflight; `--parallel N` bypasses the configured concurrency value. Unflagged
+skills must not read or validate these fields. See `om-review-prs` for that
+mode-specific loader and the lease/storage checks.
 
 ```bash
 AGENTS_MD_TEMPLATE=$(jq -r '.agentsMd.template // empty' "$CONFIG")
@@ -58,7 +69,11 @@ KNOWLEDGE_SOURCES=$(jq -c '.knowledge.sources // []' "$CONFIG")
 KNOWLEDGE_RESOLVER=$(jq -r '.knowledge.resolver // empty' "$CONFIG")
 SECURITY_CHECKLIST=$(jq -r '.securityChecklist // empty' "$CONFIG")
 SECURITY_REPORT_PUBLISH=$(jq -r '.securityReport.publish // "local"' "$CONFIG")
+PR_TITLE_TEMPLATE=$(jq -r '.prTitleTemplate // "{prefix}({area}): {summary}{issueRef}"' "$CONFIG")
+TICKET_KEY_PATTERN=$(jq -r '.ticketKeyPattern // empty' "$CONFIG")
 SECURITY_REPORT_DISCLOSURE=$(jq -r '.securityReport.disclosure // "withhold-live"' "$CONFIG")
+MIN_SEVERITY=$(jq -r '.dependencyAudit.minSeverity // "high"' "$CONFIG")
+IGNORE_JSON=$(jq -c '.dependencyAudit.ignore // []' "$CONFIG")
 HELP_DATA=$(jq -c '.help.data // [".ai/help/*.md"]' "$CONFIG")
 HELP_SKILL_ROOTS=$(jq -c '.help.skillRoots // []' "$CONFIG")
 JUDGE_CRITERIA=$(jq -r '.judge.criteria // ".ai/judge-criteria.md"' "$CONFIG")

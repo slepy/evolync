@@ -32,3 +32,4 @@ config.json.*.tmp
 layouts/
 mcp.local.json
 mcp.local.json.cez-tmp-*
+webhooks/
