@@ -120,6 +120,49 @@ Deno.test("an owner's full member pull sends the other school's existing rows on
   assertEquals(ids(full.changes.school_members), ["classmate", "me-there"]);
 });
 
+Deno.test("an owner pulls their attendance, events and orders in a school of another organization", async () => {
+  const tables = ownerWhoTrainsElsewhere();
+  tables.training_sessions = [
+    { id: "own-session", school_id: "own-s", ...stamps(NEW) },
+    { id: "foreign-session", school_id: "foreign-s", ...stamps(OLD) },
+  ];
+  tables.attendance_records = [
+    { id: "own-att", training_session_id: "own-session", school_member_id: "my-student", ...stamps(NEW) },
+    { id: "my-att", training_session_id: "foreign-session", school_member_id: "me-there", ...stamps(NEW) },
+    { id: "classmate-att", training_session_id: "foreign-session", school_member_id: "classmate", ...stamps(NEW) },
+  ];
+  tables.events = [
+    { id: "own-event", organization_id: "org-own", ...stamps(NEW) },
+    { id: "foreign-event", organization_id: "org-other", ...stamps(NEW) },
+    { id: "not-invited", organization_id: "org-other", ...stamps(NEW) },
+  ];
+  tables.event_participants = [
+    { id: "own-part", event_id: "own-event", school_member_id: "my-student", ...stamps(NEW) },
+    { id: "my-part", event_id: "foreign-event", school_member_id: "me-there", ...stamps(NEW) },
+    { id: "classmate-part", event_id: "foreign-event", school_member_id: "classmate", ...stamps(NEW) },
+    { id: "classmate-other", event_id: "not-invited", school_member_id: "classmate", ...stamps(NEW) },
+  ];
+  tables.orders = [
+    { id: "own-order", school_id: "own-s", school_member_id: "my-student", ...stamps(NEW) },
+    { id: "my-order", school_id: "foreign-s", school_member_id: "me-there", ...stamps(NEW) },
+    { id: "classmate-order", school_id: "foreign-s", school_member_id: "classmate", ...stamps(NEW) },
+  ];
+  tables.order_items = [
+    { id: "own-item", order_id: "own-order", ...stamps(NEW) },
+    { id: "my-item", order_id: "my-order", ...stamps(NEW) },
+    { id: "classmate-item", order_id: "classmate-order", ...stamps(NEW) },
+  ];
+
+  const { changes } = await ownerSync(tables, { fullMemberPull: true });
+
+  assertEquals(ids(changes.training_sessions), ["foreign-session", "own-session"]);
+  assertEquals(ids(changes.attendance_records), ["my-att", "own-att"]);
+  assertEquals(ids(changes.events), ["foreign-event", "own-event"]);
+  assertEquals(ids(changes.event_participants), ["my-part", "own-part"]);
+  assertEquals(ids(changes.orders), ["my-order", "own-order"]);
+  assertEquals(ids(changes.order_items), ["my-item", "own-item"]);
+});
+
 Deno.test("a student without an organization still pulls only their own payments", async () => {
   const tables = ownerWhoTrainsElsewhere();
   tables.organizations = tables.organizations.filter((o) => o.owner_id !== "me");
