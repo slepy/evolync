@@ -10,7 +10,10 @@
     "typecheck": "tsc --noEmit",
     "check:theme": "node scripts/check-theme-colors.js",
     "postinstall": "patch-package",
-    "test": "node --require ./test/register.cjs --test \"src/**/__tests__/*.test.ts\""
+    "test": "node --require ./test/register.cjs --test \"src/**/__tests__/*.test.ts\"",
+    "docs:dev": "npm --prefix docs run dev",
+    "docs:build": "npm --prefix docs run build",
+    "docs:preview": "npm --prefix docs run preview"
   },
   "dependencies": {
     "@expo-google-fonts/manrope": "^0.4.2",

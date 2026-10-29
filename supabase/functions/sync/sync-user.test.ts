@@ -5,6 +5,7 @@ import {
   ORGANIZATION_PUSH_TABLES,
   chunkIds,
   columnMigratedTables,
+  convertToSupabaseRecord,
   fetchTableChangesIn,
   membershipChangedSince,
   ownMembershipPush,
@@ -118,4 +119,13 @@ Deno.test("a pull over many session ids filters each chunk and merges the change
   assertEquals(calls[1][0], ["training_session_id", ids.slice(100)]);
   assertEquals(calls[1][1], ["school_member_id", ["m1"]]);
   assertEquals(result, { created: [{ id: "s0" }, { id: "s100" }], updated: [], deleted: ["s99", "s149"] });
+});
+
+Deno.test("a pushed record leaves updated_at to the server, so other users' pulls see it", () => {
+  const pushed = convertToSupabaseRecord(
+    { id: "p1", status: "paid", created_at: 1_700_000_000_000, updated_at: 1_700_000_000_000, _status: "created" },
+    "payment_records",
+  );
+
+  assertEquals(pushed, { id: "p1", status: "paid", created_at: "2023-11-14T22:13:20.000Z" });
 });

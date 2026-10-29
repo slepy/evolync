@@ -6,7 +6,7 @@ import { INVITE_VALIDITY_DAYS, inviteExpiry, type InviteValidityDays } from "../
 import { intlLocaleTag } from "@/core/i18n/localeTags";
 
 interface InviteCreateScreenProps {
-  /** Creates the code valid until `expiresAt`; a thrown error is shown above the button. */
+  /** Creates the code valid until `expiresAt`; if it throws, a generic error is shown above the button. */
   onSubmit: (expiresAt: number) => Promise<void>;
 }
 
@@ -31,7 +31,9 @@ export const InviteCreateScreen: React.FC<InviteCreateScreenProps> = ({ onSubmit
     try {
       await onSubmit(inviteExpiry(new Date(), days).getTime());
     } catch (err) {
-      setError(err instanceof Error ? err.message : t("inviteCreateError"));
+      // Service errors are internal (e.g. inviteCodeGenerationFailed); the person gets the translated message.
+      console.error("[InviteCreateScreen] Create invite failed:", err);
+      setError(t("inviteCreateError"));
     } finally {
       setIsSaving(false);
     }

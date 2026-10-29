@@ -25,7 +25,10 @@ export function convertToSupabaseRecord(record: any, tableName: string): any {
 
   // Convert timestamps from milliseconds to ISO strings
   convertOrDeleteTimestamp("created_at");
-  convertOrDeleteTimestamp("updated_at");
+  // updated_at is server-owned (DEFAULT now() on insert, trigger on update):
+  // pulls select rows by it, so a device clock (or a record made offline and
+  // pushed later) would hide a new row from every other user's next pull.
+  delete supabaseRecord.updated_at;
   convertOrDeleteTimestamp("deleted_at");
   convertOrDeleteTimestamp("joined_at");
   convertOrDeleteTimestamp("payment_date");
@@ -217,6 +220,13 @@ export function columnMigratedTables(
 ): string[] {
   return [...new Set((migration?.columns ?? []).filter((c) => c.columns.length > 0).map((c) => c.table))];
 }
+
+/**
+ * Margin taken off the returned pull timestamp: a row is stamped with its
+ * transaction's start time (now()), so one committed while a pull runs can
+ * carry a time before it. Re-pulling a few seconds is harmless.
+ */
+export const PULL_TIMESTAMP_MARGIN_MS = 10_000;
 
 /** Tables a member pulls for the schools they belong to. */
 export const MEMBER_SCHOOL_TABLES = [

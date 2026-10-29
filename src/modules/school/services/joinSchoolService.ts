@@ -1,6 +1,7 @@
 import { sync } from "@/database/sync";
 import { StudentRepository } from "@/modules/students/repositories";
 import { SchoolInviteRepository, SchoolRepository } from "../repositories";
+import { JoinRequestStatus } from "@/database/models/SchoolJoinRequest";
 import { SchoolJoinRequestRepository } from "../repositories/schoolJoinRequestRepository";
 
 // Import supabase using require to avoid Metro bundler issues.
@@ -17,6 +18,7 @@ const { supabase } = require("@/config/supabase");
  * New logic (join-request flow):
  * 1. If code doesn't exist or expired → throw error
  * 2. If user already has a pending request for this school → throw joinRequestPending
+ *    (a rejected one is replaced by the new request)
  * 3. If user is already an active member → throw alreadySchoolMember
  * 4. Create a row in school_join_requests (owner must approve before SchoolMember is created)
  *
@@ -73,13 +75,16 @@ export const joinSchool = async (
   }
 
   // ── 2. Guard: duplicate pending request ─────────────────────────────────────
+  // A rejected request only shows the outcome on the dashboard and does not
+  // block a new one (it is replaced in step 4); a request without a status
+  // (synced before the column existed) counts as pending.
   const existingRequest =
     await SchoolJoinRequestRepository.findByUserIdAndSchoolId(
       userId,
       invite.schoolId,
     );
 
-  if (existingRequest) {
+  if (existingRequest && existingRequest.status !== JoinRequestStatus.REJECTED) {
     throw new Error("joinRequestPending");
   }
 
@@ -99,6 +104,9 @@ export const joinSchool = async (
   }
 
   // ── 4. Create join request locally ──────────────────────────────────────────
+  if (existingRequest) {
+    await SchoolJoinRequestRepository.softDelete(existingRequest.id);
+  }
   await SchoolJoinRequestRepository.create({
     schoolId: invite.schoolId,
     userId,

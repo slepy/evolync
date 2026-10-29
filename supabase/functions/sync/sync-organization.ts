@@ -10,6 +10,7 @@
 import { SyncContext, SyncPullChanges } from "./types.ts";
 import {
   ORGANIZATION_PUSH_TABLES,
+  PULL_TIMESTAMP_MARGIN_MS,
   convertToSupabaseRecord,
   convertToWatermelonRecord,
   fetchTableChangesIn,
@@ -252,6 +253,10 @@ export async function syncOrganization(ctx: SyncContext): Promise<SyncPullChange
   // PUSH: Notifications (recipient-private, read_at only)
   // ===========================================================================
   await pushNotificationsChanges(ctx);
+
+  // Taken before the pull reads anything: a row written while it runs is
+  // pulled next time instead of falling behind the returned timestamp.
+  const pullTimestamp = Date.now() - PULL_TIMESTAMP_MARGIN_MS;
 
   // ===========================================================================
   // PULL: Fetch changes from Supabase since lastPulledAt
@@ -498,6 +503,6 @@ export async function syncOrganization(ctx: SyncContext): Promise<SyncPullChange
 
   return {
     changes: pullChanges,
-    timestamp: Date.now(),
+    timestamp: pullTimestamp,
   };
 }
