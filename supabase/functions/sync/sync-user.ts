@@ -14,18 +14,17 @@
  */
 
 import { SyncContext, SyncPullChanges } from "./types.ts";
-import {
-  convertToSupabaseRecord,
-  PULL_TIMESTAMP_MARGIN_MS,
-  ownMembershipPush,
-  studentOrderPush,
-  studentParticipantPush,
-} from "./utils.ts";
+import { PULL_TIMESTAMP_MARGIN_MS } from "./utils.ts";
 import { pushThreeDChanges, pullThreeDChanges } from "./sync-threed.ts";
 import { pushNotesChanges, pullNotesChanges } from "./sync-notes.ts";
 import { pushTagsChanges, pullTagsChanges } from "./sync-tags.ts";
 import { pushNotificationsChanges, pullNotificationsChanges } from "./sync-notifications.ts";
-import { createFetchTableChanges, fetchMemberships, pullMemberChanges } from "./sync-member.ts";
+import {
+  createFetchTableChanges,
+  fetchMemberships,
+  pullMemberChanges,
+  pushMemberChanges,
+} from "./sync-member.ts";
 
 export async function syncUser(ctx: SyncContext): Promise<SyncPullChanges> {
   const { supabaseClient, userId, changes, lastPulledAt } = ctx;
@@ -42,111 +41,10 @@ export async function syncUser(ctx: SyncContext): Promise<SyncPullChanges> {
     },
   });
 
-  // Tables that users can sync (limited to their data only)
-  const tablesToSync = [
-    "school_join_requests", // Their own join requests
-    "school_members", // Only their own records
-    "orders", // Their orders
-    "order_items", // Items in their orders
-    "payment_records", // Their payments
-    "attendance_records", // Their attendance
-    "event_participants", // Events they're in
-  ];
-
   // ===========================================================================
-  // PUSH: Apply incoming changes from client to Supabase
+  // PUSH: The user's own student rows
   // ===========================================================================
-
-  for (const tableName of tablesToSync) {
-    const tableChanges = changes[tableName];
-    if (!tableChanges) continue;
-
-    const { created, updated, deleted } = tableChanges;
-
-    // Security: Filter to only allow user's own data
-    const filterUserData = (records: any[]) => {
-      switch (tableName) {
-        case "school_join_requests":
-          // Only their own join requests
-          return records.filter((r: any) => r.user_id === userId);
-
-        case "school_members":
-          return ownMembershipPush(records, userId);
-
-        case "orders":
-          return studentOrderPush(records);
-
-        case "event_participants":
-          return studentParticipantPush(records);
-
-        case "order_items":
-        case "payment_records":
-        case "attendance_records":
-          // These will be validated by foreign key constraints in Supabase
-          // If user tries to insert data they don't own, FK constraint will fail
-          return records;
-
-        default:
-          return [];
-      }
-    };
-
-    // Insert created records
-    if (created.length > 0) {
-      const filteredCreated = filterUserData(created);
-
-      if (filteredCreated.length > 0) {
-        console.log(
-          `[SYNC:USER] Processing ${filteredCreated.length} created records for ${tableName}`,
-        );
-
-        const records = filteredCreated.map((record) =>
-          convertToSupabaseRecord(record, tableName),
-        );
-
-        const { error } = await supabaseClient
-          .from(tableName)
-          .upsert(records);
-
-        if (error) {
-          console.error(`[SYNC:USER] Failed to insert to ${tableName}:`, error);
-          // Don't throw - continue with other tables
-        }
-      }
-    }
-
-    // Update existing records
-    if (updated.length > 0) {
-      const filteredUpdated = filterUserData(updated);
-
-      if (filteredUpdated.length > 0) {
-        console.log(
-          `[SYNC:USER] Processing ${filteredUpdated.length} updated records for ${tableName}`,
-        );
-
-        for (const record of filteredUpdated) {
-          const supabaseRecord = convertToSupabaseRecord(record, tableName);
-          const { error } = await supabaseClient
-            .from(tableName)
-            .update(supabaseRecord)
-            .eq("id", record.id);
-
-          if (error) {
-            console.error(`[SYNC:USER] Failed to update ${tableName}:`, error);
-            // Don't throw - continue with other records
-          }
-        }
-      }
-    }
-
-    // Soft delete records
-    if (deleted.length > 0) {
-      // Users generally can't delete records, but handle it for completeness
-      console.log(
-        `[SYNC:USER] Skipping ${deleted.length} deletes for ${tableName} (users cannot delete)`,
-      );
-    }
-  }
+  await pushMemberChanges(ctx, changes, "[SYNC:USER]");
 
   // ===========================================================================
   // PUSH: 3D Tables (user-private)

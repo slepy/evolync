@@ -1,5 +1,5 @@
 /**
- * Pull of a user's student side: the schools they are a member of and their
+ * Push and pull of a user's student side: the schools they are a member of and their
  * own rows there (payments, attendance, orders, events, planned trainings).
  *
  * Used by both sync modes: a regular user (syncUser) and an organization owner
@@ -9,10 +9,15 @@
 
 import { SyncContext } from "./types.ts";
 import {
+  convertToSupabaseRecord,
   convertToWatermelonRecord,
   fetchTableChangesIn,
   MEMBER_SCHOOL_TABLES,
+  MEMBER_PUSH_TABLES,
   membershipChangedSince,
+  ownMembershipPush,
+  studentOrderPush,
+  studentParticipantPush,
 } from "./utils.ts";
 import { pullTrainingsForMember } from "./sync-trainings.ts";
 import { pullEventTypesForMember } from "./sync-event-types.ts";
@@ -24,6 +29,78 @@ export type FetchTableChanges = (
 ) => Promise<TableChanges>;
 
 const EMPTY = (): TableChanges => ({ created: [], updated: [], deleted: [] });
+
+/** A student's pushed rows of `tableName`, limited to what a student may write. */
+function studentRows(tableName: string, records: any[], userId: string): any[] {
+  switch (tableName) {
+    case "school_join_requests":
+      return records.filter((r: any) => r.user_id === userId);
+    case "school_members":
+      return ownMembershipPush(records, userId);
+    case "orders":
+      return studentOrderPush(records);
+    case "event_participants":
+      return studentParticipantPush(records);
+    case "order_items":
+    case "payment_records":
+    case "attendance_records":
+      // Validated by foreign key constraints in Supabase
+      return records;
+    default:
+      return [];
+  }
+}
+
+/**
+ * Push of a user's student side: join requests, their own membership, orders
+ * and event answers (MEMBER_PUSH_TABLES), through the student filters.
+ * Deletes are skipped (a student withdraws by setting deleted_at, an update).
+ * `throwOnError`: fail the push instead of logging and going on.
+ */
+export async function pushMemberChanges(
+  ctx: SyncContext,
+  changes: SyncContext["changes"],
+  logPrefix: string,
+  { throwOnError = false }: { throwOnError?: boolean } = {},
+): Promise<void> {
+  const { supabaseClient, userId } = ctx;
+  const fail = (message: string, error: any) => {
+    if (throwOnError) throw new Error(`${message}: ${error.message}`);
+    console.error(`${logPrefix} ${message}:`, error);
+  };
+
+  for (const tableName of MEMBER_PUSH_TABLES) {
+    const tableChanges = changes[tableName];
+    if (!tableChanges) continue;
+
+    const created = studentRows(tableName, tableChanges.created ?? [], userId);
+    if (created.length > 0) {
+      console.log(`${logPrefix} Processing ${created.length} created records for ${tableName}`);
+      const { error } = await supabaseClient
+        .from(tableName)
+        .upsert(created.map((record) => convertToSupabaseRecord(record, tableName)));
+      if (error) fail(`Failed to insert to ${tableName}`, error);
+    }
+
+    const updated = studentRows(tableName, tableChanges.updated ?? [], userId);
+    if (updated.length > 0) {
+      console.log(`${logPrefix} Processing ${updated.length} updated records for ${tableName}`);
+      for (const record of updated) {
+        const { error } = await supabaseClient
+          .from(tableName)
+          .update(convertToSupabaseRecord(record, tableName))
+          .eq("id", record.id);
+        if (error) fail(`Failed to update ${tableName}`, error);
+      }
+    }
+
+    if ((tableChanges.deleted ?? []).length > 0) {
+      console.log(
+        `${logPrefix} Skipping ${tableChanges.deleted.length} deletes for ${tableName} (users cannot delete)`,
+      );
+    }
+  }
+}
 
 /**
  * `fetchTableChanges` of a sync pull: rows created / updated / deleted since

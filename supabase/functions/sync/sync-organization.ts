@@ -15,10 +15,13 @@ import {
   PULL_TIMESTAMP_MARGIN_MS,
   convertToSupabaseRecord,
   convertToWatermelonRecord,
+  chunkIds,
   fetchTableChangesIn,
   mergePullChanges,
+  OwnedScope,
+  splitStudentChanges,
 } from "./utils.ts";
-import { fetchMemberships, pullMemberChanges } from "./sync-member.ts";
+import { fetchMemberships, pullMemberChanges, pushMemberChanges } from "./sync-member.ts";
 import { pushThreeDChanges, pullThreeDChanges } from "./sync-threed.ts";
 import { pushNotesChanges, pullNotesChanges } from "./sync-notes.ts";
 import { pushTagsChanges, pullTagsChanges } from "./sync-tags.ts";
@@ -51,10 +54,17 @@ export async function syncOrganization(ctx: SyncContext): Promise<SyncPullChange
   // PUSH: Apply incoming changes from client to Supabase
   // ===========================================================================
 
+  // Rows the owner wrote as a student of another organization's school go
+  // through the student push (after their own organization's rows).
+  const { own: ownChanges, student: studentChanges } = splitStudentChanges(
+    changes,
+    await fetchOwnedScope(supabaseClient, organizationId, changes),
+  );
+
   const skippedPaymentCycleIds = new Set<string>();
 
   for (const tableName of tablesToSync) {
-    const tableChanges = changes[tableName];
+    const tableChanges = ownChanges[tableName];
     if (!tableChanges) continue;
 
     let { created, updated, deleted } = tableChanges;
@@ -232,6 +242,8 @@ export async function syncOrganization(ctx: SyncContext): Promise<SyncPullChange
       }
     }
   }
+
+  await pushMemberChanges(ctx, studentChanges, "[SYNC:ORGANIZATION]", { throwOnError: true });
 
   // ===========================================================================
   // PUSH: Planned trainings (organization-scoped)
@@ -517,4 +529,64 @@ export async function syncOrganization(ctx: SyncContext): Promise<SyncPullChange
     changes: mergePullChanges(pullChanges, memberChanges),
     timestamp: pullTimestamp,
   };
+}
+
+/** Ids of `column` in `table` among `ids` that pass `filterFn` (chunked). */
+async function existingIds(
+  supabaseClient: any,
+  table: string,
+  ids: string[],
+  filterFn: (query: any) => any,
+): Promise<string[]> {
+  const found: string[] = [];
+  for (const part of chunkIds([...new Set(ids)])) {
+    const { data, error } = await filterFn(supabaseClient.from(table).select("id").in("id", part));
+    if (error) throw new Error(`Failed to fetch ${table}: ${error.message}`);
+    found.push(...(data || []).map((r: any) => r.id));
+  }
+  return found;
+}
+
+/**
+ * The schools, orders and events of the owner's organization that the pushed
+ * rows can reference: stored ones and the ones created in this push.
+ */
+async function fetchOwnedScope(
+  supabaseClient: any,
+  organizationId: string,
+  changes: SyncContext["changes"],
+): Promise<OwnedScope> {
+  const rows = (table: string) => [...(changes[table]?.created ?? []), ...(changes[table]?.updated ?? [])];
+
+  const { data: schools, error } = await supabaseClient
+    .from("schools")
+    .select("id")
+    .eq("organization_id", organizationId);
+  if (error) throw new Error(`Failed to fetch schools: ${error.message}`);
+  const schoolIds = new Set<string>([
+    ...(schools || []).map((s: any) => s.id),
+    ...rows("schools").filter((s) => s.organization_id === organizationId).map((s) => s.id),
+  ]);
+
+  const orderIds = new Set<string>(
+    rows("orders").filter((o) => schoolIds.has(o.school_id)).map((o) => o.id),
+  );
+  const referencedOrders = rows("order_items").map((i) => i.order_id).filter((id) => !orderIds.has(id));
+  if (referencedOrders.length > 0) {
+    for (const id of await existingIds(supabaseClient, "orders", referencedOrders, (q) =>
+      q.in("school_id", [...schoolIds]),
+    )) orderIds.add(id);
+  }
+
+  const eventIds = new Set<string>(
+    rows("events").filter((e) => e.organization_id === organizationId).map((e) => e.id),
+  );
+  const referencedEvents = rows("event_participants").map((p) => p.event_id).filter((id) => !eventIds.has(id));
+  if (referencedEvents.length > 0) {
+    for (const id of await existingIds(supabaseClient, "events", referencedEvents, (q) =>
+      q.eq("organization_id", organizationId),
+    )) eventIds.add(id);
+  }
+
+  return { schoolIds, orderIds, eventIds };
 }

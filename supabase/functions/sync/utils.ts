@@ -297,3 +297,69 @@ export function mergePullChanges(
   }
   return merged;
 }
+
+/** Tables a student pushes (their side of a school they belong to). */
+export const MEMBER_PUSH_TABLES = [
+  "school_join_requests",
+  "school_members",
+  "orders",
+  "order_items",
+  "payment_records",
+  "attendance_records",
+  "event_participants",
+];
+
+/** What an organization owner's own organization holds. */
+export interface OwnedScope {
+  schoolIds: Set<string>;
+  orderIds: Set<string>;
+  eventIds: Set<string>;
+}
+
+/** Whether a pushed row of `table` belongs to another organization's school. */
+function isStudentRow(table: string, row: any, owned: OwnedScope): boolean {
+  switch (table) {
+    case "school_join_requests":
+    case "school_members":
+    case "orders":
+      return !owned.schoolIds.has(row.school_id);
+    case "order_items":
+      return !owned.orderIds.has(row.order_id);
+    case "event_participants":
+      return !owned.eventIds.has(row.event_id);
+    default:
+      return false;
+  }
+}
+
+/**
+ * An organization owner's push split in two: rows of their own organization
+ * (`own`, applied as the owner) and the rows they wrote as a student of
+ * another organization's school (`student`: join requests, membership,
+ * orders and their items, event answers), applied through the student
+ * filters. Deletes stay with `own`.
+ */
+export function splitStudentChanges(
+  changes: Record<string, TableChanges>,
+  owned: OwnedScope,
+): { own: Record<string, TableChanges>; student: Record<string, TableChanges> } {
+  const own: Record<string, TableChanges> = {};
+  const student: Record<string, TableChanges> = {};
+  for (const [table, tableChanges] of Object.entries(changes)) {
+    if (!MEMBER_PUSH_TABLES.includes(table)) {
+      own[table] = tableChanges;
+      continue;
+    }
+    const split = (rows: any[] = []) => [
+      rows.filter((r) => !isStudentRow(table, r, owned)),
+      rows.filter((r) => isStudentRow(table, r, owned)),
+    ];
+    const [ownCreated, studentCreated] = split(tableChanges.created);
+    const [ownUpdated, studentUpdated] = split(tableChanges.updated);
+    own[table] = { created: ownCreated, updated: ownUpdated, deleted: tableChanges.deleted ?? [] };
+    if (studentCreated.length > 0 || studentUpdated.length > 0) {
+      student[table] = { created: studentCreated, updated: studentUpdated, deleted: [] };
+    }
+  }
+  return { own, student };
+}

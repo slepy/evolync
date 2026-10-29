@@ -2,16 +2,16 @@
 import { assertEquals } from "https://deno.land/std@0.224.0/assert/mod.ts";
 import { syncOrganization } from "./sync-organization.ts";
 import { syncUser } from "./sync-user.ts";
-import { mergePullChanges } from "./utils.ts";
+import { mergePullChanges, splitStudentChanges } from "./utils.ts";
 
 type Row = Record<string, any>;
 
 /**
  * Supabase client stand-in over in-memory tables: applies the filters the
- * member pull uses (eq, in, is, not is null, gte, or of gte); any other call
- * (writes, ordering) chains without effect.
+ * member pull uses (eq, in, is, not is null, gte, or of gte); writes are
+ * logged to `writes` (not applied), any other call chains without effect.
  */
-function tableClient(tables: Record<string, Row[]>) {
+function tableClient(tables: Record<string, Row[]>, writes: { op: string; table: string; rows: Row[] }[] = []) {
   const filterFor = (prop: string, args: any[]): ((row: Row) => boolean) | null => {
     const [col, value] = args;
     switch (prop) {
@@ -46,6 +46,9 @@ function tableClient(tables: Record<string, Row[]>) {
         }
         return (...args: any[]) => {
           if (prop === "maybeSingle" || prop === "single") return query(table, filters, true);
+          if (prop === "upsert" || prop === "update") {
+            writes.push({ op: String(prop), table, rows: [args[0]].flat() });
+          }
           const filter = filterFor(String(prop), args);
           return query(table, filter ? [...filters, filter] : filters, single);
         };
@@ -154,4 +157,100 @@ Deno.test("merged pulls keep a row once and do not delete a row still sent live"
   });
   assertEquals(merged.orders, { created: [], updated: [], deleted: [] });
   assertEquals(merged.events, { created: [{ id: "e" }], updated: [], deleted: [] });
+});
+
+Deno.test("an owner's answer, order and join request in another school reach that school", async () => {
+  const tables = ownerWhoTrainsElsewhere();
+  tables.events = [
+    { id: "own-event", organization_id: "org-own", ...stamps(OLD) },
+    { id: "foreign-event", organization_id: "org-other", ...stamps(OLD) },
+  ];
+  tables.orders = [{ id: "own-order", school_id: "own-s", ...stamps(OLD) }];
+  const writes: { op: string; table: string; rows: Row[] }[] = [];
+
+  await syncOrganization({
+    supabaseClient: tableClient(tables, writes),
+    userId: "me",
+    lastPulledAt: LAST_PULLED,
+    migratedTables: [],
+    columnMigratedTables: [],
+    changes: {
+      event_participants: {
+        created: [],
+        updated: [
+          { id: "my-answer", event_id: "foreign-event", school_member_id: "me-there", status: "absent", takes_exam: true },
+          { id: "student-answer", event_id: "own-event", school_member_id: "my-student", status: "attending", takes_exam: true },
+        ],
+        deleted: [],
+      },
+      orders: {
+        created: [{ id: "my-order", school_id: "foreign-s", school_member_id: "me-there", event_id: "x" }],
+        updated: [],
+        deleted: [],
+      },
+      order_items: {
+        created: [
+          { id: "my-item", order_id: "my-order" },
+          { id: "own-item", order_id: "own-order" },
+        ],
+        updated: [],
+        deleted: [],
+      },
+      school_join_requests: {
+        created: [
+          { id: "my-request", school_id: "other-s", user_id: "me", status: "pending" },
+          { id: "forged", school_id: "other-s", user_id: "someone", status: "pending" },
+        ],
+        updated: [],
+        deleted: [],
+      },
+    },
+  } as any);
+
+  const written = (table: string) =>
+    writes.filter((w) => w.table === table).flatMap((w) => w.rows).map((r) => r.id ?? r.status);
+
+  // Event answers: the owner's own event as the owner (takes_exam kept), the
+  // other school's as a student (takes_exam is the instructor's)
+  const answers = writes.filter((w) => w.table === "event_participants").flatMap((w) => w.rows);
+  assertEquals(answers.map((r) => [r.id, r.status, "takes_exam" in r]), [
+    ["student-answer", "attending", true],
+    ["my-answer", "absent", false],
+  ]);
+  assertEquals(writes.filter((w) => w.table === "orders").flatMap((w) => w.rows), [
+    { id: "my-order", school_id: "foreign-s", school_member_id: "me-there" },
+  ]);
+  assertEquals(written("order_items").sort(), ["my-item", "own-item"]);
+  assertEquals(written("school_join_requests"), ["my-request"]);
+});
+
+Deno.test("an owner's push splits student rows of other schools from their organization's", () => {
+  const owned = {
+    schoolIds: new Set(["own-s"]),
+    orderIds: new Set(["own-order"]),
+    eventIds: new Set(["own-event"]),
+  };
+  const { own, student } = splitStudentChanges(
+    {
+      schools: { created: [{ id: "own-s" }], updated: [], deleted: [] },
+      orders: {
+        created: [{ id: "a", school_id: "own-s" }, { id: "b", school_id: "foreign-s" }],
+        updated: [],
+        deleted: ["c"],
+      },
+      event_participants: {
+        created: [],
+        updated: [{ id: "p1", event_id: "own-event" }, { id: "p2", event_id: "foreign-event" }],
+        deleted: [],
+      },
+    },
+    owned,
+  );
+
+  assertEquals(own.schools.created, [{ id: "own-s" }]);
+  assertEquals(own.orders, { created: [{ id: "a", school_id: "own-s" }], updated: [], deleted: ["c"] });
+  assertEquals(student.orders, { created: [{ id: "b", school_id: "foreign-s" }], updated: [], deleted: [] });
+  assertEquals(own.event_participants.updated, [{ id: "p1", event_id: "own-event" }]);
+  assertEquals(student.event_participants.updated, [{ id: "p2", event_id: "foreign-event" }]);
+  assertEquals(student.schools, undefined);
 });
