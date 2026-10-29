@@ -19,6 +19,7 @@ import {
   convertToWatermelonRecord,
   MEMBER_SCHOOL_TABLES,
   membershipChangedSince,
+  PULL_TIMESTAMP_MARGIN_MS,
   ownMembershipPush,
   studentOrderPush,
   studentParticipantPush,
@@ -171,6 +172,10 @@ export async function syncUser(ctx: SyncContext): Promise<SyncPullChanges> {
   // ===========================================================================
   await pushNotificationsChanges(ctx);
 
+  // Taken before the pull reads anything: a row written while it runs is
+  // pulled next time instead of falling behind the returned timestamp.
+  const pullTimestamp = Date.now() - PULL_TIMESTAMP_MARGIN_MS;
+
   // ===========================================================================
   // REFRESH MEMBERSHIP: After PUSH, re-fetch user's schools to include newly joined schools
   // ===========================================================================
@@ -202,7 +207,7 @@ export async function syncUser(ctx: SyncContext): Promise<SyncPullChanges> {
     console.log(`[SYNC:USER] User ${userId} has no schools, returning notifications only`);
     return {
       changes: await pullNotificationsChanges(ctx),
-      timestamp: Date.now(),
+      timestamp: pullTimestamp,
     };
   }
 
@@ -525,6 +530,6 @@ export async function syncUser(ctx: SyncContext): Promise<SyncPullChanges> {
 
   return {
     changes: pullChanges,
-    timestamp: Date.now(),
+    timestamp: pullTimestamp,
   };
 }
