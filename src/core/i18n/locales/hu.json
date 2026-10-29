@@ -768,6 +768,8 @@
   "notificationPaymentCreatedBody": "{{amount}}, időszak: {{period}}",
   "notificationEventAssignedTitle": "Hozzáadtak egy eseményhez",
   "notificationEventAssignedBody": "Hozzáadtak ehhez: {{eventName}} ({{startDate}})",
+  "notificationJoinApprovedTitle": "Kérés elfogadva",
+  "notificationJoinApprovedBody": "Mostantól tag vagy itt: {{schoolName}}",
   "notificationsPushSetting": "Push-értesítések",
   "notificationsPushSettingHint": "Értesítések ezen az eszközön akkor is, ha az alkalmazás be van zárva.",
   "notificationsPushBlocked": "Az értesítések le vannak tiltva az eszköz beállításaiban.",

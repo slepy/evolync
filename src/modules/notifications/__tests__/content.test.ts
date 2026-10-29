@@ -67,6 +67,19 @@ describe("getNotificationContent", () => {
     );
   });
 
+  it("N6 names the school, with a fallback when it is missing", () => {
+    const content = getNotificationContent(
+      { type: "join_request_approved", payload: { schoolName: "Dojo Kraków" } },
+      translate,
+    );
+    assert.equal(content.title, "notificationJoinApprovedTitle");
+    assert.equal(content.body, 'notificationJoinApprovedBody{"schoolName":"Dojo Kraków"}');
+    assert.equal(
+      getNotificationContent({ type: "join_request_approved", payload: {} }, translate).body,
+      'notificationJoinApprovedBody{"schoolName":"notificationYourSchool"}',
+    );
+  });
+
   it("unknown types render generic text", () => {
     const content = getNotificationContent({ type: "something_new", payload: {} }, translate);
     assert.deepEqual(content, { title: "notificationGenericTitle", body: "notificationGenericBody" });

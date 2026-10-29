@@ -4,6 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
+import { useRevalidateOnLanguageChange } from '@/core/hooks';
 import { useRegister } from '../hooks/useRegister';
 import type { RegisterRequest } from '../types/registerDto';
 import { registerSchema, type RegisterFormValues } from '../validation/registerSchema';
@@ -39,6 +40,7 @@ export const RegisterForm: React.FC = () => {
   const {
     control,
     handleSubmit,
+    trigger,
     formState: { errors },
   } = useForm<RegisterFormValues>({
     resolver: zodResolver(registerSchema),
@@ -51,6 +53,7 @@ export const RegisterForm: React.FC = () => {
       phone: { prefix: '+48', number: '' },
     },
   });
+  useRevalidateOnLanguageChange(errors, trigger);
 
   const onSubmit = handleSubmit(async (data) => {
     setErrorDismissed(false);

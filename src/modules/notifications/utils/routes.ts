@@ -26,6 +26,9 @@ export function getNotificationRoute(notification: NotificationTarget): string |
     case NOTIFICATION_TYPE.EVENT_ASSIGNED:
       return "/user/events";
 
+    case NOTIFICATION_TYPE.JOIN_REQUEST_APPROVED:
+      return "/user/dashboard";
+
     default:
       return null;
   }

@@ -768,6 +768,8 @@
   "notificationPaymentCreatedBody": "{{amount}} for {{period}}",
   "notificationEventAssignedTitle": "Added to an event",
   "notificationEventAssignedBody": "You've been added to {{eventName}} on {{startDate}}",
+  "notificationJoinApprovedTitle": "Request approved",
+  "notificationJoinApprovedBody": "You're now a member of {{schoolName}}",
   "notificationsPushSetting": "Push notifications",
   "notificationsPushSettingHint": "Get alerts on this device even when the app is closed.",
   "notificationsPushBlocked": "Notifications are blocked in your device settings.",

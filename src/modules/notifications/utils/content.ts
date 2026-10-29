@@ -4,6 +4,7 @@ import {
   NOTIFICATION_TYPE,
   type EventAssignedPayload,
   type EventRsvpAttendingPayload,
+  type JoinRequestApprovedPayload,
   type JoinRequestCreatedPayload,
   type NotificationContent,
   type NotificationTarget,
@@ -99,6 +100,16 @@ export function getNotificationContent(
         body: translate("notificationEventAssignedBody", {
           eventName: text(p.eventName, translate("notificationAnEvent")),
           startDate: start ? shortDay(start, now, locale) : "",
+        }),
+      };
+    }
+
+    case NOTIFICATION_TYPE.JOIN_REQUEST_APPROVED: {
+      const p = payload as JoinRequestApprovedPayload;
+      return {
+        title: translate("notificationJoinApprovedTitle"),
+        body: translate("notificationJoinApprovedBody", {
+          schoolName: text(p.schoolName, translate("notificationYourSchool")),
         }),
       };
     }

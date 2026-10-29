@@ -119,6 +119,20 @@ const TEMPLATES: Record<string, Record<PushLocale, Render>> = {
       };
     },
   },
+  join_request_approved: {
+    en: (p) => ({
+      title: "Request approved",
+      body: `You're now a member of ${str(p.schoolName, "your school")}`,
+    }),
+    pl: (p) => ({
+      title: "Prośba zaakceptowana",
+      body: `Należysz teraz do: ${str(p.schoolName, "Twojej szkoły")}`,
+    }),
+    hu: (p) => ({
+      title: "Kérés elfogadva",
+      body: `Mostantól tag vagy itt: ${str(p.schoolName, "az iskolád")}`,
+    }),
+  },
 };
 
 const GENERIC: Record<PushLocale, { title: string; body: string }> = {

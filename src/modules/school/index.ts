@@ -10,7 +10,7 @@ export {
 } from './repositories';
 
 // Hooks
-export { useCreateSchool } from './hooks';
+export { useCreateSchool, useOwnMembershipsWatcher } from './hooks';
 
 // Services
 export { createSchool } from './services';

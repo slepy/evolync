@@ -5,6 +5,7 @@ export const NOTIFICATION_TYPE = {
   EVENT_RSVP_ATTENDING: "event_rsvp_attending",
   PAYMENT_CREATED: "payment_created",
   EVENT_ASSIGNED: "event_assigned",
+  JOIN_REQUEST_APPROVED: "join_request_approved",
 } as const;
 
 export type NotificationType = (typeof NOTIFICATION_TYPE)[keyof typeof NOTIFICATION_TYPE];

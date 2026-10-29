@@ -3,6 +3,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
+import { useRevalidateOnLanguageChange } from '@/core/hooks';
 import { Text } from 'tamagui';
 import { useRegisterInstructor } from '../hooks/useRegisterInstructor';
 import type { RegisterInstructorRequest } from '../types/registerDto';
@@ -32,6 +33,7 @@ export const RegisterInstructorForm: React.FC = () => {
   const {
     control,
     handleSubmit,
+    trigger,
     formState: { errors },
   } = useForm<RegisterInstructorFormValues>({
     resolver: zodResolver(registerInstructorSchema),
@@ -45,6 +47,7 @@ export const RegisterInstructorForm: React.FC = () => {
       school_name: '',
     },
   });
+  useRevalidateOnLanguageChange(errors, trigger);
 
   const onSubmit = handleSubmit(async (data) => {
     setErrorDismissed(false);

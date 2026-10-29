@@ -812,6 +812,8 @@
   "notificationPaymentCreatedBody": "{{amount}} za {{period}}",
   "notificationEventAssignedTitle": "Dodano Cię do wydarzenia",
   "notificationEventAssignedBody": "Dodano Cię do: {{eventName}} ({{startDate}})",
+  "notificationJoinApprovedTitle": "Prośba zaakceptowana",
+  "notificationJoinApprovedBody": "Należysz teraz do: {{schoolName}}",
   "notificationsPushSetting": "Powiadomienia push",
   "notificationsPushSettingHint": "Otrzymuj alerty na tym urządzeniu, nawet gdy aplikacja jest zamknięta.",
   "notificationsPushBlocked": "Powiadomienia są zablokowane w ustawieniach urządzenia.",

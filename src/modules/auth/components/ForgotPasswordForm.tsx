@@ -5,6 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Mail } from "lucide-react-native";
 import React from "react";
 import { Controller, useForm } from "react-hook-form";
+import { useRevalidateOnLanguageChange } from "@/core/hooks";
 import { View } from "tamagui";
 import { forgotPasswordSchema, type ForgotPasswordFormValues } from "../validation/forgotPasswordSchema";
 import { AUTH_BUTTON_COLORS } from "./LoginForm";
@@ -25,12 +26,14 @@ export const ForgotPasswordForm: React.FC<ForgotPasswordFormProps> = ({ onSubmit
   const {
     control,
     handleSubmit,
+    trigger,
     formState: { errors },
   } = useForm<ForgotPasswordFormValues>({
     resolver: zodResolver(forgotPasswordSchema),
     mode: "onChange",
     defaultValues: { email: "" },
   });
+  useRevalidateOnLanguageChange(errors, trigger);
 
   const handleSend = handleSubmit((data) => onSubmit(data.email));
 
