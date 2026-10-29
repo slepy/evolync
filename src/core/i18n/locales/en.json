@@ -63,6 +63,7 @@
   "fullNameRequired": "Full name is required (min 2 characters)",
   "nameTooShort": "Name must be at least 2 characters",
   "nameTooLong": "Name can be at most {{count}} characters",
+  "emailTooLong": "Email can be at most {{count}} characters",
   "addressTooLong": "Address can be at most 500 characters",
   "invalidDate": "Invalid date",
   "amountRequired": "Amount is required",
@@ -681,7 +682,7 @@
   "joinRequestApprove": "Approve",
   "joinRequestReject": "Reject",
   "joinRequestRejectTitle": "Reject Request",
-  "joinRequestRejectMessage": "The join request will be removed. The user will need to re-send a request to join.",
+  "joinRequestRejectMessage": "The student will see the request as rejected and can send a new one with a code.",
   "joinRequestNotFound": "Join request not found.",
 
   "approveJoinRequestTitle": "Approve Member",

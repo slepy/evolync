@@ -63,6 +63,7 @@
   "fullNameRequired": "A teljes név megadása kötelező (min. 2 karakter)",
   "nameTooShort": "A névnek legalább 2 karakterből kell állnia",
   "nameTooLong": "A név legfeljebb {{count}} karakter lehet",
+  "emailTooLong": "Az e-mail-cím legfeljebb {{count}} karakter lehet",
   "addressTooLong": "A cím legfeljebb 500 karakter lehet",
   "invalidDate": "Érvénytelen dátum",
   "amountRequired": "Az összeg megadása kötelező",
@@ -681,7 +682,7 @@
   "joinRequestApprove": "Jóváhagyás",
   "joinRequestReject": "Elutasítás",
   "joinRequestRejectTitle": "Kérés elutasítása",
-  "joinRequestRejectMessage": "A csatlakozási kérés törlődik. A felhasználónak újra el kell küldenie a kérést.",
+  "joinRequestRejectMessage": "A tanuló elutasítottként látja a kérést, és kóddal újat küldhet.",
   "joinRequestNotFound": "A csatlakozási kérés nem található.",
 
   "approveJoinRequestTitle": "Tag jóváhagyása",

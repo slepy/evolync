@@ -11,13 +11,13 @@ const phoneValueSchema = z.object({
 export const studentSchema = z.object({
   displayName: z
     .string()
-    .min(2, "studentValidationNameTooShort")
-    .max(100, "studentValidationNameTooLong")
+    .min(2, "nameTooShort")
+    .max(100, "nameTooLong")
     .trim(),
   email: z
     .string()
-    .email("studentValidationEmailInvalid")
-    .max(255, "studentValidationEmailTooLong")
+    .email("invalidEmail")
+    .max(255, "emailTooLong")
     .or(z.literal(""))
     .optional(),
   phoneNumber: phoneValueSchema.optional(),

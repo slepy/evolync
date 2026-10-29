@@ -65,6 +65,7 @@
   "fullNameRequired": "Imię i nazwisko jest wymagane (min 2 znaki)",
   "nameTooShort": "Nazwa musi mieć co najmniej 2 znaki",
   "nameTooLong": "Nazwa może mieć maksymalnie {{count}} znaków",
+  "emailTooLong": "Adres e-mail może mieć maksymalnie {{count}} znaków",
   "addressTooLong": "Adres może mieć maksymalnie 500 znaków",
   "invalidDate": "Nieprawidłowa data",
   "amountRequired": "Kwota jest wymagana",
@@ -719,7 +720,7 @@
   "joinRequestApprove": "Zatwierdź",
   "joinRequestReject": "Odrzuć",
   "joinRequestRejectTitle": "Odrzuć prośbę",
-  "joinRequestRejectMessage": "Prośba o dołączenie zostanie usunięta. Użytkownik będzie musiał wysłać prośbę ponownie.",
+  "joinRequestRejectMessage": "Uczeń zobaczy prośbę jako odrzuconą i będzie mógł wysłać nową z kodem.",
   "joinRequestNotFound": "Prośba o dołączenie nie znaleziona.",
 
   "approveJoinRequestTitle": "Zatwierdź prośbę",
