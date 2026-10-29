@@ -1,0 +1,527 @@
+{
+  "endpoints": [
+    {
+      "id": "sync-pull",
+      "group": "function",
+      "method": "POST",
+      "path": "/functions/v1/sync",
+      "call": "synchronize() → pullChanges",
+      "auth": {
+        "en": "User JWT (Authorization: Bearer) + anon key",
+        "pl": "JWT użytkownika (Authorization: Bearer) + klucz anon",
+        "hu": "Felhasználói JWT (Authorization: Bearer) + anon kulcs"
+      },
+      "summary": {
+        "en": "Downloads every change since the last sync into the local WatermelonDB. An organization owner gets the whole organization, any other user only the schools they belong to.",
+        "pl": "Pobiera wszystkie zmiany od ostatniej synchronizacji do lokalnej bazy WatermelonDB. Właściciel organizacji dostaje całą organizację, pozostali użytkownicy tylko szkoły, do których należą.",
+        "hu": "Letölt minden változást az utolsó szinkronizálás óta a helyi WatermelonDB-be. A szervezet tulajdonosa a teljes szervezetet kapja, más felhasználó csak azokat az iskolákat, amelyeknek tagja."
+      },
+      "request": "{\n  \"changes\": {},\n  \"lastPulledAt\": 1761400000000,   // 0 = first sync\n  \"migration\": null                // set after a local schema migration\n}",
+      "response": "{\n  \"changes\": {\n    \"schools\": { \"created\": [...], \"updated\": [...], \"deleted\": [\"id\"] },\n    \"...\": {}\n  },\n  \"timestamp\": 1761400123456\n}",
+      "notes": {
+        "en": "Pull and push go to the same URL; an empty `changes` object means pull. The client refreshes the access token first when it expires within 60 s.",
+        "pl": "Pull i push trafiają pod ten sam adres; pusty obiekt `changes` oznacza pull. Klient najpierw odświeża token, jeśli wygasa w ciągu 60 s.",
+        "hu": "A pull és a push ugyanarra a címre megy; az üres `changes` objektum pullt jelent. A kliens előbb frissíti a tokent, ha 60 mp-en belül lejár."
+      },
+      "source": [
+        "src/database/sync.ts",
+        "supabase/functions/sync/index.ts"
+      ],
+      "features": [
+        "sign-in",
+        "sign-up",
+        "join-school",
+        "students"
+      ]
+    },
+    {
+      "id": "sync-push",
+      "group": "function",
+      "method": "POST",
+      "path": "/functions/v1/sync",
+      "call": "synchronize() → pushChanges",
+      "auth": {
+        "en": "User JWT (Authorization: Bearer) + anon key",
+        "pl": "JWT użytkownika (Authorization: Bearer) + klucz anon",
+        "hu": "Felhasználói JWT (Authorization: Bearer) + anon kulcs"
+      },
+      "summary": {
+        "en": "Uploads records created, updated or deleted offline. Services trigger it after every mutation (fire-and-forget).",
+        "pl": "Wysyła rekordy utworzone, zmienione lub usunięte offline. Serwisy wywołują ją po każdej zmianie danych (bez czekania na wynik).",
+        "hu": "Feltölti az offline létrehozott, módosított vagy törölt rekordokat. A szolgáltatások minden módosítás után elindítják (nem várnak az eredményre)."
+      },
+      "request": "{\n  \"changes\": {\n    \"orders\": { \"created\": [...], \"updated\": [...], \"deleted\": [\"id\"] }\n  },\n  \"lastPulledAt\": 1761400000000\n}",
+      "response": "{ ... }   // ignored by the client",
+      "notes": {
+        "en": "Writes run with the service role but carry the `x-evolync-actor` header, so database triggers (notifications) know who acted.",
+        "pl": "Zapisy idą z rolą service, ale z nagłówkiem `x-evolync-actor`, dzięki czemu triggery bazy (powiadomienia) wiedzą, kto wykonał akcję.",
+        "hu": "Az írások service szereppel futnak, de `x-evolync-actor` fejléccel, így az adatbázis-triggerek (értesítések) tudják, ki végezte a műveletet."
+      },
+      "source": [
+        "src/database/sync.ts",
+        "supabase/functions/sync/index.ts"
+      ],
+      "features": [
+        "sign-up",
+        "join-school",
+        "students"
+      ]
+    },
+    {
+      "id": "send-push",
+      "group": "function",
+      "method": "POST",
+      "path": "/functions/v1/send-push",
+      "call": "trigger on_notifications_dispatch_push → pg_net",
+      "auth": {
+        "en": "Shared secret header x-send-push-secret (JWT check off). Called only by the database, never by the app.",
+        "pl": "Wspólny sekret w nagłówku x-send-push-secret (bez weryfikacji JWT). Wywołuje ją tylko baza danych, nigdy aplikacja.",
+        "hu": "Közös titok az x-send-push-secret fejlécben (JWT-ellenőrzés nélkül). Csak az adatbázis hívja, az alkalmazás soha."
+      },
+      "summary": {
+        "en": "Sends each new row of `notifications` as an Expo push message to the recipient's enabled devices, in the device language.",
+        "pl": "Wysyła każdy nowy wiersz `notifications` jako powiadomienie push Expo na włączone urządzenia odbiorcy, w języku urządzenia.",
+        "hu": "Minden új `notifications` sort Expo push üzenetként küld el a címzett engedélyezett eszközeire, az eszköz nyelvén."
+      },
+      "notes": {
+        "en": "More than 3 notifications for one recipient within 60 s collapse into a single \"You have N+ new notifications\" push. Join notifications: the owner gets one for a new request, the student one for the approval.",
+        "pl": "Ponad 3 powiadomienia dla jednego odbiorcy w ciągu 60 s łączą się w jeden push „Masz N+ nowych powiadomień”. Powiadomienia o dołączeniu: właściciel dostaje je przy nowej prośbie, uczeń przy akceptacji.",
+        "hu": "Ha egy címzett 60 mp-en belül 3-nál több értesítést kap, egyetlen „N+ új értesítésed van” push megy ki. Csatlakozási értesítések: a tulajdonos új kérésnél kap egyet, a tanuló a jóváhagyáskor."
+      },
+      "source": [
+        "supabase/functions/send-push/handler.ts",
+        "supabase/migrations/20261001000200_notifications_push_webhook.sql"
+      ],
+      "features": []
+    },
+    {
+      "id": "setup-instructor-organization",
+      "group": "rpc",
+      "method": "POST",
+      "path": "/rest/v1/rpc/setup_instructor_organization",
+      "call": "supabase.rpc('setup_instructor_organization', …)",
+      "auth": {
+        "en": "User JWT; security definer, the user may only set up their own account",
+        "pl": "JWT użytkownika; security definer, użytkownik może skonfigurować tylko własne konto",
+        "hu": "Felhasználói JWT; security definer, a felhasználó csak a saját fiókját állíthatja be"
+      },
+      "summary": {
+        "en": "Completes an instructor account that an older app version left without an organization: creates the organization, its default roles (Owner, Instructor, Student) and the first school. New sign ups get them from the sign-up trigger.",
+        "pl": "Dokańcza konto instruktora, które starsza wersja aplikacji zostawiła bez organizacji: tworzy organizację, jej domyślne role (Owner, Instructor, Student) i pierwszą szkołę. Nowe rejestracje dostają je z triggera rejestracji.",
+        "hu": "Befejezi azt az edzői fiókot, amelyet egy régebbi alkalmazásverzió szervezet nélkül hagyott: létrehozza a szervezetet, az alapértelmezett szerepeket (Owner, Instructor, Student) és az első iskolát. Az új regisztrációk ezeket a regisztrációs triggertől kapják."
+      },
+      "request": "{\n  \"p_user_id\": \"uuid\",\n  \"p_organization_name\": \"Cobra Kai Dojo\",\n  \"p_school_name\": \"Cobra Kai Dojo NY\",\n  \"p_full_name\": \"John Kreese\"\n}",
+      "response": "{\n  \"success\": true,\n  \"organization_id\": \"uuid\",\n  \"school_id\": \"uuid\"\n}",
+      "source": [
+        "src/modules/auth/services/instructorSignUp.ts",
+        "supabase/migrations/20260105000000_init_schema.sql"
+      ],
+      "features": [
+        "sign-up"
+      ]
+    },
+    {
+      "id": "register-push-token",
+      "group": "rpc",
+      "method": "POST",
+      "path": "/rest/v1/rpc/register_push_token",
+      "call": "supabase.rpc('register_push_token', …)",
+      "auth": {
+        "en": "User JWT (role authenticated)",
+        "pl": "JWT użytkownika (rola authenticated)",
+        "hu": "Felhasználói JWT (authenticated szerep)"
+      },
+      "summary": {
+        "en": "Saves this device's Expo push token for the signed-in user, with platform and language.",
+        "pl": "Zapisuje token push Expo tego urządzenia dla zalogowanego użytkownika, razem z platformą i językiem.",
+        "hu": "Elmenti az eszköz Expo push tokenjét a bejelentkezett felhasználóhoz, platformmal és nyelvvel."
+      },
+      "request": "{\n  \"p_token\": \"ExponentPushToken[…]\",\n  \"p_platform\": \"android\",\n  \"p_locale\": \"pl\"\n}",
+      "response": "null",
+      "source": [
+        "src/modules/notifications/services/pushRegistrationService.ts",
+        "supabase/migrations/20261020000000_push_tokens_hungarian.sql"
+      ],
+      "features": []
+    },
+    {
+      "id": "disable-push-token",
+      "group": "rpc",
+      "method": "POST",
+      "path": "/rest/v1/rpc/disable_push_token",
+      "call": "supabase.rpc('disable_push_token', …)",
+      "auth": {
+        "en": "User JWT (role authenticated)",
+        "pl": "JWT użytkownika (rola authenticated)",
+        "hu": "Felhasználói JWT (authenticated szerep)"
+      },
+      "summary": {
+        "en": "Stops pushes to this device. Called on sign out, before the session ends.",
+        "pl": "Wyłącza powiadomienia push na tym urządzeniu. Wywoływana przy wylogowaniu, zanim sesja się skończy.",
+        "hu": "Leállítja a push üzeneteket erre az eszközre. Kijelentkezéskor hívódik, a munkamenet vége előtt."
+      },
+      "request": "{ \"p_token\": \"ExponentPushToken[…]\" }",
+      "response": "null",
+      "source": [
+        "src/modules/notifications/services/pushRegistrationService.ts",
+        "src/modules/auth/hooks/useAuth.ts"
+      ],
+      "features": []
+    },
+    {
+      "id": "organizations-owned",
+      "group": "rest",
+      "method": "GET",
+      "path": "/rest/v1/organizations?owner_id=eq.{userId}",
+      "call": "supabase.from('organizations').select('id, owner_id, name')",
+      "auth": {
+        "en": "User JWT, row level security",
+        "pl": "JWT użytkownika, row level security",
+        "hu": "Felhasználói JWT, row level security"
+      },
+      "summary": {
+        "en": "Checks whether the user owns an organization. The answer decides between the instructor and the student dashboard and is cached on the device.",
+        "pl": "Sprawdza, czy użytkownik jest właścicielem organizacji. Od wyniku zależy, czy otworzy się dashboard instruktora czy ucznia; wynik jest zapisywany na urządzeniu.",
+        "hu": "Ellenőrzi, hogy a felhasználó tulajdonol-e szervezetet. Ettől függ, hogy az edzői vagy a tanulói irányítópult nyílik meg; az eredményt az eszköz tárolja."
+      },
+      "response": "{ \"id\": \"uuid\", \"owner_id\": \"uuid\", \"name\": \"Cobra Kai Dojo\" }",
+      "notes": {
+        "en": "Runs only when online; offline the cached value from SecureStore is used.",
+        "pl": "Wykonywane tylko online; offline używana jest wartość zapisana w SecureStore.",
+        "hu": "Csak online fut; offline a SecureStore-ban tárolt érték érvényes."
+      },
+      "source": [
+        "src/modules/auth/hooks/useAuth.ts",
+        "src/modules/auth/services/instructorSignUp.ts"
+      ],
+      "features": [
+        "sign-in",
+        "sign-up"
+      ]
+    },
+    {
+      "id": "school-members-active",
+      "group": "rest",
+      "method": "GET",
+      "path": "/rest/v1/school_members?user_id=eq.{userId}&status=eq.active",
+      "call": "supabase.from('school_members').select('id, school_id, schools!inner(id, organization_id)')",
+      "auth": {
+        "en": "User JWT, row level security",
+        "pl": "JWT użytkownika, row level security",
+        "hu": "Felhasználói JWT, row level security"
+      },
+      "summary": {
+        "en": "Loads the schools the user actively belongs to (not deleted) and picks the active one for the context switcher.",
+        "pl": "Wczytuje szkoły, do których użytkownik aktywnie należy (nieusunięte), i wybiera aktywną dla przełącznika kontekstu.",
+        "hu": "Betölti azokat az iskolákat, amelyeknek a felhasználó aktív tagja (nem törölt), és kiválasztja az aktívat a kontextusváltóhoz."
+      },
+      "response": "[\n  { \"id\": \"member uuid\", \"school_id\": \"uuid\", \"schools\": { \"id\": \"uuid\", \"organization_id\": \"uuid\" } }\n]",
+      "notes": {
+        "en": "Runs only when online; offline the cached list from SecureStore is used.",
+        "pl": "Wykonywane tylko online; offline używana jest lista zapisana w SecureStore.",
+        "hu": "Csak online fut; offline a SecureStore-ban tárolt lista érvényes."
+      },
+      "source": [
+        "src/modules/auth/hooks/useAuth.ts"
+      ],
+      "features": [
+        "sign-in"
+      ]
+    },
+    {
+      "id": "school-invites-by-code",
+      "group": "rest",
+      "method": "GET",
+      "path": "/rest/v1/school_invites?code=eq.{code}&expires_at=gt.{now}",
+      "call": "supabase.from('school_invites').select('*').eq('code', code)",
+      "auth": {
+        "en": "User JWT, row level security",
+        "pl": "JWT użytkownika, row level security",
+        "hu": "Felhasználói JWT, row level security"
+      },
+      "summary": {
+        "en": "Finds a valid (not expired, not deleted) invite code when it is not in the local database yet, e.g. the instructor created it on another device.",
+        "pl": "Szuka ważnego (niewygasłego, nieusuniętego) kodu zaproszenia, gdy nie ma go jeszcze w lokalnej bazie, np. instruktor utworzył go na innym urządzeniu.",
+        "hu": "Érvényes (le nem járt, nem törölt) meghívókódot keres, ha még nincs a helyi adatbázisban, pl. az edző másik eszközön hozta létre."
+      },
+      "response": "{ \"id\": \"uuid\", \"school_id\": \"uuid\", \"role_id\": \"uuid\", \"code\": \"K7M2QA\", \"expires_at\": \"2026-11-01T00:00:00Z\" }",
+      "notes": {
+        "en": "A deliberate exception to offline-first: a student has no local copy of a school they do not belong to yet.",
+        "pl": "Celowy wyjątek od offline-first: uczeń nie ma lokalnej kopii szkoły, do której jeszcze nie należy.",
+        "hu": "Szándékos kivétel az offline-first elv alól: a tanulónak nincs helyi másolata egy olyan iskoláról, amelynek még nem tagja."
+      },
+      "source": [
+        "src/modules/school/services/joinSchoolService.ts"
+      ],
+      "features": [
+        "join-school",
+        "students"
+      ]
+    },
+    {
+      "id": "schools-by-id",
+      "group": "rest",
+      "method": "GET",
+      "path": "/rest/v1/schools?id=eq.{schoolId}",
+      "call": "SchoolRepository.findByIdOrFetchFromSupabase(id)",
+      "auth": {
+        "en": "User JWT, row level security",
+        "pl": "JWT użytkownika, row level security",
+        "hu": "Felhasználói JWT, row level security"
+      },
+      "summary": {
+        "en": "Fetches a school missing in the local database and saves it locally, so the dashboard can show its name.",
+        "pl": "Pobiera szkołę, której brak w lokalnej bazie, i zapisuje ją lokalnie, żeby dashboard mógł pokazać jej nazwę.",
+        "hu": "Lekér egy, a helyi adatbázisban hiányzó iskolát, és helyben elmenti, hogy az irányítópult megjeleníthesse a nevét."
+      },
+      "response": "{ \"id\": \"uuid\", \"organization_id\": \"uuid\", \"name\": \"Warszawa Mokotów\", \"description\": null, \"logo_url\": null }",
+      "source": [
+        "src/modules/school/repositories/schoolRepository.ts",
+        "src/modules/school/services/joinSchoolService.ts"
+      ],
+      "features": [
+        "join-school"
+      ]
+    },
+    {
+      "id": "auth-sign-in-password",
+      "group": "auth",
+      "method": "POST",
+      "path": "/auth/v1/token?grant_type=password",
+      "call": "supabase.auth.signInWithPassword({ email, password })",
+      "auth": {
+        "en": "Anon key",
+        "pl": "Klucz anon",
+        "hu": "Anon kulcs"
+      },
+      "summary": {
+        "en": "Signs in with email and password and returns the session (access + refresh token).",
+        "pl": "Loguje e-mailem i hasłem i zwraca sesję (access + refresh token).",
+        "hu": "Bejelentkezik e-maillel és jelszóval, és visszaadja a munkamenetet (access + refresh token)."
+      },
+      "request": "{ \"email\": \"anna.nowak@example.com\", \"password\": \"••••••••\" }",
+      "response": "{\n  \"access_token\": \"jwt\",\n  \"refresh_token\": \"…\",\n  \"expires_at\": 1761403600,\n  \"user\": { \"id\": \"uuid\", \"email\": \"…\" }\n}",
+      "notes": {
+        "en": "Also used after a password reset to prove the new password works.",
+        "pl": "Używane też po resecie hasła, żeby sprawdzić, czy nowe hasło działa.",
+        "hu": "Jelszó-visszaállítás után is használjuk, hogy ellenőrizzük az új jelszót."
+      },
+      "source": [
+        "src/modules/auth/hooks/useAuth.ts"
+      ],
+      "features": [
+        "sign-in",
+        "password-reset"
+      ]
+    },
+    {
+      "id": "auth-refresh",
+      "group": "auth",
+      "method": "POST",
+      "path": "/auth/v1/token?grant_type=refresh_token",
+      "call": "supabase.auth.refreshSession()",
+      "auth": {
+        "en": "Anon key + refresh token",
+        "pl": "Klucz anon + refresh token",
+        "hu": "Anon kulcs + refresh token"
+      },
+      "summary": {
+        "en": "Gets a new access token when the stored one has expired (app start) or expires within 60 s (before a sync).",
+        "pl": "Pobiera nowy access token, gdy zapisany wygasł (start aplikacji) albo wygaśnie w ciągu 60 s (przed synchronizacją).",
+        "hu": "Új access tokent kér, ha a tárolt lejárt (alkalmazásindítás) vagy 60 mp-en belül lejár (szinkronizálás előtt)."
+      },
+      "request": "{ \"refresh_token\": \"…\" }",
+      "response": "{ \"access_token\": \"jwt\", \"refresh_token\": \"…\", \"expires_at\": 1761407200, \"user\": { … } }",
+      "source": [
+        "src/modules/auth/hooks/useAuth.ts",
+        "src/database/sync.ts"
+      ],
+      "features": [
+        "sign-in"
+      ]
+    },
+    {
+      "id": "auth-sign-up",
+      "group": "auth",
+      "method": "POST",
+      "path": "/auth/v1/signup",
+      "call": "supabase.auth.signUp({ email, password, options })",
+      "auth": {
+        "en": "Anon key",
+        "pl": "Klucz anon",
+        "hu": "Anon kulcs"
+      },
+      "summary": {
+        "en": "Creates an account (student or instructor) and signs it in. Email confirmation is turned off. For an instructor the metadata carries the organization and school names, and a database trigger creates the organization, roles and first school in the same transaction.",
+        "pl": "Tworzy konto (ucznia lub instruktora) i od razu je loguje. Potwierdzanie e-maila jest wyłączone. U instruktora metadane niosą nazwy organizacji i szkoły, a trigger w bazie tworzy organizację, role i pierwszą szkołę w tej samej transakcji.",
+        "hu": "Fiókot hoz létre (tanuló vagy edző), és be is jelentkezteti. Az e-mail-megerősítés ki van kapcsolva. Edzőnél a metaadatok viszik a szervezet és az iskola nevét, és egy adatbázis-trigger ugyanabban a tranzakcióban hozza létre a szervezetet, a szerepeket és az első iskolát."
+      },
+      "request": "{\n  \"email\": \"…\",\n  \"password\": \"…\",\n  \"data\": {\n    \"full_name\": \"…\",\n    \"phone_number\": \"…\",          // student\n    \"organization_name\": \"…\",     // instructor\n    \"school_name\": \"…\"            // instructor\n  }\n}",
+      "source": [
+        "src/modules/auth/services/register.ts",
+        "src/modules/auth/services/instructorSignUp.ts",
+        "supabase/migrations/20261026000100_instructor_signup_in_one_transaction.sql"
+      ],
+      "features": [
+        "sign-up"
+      ]
+    },
+    {
+      "id": "auth-recover",
+      "group": "auth",
+      "method": "POST",
+      "path": "/auth/v1/recover",
+      "call": "supabase.auth.resetPasswordForEmail(email)",
+      "auth": {
+        "en": "Anon key",
+        "pl": "Klucz anon",
+        "hu": "Anon kulcs"
+      },
+      "summary": {
+        "en": "Sends the password reset email. The app uses only the code from the email, not its link.",
+        "pl": "Wysyła e-mail do resetu hasła. Aplikacja korzysta tylko z kodu z e-maila, nie z linku.",
+        "hu": "Elküldi a jelszó-visszaállító e-mailt. Az alkalmazás csak az e-mailben lévő kódot használja, a linket nem."
+      },
+      "request": "{ \"email\": \"…\" }",
+      "source": [
+        "src/modules/auth/hooks/useAuth.ts"
+      ],
+      "features": [
+        "password-reset"
+      ]
+    },
+    {
+      "id": "auth-verify-recovery",
+      "group": "auth",
+      "method": "POST",
+      "path": "/auth/v1/verify",
+      "call": "supabase.auth.verifyOtp({ email, token, type: 'recovery' })",
+      "auth": {
+        "en": "Anon key",
+        "pl": "Klucz anon",
+        "hu": "Anon kulcs"
+      },
+      "summary": {
+        "en": "Checks the code from the reset email and opens a session that may set a new password.",
+        "pl": "Sprawdza kod z e-maila resetującego i otwiera sesję, w której można ustawić nowe hasło.",
+        "hu": "Ellenőrzi a visszaállító e-mail kódját, és munkamenetet nyit, amelyben új jelszó állítható be."
+      },
+      "request": "{ \"email\": \"…\", \"token\": \"123456\", \"type\": \"recovery\" }",
+      "source": [
+        "src/modules/auth/hooks/useAuth.ts"
+      ],
+      "features": [
+        "password-reset"
+      ]
+    },
+    {
+      "id": "auth-update-user",
+      "group": "auth",
+      "method": "PUT",
+      "path": "/auth/v1/user",
+      "call": "supabase.auth.updateUser({ password })",
+      "auth": {
+        "en": "User JWT",
+        "pl": "JWT użytkownika",
+        "hu": "Felhasználói JWT"
+      },
+      "summary": {
+        "en": "Sets the new password after a verified reset code.",
+        "pl": "Ustawia nowe hasło po zweryfikowaniu kodu resetu.",
+        "hu": "Beállítja az új jelszót az ellenőrzött visszaállító kód után."
+      },
+      "request": "{ \"password\": \"…\" }",
+      "notes": {
+        "en": "Answers 200 even when no password was stored, so the app signs in with the new password to confirm it.",
+        "pl": "Zwraca 200 nawet wtedy, gdy hasło nie zostało zapisane, dlatego aplikacja loguje się nowym hasłem, żeby to potwierdzić.",
+        "hu": "Akkor is 200-at ad, ha a jelszó nem mentődött el, ezért az alkalmazás az új jelszóval bejelentkezve ellenőrzi."
+      },
+      "source": [
+        "src/modules/auth/hooks/useAuth.ts"
+      ],
+      "features": [
+        "password-reset"
+      ]
+    },
+    {
+      "id": "auth-google",
+      "group": "auth",
+      "method": "GET",
+      "path": "/auth/v1/authorize?provider=google",
+      "call": "supabase.auth.signInWithOAuth({ provider: 'google' })",
+      "auth": {
+        "en": "Anon key; returns to evolync://auth/callback",
+        "pl": "Klucz anon; powrót na evolync://auth/callback",
+        "hu": "Anon kulcs; visszatérés: evolync://auth/callback"
+      },
+      "summary": {
+        "en": "Google sign in in the system browser. The callback screen stores the session and continues like an email sign in.",
+        "pl": "Logowanie przez Google w przeglądarce systemowej. Ekran callback zapisuje sesję i dalej działa jak logowanie e-mailem.",
+        "hu": "Google-bejelentkezés a rendszerböngészőben. A callback képernyő elmenti a munkamenetet, és az e-mailes bejelentkezéshez hasonlóan folytatja."
+      },
+      "notes": {
+        "en": "Implemented (useAuth.signInWithGoogle, app/auth/callback.tsx), but the sign-in screen currently has no Google button.",
+        "pl": "Zaimplementowane (useAuth.signInWithGoogle, app/auth/callback.tsx), ale ekran logowania nie ma obecnie przycisku Google.",
+        "hu": "Megvalósítva (useAuth.signInWithGoogle, app/auth/callback.tsx), de a bejelentkező képernyőn jelenleg nincs Google gomb."
+      },
+      "source": [
+        "src/modules/auth/hooks/useAuth.ts",
+        "app/auth/callback.tsx"
+      ],
+      "features": [
+        "sign-in"
+      ]
+    },
+    {
+      "id": "auth-logout",
+      "group": "auth",
+      "method": "POST",
+      "path": "/auth/v1/logout",
+      "call": "supabase.auth.signOut()",
+      "auth": {
+        "en": "User JWT",
+        "pl": "JWT użytkownika",
+        "hu": "Felhasználói JWT"
+      },
+      "summary": {
+        "en": "Ends the session. The app then clears the session, organization and memberships stored on the device.",
+        "pl": "Kończy sesję. Aplikacja czyści potem sesję, organizację i członkostwa zapisane na urządzeniu.",
+        "hu": "Lezárja a munkamenetet. Ezután az alkalmazás törli az eszközön tárolt munkamenetet, szervezetet és tagságokat."
+      },
+      "source": [
+        "src/modules/auth/hooks/useAuth.ts"
+      ],
+      "features": [
+        "password-reset"
+      ],
+      "notes": {
+        "en": "After a password reset the app signs out the temporary recovery session, so the person signs in again with the new password.",
+        "pl": "Po resecie hasła aplikacja kończy tymczasową sesję odzyskiwania, żeby użytkownik zalogował się od nowa nowym hasłem.",
+        "hu": "Jelszó-visszaállítás után az alkalmazás lezárja az ideiglenes helyreállítási munkamenetet, hogy a felhasználó az új jelszóval jelentkezzen be újra."
+      }
+    },
+    {
+      "id": "storage-upload",
+      "group": "storage",
+      "method": "POST",
+      "path": "/storage/v1/object/{bucket}/{path}",
+      "call": "supabase.storage.from(bucket).upload(path, file)",
+      "auth": {
+        "en": "User JWT, storage policies",
+        "pl": "JWT użytkownika, polityki storage",
+        "hu": "Felhasználói JWT, storage szabályok"
+      },
+      "summary": {
+        "en": "Uploads a photo (buckets: product-images, 3d-sequences) and returns its public URL, which is then saved on the record.",
+        "pl": "Wysyła zdjęcie (buckety: product-images, 3d-sequences) i zwraca jego publiczny URL, który zapisuje się potem w rekordzie.",
+        "hu": "Feltölt egy képet (bucketek: product-images, 3d-sequences), és visszaadja a nyilvános URL-jét, amelyet aztán a rekord tárol."
+      },
+      "source": [
+        "src/core/utils/uploadImage.ts",
+        "src/modules/inventory/services/productService.ts",
+        "src/modules/threed/services/sequenceService.ts"
+      ],
+      "features": []
+    }
+  ]
+}
