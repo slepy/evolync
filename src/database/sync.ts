@@ -1,5 +1,6 @@
 import { synchronize } from "@nozbe/watermelondb/sync";
 import { database, resetLocalDatabase } from "./index";
+import { resendPendingJoinRequestsOnce } from "./resendJoinRequests";
 
 // Import supabase using require to avoid Metro bundler issues
 const { supabase } = require("@/config/supabase");
@@ -115,6 +116,11 @@ async function performSync(options: SyncOptions = {}): Promise<SyncResult> {
       }
       session = refreshData.session;
     }
+
+    // Requests dropped before the server had their status column: push them again (once).
+    await resendPendingJoinRequestsOnce(session.user.id).catch((error) =>
+      console.warn("[SYNC] Join request repair failed:", error),
+    );
 
     const syncTimestamp = Date.now();
 
