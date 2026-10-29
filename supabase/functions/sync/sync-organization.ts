@@ -72,6 +72,58 @@ export async function syncOrganization(ctx: SyncContext): Promise<SyncPullChange
       updated = ownEventTypesPush(updated, organizationId);
     }
 
+    // Update existing records first: a soft delete frees a unique slot (one live
+    // training session per school per day) before a created row takes it.
+    if (updated.length > 0) {
+      if (tableName === "payment_records") {
+        const cycleIds = [...new Set(updated.map((r: any) => r.payment_cycle_id))];
+
+        const { data: existingCycles } = await supabaseClient
+          .from("payment_cycles")
+          .select("id")
+          .in("id", cycleIds)
+          .is("deleted_at", null);
+
+        const existingCycleIds = new Set(
+          (existingCycles || []).map((c: any) => c.id),
+        );
+
+        for (const record of updated) {
+          if (!existingCycleIds.has(record.payment_cycle_id)) {
+            console.log(
+              `[SYNC:ORGANIZATION] Skipping update for payment_record ${record.id}`,
+            );
+            continue;
+          }
+
+          const supabaseRecord = convertToSupabaseRecord(record, tableName);
+          const { error } = await supabaseClient
+            .from(tableName)
+            .update(supabaseRecord)
+            .eq("id", record.id);
+
+          if (error) {
+            throw new Error(`Failed to update ${tableName}: ${error.message}`);
+          }
+        }
+      } else {
+        for (const record of updated) {
+          const supabaseRecord = convertToSupabaseRecord(record, tableName);
+          let updateQuery = supabaseClient
+            .from(tableName)
+            .update(supabaseRecord)
+            .eq("id", record.id);
+          // Only the organization's own types (never re-homes a foreign one).
+          if (tableName === "event_types") updateQuery = updateQuery.eq("organization_id", organizationId);
+          const { error } = await updateQuery;
+
+          if (error) {
+            throw new Error(`Failed to update ${tableName}: ${error.message}`);
+          }
+        }
+      }
+    }
+
     // Insert created records
     if (created.length > 0) {
       console.log(
@@ -157,57 +209,6 @@ export async function syncOrganization(ctx: SyncContext): Promise<SyncPullChange
 
         if (error) {
           throw new Error(`Failed to insert to ${tableName}: ${error.message}`);
-        }
-      }
-    }
-
-    // Update existing records
-    if (updated.length > 0) {
-      if (tableName === "payment_records") {
-        const cycleIds = [...new Set(updated.map((r: any) => r.payment_cycle_id))];
-
-        const { data: existingCycles } = await supabaseClient
-          .from("payment_cycles")
-          .select("id")
-          .in("id", cycleIds)
-          .is("deleted_at", null);
-
-        const existingCycleIds = new Set(
-          (existingCycles || []).map((c: any) => c.id),
-        );
-
-        for (const record of updated) {
-          if (!existingCycleIds.has(record.payment_cycle_id)) {
-            console.log(
-              `[SYNC:ORGANIZATION] Skipping update for payment_record ${record.id}`,
-            );
-            continue;
-          }
-
-          const supabaseRecord = convertToSupabaseRecord(record, tableName);
-          const { error } = await supabaseClient
-            .from(tableName)
-            .update(supabaseRecord)
-            .eq("id", record.id);
-
-          if (error) {
-            throw new Error(`Failed to update ${tableName}: ${error.message}`);
-          }
-        }
-      } else {
-        for (const record of updated) {
-          const supabaseRecord = convertToSupabaseRecord(record, tableName);
-          let updateQuery = supabaseClient
-            .from(tableName)
-            .update(supabaseRecord)
-            .eq("id", record.id);
-          // Only the organization's own types (never re-homes a foreign one).
-          if (tableName === "event_types") updateQuery = updateQuery.eq("organization_id", organizationId);
-          const { error } = await updateQuery;
-
-          if (error) {
-            throw new Error(`Failed to update ${tableName}: ${error.message}`);
-          }
         }
       }
     }
