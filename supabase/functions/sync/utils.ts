@@ -261,3 +261,39 @@ export function membershipChangedSince(
     [m.created_at, m.updated_at].some((value) => !!value && new Date(value).getTime() > lastPulledAt),
   );
 }
+
+/**
+ * Pull changes of an owner's organization joined with those of the schools
+ * they train in as a student (another organization). A row both pulls send
+ * stays once (created wins over updated); an id one pull deletes is not
+ * deleted while the other still sends it live.
+ */
+export function mergePullChanges(
+  base: Record<string, TableChanges>,
+  extra: Record<string, TableChanges>,
+): Record<string, TableChanges> {
+  const merged: Record<string, TableChanges> = { ...base };
+  for (const [table, add] of Object.entries(extra)) {
+    const own = merged[table] ?? { created: [], updated: [], deleted: [] };
+    const created = [...own.created];
+    const createdIds = new Set(created.map((r) => r.id));
+    for (const r of add.created) {
+      if (!createdIds.has(r.id)) {
+        created.push(r);
+        createdIds.add(r.id);
+      }
+    }
+    const updated: any[] = [];
+    const updatedIds = new Set<string>();
+    for (const r of [...own.updated, ...add.updated]) {
+      if (createdIds.has(r.id) || updatedIds.has(r.id)) continue;
+      updated.push(r);
+      updatedIds.add(r.id);
+    }
+    const deleted = [...new Set([...own.deleted, ...add.deleted])].filter(
+      (id) => !createdIds.has(id) && !updatedIds.has(id),
+    );
+    merged[table] = { created, updated, deleted };
+  }
+  return merged;
+}

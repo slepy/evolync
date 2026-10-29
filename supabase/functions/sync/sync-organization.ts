@@ -5,6 +5,8 @@
  * - All schools in the organization
  * - All students, payments, orders, attendance
  * - All products and inventory
+ * - As a student of another organization's school: that school and their
+ *   own rows there (see sync-member.ts)
  */
 
 import { SyncContext, SyncPullChanges } from "./types.ts";
@@ -14,7 +16,9 @@ import {
   convertToSupabaseRecord,
   convertToWatermelonRecord,
   fetchTableChangesIn,
+  mergePullChanges,
 } from "./utils.ts";
+import { fetchMemberships, pullMemberChanges } from "./sync-member.ts";
 import { pushThreeDChanges, pullThreeDChanges } from "./sync-threed.ts";
 import { pushNotesChanges, pullNotesChanges } from "./sync-notes.ts";
 import { pushTagsChanges, pullTagsChanges } from "./sync-tags.ts";
@@ -501,8 +505,16 @@ export async function syncOrganization(ctx: SyncContext): Promise<SyncPullChange
   // ===========================================================================
   Object.assign(pullChanges, await pullNotificationsChanges(ctx));
 
+  // ===========================================================================
+  // PULL: Schools of other organizations the owner trains in as a student
+  // ===========================================================================
+  const studentMemberships = await fetchMemberships(ctx, schoolIds);
+  const memberChanges = studentMemberships.length > 0
+    ? await pullMemberChanges(ctx, studentMemberships, "[SYNC:ORGANIZATION]")
+    : {};
+
   return {
-    changes: pullChanges,
+    changes: mergePullChanges(pullChanges, memberChanges),
     timestamp: pullTimestamp,
   };
 }

@@ -18,6 +18,8 @@ export interface SyncPushChanges {
   lastPulledAt: number;
   /** Sent by WatermelonDB when the client schema migrated since the last pull. */
   migration?: { from: number; tables: string[]; columns: { table: string; columns: string[] }[] } | null;
+  /** Sent once by a client: pull the member tables of its schools in full. */
+  fullMemberPull?: boolean;
 }
 
 export interface SyncContext {
@@ -29,4 +31,6 @@ export interface SyncContext {
   migratedTables?: string[];
   /** Tables that gained columns in that migration; their rows are pulled in full. */
   columnMigratedTables?: string[];
+  /** The client asked for its member schools' existing rows (once per device). */
+  fullMemberPull?: boolean;
 }

@@ -41,6 +41,15 @@ export interface SyncResult {
   timestamp: number;
 }
 
+/**
+ * One-time repair (2026-10-29). An organization owner's sync pulled only their
+ * own organization, so the schools they train in as a student never reached
+ * the device (no payments, attendance or orders there). The server now pulls
+ * them incrementally; the first sync after the update asks for their existing
+ * rows in full. Done once the server confirms it.
+ */
+const FULL_MEMBER_PULL_KEY = "fullMemberPull20261029";
+
 // Sync lock to prevent concurrent synchronization
 let isSyncing = false;
 let syncPromise: Promise<SyncResult> | null = null;
@@ -124,6 +133,9 @@ async function performSync(options: SyncOptions = {}): Promise<SyncResult> {
 
     const syncTimestamp = Date.now();
 
+    const fullMemberPull = !(await database.localStorage.get(FULL_MEMBER_PULL_KEY));
+    let fullMemberPulled = false;
+
     await synchronize({
       database,
       // Lets a device that gains a table through a schema migration (e.g.
@@ -143,6 +155,7 @@ async function performSync(options: SyncOptions = {}): Promise<SyncResult> {
           changes: {},
           lastPulledAt: lastPulledAt || 0,
           migration: migration ?? null,
+          fullMemberPull,
         };
 
         const response = await fetch(url, {
@@ -167,6 +180,7 @@ async function performSync(options: SyncOptions = {}): Promise<SyncResult> {
         }
 
         const result = await response.json();
+        if (result.fullMemberPull) fullMemberPulled = true;
 
         // Debug: Log all table sync results
         const tableNames = Object.keys(result.changes || {});
@@ -247,6 +261,8 @@ async function performSync(options: SyncOptions = {}): Promise<SyncResult> {
       // Conflict resolution: last write wins (based on updated_at timestamp)
       // WatermelonDB handles this automatically by comparing timestamps
     });
+
+    if (fullMemberPulled) await database.localStorage.set(FULL_MEMBER_PULL_KEY, true);
 
     return {
       success: true,

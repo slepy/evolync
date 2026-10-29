@@ -62,7 +62,7 @@ Deno.serve(async (req) => {
 
     // Parse request body
     const body: SyncPushChanges = await req.json();
-    const { changes, lastPulledAt, migration } = body;
+    const { changes, lastPulledAt, migration, fullMemberPull } = body;
 
     console.log(`[SYNC] Starting sync for user: ${user.id}`);
 
@@ -105,6 +105,7 @@ Deno.serve(async (req) => {
       lastPulledAt,
       migratedTables: migration?.tables ?? [],
       columnMigratedTables: columnMigratedTables(migration),
+      fullMemberPull: !!fullMemberPull,
     };
 
     let result;
@@ -120,7 +121,8 @@ Deno.serve(async (req) => {
     }
 
     // Return sync result
-    return new Response(JSON.stringify(result), {
+    // Echoed so the client stops asking only once a server handled it.
+    return new Response(JSON.stringify({ ...result, fullMemberPull: syncContext.fullMemberPull }), {
       status: 200,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
