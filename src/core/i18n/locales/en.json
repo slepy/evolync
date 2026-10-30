@@ -351,7 +351,7 @@
   "eventsDatesEditHint": "Shown as a bar across the calendar",
   "eventsAudienceTitle": "Who can see it?",
   "eventsCancelSheetTitle": "Cancel {{name}}?",
-  "eventsCancelSheetMessage": "Participants will be notified. The event stays in the calendar as cancelled.",
+  "eventsCancelSheetMessage": "The event stays in the calendar as cancelled, so participants will see it there.",
   "eventsDeleteSheetTitle": "Delete {{name}}?",
   "eventsDeleteSheetMessage": "The event and its participant list will be removed. This cannot be undone.",
   "eventsKeep": "Keep",

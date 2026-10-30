@@ -2,7 +2,6 @@ import { sync } from "@/database/sync";
 import { useStore } from "@/store";
 import type Sequence from "@/database/models/Sequence";
 import type SequenceStep from "@/database/models/SequenceStep";
-import { uploadImage } from "@/core/utils/uploadImage";
 import { TaggableRepository, setTagsForEntity } from "@/modules/tags";
 import { SequenceRepository, SequenceStepRepository } from "../repositories";
 import type { CreateSequenceDto, UpdateSequenceDto, AnyStepData } from "../types";
@@ -35,26 +34,6 @@ export const updateSequence = async (
   const parsed = validated(updateSequenceSchema, fields);
   const sequence = await SequenceRepository.update(sequenceId, parsed);
   if (tagIds) await setTagsForEntity(tagIds, sequenceId, "threed_sequence");
-  sync().catch(console.error);
-  return sequence;
-};
-
-export const updateSequenceCoverImage = async (
-  sequenceId: string,
-  screenshotUri: string
-): Promise<Sequence> => {
-  const { user } = useStore.getState();
-
-  const imageUrl = await uploadImage(
-    screenshotUri,
-    "3d-sequences",
-    user?.id
-  );
-
-  const sequence = await SequenceRepository.update(sequenceId, {
-    coverImageUrl: imageUrl,
-  });
-
   sync().catch(console.error);
   return sequence;
 };

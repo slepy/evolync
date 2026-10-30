@@ -112,6 +112,5 @@ Starsze techniki (V1, V2) są czytane przez `normalizeTechniqueData` w `utils/da
 ## Uwagi
 
 - Plansze projektu rysują postać liniami; aplikacja zawsze renderuje prawdziwy model 3D.
-- `updateSequenceCoverImage` (wysyłanie do bucketu `3d-sequences`) istnieje, ale żaden ekran go nie wywołuje, więc sekwencje nie mają okładki.
 
 </FeatureView>

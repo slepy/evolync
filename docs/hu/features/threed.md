@@ -112,6 +112,5 @@ A régebbi technikákat (V1, V2) a `utils/dataCompat.ts` fájl `normalizeTechniq
 ## Megjegyzések
 
 - A tervek vonalakkal rajzolják az alakot; az alkalmazás mindig a valódi 3D modellt jeleníti meg.
-- Az `updateSequenceCoverImage` (feltöltés a `3d-sequences` tárolóba) létezik, de egyik képernyő sem hívja, így a szekvenciáknak nincs borítója.
 
 </FeatureView>

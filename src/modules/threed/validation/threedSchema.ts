@@ -23,7 +23,6 @@ export const createSequenceSchema = z.object({
 export const updateSequenceSchema = z.object({
   title: z.string().trim().min(1, "titleRequired").max(THREED_TITLE_MAX, "threedValidationTitleTooLong").optional(),
   description: z.string().max(THREED_DESCRIPTION_MAX, "threedValidationDescriptionTooLong").optional(),
-  coverImageUrl: z.string().optional(),
 });
 
 export const createTechniqueSchema = z.object({

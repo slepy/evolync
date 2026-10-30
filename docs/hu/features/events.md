@@ -24,7 +24,7 @@ rules:
 messages:
   - situation: "Esemény lemondása"
     title: "Lemondod: Téli tábor?"
-    message: "A résztvevők értesítést kapnak. Az esemény lemondottként a naptárban marad."
+    message: "Az esemény lemondottként a naptárban marad, így a résztvevők is ott látják."
   - situation: "Fizető résztvevőkkel rendelkező esemény törlése"
     title: "A törlés nem lehetséges"
     message: "Ennek az eseménynek 6 fizető résztvevője van, ezért nem törölhető. Mondd le helyette."
@@ -131,9 +131,5 @@ flows:
 | `event_participants` | `event_id`, `school_member_id`, `status` (`absent` / `attending` / `paid`), `status_changed_by`, `takes_exam` |
 
 A `status_changed_by` megmondja az adatbázisnak, ki cselekedett: maga a tanuló (a válasza értesíti a tulajdonost) vagy valaki más (a hozzáadás értesíti a tanulót).
-
-## Megjegyzések
-
-- A lemondási lap azt írja: *A résztvevők értesítést kapnak*, de lemondott eseményről nincs értesítés; a résztvevők csak lemondottként látják.
 
 </FeatureView>

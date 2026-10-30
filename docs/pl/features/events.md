@@ -24,7 +24,7 @@ rules:
 messages:
   - situation: "Anulowanie wydarzenia"
     title: "Anulować Obóz zimowy?"
-    message: "Uczestnicy dostaną powiadomienie. Wydarzenie zostanie w kalendarzu jako anulowane."
+    message: "Wydarzenie zostanie w kalendarzu jako anulowane i tak zobaczą je uczestnicy."
   - situation: "Usunięcie wydarzenia z opłaconymi uczestnikami"
     title: "Nie można usunąć"
     message: "To wydarzenie ma 6 opłaconych uczestników i nie może zostać usunięte. Anuluj je."
@@ -131,9 +131,5 @@ flows:
 | `event_participants` | `event_id`, `school_member_id`, `status` (`absent` / `attending` / `paid`), `status_changed_by`, `takes_exam` |
 
 `status_changed_by` mówi bazie, kto działał: sam uczeń (odpowiedź powiadamia właściciela) czy ktoś inny (dodanie powiadamia ucznia).
-
-## Uwagi
-
-- Arkusz anulowania mówi *Uczestnicy dostaną powiadomienie*, ale nie ma powiadomienia o anulowanym wydarzeniu; uczestnicy widzą je tylko jako anulowane.
 
 </FeatureView>
