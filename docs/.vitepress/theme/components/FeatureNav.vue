@@ -9,7 +9,7 @@ import { matches } from '../search';
 import Icon from './Icon.vue';
 
 // Left column of the explorer: every feature of the current language, by group.
-const GROUP_ORDER = ['account', 'school'];
+const GROUP_ORDER = ['account', 'organization', 'school', 'student', 'notebook'];
 
 const { lang } = useLang();
 const { frontmatter } = useData();

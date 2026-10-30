@@ -1,4 +1,4 @@
-import type { PaymentStatus } from "@/database/models/PaymentRecord";
+import type { PaymentMethod, PaymentStatus } from "@/database/models/PaymentRecord";
 import { intlLocaleTag } from "@/core/i18n/localeTags";
 
 /** "YYYY-MM-DD" */
@@ -192,3 +192,33 @@ export function countPeriods(
 /** "150 PLN", "150 PLN · 20 EUR" (student Payments summary "… to pay"). */
 export const formatCurrencyAmounts = (amounts: ReadonlyArray<CurrencyAmount>): string =>
   amounts.map(({ amount, currency }) => `${formatAmount(amount)} ${currency}`).join(" · ");
+
+export interface PaymentValues {
+  status: PaymentStatus;
+  amount: number;
+  currency: string;
+  method: PaymentMethod;
+}
+
+/**
+ * What saving `next` over a stored payment changes: nothing (null) when the
+ * values are equal, else the values, with the payment date only when the
+ * payment becomes Paid now; a payment already paid keeps its date.
+ */
+export function paymentUpdate(
+  stored: PaymentValues | undefined,
+  next: PaymentValues,
+  now: Date,
+): (PaymentValues & { paymentDate?: Date }) | null {
+  if (
+    stored &&
+    stored.status === next.status &&
+    stored.amount === next.amount &&
+    stored.currency === next.currency &&
+    stored.method === next.method
+  ) {
+    return null;
+  }
+  const becomesPaid = next.status === "paid" && stored?.status !== "paid";
+  return becomesPaid ? { ...next, paymentDate: now } : { ...next };
+}

@@ -16,6 +16,7 @@ import {
   memberPaymentAmount,
   nextPaymentStatus,
   parseAmount,
+  paymentUpdate,
   periodKind,
   periodOwnAmount,
   periodPresetRange,
@@ -211,5 +212,28 @@ describe("formatCurrencyAmounts", () => {
       "150 PLN · 20.50 EUR",
     );
     assert.equal(formatCurrencyAmounts([]), "");
+  });
+});
+
+describe("paymentUpdate", () => {
+  const now = new Date("2026-10-30T10:00:00Z");
+  const pending = { status: "pending", amount: 150, currency: "PLN", method: "cash" } as const;
+  const paid = { ...pending, status: "paid" } as const;
+
+  it("skips a payment that did not change", () => {
+    assert.equal(paymentUpdate(paid, { ...paid }, now), null);
+  });
+
+  it("dates a payment that becomes paid", () => {
+    assert.deepEqual(paymentUpdate(pending, paid, now), { ...paid, paymentDate: now });
+  });
+
+  it("keeps the date of a payment already paid", () => {
+    assert.deepEqual(paymentUpdate(paid, { ...paid, method: "transfer" }, now), { ...paid, method: "transfer" });
+  });
+
+  it("dates a new paid payment, not a new pending one", () => {
+    assert.deepEqual(paymentUpdate(undefined, paid, now), { ...paid, paymentDate: now });
+    assert.deepEqual(paymentUpdate(undefined, pending, now), { ...pending });
   });
 });

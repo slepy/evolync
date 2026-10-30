@@ -31,7 +31,20 @@
         "sign-in",
         "sign-up",
         "join-school",
-        "students"
+        "students",
+        "payments",
+        "attendance",
+        "orders",
+        "events",
+        "trainings",
+        "grading",
+        "inventory",
+        "organization",
+        "student-dashboard",
+        "notes",
+        "tags",
+        "threed",
+        "notifications"
       ]
     },
     {
@@ -64,7 +77,19 @@
       "features": [
         "sign-up",
         "join-school",
-        "students"
+        "students",
+        "payments",
+        "attendance",
+        "orders",
+        "events",
+        "trainings",
+        "grading",
+        "inventory",
+        "organization",
+        "school",
+        "notes",
+        "tags",
+        "threed"
       ]
     },
     {
@@ -84,15 +109,20 @@
         "hu": "Minden új `notifications` sort Expo push üzenetként küld el a címzett engedélyezett eszközeire, az eszköz nyelvén."
       },
       "notes": {
-        "en": "More than 3 notifications for one recipient within 60 s collapse into a single \"You have N+ new notifications\" push. Join notifications: the owner gets one for a new request, the student one for the approval.",
-        "pl": "Ponad 3 powiadomienia dla jednego odbiorcy w ciągu 60 s łączą się w jeden push „Masz N+ nowych powiadomień”. Powiadomienia o dołączeniu: właściciel dostaje je przy nowej prośbie, uczeń przy akceptacji.",
-        "hu": "Ha egy címzett 60 mp-en belül 3-nál több értesítést kap, egyetlen „N+ új értesítésed van” push megy ki. Csatlakozási értesítések: a tulajdonos új kérésnél kap egyet, a tanuló a jóváhagyáskor."
+        "en": "More than 3 notifications for one recipient within 60 s collapse into a single \"You have N+ new notifications\" push. Join notifications: the owner gets one for a new request, the student one for the approval. Payments: a student with an account gets one for each new payment.",
+        "pl": "Ponad 3 powiadomienia dla jednego odbiorcy w ciągu 60 s łączą się w jeden push „Masz N+ nowych powiadomień”. Powiadomienia o dołączeniu: właściciel dostaje je przy nowej prośbie, uczeń przy akceptacji. Płatności: uczeń z kontem dostaje je przy każdej nowej płatności.",
+        "hu": "Ha egy címzett 60 mp-en belül 3-nál több értesítést kap, egyetlen „N+ új értesítésed van” push megy ki. Csatlakozási értesítések: a tulajdonos új kérésnél kap egyet, a tanuló a jóváhagyáskor. Befizetések: a fiókkal rendelkező tanuló minden új befizetésnél kap egyet."
       },
       "source": [
         "supabase/functions/send-push/handler.ts",
         "supabase/migrations/20261001000200_notifications_push_webhook.sql"
       ],
-      "features": []
+      "features": [
+        "payments",
+        "orders",
+        "events",
+        "notifications"
+      ]
     },
     {
       "id": "setup-instructor-organization",
@@ -142,7 +172,9 @@
         "src/modules/notifications/services/pushRegistrationService.ts",
         "supabase/migrations/20261020000000_push_tokens_hungarian.sql"
       ],
-      "features": []
+      "features": [
+        "notifications"
+      ]
     },
     {
       "id": "disable-push-token",
@@ -166,7 +198,9 @@
         "src/modules/notifications/services/pushRegistrationService.ts",
         "src/modules/auth/hooks/useAuth.ts"
       ],
-      "features": []
+      "features": [
+        "notifications"
+      ]
     },
     {
       "id": "organizations-owned",
@@ -280,7 +314,8 @@
         "src/modules/school/services/joinSchoolService.ts"
       ],
       "features": [
-        "join-school"
+        "join-school",
+        "organization"
       ]
     },
     {
@@ -440,7 +475,8 @@
         "src/modules/auth/hooks/useAuth.ts"
       ],
       "features": [
-        "password-reset"
+        "password-reset",
+        "profile"
       ]
     },
     {
@@ -512,16 +548,19 @@
         "hu": "Felhasználói JWT, storage szabályok"
       },
       "summary": {
-        "en": "Uploads a photo (buckets: product-images, 3d-sequences) and returns its public URL, which is then saved on the record.",
-        "pl": "Wysyła zdjęcie (buckety: product-images, 3d-sequences) i zwraca jego publiczny URL, który zapisuje się potem w rekordzie.",
-        "hu": "Feltölt egy képet (bucketek: product-images, 3d-sequences), és visszaadja a nyilvános URL-jét, amelyet aztán a rekord tárol."
+        "en": "Uploads a photo (buckets: avatars, product-images, 3d-sequences) and returns its public URL, which is then saved on the record.",
+        "pl": "Wysyła zdjęcie (buckety: avatars, product-images, 3d-sequences) i zwraca jego publiczny URL, który zapisuje się potem w rekordzie.",
+        "hu": "Feltölt egy képet (bucketek: avatars, product-images, 3d-sequences), és visszaadja a nyilvános URL-jét, amelyet aztán a rekord tárol."
       },
       "source": [
         "src/core/utils/uploadImage.ts",
         "src/modules/inventory/services/productService.ts",
         "src/modules/threed/services/sequenceService.ts"
       ],
-      "features": []
+      "features": [
+        "inventory",
+        "profile"
+      ]
     }
   ]
 }

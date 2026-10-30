@@ -8,7 +8,7 @@ import { labels } from '../labels';
 import Icon from './Icon.vue';
 
 // Home page: what the docs are, then every feature as a card, by group.
-const GROUP_ORDER = ['account', 'school'];
+const GROUP_ORDER = ['account', 'organization', 'school', 'student', 'notebook'];
 
 const { lang, prefix } = useLang();
 const l = computed(() => labels[lang.value]);

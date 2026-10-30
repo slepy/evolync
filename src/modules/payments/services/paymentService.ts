@@ -2,6 +2,7 @@ import { database } from "@/database";
 import PaymentCycle from "@/database/models/PaymentCycle";
 import PaymentRecord, {
   type PaymentMethod,
+  type PaymentStatus,
 } from "@/database/models/PaymentRecord";
 import SchoolMember from "@/database/models/SchoolMember";
 import SchoolSettings from "@/database/models/SchoolSettings";
@@ -22,7 +23,7 @@ import {
   createPaymentCycleSchema,
   paymentRecordEditSchema,
 } from "../validation";
-import { memberPaymentAmount, periodOwnAmount } from "../paymentPeriod";
+import { memberPaymentAmount, paymentUpdate, periodOwnAmount } from "../paymentPeriod";
 
 // ============================================================================
 // Payment Cycles
@@ -230,29 +231,36 @@ export const bulkSavePaymentList = async (
   );
   const collection = database.get<PaymentRecord>("payment_records");
 
-  const operations = paymentList.map((item) => {
+  // Only payments that changed are written; the payment date is set when one becomes Paid
+  const now = new Date();
+  const operations = paymentList.flatMap((item) => {
     const existing = existingByMember.get(item.memberId);
-    const paymentDate = item.status === "paid" ? new Date() : undefined;
+    const change = paymentUpdate(existing, { ...item, status: item.status as PaymentStatus }, now);
+    if (!change) return [];
 
     if (existing) {
-      return existing.prepareUpdate((r) => {
-        r.status = item.status as any;
-        r.amount = item.amount;
-        r.currency = item.currency;
-        r.method = item.method;
-        if (paymentDate) r.paymentDate = paymentDate;
-      });
+      return [
+        existing.prepareUpdate((r) => {
+          r.status = change.status;
+          r.amount = change.amount;
+          r.currency = change.currency;
+          r.method = change.method;
+          if (change.paymentDate) r.paymentDate = change.paymentDate;
+        }),
+      ];
     }
-    return collection.prepareCreate((r) => {
-      r._raw.id = uuidv4();
-      r.paymentCycleId = cycleId;
-      r.schoolMemberId = item.memberId;
-      r.status = item.status as any;
-      r.amount = item.amount;
-      r.currency = item.currency;
-      r.method = item.method;
-      if (paymentDate) r.paymentDate = paymentDate;
-    });
+    return [
+      collection.prepareCreate((r) => {
+        r._raw.id = uuidv4();
+        r.paymentCycleId = cycleId;
+        r.schoolMemberId = item.memberId;
+        r.status = change.status;
+        r.amount = change.amount;
+        r.currency = change.currency;
+        r.method = change.method;
+        if (change.paymentDate) r.paymentDate = change.paymentDate;
+      }),
+    ];
   });
 
   await database.write(async () => {
@@ -296,15 +304,20 @@ export const bulkUpdatePaymentRecords = async (
   );
   const updateByRecordId = new Map(updates.map((u) => [u.recordId, u]));
 
-  const operations = records.map((record) => {
+  const now = new Date();
+  const operations = records.flatMap((record) => {
     const update = updateByRecordId.get(record.id)!;
-    return record.prepareUpdate((r) => {
-      r.status = update.status as any;
-      r.amount = update.amount;
-      r.currency = update.currency;
-      r.method = update.method;
-      if (update.status === "paid") r.paymentDate = new Date();
-    });
+    const change = paymentUpdate(record, { ...update, status: update.status as PaymentStatus }, now);
+    if (!change) return [];
+    return [
+      record.prepareUpdate((r) => {
+        r.status = change.status;
+        r.amount = change.amount;
+        r.currency = change.currency;
+        r.method = change.method;
+        if (change.paymentDate) r.paymentDate = change.paymentDate;
+      }),
+    ];
   });
 
   await database.write(async () => {
