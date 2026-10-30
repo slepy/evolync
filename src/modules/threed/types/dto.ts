@@ -10,7 +10,6 @@ export interface CreateSequenceDto {
 export interface UpdateSequenceDto {
   title?: string;
   description?: string;
-  coverImageUrl?: string;
   tagIds?: string[];
 }
 

@@ -365,7 +365,7 @@
   "eventsDatesEditHint": "Widoczne jako pasek w kalendarzu",
   "eventsAudienceTitle": "Kto to widzi?",
   "eventsCancelSheetTitle": "Anulować {{name}}?",
-  "eventsCancelSheetMessage": "Uczestnicy dostaną powiadomienie. Wydarzenie zostanie w kalendarzu jako anulowane.",
+  "eventsCancelSheetMessage": "Wydarzenie zostanie w kalendarzu jako anulowane i tak zobaczą je uczestnicy.",
   "eventsDeleteSheetTitle": "Usunąć {{name}}?",
   "eventsDeleteSheetMessage": "Wydarzenie i lista uczestników zostaną usunięte. Tej operacji nie można cofnąć.",
   "eventsKeep": "Zostaw",

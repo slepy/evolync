@@ -351,7 +351,7 @@
   "eventsDatesEditHint": "Sávként jelenik meg a naptárban",
   "eventsAudienceTitle": "Ki láthatja?",
   "eventsCancelSheetTitle": "Lemondod: {{name}}?",
-  "eventsCancelSheetMessage": "A résztvevők értesítést kapnak. Az esemény lemondottként a naptárban marad.",
+  "eventsCancelSheetMessage": "Az esemény lemondottként a naptárban marad, így a résztvevők is ott látják.",
   "eventsDeleteSheetTitle": "Törlöd: {{name}}?",
   "eventsDeleteSheetMessage": "Az esemény és a résztvevők listája törlődik. Ez nem vonható vissza.",
   "eventsKeep": "Megtartás",

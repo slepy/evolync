@@ -1,7 +1,6 @@
 export {
   createSequence,
   updateSequence,
-  updateSequenceCoverImage,
   deleteSequence,
   addStepToSequence,
   updateStep,

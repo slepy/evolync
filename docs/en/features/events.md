@@ -24,7 +24,7 @@ rules:
 messages:
   - situation: "Cancel an event"
     title: "Cancel Winter Camp?"
-    message: "Participants will be notified. The event stays in the calendar as cancelled."
+    message: "The event stays in the calendar as cancelled, so participants will see it there."
   - situation: "Delete an event with paid participants"
     title: "Delete is blocked"
     message: "This event has 6 paid participants and cannot be deleted. Cancel it instead."
@@ -131,9 +131,5 @@ flows:
 | `event_participants` | `event_id`, `school_member_id`, `status` (`absent` / `attending` / `paid`), `status_changed_by`, `takes_exam` |
 
 `status_changed_by` tells the database who acted: the student themself (the RSVP notifies the owner) or someone else (adding notifies the student).
-
-## Notes
-
-- The cancel sheet says *Participants will be notified*, but there is no notification for a cancelled event; the participants only see it as cancelled.
 
 </FeatureView>

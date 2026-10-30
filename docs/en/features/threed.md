@@ -112,6 +112,5 @@ Older techniques (V1, V2) are read through `normalizeTechniqueData` in `utils/da
 ## Notes
 
 - The design boards draw the figure as lines; the app always renders the real 3D model.
-- `updateSequenceCoverImage` (upload to the `3d-sequences` bucket) exists but no screen calls it, so sequences have no cover.
 
 </FeatureView>
