@@ -208,7 +208,12 @@ Deno.test("an owner's answer, order and join request in another school reach tha
     { id: "own-event", organization_id: "org-own", ...stamps(OLD) },
     { id: "foreign-event", organization_id: "org-other", ...stamps(OLD) },
   ];
+  tables.event_participants = [
+    { id: "my-answer", event_id: "foreign-event", school_member_id: "me-there", ...stamps(OLD) },
+  ];
   tables.orders = [{ id: "own-order", school_id: "own-s", ...stamps(OLD) }];
+  tables.products = [{ id: "belt", organization_id: "org-other", ...stamps(OLD) }];
+  tables.product_variants = [{ id: "belt-m", product_id: "belt", price: 80, currency: "PLN", ...stamps(OLD) }];
   const writes: { op: string; table: string; rows: Row[] }[] = [];
 
   await syncOrganization({
@@ -233,7 +238,7 @@ Deno.test("an owner's answer, order and join request in another school reach tha
       },
       order_items: {
         created: [
-          { id: "my-item", order_id: "my-order" },
+          { id: "my-item", order_id: "my-order", product_variant_id: "belt-m" },
           { id: "own-item", order_id: "own-order" },
         ],
         updated: [],
@@ -261,10 +266,118 @@ Deno.test("an owner's answer, order and join request in another school reach tha
     ["my-answer", "absent", false],
   ]);
   assertEquals(writes.filter((w) => w.table === "orders").flatMap((w) => w.rows), [
-    { id: "my-order", school_id: "foreign-s", school_member_id: "me-there" },
+    { id: "my-order", school_id: "foreign-s", school_member_id: "me-there", status: "placed" },
   ]);
   assertEquals(written("order_items").sort(), ["my-item", "own-item"]);
   assertEquals(written("school_join_requests"), ["my-request"]);
+});
+
+Deno.test("a student's push writes only their own membership, orders and answers, never payments or attendance", async () => {
+  const tables = ownerWhoTrainsElsewhere();
+  tables.organizations = tables.organizations.filter((o) => o.owner_id !== "me");
+  tables.orders = [
+    { id: "my-placed", school_id: "foreign-s", school_member_id: "me-there", status: "placed", ...stamps(OLD) },
+    { id: "my-paid", school_id: "foreign-s", school_member_id: "me-there", status: "paid", ...stamps(OLD) },
+    { id: "classmate-order", school_id: "foreign-s", school_member_id: "classmate", status: "placed", ...stamps(OLD) },
+  ];
+  tables.order_items = [
+    { id: "placed-item", order_id: "my-placed", unit_price: 100, currency: "PLN", ...stamps(OLD) },
+    { id: "paid-item", order_id: "my-paid", unit_price: 100, currency: "PLN", ...stamps(OLD) },
+    { id: "classmate-item", order_id: "classmate-order", unit_price: 100, currency: "PLN", ...stamps(OLD) },
+  ];
+  tables.products = [
+    { id: "belt", organization_id: "org-other", ...stamps(OLD) },
+    { id: "own-belt", organization_id: "org-own", ...stamps(OLD) },
+  ];
+  tables.product_variants = [
+    { id: "belt-m", product_id: "belt", price: 80, currency: "PLN", ...stamps(OLD) },
+    { id: "own-belt-m", product_id: "own-belt", price: 50, currency: "EUR", ...stamps(OLD) },
+  ];
+  tables.event_participants = [
+    { id: "my-part", event_id: "foreign-event", school_member_id: "me-there", ...stamps(OLD) },
+    { id: "classmate-part", event_id: "foreign-event", school_member_id: "classmate", ...stamps(OLD) },
+  ];
+  const writes: { op: string; table: string; rows: Row[] }[] = [];
+
+  await syncUser({
+    supabaseClient: tableClient(tables, writes),
+    userId: "me",
+    lastPulledAt: LAST_PULLED,
+    migratedTables: [],
+    columnMigratedTables: [],
+    changes: {
+      payment_records: { created: [], updated: [{ id: "my-pay", status: "paid" }], deleted: [] },
+      school_members: {
+        created: [{ id: "self-join", user_id: "me", school_id: "own-s", status: "active" }],
+        updated: [
+          { id: "me-there", user_id: "me", school_id: "foreign-s", display_name: "Me", status: "active", current_rank_id: "black" },
+          { id: "classmate", user_id: "me", school_id: "foreign-s", display_name: "Taken" },
+        ],
+        deleted: [],
+      },
+      attendance_records: {
+        created: [{ id: "forged-att", training_session_id: "s", school_member_id: "me-there", status: "present" }],
+        updated: [],
+        deleted: [],
+      },
+      orders: {
+        created: [
+          { id: "new-order", school_id: "foreign-s", school_member_id: "me-there", status: "completed" },
+          { id: "for-classmate", school_id: "foreign-s", school_member_id: "classmate", status: "placed" },
+          { id: "classmate-order", school_id: "foreign-s", school_member_id: "me-there", status: "placed" },
+        ],
+        updated: [
+          { id: "my-placed", school_id: "foreign-s", school_member_id: "me-there", status: "completed" },
+          { id: "my-paid", school_id: "foreign-s", school_member_id: "me-there", status: "paid", deleted_at: 1 },
+          { id: "classmate-order", school_id: "foreign-s", school_member_id: "classmate", status: "completed" },
+        ],
+        deleted: [],
+      },
+      order_items: {
+        created: [
+          { id: "new-item", order_id: "new-order", product_variant_id: "belt-m", unit_price: 80, currency: "PLN" },
+          { id: "added-item", order_id: "my-placed", product_variant_id: "belt-m", unit_price: 0, currency: "PLN" },
+          { id: "smuggled-item", order_id: "classmate-order", product_variant_id: "belt-m", unit_price: 80 },
+          { id: "foreign-product", order_id: "my-placed", product_variant_id: "own-belt-m", unit_price: 50 },
+        ],
+        updated: [
+          { id: "placed-item", order_id: "my-placed", quantity: 2, unit_price: 1, currency: "PLN" },
+          { id: "paid-item", order_id: "my-paid", quantity: 2 },
+          { id: "classmate-item", order_id: "my-placed", quantity: 9 },
+        ],
+        deleted: [],
+      },
+      event_participants: {
+        created: [{ id: "self-invite", event_id: "not-invited", school_member_id: "me-there", status: "attending" }],
+        updated: [
+          { id: "my-part", event_id: "foreign-event", school_member_id: "me-there", status: "attending" },
+          { id: "classmate-part", event_id: "foreign-event", school_member_id: "classmate", status: "attending" },
+        ],
+        deleted: [],
+      },
+    },
+  } as any);
+
+  const written = (table: string) => writes.filter((w) => w.table === table).flatMap((w) => w.rows);
+
+  assertEquals(written("payment_records"), []);
+  assertEquals(written("attendance_records"), []);
+  // A new order starts as placed; a placed one keeps its server status
+  assertEquals(written("orders").map((r) => [r.id, r.status]), [
+    ["new-order", "placed"],
+    ["my-placed", undefined],
+  ]);
+  // A new item takes the variant's price, a stored one keeps its snapshot
+  assertEquals(written("order_items").map((r) => [r.id, r.unit_price]), [
+    ["new-item", 80],
+    ["added-item", 80],
+    ["placed-item", undefined],
+  ]);
+  // Only their own stored membership, without status or rank
+  assertEquals(written("school_members").map((r) => [r.id, r.display_name, r.status, r.current_rank_id]), [
+    ["me-there", "Me", undefined, undefined],
+  ]);
+  assertEquals(written("event_participants").map((r) => r.id), ["my-part"]);
 });
 
 Deno.test("an owner's push splits student rows of other schools from their organization's", () => {

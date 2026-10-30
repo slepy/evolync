@@ -9,6 +9,7 @@
 
 import { SyncContext } from "./types.ts";
 import {
+  chunkIds,
   convertToSupabaseRecord,
   convertToWatermelonRecord,
   fetchTableChangesIn,
@@ -30,22 +31,178 @@ export type FetchTableChanges = (
 
 const EMPTY = (): TableChanges => ({ created: [], updated: [], deleted: [] });
 
-/** A student's pushed rows of `tableName`, limited to what a student may write. */
-function studentRows(tableName: string, records: any[], userId: string): any[] {
+/** The status a student places an order in and may still edit it in. */
+const ORDER_PLACED = "placed";
+
+/** What a student's push may touch: their memberships and the orders they may edit. */
+interface StudentScope {
+  /** school_members.id → school_id of the user's live memberships. */
+  schoolByMember: Map<string, string>;
+  /** Orders the push may add items to or change items of → their school_id. */
+  editableOrders: Map<string, string>;
+}
+
+/** Server rows of `tableName` with the given ids (deleted ones too), by id. */
+async function fetchServerRows(
+  ctx: SyncContext,
+  tableName: string,
+  columns: string,
+  ids: string[],
+): Promise<Map<string, any>> {
+  const rows = new Map<string, any>();
+  for (const part of chunkIds([...new Set(ids)])) {
+    const { data, error } = await ctx.supabaseClient.from(tableName).select(columns).in("id", part);
+    if (error) throw new Error(`Failed to fetch ${tableName}: ${error.message}`);
+    for (const row of data || []) rows.set(row.id, row);
+  }
+  return rows;
+}
+
+/** Membership columns only the instructor sets (status, rank, role, fee). */
+const INSTRUCTOR_MEMBER_COLUMNS = [
+  "status",
+  "role_id",
+  "current_rank_id",
+  "payment_amount",
+  "payment_currency",
+  "joined_at",
+];
+
+/**
+ * A student's pushed school_members rows: only their own stored memberships
+ * (the instructor creates one when approving a join request), never moved to
+ * another school or user, without the columns the instructor sets.
+ */
+async function studentMemberships(ctx: SyncContext, records: any[]): Promise<any[]> {
+  const own = ownMembershipPush(records, ctx.userId);
+  const server = await fetchServerRows(ctx, "school_members", "id, user_id, school_id", own.map((r) => r.id));
+  return own.flatMap((r: any) => {
+    const existing = server.get(r.id);
+    if (!existing || existing.user_id !== ctx.userId || existing.school_id !== r.school_id) return [];
+    return [Object.fromEntries(Object.entries(r).filter(([column]) => !INSTRUCTOR_MEMBER_COLUMNS.includes(column)))];
+  });
+}
+
+/**
+ * A student's pushed orders: only on their own memberships, never someone
+ * else's order. A new order starts as placed; an existing one changes only
+ * while placed (the student's edit window) and keeps its server status.
+ */
+async function studentOrders(ctx: SyncContext, records: any[], scope: StudentScope): Promise<any[]> {
+  const server = await fetchServerRows(ctx, "orders", "id, school_member_id, status", records.map((r) => r.id));
+  const accepted = studentOrderPush(records).filter((r: any) => {
+    if (scope.schoolByMember.get(r.school_member_id) !== r.school_id) return false;
+    const existing = server.get(r.id);
+    return !existing || (scope.schoolByMember.has(existing.school_member_id) && existing.status === ORDER_PLACED);
+  });
+  return accepted.map(({ status: _status, ...r }: any) => {
+    scope.editableOrders.set(r.id, r.school_id);
+    return server.has(r.id) ? r : { ...r, status: ORDER_PLACED };
+  });
+}
+
+/**
+ * A student's pushed order items: only in their own placed orders (stored or
+ * pushed in this sync), never moved to another order. A new item takes the
+ * price of a variant of the school's organization; a stored one keeps its
+ * product and price snapshot (quantity and deletion change).
+ */
+async function studentOrderItems(ctx: SyncContext, records: any[], scope: StudentScope): Promise<any[]> {
+  const server = await fetchServerRows(ctx, "order_items", "id, order_id", records.map((r) => r.id));
+  const orderIds = records
+    .map((r) => r.order_id)
+    .concat([...server.values()].map((r) => r.order_id))
+    .filter((id) => !scope.editableOrders.has(id));
+  const orders = await fetchServerRows(ctx, "orders", "id, school_id, school_member_id, status", orderIds);
+  for (const order of orders.values()) {
+    if (scope.schoolByMember.has(order.school_member_id) && order.status === ORDER_PLACED) {
+      scope.editableOrders.set(order.id, order.school_id);
+    }
+  }
+
+  const inOwnOrder = records.filter((r: any) => {
+    if (!scope.editableOrders.has(r.order_id)) return false;
+    const existing = server.get(r.id);
+    return !existing || existing.order_id === r.order_id;
+  });
+  const fresh = inOwnOrder.filter((r: any) => !server.has(r.id));
+  const variants = await fetchServerRows(
+    ctx,
+    "product_variants",
+    "id, product_id, price, currency",
+    fresh.map((r) => r.product_variant_id),
+  );
+  const products = await fetchServerRows(
+    ctx,
+    "products",
+    "id, organization_id",
+    [...variants.values()].map((v) => v.product_id),
+  );
+  const schools = await fetchServerRows(
+    ctx,
+    "schools",
+    "id, organization_id",
+    fresh.map((r) => scope.editableOrders.get(r.order_id)!),
+  );
+
+  return inOwnOrder.flatMap((r: any) => {
+    if (server.has(r.id)) {
+      const { product_variant_id: _variant, unit_price: _price, currency: _currency, ...rest } = r;
+      return [rest];
+    }
+    const variant = variants.get(r.product_variant_id);
+    const organizationId = schools.get(scope.editableOrders.get(r.order_id)!)?.organization_id;
+    if (!variant || !organizationId || products.get(variant.product_id)?.organization_id !== organizationId) {
+      return [];
+    }
+    return [{ ...r, unit_price: variant.price, currency: variant.currency }];
+  });
+}
+
+/**
+ * A student's pushed event answers: only their own participant rows, which
+ * the instructor created (a student never adds or moves one).
+ */
+async function studentParticipants(ctx: SyncContext, records: any[], scope: StudentScope): Promise<any[]> {
+  const server = await fetchServerRows(
+    ctx,
+    "event_participants",
+    "id, event_id, school_member_id",
+    records.map((r) => r.id),
+  );
+  return studentParticipantPush(records).filter((r: any) => {
+    const existing = server.get(r.id);
+    return (
+      !!existing &&
+      scope.schoolByMember.has(existing.school_member_id) &&
+      existing.school_member_id === r.school_member_id &&
+      existing.event_id === r.event_id
+    );
+  });
+}
+
+/**
+ * A student's pushed rows of `tableName`, limited to what a student may write.
+ * Payments and attendance are read-only for a student (the instructor marks them).
+ */
+async function studentRows(
+  ctx: SyncContext,
+  tableName: string,
+  records: any[],
+  scope: StudentScope,
+): Promise<any[]> {
+  if (records.length === 0) return [];
   switch (tableName) {
     case "school_join_requests":
-      return records.filter((r: any) => r.user_id === userId);
+      return records.filter((r: any) => r.user_id === ctx.userId);
     case "school_members":
-      return ownMembershipPush(records, userId);
+      return studentMemberships(ctx, records);
     case "orders":
-      return studentOrderPush(records);
-    case "event_participants":
-      return studentParticipantPush(records);
+      return studentOrders(ctx, records, scope);
     case "order_items":
-    case "payment_records":
-    case "attendance_records":
-      // Validated by foreign key constraints in Supabase
-      return records;
+      return studentOrderItems(ctx, records, scope);
+    case "event_participants":
+      return studentParticipants(ctx, records, scope);
     default:
       return [];
   }
@@ -53,7 +210,8 @@ function studentRows(tableName: string, records: any[], userId: string): any[] {
 
 /**
  * Push of a user's student side: join requests, their own membership, orders
- * and event answers (MEMBER_PUSH_TABLES), through the student filters.
+ * and event answers (MEMBER_PUSH_TABLES), through the student filters
+ * (checked against their memberships and the stored rows).
  * Deletes are skipped (a student withdraws by setting deleted_at, an update).
  * `throwOnError`: fail the push instead of logging and going on.
  */
@@ -63,17 +221,28 @@ export async function pushMemberChanges(
   logPrefix: string,
   { throwOnError = false }: { throwOnError?: boolean } = {},
 ): Promise<void> {
-  const { supabaseClient, userId } = ctx;
-  const fail = (message: string, error: any) => {
+  const { supabaseClient } = ctx;
+  const fail =(message: string, error: any) => {
     if (throwOnError) throw new Error(`${message}: ${error.message}`);
     console.error(`${logPrefix} ${message}:`, error);
+  };
+
+  const pushed = (table: string) =>
+    (changes[table]?.created?.length ?? 0) + (changes[table]?.updated?.length ?? 0) > 0;
+  const memberships = ["orders", "order_items", "event_participants"].some(pushed)
+    ? await fetchMemberships(ctx)
+    : [];
+  const scope: StudentScope = {
+    schoolByMember: new Map(memberships.map((m) => [m.id, m.school_id])),
+    editableOrders: new Map(),
   };
 
   for (const tableName of MEMBER_PUSH_TABLES) {
     const tableChanges = changes[tableName];
     if (!tableChanges) continue;
 
-    const created = studentRows(tableName, tableChanges.created ?? [], userId);
+    const created = await studentRows(ctx, tableName, tableChanges.created ?? [], scope);
+    const updated = await studentRows(ctx, tableName, tableChanges.updated ?? [], scope);
     if (created.length > 0) {
       console.log(`${logPrefix} Processing ${created.length} created records for ${tableName}`);
       const { error } = await supabaseClient
@@ -82,7 +251,6 @@ export async function pushMemberChanges(
       if (error) fail(`Failed to insert to ${tableName}`, error);
     }
 
-    const updated = studentRows(tableName, tableChanges.updated ?? [], userId);
     if (updated.length > 0) {
       console.log(`${logPrefix} Processing ${updated.length} updated records for ${tableName}`);
       for (const record of updated) {
