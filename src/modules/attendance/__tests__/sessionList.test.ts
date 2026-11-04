@@ -4,12 +4,18 @@ import {
   countSessions,
   countStatuses,
   dateLocaleTag,
+  findSessionOnDay,
+  formatSessionDate,
   formatSessionMonth,
   formatSessionShort,
   formatSessionTime,
   formatSessionTitle,
   groupSessionsByMonth,
   isSameDay,
+  parseDayKey,
+  sessionDateForDay,
+  toDayKey,
+  yesterdayKey,
 } from "@/modules/attendance/sessionList";
 
 const day = (y: number, m: number, d: number) => new Date(y, m - 1, d, 18, 30);
@@ -88,5 +94,52 @@ describe("formatSessionTime", () => {
 
   it("has no time for a session saved at midnight", () => {
     assert.equal(formatSessionTime(new Date(2026, 9, 2), "en-GB"), null);
+  });
+});
+
+describe("formatSessionDate", () => {
+  it("adds the year to the short day", () => {
+    assert.equal(formatSessionDate(new Date(2026, 10, 4, 9, 0), "en-GB"), "Wed, 4 Nov 2026");
+  });
+});
+
+describe("day keys", () => {
+  it("round-trips a local day", () => {
+    assert.equal(toDayKey(new Date(2026, 0, 5, 23, 59)), "2026-01-05");
+    assert.deepEqual(parseDayKey("2026-01-05"), new Date(2026, 0, 5));
+  });
+  it("rejects malformed and impossible days", () => {
+    assert.equal(parseDayKey("2026-1-5"), null);
+    assert.equal(parseDayKey("2026-02-30"), null);
+  });
+  it("gives yesterday across a month and year boundary", () => {
+    assert.equal(yesterdayKey(new Date(2026, 10, 4, 10)), "2026-11-03");
+    assert.equal(yesterdayKey(new Date(2027, 0, 1, 0, 5)), "2026-12-31");
+  });
+});
+
+describe("sessionDateForDay", () => {
+  const now = new Date(2026, 10, 4, 18, 30);
+  it("keeps the current time for today", () => {
+    assert.equal(sessionDateForDay(null, now), now);
+    assert.equal(sessionDateForDay("2026-11-04", now), now);
+  });
+  it("saves a past day at local midnight", () => {
+    assert.deepEqual(sessionDateForDay("2026-10-30", now), new Date(2026, 9, 30));
+  });
+  it("never saves a future or invalid day", () => {
+    assert.equal(sessionDateForDay("2026-11-05", now), now);
+    assert.equal(sessionDateForDay("soon", now), now);
+  });
+});
+
+describe("findSessionOnDay", () => {
+  const sessions = [{ id: "a", sessionDate: day(2026, 11, 4) }, { id: "b", sessionDate: new Date(2026, 9, 30) }];
+  it("finds the session of the same local day", () => {
+    assert.equal(findSessionOnDay(sessions, new Date(2026, 9, 30, 12))?.id, "b");
+    assert.equal(findSessionOnDay(sessions, new Date(2026, 10, 4))?.id, "a");
+  });
+  it("returns null for a free day", () => {
+    assert.equal(findSessionOnDay(sessions, new Date(2026, 9, 31)), null);
   });
 });

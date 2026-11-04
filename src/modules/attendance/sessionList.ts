@@ -88,3 +88,43 @@ export function formatSessionTime(date: Date, locale: string): string | null {
   if (date.getHours() === 0 && date.getMinutes() === 0) return null;
   return date.toLocaleTimeString(locale, { hour: "2-digit", minute: "2-digit", hour12: false });
 }
+
+/** "Wed, 4 Nov 2026" (13C under the DAY pills, 13C1 DATE field). */
+export const formatSessionDate = (date: Date, locale: string): string =>
+  `${formatSessionShort(date, locale)} ${date.getFullYear()}`;
+
+const pad2 = (n: number): string => String(n).padStart(2, "0");
+
+/** Local calendar day of `date` as "YYYY-MM-DD" (the DATE field value). */
+export const toDayKey = (date: Date): string =>
+  `${date.getFullYear()}-${pad2(date.getMonth() + 1)}-${pad2(date.getDate())}`;
+
+/** "YYYY-MM-DD" → local midnight of that day; null for anything else. */
+export function parseDayKey(day: string): Date | null {
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(day);
+  if (!match) return null;
+  const date = new Date(Number(match[1]), Number(match[2]) - 1, Number(match[3]));
+  return toDayKey(date) === day ? date : null;
+}
+
+/** The day before `today`, as "YYYY-MM-DD" (default of Past date). */
+export const yesterdayKey = (today: Date): string =>
+  toDayKey(new Date(today.getFullYear(), today.getMonth(), today.getDate() - 1));
+
+/**
+ * Date a new session is saved with (13C / 13C1). Today keeps the current time;
+ * a past day is saved at local midnight, which the app shows as a session
+ * without a time. A future or invalid day falls back to now: sessions are
+ * never created ahead.
+ */
+export function sessionDateForDay(pastDay: string | null, now: Date): Date {
+  if (!pastDay) return now;
+  const date = parseDayKey(pastDay);
+  if (!date || date.getTime() > now.getTime()) return now;
+  return isSameDay(date, now) ? now : date;
+}
+
+/** The session already saved on the local day of `date` (one session per day), or null. */
+export function findSessionOnDay<S extends { sessionDate: Date }>(sessions: readonly S[], date: Date): S | null {
+  return sessions.find((session) => isSameDay(session.sessionDate, date)) ?? null;
+}
