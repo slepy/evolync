@@ -109,16 +109,17 @@ export const yesterdayKey = (today: Date): string =>
   toDayKey(new Date(today.getFullYear(), today.getMonth(), today.getDate() - 1));
 
 /**
- * Date a new session is saved with (13C / 13C1). Today keeps the current time;
- * a past day is saved at local midnight, which the app shows as a session
- * without a time. A future or invalid day falls back to now: sessions are
- * never created ahead.
+ * Date a new session is saved with (13C / 13C1): UTC midnight of the picked
+ * local day. Sync stores the server `date` as the UTC day of this value and
+ * returns UTC midnight on pull, so the day survives a round trip; local
+ * midnight or the current time would land on the previous day east of UTC
+ * (and collide with that day's session). A future or invalid day falls back
+ * to today: sessions are never created ahead.
  */
 export function sessionDateForDay(pastDay: string | null, now: Date): Date {
-  if (!pastDay) return now;
-  const date = parseDayKey(pastDay);
-  if (!date || date.getTime() > now.getTime()) return now;
-  return isSameDay(date, now) ? now : date;
+  const picked = pastDay ? parseDayKey(pastDay) : null;
+  const day = picked && picked.getTime() <= now.getTime() ? picked : now;
+  return new Date(Date.UTC(day.getFullYear(), day.getMonth(), day.getDate()));
 }
 
 /** The session already saved on the local day of `date` (one session per day), or null. */

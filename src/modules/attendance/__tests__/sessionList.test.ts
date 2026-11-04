@@ -120,16 +120,24 @@ describe("day keys", () => {
 
 describe("sessionDateForDay", () => {
   const now = new Date(2026, 10, 4, 18, 30);
-  it("keeps the current time for today", () => {
-    assert.equal(sessionDateForDay(null, now), now);
-    assert.equal(sessionDateForDay("2026-11-04", now), now);
+  const utcDay = (date: Date) => date.toISOString().split("T")[0];
+  it("saves today at UTC midnight of the local day", () => {
+    assert.deepEqual(sessionDateForDay(null, now), new Date(Date.UTC(2026, 10, 4)));
+    assert.deepEqual(sessionDateForDay("2026-11-04", now), new Date(Date.UTC(2026, 10, 4)));
   });
-  it("saves a past day at local midnight", () => {
-    assert.deepEqual(sessionDateForDay("2026-10-30", now), new Date(2026, 9, 30));
+  it("saves a past day at UTC midnight of that day", () => {
+    assert.deepEqual(sessionDateForDay("2026-10-30", now), new Date(Date.UTC(2026, 9, 30)));
+  });
+  it("keeps the picked day through sync, which stores the UTC day", () => {
+    assert.equal(utcDay(sessionDateForDay("2026-10-30", now)), "2026-10-30");
+    assert.equal(utcDay(sessionDateForDay(null, new Date(2026, 10, 4, 0, 30))), "2026-11-04");
+  });
+  it("shows on the picked local day east of UTC", { skip: new Date(2026, 9, 30).getTimezoneOffset() > 0 }, () => {
+    assert.ok(isSameDay(sessionDateForDay("2026-10-30", now), new Date(2026, 9, 30, 12)));
   });
   it("never saves a future or invalid day", () => {
-    assert.equal(sessionDateForDay("2026-11-05", now), now);
-    assert.equal(sessionDateForDay("soon", now), now);
+    assert.deepEqual(sessionDateForDay("2026-11-05", now), new Date(Date.UTC(2026, 10, 4)));
+    assert.deepEqual(sessionDateForDay("soon", now), new Date(Date.UTC(2026, 10, 4)));
   });
 });
 
