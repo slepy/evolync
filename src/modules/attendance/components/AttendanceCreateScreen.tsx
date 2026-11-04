@@ -40,7 +40,7 @@ export const AttendanceCreateScreen: React.FC<AttendanceCreateScreenProps> = ({ 
   const [day, setDay] = useState<SessionDay>("today");
   const [pastDay, setPastDay] = useState(() => yesterdayKey(now));
   const [rows, setRows] = useState<AttendanceRow[] | null>(null);
-  const [sessions, setSessions] = useState<TrainingSession[]>([]);
+  const [sessions, setSessions] = useState<TrainingSession[] | null>(null);
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const locale = dateLocaleTag(t("locale"));
@@ -71,13 +71,17 @@ export const AttendanceCreateScreen: React.FC<AttendanceCreateScreenProps> = ({ 
   useEffect(() => {
     const subscription = TrainingSessionRepository.observeBySchoolId(schoolId).subscribe({
       next: setSessions,
-      error: (err: Error) => console.error("[AttendanceCreateScreen] Sessions observer error:", err),
+      error: (err: Error) => {
+        console.error("[AttendanceCreateScreen] Sessions observer error:", err);
+        setError(t("attendanceErrorLoadingAttendance"));
+        setSessions((prev) => prev ?? []);
+      },
     });
     return () => subscription.unsubscribe();
   }, [schoolId]);
 
   const sessionDate = sessionDateForDay(day === "past" ? pastDay : null, now);
-  const existing = findSessionOnDay(sessions, sessionDate);
+  const existing = findSessionOnDay(sessions ?? [], sessionDate);
 
   const handleCreate = async () => {
     if (existing) {
@@ -102,7 +106,8 @@ export const AttendanceCreateScreen: React.FC<AttendanceCreateScreenProps> = ({ 
     }
   };
 
-  if (!rows) return <LoadingScreen />;
+  // Both lists first: before the sessions load, Create could add a second session to a day that has one.
+  if (!rows || !sessions) return <LoadingScreen />;
 
   const existsNote = existing ? t("attendanceSessionExists") : null;
   const dayPicker = (
