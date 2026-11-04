@@ -1064,5 +1064,9 @@
   "profileLogOut": "Wyloguj się",
   "profileLogOutHint": "Wyloguj się z Evolync na tym urządzeniu",
   "profileLogOutConfirmTitle": "Wylogować się?",
-  "profileLogOutConfirmMessage": "Możesz zalogować się ponownie e-mailem i hasłem."
+  "profileLogOutConfirmMessage": "Możesz zalogować się ponownie e-mailem i hasłem.",
+  "share": "Udostępnij",
+  "retry": "Ponów",
+  "crashReportTitle": "Aplikacja nieoczekiwanie się zamknęła",
+  "crashReportMessage": "Wyślij ten raport twórcy aplikacji, żeby pomóc naprawić błąd."
 }
