@@ -3,9 +3,9 @@
   "attachments": {},
   "boards": {
     "AttendanceCreate.dc.html": {
-      "h": 1170,
+      "h": 1260,
       "is_interactive": true,
-      "title": "13C · New session (today): everyone present, Create",
+      "title": "13C · New session: day Today / Past date, Today picked",
       "w": 390,
       "x": 946,
       "y": 14008
@@ -853,20 +853,12 @@
       "x": 1886,
       "y": 8208
     },
-    "AttendanceCreateToday.dc.html": {
-      "h": 1260,
-      "is_interactive": true,
-      "title": "13C1 · New session: day Today / Past date, Today picked",
-      "w": 390,
-      "x": 1416,
-      "y": 14008
-    },
     "AttendanceCreatePastDate.dc.html": {
       "h": 1180,
       "is_interactive": true,
-      "title": "13C2 · New session: Past date, DATE field (no future days)",
+      "title": "13C1 · New session: Past date, DATE field (no future days)",
       "w": 390,
-      "x": 1886,
+      "x": 1416,
       "y": 14008
     }
   },
@@ -1095,7 +1087,6 @@
     "AttendanceList.dc.html",
     "AttendanceDetails.dc.html",
     "AttendanceCreate.dc.html",
-    "AttendanceCreateToday.dc.html",
     "AttendanceCreatePastDate.dc.html",
     "PaymentsList.dc.html",
     "PaymentDetails.dc.html",
