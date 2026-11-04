@@ -2,8 +2,9 @@ import { contextColors, type ContextKey } from "@/core/theme/tokens";
 import { LinearGradient } from "expo-linear-gradient";
 import type { ReactNode } from "react";
 import { KeyboardAvoidingView, Platform } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 import { ScrollView, YStack } from "tamagui";
+import { bottomInsetPadding } from "../../utils/safeArea";
 import { type SubScreenHeaderProps, SubScreenHeader } from "./SubScreenHeader";
 
 export interface SubScreenPageProps extends SubScreenHeaderProps {
@@ -19,6 +20,8 @@ export interface SubScreenPageProps extends SubScreenHeaderProps {
  * apart. With a `footer` it is a form screen (9B): the button stays visible.
  */
 export function SubScreenPage({ children, footer, context, ...header }: SubScreenPageProps) {
+  const insets = useSafeAreaInsets();
+
   return (
     <YStack flex={1} backgroundColor="$neutralPage">
       {context ? (
@@ -37,7 +40,7 @@ export function SubScreenPage({ children, footer, context, ...header }: SubScree
           <ScrollView
             flex={1}
             keyboardShouldPersistTaps="handled"
-            contentContainerStyle={{ paddingHorizontal: 20, paddingTop: 16, paddingBottom: footer ? 24 : 40 }}
+            contentContainerStyle={{ paddingHorizontal: 20, paddingTop: 16, paddingBottom: footer ? 24 : bottomInsetPadding(40, insets.bottom) }}
           >
             <YStack width="100%" maxWidth={500} alignSelf="center" gap={24}>
               {children}
