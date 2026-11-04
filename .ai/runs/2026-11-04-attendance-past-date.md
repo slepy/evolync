@@ -11,7 +11,7 @@ An instructor creating an attendance session picks the day: Today or a past date
 ## Scope
 
 - `AttendanceCreateScreen` (13C): header "New session"; DAY `PillGroup` (Today / Past date, attendance accent); Today shows the date under the pills; Past date shows a DATE `DateTimeField` (max = today) with the hint "Today or an earlier day. Future days cannot be picked."
-- The session is stored on the picked day: Today keeps the current time, a past day is stored at local noon so the UTC day used by `getOrCreateSessionForDate` is the same calendar day.
+- The session is stored on the picked day: Today keeps the current time, a past day is stored at local midnight (the app already shows midnight as a session without a time; the UTC-day `getOrCreateSessionForDate` has no caller).
 - One session per day stays the rule: when the picked day already has a session, the button reads "Open" and opens that session instead of creating a second one.
 - The Add button on 13A and the dashboard `+` always open the create screen (before, Add opened today's session when it existed, so a past day could never be added).
 - `AttendanceSessionBody` takes optional content above the status summary.
@@ -45,7 +45,7 @@ An instructor creating an attendance session picks the day: Today or a past date
 
 ## Risks
 
-- Timezones: a past day is stored at local noon; offsets beyond ±12h would still shift the UTC day (none in practice).
+- Timezones: a past day is local midnight, which is the previous UTC day east of Greenwich; every reader compares local days (`isSameDay`), and the only UTC-day reader (`getOrCreateSessionForDate`) is unused.
 - Behavior change: Add on 13A no longer jumps straight into today's session; the create screen offers "Open" for it instead.
 
 ## Progress
@@ -54,7 +54,7 @@ An instructor creating an attendance session picks the day: Today or a past date
 
 ### Phase 1: Date logic
 
-- [ ] 1.1 Pure date helpers with unit tests
+- [x] 1.1 Pure date helpers with unit tests — 7b3b35c
 
 ### Phase 2: Screen
 
