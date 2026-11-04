@@ -12,6 +12,8 @@ export interface NotificationRowProps {
   icon: LucideIcon;
   accent: ListAccent;
   onPress: () => void;
+  /** Screen-reader "Delete" action (the swipe is not reachable by VoiceOver / TalkBack). */
+  onDelete?: () => void;
 }
 
 /**
@@ -19,12 +21,20 @@ export interface NotificationRowProps {
  * time on the right, body wrapping under it. Unread rows are bold white on a
  * 3% white fill; read titles are softer.
  */
-export function NotificationRow({ title, body, time, unread, icon, accent, onPress }: NotificationRowProps) {
+export function NotificationRow({ title, body, time, unread, icon, accent, onPress, onDelete }: NotificationRowProps) {
   return (
     <XStack
       role="button"
       aria-label={[title, body, time, unread ? t("notificationsUnread") : null].filter(Boolean).join(". ")}
       onPress={onPress}
+      accessibilityActions={onDelete ? [{ name: "delete", label: t("delete") }] : undefined}
+      onAccessibilityAction={
+        onDelete
+          ? (event: { nativeEvent: { actionName: string } }) => {
+              if (event.nativeEvent.actionName === "delete") onDelete();
+            }
+          : undefined
+      }
       pressStyle={{ opacity: 0.85 }}
       alignItems="flex-start"
       gap={14}

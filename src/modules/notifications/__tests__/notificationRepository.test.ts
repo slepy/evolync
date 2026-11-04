@@ -95,6 +95,53 @@ describe("NotificationRepository", () => {
     assert.equal(await NotificationRepository.markAllRead(ME), 0);
   });
 
+  it("softDelete hides the row from the list and the unread count", async () => {
+    const kept = await seed();
+    const removed = await seed();
+
+    const list = record<Notification[]>(NotificationRepository.observeByRecipient(ME));
+    const count = record<number>(NotificationRepository.observeUnreadCount(ME));
+    await flush();
+    assert.equal(count.values.at(-1), 2);
+
+    await NotificationRepository.softDelete(removed);
+    await flush();
+    list.stop();
+    count.stop();
+
+    assert.deepEqual(list.values.at(-1)!.map((n) => n.id), [kept]);
+    assert.equal(count.values.at(-1), 1);
+
+    const row = await NotificationRepository.findById(removed);
+    assert.ok(row?.deletedAt, "soft delete keeps the row with deleted_at for sync");
+    assert.notEqual(row?._raw._status, "deleted", "pushed as an update, not a deleted id");
+  });
+
+  it("softDelete keeps the first deletion time", async () => {
+    const id = await seed({ deleted_at: 1_000 });
+    await NotificationRepository.softDelete(id);
+    const row = await NotificationRepository.findById(id);
+    assert.equal(row?.deletedAt?.getTime(), 1_000);
+  });
+
+  it("softDeleteAll removes only the recipient's live rows", async () => {
+    await seed();
+    await seed({ read_at: Date.now() });
+    const gone = await seed({ deleted_at: 1_000 });
+    const theirs = await seed({ recipient_id: OTHER });
+
+    assert.equal(await NotificationRepository.softDeleteAll(ME), 2);
+
+    const list = record<Notification[]>(NotificationRepository.observeByRecipient(ME));
+    await flush();
+    list.stop();
+    assert.deepEqual(list.values.at(-1), []);
+
+    assert.equal((await NotificationRepository.findById(gone))?.deletedAt?.getTime(), 1_000);
+    assert.equal((await NotificationRepository.findById(theirs))?.deletedAt ?? null, null);
+    assert.equal(await NotificationRepository.softDeleteAll(ME), 0);
+  });
+
   it("lists the recipient's notifications newest first with parsed payload", async () => {
     const older = await seed({ created_at: 1_000 });
     const newer = await seed({ created_at: 2_000 });

@@ -5,15 +5,21 @@ import {
   ListSection,
   MainNav,
   Notice,
+  SwipeToDelete,
   TabPage,
+  TrashButton,
   useNavHome,
 } from "@/core/components";
+import { confirmDelete } from "@/core/utils/confirmDelete";
 import type Notification from "@/database/models/Notification";
 import { useStore } from "@/store";
 import { BellOff, CheckCheck } from "lucide-react-native";
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { XStack } from "tamagui";
 import { useNotifications, useOpenNotification } from "../hooks";
 import {
+  deleteAllNotifications,
+  deleteNotification,
   markAllNotificationsRead,
   markNotificationRead,
   resolveNotificationOpen,
@@ -43,9 +49,9 @@ function useNow(): Date {
 
 /**
  * Alerts tab (N1–N4), shared by owners and students: day groups with the
- * unread count, module-colored rows, Mark all as read. Reads from
- * WatermelonDB, so it renders offline; marking read is local-first and syncs
- * in the background.
+ * unread count, module-colored rows, Mark all as read, swipe a row left to
+ * delete it, Delete all. Reads from WatermelonDB, so it renders offline;
+ * marking read and deleting are local-first and sync in the background.
  */
 export function NotificationsScreen() {
   const openNotification = useOpenNotification();
@@ -93,13 +99,31 @@ export function NotificationsScreen() {
     );
   }, [userId]);
 
+  const handleDelete = useCallback((id: string) => {
+    deleteNotification(id).catch((err) => console.error("[NotificationsScreen] delete:", err));
+  }, []);
+
+  const handleDeleteAll = useCallback(() => {
+    if (!userId) return;
+    confirmDelete(t("notificationsDeleteAllTitle"), t("notificationsDeleteAllMessage"), () => {
+      deleteAllNotifications(userId).catch((err) =>
+        console.error("[NotificationsScreen] deleteAll:", err),
+      );
+    });
+  }, [userId]);
+
   return (
     <TabPage
       title={t("notificationsTitle")}
       context={home}
       actions={
-        hasUnread ? (
-          <IconButton icon={CheckCheck} label={t("notificationsMarkAllRead")} onPress={handleMarkAllRead} />
+        groups.length > 0 ? (
+          <XStack gap={10}>
+            {hasUnread ? (
+              <IconButton icon={CheckCheck} label={t("notificationsMarkAllRead")} onPress={handleMarkAllRead} />
+            ) : null}
+            <TrashButton label={t("notificationsDeleteAll")} onPress={handleDeleteAll} />
+          </XStack>
         ) : null
       }
       nav={<MainNav />}
@@ -126,16 +150,18 @@ export function NotificationsScreen() {
                 const { title, body } = getNotificationContent(notification, t, now, locale);
                 const style = notificationRowStyle(notification.type);
                 return (
-                  <NotificationRow
-                    key={notification.id}
-                    title={title}
-                    body={body}
-                    time={inboxTimeLabel(notification.createdAt, now, t, locale)}
-                    unread={!notification.readAt}
-                    icon={style.icon}
-                    accent={style.accent}
-                    onPress={() => handlePress(notification)}
-                  />
+                  <SwipeToDelete key={notification.id} onDelete={() => handleDelete(notification.id)}>
+                    <NotificationRow
+                      title={title}
+                      body={body}
+                      time={inboxTimeLabel(notification.createdAt, now, t, locale)}
+                      unread={!notification.readAt}
+                      icon={style.icon}
+                      accent={style.accent}
+                      onPress={() => handlePress(notification)}
+                      onDelete={() => handleDelete(notification.id)}
+                    />
+                  </SwipeToDelete>
                 );
               })}
             </ListCard>

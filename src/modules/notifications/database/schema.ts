@@ -4,7 +4,7 @@ import { tableSchema } from "@nozbe/watermelondb";
  * WatermelonDB schema for the Notifications module.
  *
  * Rows are created server-side by Postgres triggers and arrive through sync;
- * the client only ever changes `read_at`.
+ * the client only ever changes `read_at` and `deleted_at` (user removes a row).
  */
 export const notificationsSchema = [
   tableSchema({

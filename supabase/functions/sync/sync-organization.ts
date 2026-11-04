@@ -266,7 +266,7 @@ export async function syncOrganization(ctx: SyncContext): Promise<SyncPullChange
   await pushTagsChanges({ supabaseClient, userId, changes, lastPulledAt });
 
   // ===========================================================================
-  // PUSH: Notifications (recipient-private, read_at only)
+  // PUSH: Notifications (recipient-private, read_at + soft delete only)
   // ===========================================================================
   await pushNotificationsChanges(ctx);
 

@@ -11,7 +11,7 @@ const liveForRecipient = (recipientId: string) => [
 
 /**
  * Notifications are created by the server and arrive through sync, so this
- * repository only reads them and sets `read_at`.
+ * repository only reads them and sets `read_at` / `deleted_at`.
  */
 export const NotificationRepository = {
   async findById(id: string): Promise<Notification | null> {
@@ -73,5 +73,37 @@ export const NotificationRepository = {
       );
     });
     return unread.length;
+  },
+
+  /**
+   * Soft delete (sets `deleted_at`, pushed as an update), never
+   * `markAsDeleted`: the server ignores deleted ids of this table.
+   */
+  async softDelete(id: string): Promise<void> {
+    const record = await collection().find(id);
+    if (record.deletedAt) return;
+    await database.write(async () => {
+      await record.update((r) => {
+        r.deletedAt = new Date();
+      });
+    });
+  },
+
+  /** Soft-deletes every live notification of the recipient; returns how many. */
+  async softDeleteAll(recipientId: string): Promise<number> {
+    const live = await collection().query(...liveForRecipient(recipientId)).fetch();
+    if (live.length === 0) return 0;
+
+    const now = new Date();
+    await database.write(async () => {
+      await database.batch(
+        live.map((record) =>
+          record.prepareUpdate((r) => {
+            r.deletedAt = now;
+          }),
+        ),
+      );
+    });
+    return live.length;
   },
 };

@@ -1,4 +1,9 @@
-export { markNotificationRead, markAllNotificationsRead } from "./notificationService";
+export {
+  deleteAllNotifications,
+  deleteNotification,
+  markAllNotificationsRead,
+  markNotificationRead,
+} from "./notificationService";
 export { resolveNotificationOpen } from "./notificationNavigation";
 export type { NotificationOpenResult } from "./notificationNavigation";
 export {
