@@ -31,9 +31,11 @@ Wrap those four handlers in `confirmDelete(t("delete"), <message>, …)`; add th
 
 ## Progress
 
+PR: #74
+
 > Convention: `- [ ]` pending, `- [x]` done. Append ` — <commit sha>` when a step lands. Do not rename step titles.
 
 ### Phase 1: Add missing confirmations
 
-- [ ] 1.1 Confirm rejected join request removal
-- [ ] 1.2 Confirm note row, order product and photo removal
+- [x] 1.1 Confirm rejected join request removal — 412bc03
+- [x] 1.2 Confirm note row, order product and photo removal — daa72f7
