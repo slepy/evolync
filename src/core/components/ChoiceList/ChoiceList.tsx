@@ -74,14 +74,29 @@ export function ChoiceList<T extends string>({
             borderColor={selected ? a.tint : "$neutralRaisedBorder"}
             backgroundColor={selected ? a.selectedFill : surface === "page" ? "$neutralPage" : "$neutralCard"}
           >
-            {selected ? (
-              <View width={24} height={24} borderRadius={12} overflow="hidden" alignItems="center" justifyContent="center" flexShrink={0}>
-                <LinearGradient colors={[a.from, a.to]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={StyleSheet.absoluteFill} />
+            {/* Same view tree in both states, only opacity changes (see ListCheckbox). */}
+            <View width={24} height={24} borderRadius={12} overflow="hidden" alignItems="center" justifyContent="center" flexShrink={0}>
+              <LinearGradient
+                colors={[a.from, a.to]}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 1 }}
+                style={[StyleSheet.absoluteFill, { opacity: selected ? 1 : 0 }]}
+              />
+              <View
+                position="absolute"
+                top={0}
+                left={0}
+                right={0}
+                bottom={0}
+                borderRadius={12}
+                borderWidth={1.5}
+                borderColor="$neutralControl"
+                opacity={selected ? 0 : 1}
+              />
+              <View opacity={selected ? 1 : 0}>
                 <Check size={14} color={a.onGradient} strokeWidth={3} />
               </View>
-            ) : (
-              <View width={24} height={24} borderRadius={12} borderWidth={1.5} borderColor="$neutralControl" flexShrink={0} />
-            )}
+            </View>
             <YStack flex={1} minWidth={0} gap={2}>
               <XStack alignItems="center" gap={8}>
                 {option.dot ? (
