@@ -73,9 +73,6 @@ export const formatSessionTitle = (date: Date, locale: string): string =>
 export const formatSessionShort = (date: Date, locale: string): string =>
   `${capitalize(date.toLocaleDateString(locale, { weekday: "short" }))}, ${dayMonthShort(date, locale)}`;
 
-/** "4 Oct" (13C header after "Today, "). */
-export const formatDayMonthShort = dayMonthShort;
-
 /** Counts of each status in an edited list (13B / 13C summary). */
 export function countStatuses(items: ReadonlyArray<{ status: AttendanceStatus }>): Record<AttendanceStatus, number> {
   const counts: Record<AttendanceStatus, number> = { present: 0, absent: 0, excused: 0 };

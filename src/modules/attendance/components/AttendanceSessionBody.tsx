@@ -27,9 +27,11 @@ export interface AttendanceSessionBodyProps {
   error: string | null;
   /** Trash button in the header (13B): deletes the session. */
   headerAction?: React.ReactNode;
+  /** Content above the status summary (13C: DAY / DATE). */
+  children?: React.ReactNode;
 }
 
-/** 13B / 13C: Status summary, hint, member rows with a status button, Save / Create pinned at the bottom. */
+/** 13B / 13C: optional content on top, Status summary, hint, member rows with a status button, Save / Create pinned at the bottom. */
 export function AttendanceSessionBody({
   title,
   rows,
@@ -40,6 +42,7 @@ export function AttendanceSessionBody({
   isSaving,
   error,
   headerAction,
+  children,
 }: AttendanceSessionBodyProps) {
   const counts = countStatuses(rows);
 
@@ -70,6 +73,7 @@ export function AttendanceSessionBody({
       }
     >
       <YStack gap={16}>
+        {children}
         <StatusSummary
           title={t("membersCount", { count: rows.length })}
           subtitle={t("attendancePresentSummary", {

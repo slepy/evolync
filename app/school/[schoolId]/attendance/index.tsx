@@ -11,13 +11,7 @@ export default function SchoolAttendanceScreen() {
     <AttendanceSessionsScreen
       schoolId={schoolId}
       onSessionPress={(sessionId) => router.push(`/school/${schoolId}/attendance/${sessionId}`)}
-      onAdd={(todaySessionId) =>
-        router.push(
-          todaySessionId
-            ? `/school/${schoolId}/attendance/${todaySessionId}`
-            : `/school/${schoolId}/attendance/create`,
-        )
-      }
+      onAdd={() => router.push(`/school/${schoolId}/attendance/create`)}
     />
   );
 }
