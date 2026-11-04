@@ -50,6 +50,8 @@ An instructor creating an attendance session picks the day: Today or a past date
 
 ## Progress
 
+PR: #72
+
 > Convention: `- [ ]` pending, `- [x]` done. Append ` — <commit sha>` when a step lands. Do not rename step titles.
 
 ### Phase 1: Date logic
@@ -58,8 +60,8 @@ An instructor creating an attendance session picks the day: Today or a past date
 
 ### Phase 2: Screen
 
-- [ ] 2.1 Create screen with DAY / DATE, existing session, routes, translations
+- [x] 2.1 Create screen with DAY / DATE, existing session, routes, translations — 95e9c8a
 
 ### Phase 3: Validation
 
-- [ ] 3.1 Full validation gate
+- [x] 3.1 Full validation gate — 95e9c8a
