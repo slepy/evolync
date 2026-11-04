@@ -852,6 +852,22 @@
       "w": 390,
       "x": 1886,
       "y": 8208
+    },
+    "AttendanceCreateToday.dc.html": {
+      "h": 1260,
+      "is_interactive": true,
+      "title": "13C1 · New session: day Today / Past date, Today picked",
+      "w": 390,
+      "x": 1416,
+      "y": 14008
+    },
+    "AttendanceCreatePastDate.dc.html": {
+      "h": 1180,
+      "is_interactive": true,
+      "title": "13C2 · New session: Past date, DATE field (no future days)",
+      "w": 390,
+      "x": 1886,
+      "y": 14008
     }
   },
   "createdOnFiles": {
@@ -1079,6 +1095,8 @@
     "AttendanceList.dc.html",
     "AttendanceDetails.dc.html",
     "AttendanceCreate.dc.html",
+    "AttendanceCreateToday.dc.html",
+    "AttendanceCreatePastDate.dc.html",
     "PaymentsList.dc.html",
     "PaymentDetails.dc.html",
     "PaymentDetailsAmounts.dc.html",
