@@ -11,7 +11,7 @@
  * server; they are converted in both directions.
  */
 
-import { convertToSupabaseRecord, convertToWatermelonRecord } from "./utils.ts";
+import { convertToSupabaseRecord, convertToWatermelonRecord, describeError } from "./utils.ts";
 
 type TableChanges = { created: any[]; updated: any[]; deleted: string[] };
 
@@ -83,7 +83,7 @@ async function foreignIds(
   const foreign = new Set<string>();
   for (const part of chunks(ids)) {
     const { data, error } = await supabaseClient.from(table).select("id, organization_id").in("id", part);
-    if (error) throw new Error(`Failed to verify ${table}: ${error.message}`);
+    if (error) throw new Error(`Failed to verify ${table}: ${describeError(error)}`);
     for (const row of data || []) {
       if (row.organization_id !== organizationId) foreign.add(row.id);
     }
@@ -105,7 +105,7 @@ async function ownIds(
       .select("id")
       .in("id", part)
       .eq("organization_id", organizationId);
-    if (error) throw new Error(`Failed to verify ${table}: ${error.message}`);
+    if (error) throw new Error(`Failed to verify ${table}: ${describeError(error)}`);
     for (const row of data || []) own.add(row.id);
   }
   return own;
@@ -134,7 +134,7 @@ async function scopePreviousSeries(supabaseClient: any, rows: any[], organizatio
 /** Every school id of the organization (soft-deleted ones included). */
 async function organizationSchoolIds(supabaseClient: any, organizationId: string): Promise<Set<string>> {
   const { data, error } = await supabaseClient.from("schools").select("id").eq("organization_id", organizationId);
-  if (error) throw new Error(`Failed to verify schools: ${error.message}`);
+  if (error) throw new Error(`Failed to verify schools: ${describeError(error)}`);
   return new Set((data || []).map((r: any) => r.id));
 }
 
@@ -143,7 +143,7 @@ async function membersOfSchools(supabaseClient: any, ids: string[], schoolIds: S
   const own = new Set<string>();
   for (const part of chunks([...new Set(ids)])) {
     const { data, error } = await supabaseClient.from("school_members").select("id, school_id").in("id", part);
-    if (error) throw new Error(`Failed to verify school_members: ${error.message}`);
+    if (error) throw new Error(`Failed to verify school_members: ${describeError(error)}`);
     for (const row of data || []) if (schoolIds.has(row.school_id)) own.add(row.id);
   }
   return own;
@@ -179,7 +179,7 @@ export async function pushTrainingsChanges(
 
     if (rows.length > 0) {
       const { error } = await supabaseClient.from(table).upsert(rows);
-      if (error) throw new Error(`Failed to upsert ${table}: ${error.message}`);
+      if (error) throw new Error(`Failed to upsert ${table}: ${describeError(error)}`);
     }
 
     if (deleted.length > 0) {
@@ -188,7 +188,7 @@ export async function pushTrainingsChanges(
         .update({ deleted_at: new Date().toISOString() })
         .in("id", deleted)
         .eq("organization_id", organizationId);
-      if (error) throw new Error(`Failed to delete from ${table}: ${error.message}`);
+      if (error) throw new Error(`Failed to delete from ${table}: ${describeError(error)}`);
     }
   }
 
@@ -207,7 +207,7 @@ export async function pushTrainingsChanges(
 
     if (rows.length > 0) {
       const { error } = await supabaseClient.from("training_invitees").upsert(rows);
-      if (error) throw new Error(`Failed to upsert training_invitees: ${error.message}`);
+      if (error) throw new Error(`Failed to upsert training_invitees: ${describeError(error)}`);
     }
 
     if (deleted.length > 0) {
@@ -215,7 +215,7 @@ export async function pushTrainingsChanges(
         .from("training_invitees")
         .select("id, training_id")
         .in("id", deleted);
-      if (error) throw new Error(`Failed to verify training_invitees: ${error.message}`);
+      if (error) throw new Error(`Failed to verify training_invitees: ${describeError(error)}`);
       const ownParents = await ownTrainingIds(
         supabaseClient,
         (data || []).map((r: any) => r.training_id),
@@ -256,7 +256,7 @@ async function fetchChanges(
     : query.gte("updated_at", new Date(lastPulledAt).toISOString());
 
   const { data, error } = await scope(query);
-  if (error) throw new Error(`Failed to fetch from ${table}: ${error.message}`);
+  if (error) throw new Error(`Failed to fetch from ${table}: ${describeError(error)}`);
 
   const changes = empty();
   for (const row of data || []) {
@@ -370,7 +370,7 @@ export async function pullTrainingsForMember(
       .select("*")
       .in("organization_id", scope.organizationIds)
       .is("deleted_at", null);
-    if (error) throw new Error(`Failed to fetch trainings: ${error.message}`);
+    if (error) throw new Error(`Failed to fetch trainings: ${describeError(error)}`);
     for (const row of data || []) {
       if (isTrainingVisibleToMember(row, scope, invited)) {
         changes.created.push(toWatermelonTrainingRecord(row, "trainings"));
@@ -385,7 +385,7 @@ export async function pullTrainingsForMember(
     .select("*")
     .in("organization_id", scope.organizationIds)
     .gte("updated_at", since);
-  if (error) throw new Error(`Failed to fetch trainings: ${error.message}`);
+  if (error) throw new Error(`Failed to fetch trainings: ${describeError(error)}`);
 
   const rows: any[] = [...(changed || [])];
   const seen = new Set(rows.map((r) => r.id));

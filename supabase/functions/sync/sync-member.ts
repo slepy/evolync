@@ -12,6 +12,7 @@ import {
   chunkIds,
   convertToSupabaseRecord,
   convertToWatermelonRecord,
+  describeError,
   fetchTableChangesIn,
   MEMBER_SCHOOL_TABLES,
   MEMBER_PUSH_TABLES,
@@ -52,7 +53,7 @@ async function fetchServerRows(
   const rows = new Map<string, any>();
   for (const part of chunkIds([...new Set(ids)])) {
     const { data, error } = await ctx.supabaseClient.from(tableName).select(columns).in("id", part);
-    if (error) throw new Error(`Failed to fetch ${tableName}: ${error.message}`);
+    if (error) throw new Error(`Failed to fetch ${tableName}: ${describeError(error)}`);
     for (const row of data || []) rows.set(row.id, row);
   }
   return rows;
@@ -223,7 +224,7 @@ export async function pushMemberChanges(
 ): Promise<void> {
   const { supabaseClient } = ctx;
   const fail =(message: string, error: any) => {
-    if (throwOnError) throw new Error(`${message}: ${error.message}`);
+    if (throwOnError) throw new Error(`${message}: ${describeError(error)}`);
     console.error(`${logPrefix} ${message}:`, error);
   };
 
@@ -351,7 +352,7 @@ export async function fetchMemberships(
     .is("deleted_at", null);
 
   if (error) {
-    throw new Error(`Failed to fetch memberships: ${error.message}`);
+    throw new Error(`Failed to fetch memberships: ${describeError(error)}`);
   }
 
   const excluded = new Set(excludeSchoolIds);

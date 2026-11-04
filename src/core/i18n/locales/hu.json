@@ -1008,5 +1008,9 @@
   "profileLogOut": "Kijelentkezés",
   "profileLogOutHint": "Kijelentkezés az Evolyncből ezen az eszközön",
   "profileLogOutConfirmTitle": "Kijelentkezel?",
-  "profileLogOutConfirmMessage": "Az e-mail-címeddel és jelszavaddal újra bejelentkezhetsz."
+  "profileLogOutConfirmMessage": "Az e-mail-címeddel és jelszavaddal újra bejelentkezhetsz.",
+  "share": "Megosztás",
+  "retry": "Újra",
+  "crashReportTitle": "Az alkalmazás váratlanul bezárult",
+  "crashReportMessage": "Küldd el ezt a jelentést a fejlesztőnek, hogy segíts kijavítani a hibát."
 }

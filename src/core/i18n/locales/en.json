@@ -1008,5 +1008,9 @@
   "profileLogOut": "Log out",
   "profileLogOutHint": "Sign out of Evolync on this device",
   "profileLogOutConfirmTitle": "Log out?",
-  "profileLogOutConfirmMessage": "You can sign in again with your email and password."
+  "profileLogOutConfirmMessage": "You can sign in again with your email and password.",
+  "share": "Share",
+  "retry": "Retry",
+  "crashReportTitle": "The app closed unexpectedly",
+  "crashReportMessage": "Share this report with the developer to help fix it."
 }
