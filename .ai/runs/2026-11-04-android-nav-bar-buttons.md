@@ -54,17 +54,19 @@ Primary buttons (Create / Save) at the bottom of forms and sheets, and the last 
 
 ## Progress
 
+PR: #75
+
 > Convention: `- [ ]` pending, `- [x]` done. Append ` — <commit sha>` when a step lands. Do not rename step titles.
 
 ### Phase 1: Helper
 
-- [ ] 1.1 bottomInsetPadding helper with unit tests
+- [x] 1.1 bottomInsetPadding helper with unit tests — 0e5eee6
 
 ### Phase 2: Sheets and pages
 
-- [ ] 2.1 Sheets pad above the navigation bar
-- [ ] 2.2 Scrolling pages keep the last row above the navigation bar
+- [x] 2.1 Sheets pad above the navigation bar — a5cd35f
+- [x] 2.2 Scrolling pages keep the last row above the navigation bar — a73ebdf
 
 ### Phase 3: Validation
 
-- [ ] 3.1 Full validation gate
+- [x] 3.1 Full validation gate — a73ebdf
