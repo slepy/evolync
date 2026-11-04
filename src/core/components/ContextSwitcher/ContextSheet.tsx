@@ -1,5 +1,7 @@
 import { Building2, Plus } from "lucide-react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Sheet, Text, YStack } from "tamagui";
+import { bottomInsetPadding } from "../../utils/safeArea";
 import { ListCard, ListCheck, ListIcon, ListRow, ListSection } from "../List";
 import { ContextBadge } from "./ContextBadge";
 import type { ContextOption } from "./types";
@@ -34,6 +36,7 @@ export function ContextSheet({
   title,
   description,
 }: ContextSheetProps) {
+  const insets = useSafeAreaInsets();
   const manage = options.filter((o) => o.context !== "student");
   const train = options.filter((o) => o.context === "student");
   const heading = title ?? t("contextSwitchTitle");
@@ -66,7 +69,7 @@ export function ContextSheet({
         borderTopRightRadius="$header"
         paddingHorizontal={20}
         paddingTop={10}
-        paddingBottom={32}
+        paddingBottom={bottomInsetPadding(32, insets.bottom)}
       >
         <Sheet.Handle backgroundColor="$neutralControl" />
         <YStack gap={20} paddingTop={12}>

@@ -6,6 +6,7 @@ import {
   type ListAccent,
 } from "@/core/components";
 import { neutral } from "@/core/theme/tokens";
+import { bottomInsetPadding } from "@/core/utils/safeArea";
 import { useStore } from "@/store";
 import {
   BellRing,
@@ -17,6 +18,7 @@ import {
   type LucideIcon,
 } from "lucide-react-native";
 import React, { Fragment, useEffect, useState } from "react";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Sheet, Text, View, XStack, YStack } from "tamagui";
 import {
   dismissPushRationale,
@@ -51,6 +53,7 @@ const STUDENT_ROWS: PromptRow[] = [
 export function PushPermissionPrompt() {
   const ownsOrganization = useStore((s) => !!s.organization);
   const [open, setOpen] = useState(false);
+  const insets = useSafeAreaInsets();
   const rows = ownsOrganization ? OWNER_ROWS : STUDENT_ROWS;
 
   useEffect(() => {
@@ -92,7 +95,7 @@ export function PushPermissionPrompt() {
         borderTopRightRadius="$header"
         paddingHorizontal={20}
         paddingTop={12}
-        paddingBottom={32}
+        paddingBottom={bottomInsetPadding(32, insets.bottom)}
       >
         <Sheet.Handle backgroundColor="$neutralControl" />
         <YStack gap={16} paddingTop={12}>

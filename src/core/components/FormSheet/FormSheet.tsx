@@ -1,7 +1,9 @@
 import { neutral } from "@/core/theme/tokens";
 import { X } from "lucide-react-native";
 import type { ReactNode } from "react";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Sheet, Text, View, XStack, YStack } from "tamagui";
+import { bottomInsetPadding } from "../../utils/safeArea";
 
 export interface FormSheetProps {
   open: boolean;
@@ -29,6 +31,7 @@ export interface FormSheetProps {
 /**
  * Standard bottom sheet with a small form (7B / 8B): raised fill, radius 28
  * on top, handle, title with a 44px close button, fields, primary button.
+ * The footer stays above the Android navigation bar (edge-to-edge).
  */
 export function FormSheet({
   open,
@@ -42,6 +45,8 @@ export function FormSheet({
   footer,
   fill,
 }: FormSheetProps) {
+  const insets = useSafeAreaInsets();
+
   return (
     <Sheet
       modal
@@ -60,7 +65,7 @@ export function FormSheet({
         borderTopRightRadius="$header"
         paddingHorizontal={20}
         paddingTop={10}
-        paddingBottom={fill ? 28 : 36}
+        paddingBottom={bottomInsetPadding(fill ? 28 : 36, insets.bottom)}
       >
         <Sheet.Handle backgroundColor="$neutralControl" />
         <YStack gap={fill ? 14 : 20} paddingTop={12} flex={fill ? 1 : undefined}>
