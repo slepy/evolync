@@ -11,6 +11,7 @@ import {
 } from "react-native";
 import { Text, XStack, YStack } from "tamagui";
 import { neutral } from "@/core/theme/tokens";
+import { confirmDelete } from "@/core/utils/confirmDelete";
 import { resolveListAccent, type ListAccent } from "../List/accent";
 import { TrashButton } from "../TrashButton/TrashButton";
 
@@ -160,7 +161,9 @@ export function PhotoField({
             </Text>
           </XStack>
           <TrashButton
-            onPress={() => onChange(null)}
+            onPress={() =>
+              confirmDelete(t("delete"), t("imagePickerRemoveImageConfirm"), () => onChange(null))
+            }
             label={t("imagePickerRemoveImage")}
             disabled={busy}
           />
