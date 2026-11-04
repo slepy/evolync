@@ -16,6 +16,7 @@ import {
   convertToSupabaseRecord,
   convertToWatermelonRecord,
   chunkIds,
+  describeError,
   fetchTableChangesIn,
   mergePullChanges,
   OwnedScope,
@@ -118,7 +119,7 @@ export async function syncOrganization(ctx: SyncContext): Promise<SyncPullChange
             .eq("id", record.id);
 
           if (error) {
-            throw new Error(`Failed to update ${tableName}: ${error.message}`);
+            throw new Error(`Failed to update ${tableName}: ${describeError(error)}`);
           }
         }
       } else {
@@ -133,7 +134,7 @@ export async function syncOrganization(ctx: SyncContext): Promise<SyncPullChange
           const { error } = await updateQuery;
 
           if (error) {
-            throw new Error(`Failed to update ${tableName}: ${error.message}`);
+            throw new Error(`Failed to update ${tableName}: ${describeError(error)}`);
           }
         }
       }
@@ -177,7 +178,7 @@ export async function syncOrganization(ctx: SyncContext): Promise<SyncPullChange
             .upsert(recordsToInsert);
 
           if (error) {
-            throw new Error(`Failed to insert to ${tableName}: ${error.message}`);
+            throw new Error(`Failed to insert to ${tableName}: ${describeError(error)}`);
           }
         }
       } else if (tableName === "payment_records") {
@@ -208,7 +209,7 @@ export async function syncOrganization(ctx: SyncContext): Promise<SyncPullChange
             .upsert(validRecords, { ignoreDuplicates: true });
 
           if (error) {
-            throw new Error(`Failed to insert to ${tableName}: ${error.message}`);
+            throw new Error(`Failed to insert to ${tableName}: ${describeError(error)}`);
           }
         }
       } else {
@@ -223,7 +224,7 @@ export async function syncOrganization(ctx: SyncContext): Promise<SyncPullChange
           .upsert(records, tableName === "event_types" ? { ignoreDuplicates: true } : undefined);
 
         if (error) {
-          throw new Error(`Failed to insert to ${tableName}: ${error.message}`);
+          throw new Error(`Failed to insert to ${tableName}: ${describeError(error)}`);
         }
       }
     }
@@ -238,7 +239,7 @@ export async function syncOrganization(ctx: SyncContext): Promise<SyncPullChange
       const { error } = await deleteQuery;
 
       if (error) {
-        throw new Error(`Failed to delete from ${tableName}: ${error.message}`);
+        throw new Error(`Failed to delete from ${tableName}: ${describeError(error)}`);
       }
     }
   }
@@ -301,7 +302,7 @@ export async function syncOrganization(ctx: SyncContext): Promise<SyncPullChange
     const { data: records, error } = await query;
 
     if (error) {
-      throw new Error(`Failed to fetch from ${tableName}: ${error.message}`);
+      throw new Error(`Failed to fetch from ${tableName}: ${describeError(error)}`);
     }
 
     const created: any[] = [];
@@ -541,7 +542,7 @@ async function existingIds(
   const found: string[] = [];
   for (const part of chunkIds([...new Set(ids)])) {
     const { data, error } = await filterFn(supabaseClient.from(table).select("id").in("id", part));
-    if (error) throw new Error(`Failed to fetch ${table}: ${error.message}`);
+    if (error) throw new Error(`Failed to fetch ${table}: ${describeError(error)}`);
     found.push(...(data || []).map((r: any) => r.id));
   }
   return found;
@@ -562,7 +563,7 @@ async function fetchOwnedScope(
     .from("schools")
     .select("id")
     .eq("organization_id", organizationId);
-  if (error) throw new Error(`Failed to fetch schools: ${error.message}`);
+  if (error) throw new Error(`Failed to fetch schools: ${describeError(error)}`);
   const schoolIds = new Set<string>([
     ...(schools || []).map((s: any) => s.id),
     ...rows("schools").filter((s) => s.organization_id === organizationId).map((s) => s.id),

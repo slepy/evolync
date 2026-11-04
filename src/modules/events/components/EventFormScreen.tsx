@@ -220,7 +220,7 @@ export const EventFormScreen: React.FC<EventFormScreenProps> = ({
                 error={fieldError("price")}
               />
             </YStack>
-            <YStack flex={2} minWidth={0}>
+            <YStack flex={2} minWidth={112}>
               <SelectField
                 label={t("fieldCurrency")}
                 value={form.currency}

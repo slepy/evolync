@@ -363,3 +363,12 @@ export function splitStudentChanges(
   }
   return { own, student };
 }
+
+/**
+ * A Postgres error as one line: message plus its details and hint, which name
+ * the failing key (e.g. `Key (school_id)=(…) is not present in table "schools"`),
+ * so a client that shows the sync error points at the record that blocks it.
+ */
+export function describeError(error: { message?: string; details?: string | null; hint?: string | null }): string {
+  return [error.message, error.details, error.hint].filter(Boolean).join(" — ");
+}

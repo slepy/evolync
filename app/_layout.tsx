@@ -7,6 +7,7 @@ import "react-native-url-polyfill/auto";
 import "@/core/i18n/config"; // Initialize i18n immediately
 import { useAuth } from "@/modules/auth/hooks/useAuth";
 import { registerSignOutHandler } from "@/core/utils/signOutBridge";
+import { installCrashRecorder, showLastCrashReport } from "@/core/utils/diagnostics";
 import { useSyncStore } from "@/database/hooks/useSyncStore";
 import { NotificationResponseHandler } from "@/modules/notifications";
 import { useOwnMembershipsWatcher } from "@/modules/school";
@@ -50,6 +51,9 @@ const navigationTheme = {
 export const unstable_settings = {
   initialRouteName: "index",
 };
+
+// A fatal JS error is saved and offered on the next launch (no logs in preview builds).
+installCrashRecorder();
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -106,6 +110,10 @@ function RootLayoutNav() {
     const handler = (lng: string) => forceLanguageRerender(lng);
     i18n.on("languageChanged", handler);
     return () => i18n.off("languageChanged", handler);
+  }, []);
+
+  useEffect(() => {
+    showLastCrashReport().catch(console.error);
   }, []);
 
   // Gesture root for RNGH gestures (SwipeToDelete); outermost so portaled sheets are inside it too.
