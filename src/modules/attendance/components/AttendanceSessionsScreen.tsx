@@ -19,8 +19,8 @@ import { dateLocaleTag, formatSessionMonth, formatSessionTitle } from "../sessio
 interface AttendanceSessionsScreenProps {
   schoolId: string;
   onSessionPress: (sessionId: string) => void;
-  /** Add new: today's session opens when it already exists (one session per day). */
-  onAdd: (todaySessionId: string | null) => void;
+  /** Add new: the new session screen (13C), where Today or a past date is picked. */
+  onAdd: () => void;
 }
 
 /**
@@ -32,7 +32,7 @@ export const AttendanceSessionsScreen: React.FC<AttendanceSessionsScreenProps> =
   onSessionPress,
   onAdd,
 }) => {
-  const { groups, todaySession, isLoading, error } = useAttendanceSessionList(schoolId);
+  const { groups, isLoading, error } = useAttendanceSessionList(schoolId);
   const locale = dateLocaleTag(t("locale"));
 
   if (isLoading) return <LoadingScreen />;
@@ -47,7 +47,7 @@ export const AttendanceSessionsScreen: React.FC<AttendanceSessionsScreenProps> =
       <ListSection
         title={t("attendanceSessions")}
         accent="attendance"
-        action={{ label: t("addNew"), onPress: () => onAdd(todaySession?.id ?? null) }}
+        action={{ label: t("addNew"), onPress: onAdd }}
       >
         {groups.length === 0 ? (
           <ListEmpty text={t("emptyNoSessions")} />

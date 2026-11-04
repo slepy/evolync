@@ -2,7 +2,7 @@ import AttendanceRecord from "@/database/models/AttendanceRecord";
 import TrainingSession from "@/database/models/TrainingSession";
 import { useEffect, useMemo, useState } from "react";
 import { AttendanceRecordRepository, TrainingSessionRepository } from "../repositories";
-import { countSessions, groupSessionsByMonth, isSameDay, type SessionCounts } from "../sessionList";
+import { countSessions, groupSessionsByMonth, type SessionCounts } from "../sessionList";
 
 export interface SessionListEntry {
   session: TrainingSession;
@@ -55,10 +55,5 @@ export const useAttendanceSessionList = (schoolId: string | undefined) => {
     return groupSessionsByMonth(entries);
   }, [sessions, records]);
 
-  const todaySession = useMemo(
-    () => (sessions ?? []).find((session) => isSameDay(session.sessionDate, new Date())) ?? null,
-    [sessions],
-  );
-
-  return { groups, todaySession, isLoading: sessions === null || records === null, error };
+  return { groups, isLoading: sessions === null || records === null, error };
 };

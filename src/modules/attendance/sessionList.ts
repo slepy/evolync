@@ -73,9 +73,6 @@ export const formatSessionTitle = (date: Date, locale: string): string =>
 export const formatSessionShort = (date: Date, locale: string): string =>
   `${capitalize(date.toLocaleDateString(locale, { weekday: "short" }))}, ${dayMonthShort(date, locale)}`;
 
-/** "4 Oct" (13C header after "Today, "). */
-export const formatDayMonthShort = dayMonthShort;
-
 /** Counts of each status in an edited list (13B / 13C summary). */
 export function countStatuses(items: ReadonlyArray<{ status: AttendanceStatus }>): Record<AttendanceStatus, number> {
   const counts: Record<AttendanceStatus, number> = { present: 0, absent: 0, excused: 0 };
@@ -83,8 +80,53 @@ export function countStatuses(items: ReadonlyArray<{ status: AttendanceStatus }>
   return counts;
 }
 
-/** "18:00" (student Attendance row after the school); null for a session saved without a time (midnight). */
+/**
+ * "18:00" (student Attendance row after the school); null for a session saved
+ * without a time: local midnight, or UTC midnight (how sync stores a day).
+ */
 export function formatSessionTime(date: Date, locale: string): string | null {
   if (date.getHours() === 0 && date.getMinutes() === 0) return null;
+  if (date.getUTCHours() === 0 && date.getUTCMinutes() === 0) return null;
   return date.toLocaleTimeString(locale, { hour: "2-digit", minute: "2-digit", hour12: false });
+}
+
+/** "Wed, 4 Nov 2026" (13C under the DAY pills, 13C1 DATE field). */
+export const formatSessionDate = (date: Date, locale: string): string =>
+  `${formatSessionShort(date, locale)} ${date.getFullYear()}`;
+
+const pad2 = (n: number): string => String(n).padStart(2, "0");
+
+/** Local calendar day of `date` as "YYYY-MM-DD" (the DATE field value). */
+export const toDayKey = (date: Date): string =>
+  `${date.getFullYear()}-${pad2(date.getMonth() + 1)}-${pad2(date.getDate())}`;
+
+/** "YYYY-MM-DD" → local midnight of that day; null for anything else. */
+export function parseDayKey(day: string): Date | null {
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(day);
+  if (!match) return null;
+  const date = new Date(Number(match[1]), Number(match[2]) - 1, Number(match[3]));
+  return toDayKey(date) === day ? date : null;
+}
+
+/** The day before `today`, as "YYYY-MM-DD" (default of Past date). */
+export const yesterdayKey = (today: Date): string =>
+  toDayKey(new Date(today.getFullYear(), today.getMonth(), today.getDate() - 1));
+
+/**
+ * Date a new session is saved with (13C / 13C1): UTC midnight of the picked
+ * local day. Sync stores the server `date` as the UTC day of this value and
+ * returns UTC midnight on pull, so the day survives a round trip; local
+ * midnight or the current time would land on the previous day east of UTC
+ * (and collide with that day's session). A future or invalid day falls back
+ * to today: sessions are never created ahead.
+ */
+export function sessionDateForDay(pastDay: string | null, now: Date): Date {
+  const picked = pastDay ? parseDayKey(pastDay) : null;
+  const day = picked && picked.getTime() <= now.getTime() ? picked : now;
+  return new Date(Date.UTC(day.getFullYear(), day.getMonth(), day.getDate()));
+}
+
+/** The session already saved on the local day of `date` (one session per day), or null. */
+export function findSessionOnDay<S extends { sessionDate: Date }>(sessions: readonly S[], date: Date): S | null {
+  return sessions.find((session) => isSameDay(session.sessionDate, date)) ?? null;
 }
