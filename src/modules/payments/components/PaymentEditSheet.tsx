@@ -63,7 +63,7 @@ export const PaymentEditSheet: React.FC<PaymentEditSheetProps> = ({
               error={amountValid ? undefined : t("amountInvalidType")}
             />
           </YStack>
-          <YStack flex={2} minWidth={0}>
+          <YStack flex={2} minWidth={112}>
             <SelectField label={t("fieldCurrency")} value={draft.currency} onPress={onCurrencyPress} accent="payments" />
           </YStack>
         </XStack>
