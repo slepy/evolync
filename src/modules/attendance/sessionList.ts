@@ -80,9 +80,13 @@ export function countStatuses(items: ReadonlyArray<{ status: AttendanceStatus }>
   return counts;
 }
 
-/** "18:00" (student Attendance row after the school); null for a session saved without a time (midnight). */
+/**
+ * "18:00" (student Attendance row after the school); null for a session saved
+ * without a time: local midnight, or UTC midnight (how sync stores a day).
+ */
 export function formatSessionTime(date: Date, locale: string): string | null {
   if (date.getHours() === 0 && date.getMinutes() === 0) return null;
+  if (date.getUTCHours() === 0 && date.getUTCMinutes() === 0) return null;
   return date.toLocaleTimeString(locale, { hour: "2-digit", minute: "2-digit", hour12: false });
 }
 

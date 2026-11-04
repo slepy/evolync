@@ -95,6 +95,9 @@ describe("formatSessionTime", () => {
   it("has no time for a session saved at midnight", () => {
     assert.equal(formatSessionTime(new Date(2026, 9, 2), "en-GB"), null);
   });
+  it("shows no time for a day stored by sync (UTC midnight)", () => {
+    assert.equal(formatSessionTime(new Date(Date.UTC(2026, 9, 2)), "en-GB"), null);
+  });
 });
 
 describe("formatSessionDate", () => {
