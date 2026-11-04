@@ -199,7 +199,7 @@ export const PaymentPeriodFormScreen: React.FC<PaymentPeriodFormScreenProps> = (
                   error={amountInvalid ? t("amountInvalidType") : undefined}
                 />
               </YStack>
-              <YStack flex={3} minWidth={0}>
+              <YStack flex={3} minWidth={112}>
                 <SelectField
                   label={t("fieldCurrency")}
                   value={currency}

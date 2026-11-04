@@ -140,7 +140,7 @@ export const SchoolSettingsScreen: React.FC<SchoolSettingsScreenProps> = ({ init
                   error={errors.defaultPaymentAmount}
                 />
               </YStack>
-              <YStack flex={3} minWidth={0}>
+              <YStack flex={3} minWidth={112}>
                 <SelectField
                   label={t("fieldCurrency")}
                   value={currency}
