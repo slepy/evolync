@@ -15,6 +15,7 @@ import {
   TrashButton,
   useContextSwitch,
 } from "@/core/components";
+import { confirmDelete } from "@/core/utils/confirmDelete";
 import { JoinRequestStatus } from "@/database/models/SchoolJoinRequest";
 import { PushPermissionPrompt } from "@/modules/notifications";
 import { usePendingJoinRequests } from "@/modules/school/hooks";
@@ -74,7 +75,16 @@ export function StudentDashboard() {
                 leading={<ListIcon icon={Building2} accent={rejected ? "danger" : "neutral"} />}
                 trailing={
                   rejected ? (
-                    <TrashButton size={40} onPress={() => SchoolJoinRequestRepository.softDelete(request.id)} />
+                    <TrashButton
+                      size={40}
+                      onPress={() =>
+                        confirmDelete(t("delete"), t("joinRequestDeleteConfirm"), () => {
+                          SchoolJoinRequestRepository.softDelete(request.id).catch((err) =>
+                            console.error("[StudentDashboard] delete join request:", err),
+                          );
+                        })
+                      }
+                    />
                   ) : undefined
                 }
               />
