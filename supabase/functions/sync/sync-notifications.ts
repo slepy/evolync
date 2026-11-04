@@ -2,8 +2,8 @@
  * Sync logic for the notifications table (recipient-private data)
  *
  * Notifications are created server-side by Postgres triggers, so the client
- * never creates or deletes them. The only accepted client change is `read_at`
- * on the caller's own rows.
+ * never creates them. The accepted client changes, on the caller's own rows,
+ * are `read_at` and a soft delete (`deleted_at`, set only — never cleared).
  *
  * Shared between sync-organization and sync-user: notifications are pulled
  * by recipient in both sync modes (an owner can also be a student elsewhere).
@@ -54,7 +54,9 @@ export function toWatermelonNotification(row: any): any {
 }
 
 /**
- * Push: apply `read_at` from updated records owned by the caller.
+ * Push: apply `read_at` from updated records owned by the caller, and a soft
+ * delete when the record carries `deleted_at`. A deletion only lands on a
+ * live row, so a server-side deletion time is kept and nothing is undeleted.
  * Every other column, and all created/deleted records, are ignored.
  */
 export async function pushNotificationsChanges(ctx: SyncNotificationsContext): Promise<void> {
@@ -72,14 +74,21 @@ export async function pushNotificationsChanges(ctx: SyncNotificationsContext): P
   for (const record of updated) {
     if (!record?.id) continue;
 
-    const { error } = await supabaseClient
+    // The server clock stamps the deletion; the client value only signals it.
+    const deleting = toIso(record.deleted_at) !== null;
+    const query = supabaseClient
       .from(NOTIFICATIONS_TABLE)
-      .update({ read_at: toIso(record.read_at) })
+      .update(
+        deleting
+          ? { read_at: toIso(record.read_at), deleted_at: new Date().toISOString() }
+          : { read_at: toIso(record.read_at) },
+      )
       .eq("id", record.id)
       .eq("recipient_id", userId);
+    const { error } = deleting ? await query.is("deleted_at", null) : await query;
 
     if (error) {
-      console.error(`[SYNC:NOTIFICATIONS] Failed to update read_at for ${record.id}:`, error);
+      console.error(`[SYNC:NOTIFICATIONS] Failed to update ${record.id}:`, error);
     }
   }
 }

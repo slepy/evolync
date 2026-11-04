@@ -98,6 +98,51 @@ Deno.test("push clears read_at when the client marks unread", async () => {
   assertEquals(queries[0].calls[0], { op: "update", args: [{ read_at: null }] });
 });
 
+Deno.test("push soft-deletes the caller's live row", async () => {
+  const { client, queries } = fakeClient();
+  const deletedAt = Date.parse("2099-01-01T00:00:00.000Z");
+  const readAt = Date.parse("2026-11-04T08:00:00.000Z");
+
+  await pushNotificationsChanges({
+    supabaseClient: client,
+    userId: ME,
+    lastPulledAt: 1,
+    changes: {
+      notifications: {
+        created: [],
+        updated: [{ id: "n1", recipient_id: OTHER, read_at: readAt, deleted_at: deletedAt }],
+        deleted: [],
+      },
+    },
+  });
+
+  const calls = queries[0].calls;
+  const [update] = calls[0].args as [{ read_at: string; deleted_at: string }];
+  assertEquals(calls[0].op, "update");
+  assertEquals(update.read_at, "2026-11-04T08:00:00.000Z");
+  assert(
+    Date.parse(update.deleted_at) < deletedAt,
+    "the deletion is stamped with the server clock, not the client value",
+  );
+  assert(calls.some((c) => c.op === "eq" && c.args[0] === "recipient_id" && c.args[1] === ME));
+  assert(
+    calls.some((c) => c.op === "is" && c.args[0] === "deleted_at" && c.args[1] === null),
+    "a deletion only lands on a live row (keeps the server's deletion time)",
+  );
+});
+
+Deno.test("push never clears deleted_at", async () => {
+  const { client, queries } = fakeClient();
+  await pushNotificationsChanges({
+    supabaseClient: client,
+    userId: ME,
+    lastPulledAt: 1,
+    changes: { notifications: { created: [], updated: [{ id: "n1", read_at: null, deleted_at: null }], deleted: [] } },
+  });
+  assertEquals(queries[0].calls[0], { op: "update", args: [{ read_at: null }] });
+  assert(!queries[0].calls.some((c) => c.op === "is"), "a live record update is not filtered");
+});
+
 Deno.test("pull never returns another user's notifications", async () => {
   const mine = row();
   const theirs = row({ recipient_id: OTHER });

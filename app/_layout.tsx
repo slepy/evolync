@@ -25,6 +25,7 @@ import * as SplashScreen from "expo-splash-screen";
 import { StatusBar } from "expo-status-bar";
 import { useEffect, useState } from "react";
 import { View } from "react-native";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { PortalProvider } from "@tamagui/portal";
 import { TamaguiProvider } from "tamagui";
 import i18n, { languageReady } from "@/core/i18n/config";
@@ -115,34 +116,37 @@ function RootLayoutNav() {
     showLastCrashReport().catch(console.error);
   }, []);
 
+  // Gesture root for RNGH gestures (SwipeToDelete); outermost so portaled sheets are inside it too.
   return (
-    <PortalProvider shouldAddRootHost>
-      <TamaguiProvider config={config} defaultTheme="dark">
-        <ThemeProvider value={navigationTheme}>
-          <StatusBar style="light" />
-          <View
-            style={{
-              flex: 1,
-              backgroundColor: themeColors.background,
-            }}
-          >
-            <Stack
-              screenOptions={{
-                headerShown: false,
-                contentStyle: { backgroundColor: themeColors.background },
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <PortalProvider shouldAddRootHost>
+        <TamaguiProvider config={config} defaultTheme="dark">
+          <ThemeProvider value={navigationTheme}>
+            <StatusBar style="light" />
+            <View
+              style={{
+                flex: 1,
+                backgroundColor: themeColors.background,
               }}
             >
-              {/* Launch path (L2): screens that replace the launch loading
+              <Stack
+                screenOptions={{
+                  headerShown: false,
+                  contentStyle: { backgroundColor: themeColors.background },
+                }}
+              >
+                {/* Launch path (L2): screens that replace the launch loading
                   fade in instead of sliding over it. */}
-              <Stack.Screen name="index" options={{ animation: "none" }} />
-              <Stack.Screen name="auth/login" options={{ animation: "fade" }} />
-              <Stack.Screen name="organization/dashboard" options={{ animation: "fade" }} />
-              <Stack.Screen name="user/dashboard" options={{ animation: "fade" }} />
-            </Stack>
-            <NotificationResponseHandler />
-          </View>
-        </ThemeProvider>
-      </TamaguiProvider>
-    </PortalProvider>
+                <Stack.Screen name="index" options={{ animation: "none" }} />
+                <Stack.Screen name="auth/login" options={{ animation: "fade" }} />
+                <Stack.Screen name="organization/dashboard" options={{ animation: "fade" }} />
+                <Stack.Screen name="user/dashboard" options={{ animation: "fade" }} />
+              </Stack>
+              <NotificationResponseHandler />
+            </View>
+          </ThemeProvider>
+        </TamaguiProvider>
+      </PortalProvider>
+    </GestureHandlerRootView>
   );
 }

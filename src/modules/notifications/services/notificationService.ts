@@ -13,3 +13,16 @@ export const markAllNotificationsRead = async (recipientId: string) => {
   }
   return marked;
 };
+
+export const deleteNotification = async (id: string) => {
+  await NotificationRepository.softDelete(id);
+  sync().catch((err) => console.error("[deleteNotification] Sync:", err));
+};
+
+export const deleteAllNotifications = async (recipientId: string) => {
+  const deleted = await NotificationRepository.softDeleteAll(recipientId);
+  if (deleted > 0) {
+    sync().catch((err) => console.error("[deleteAllNotifications] Sync:", err));
+  }
+  return deleted;
+};
