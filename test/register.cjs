@@ -34,6 +34,8 @@ const compile = (module, filename) => {
     plugins: [
       ["@babel/plugin-proposal-decorators", { legacy: true }],
       ["@babel/plugin-transform-class-properties", { loose: true }],
+      // Components (.tsx) render in tests through react-test-renderer.
+      ...(filename.endsWith(".tsx") ? [["@babel/plugin-transform-react-jsx", { runtime: "automatic" }]] : []),
       "@babel/plugin-transform-modules-commonjs",
     ],
   });
