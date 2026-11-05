@@ -250,6 +250,7 @@
   "paymentsLockedNotice": "A befizetések zárolva vannak. Az állapot módosításához oldd fel őket a ⋮ menüben.",
   "paymentsLockedStatus": "A befizetések zárolva vannak",
   "paymentsLockedRowsHint": "A zárolt időszakok nem módosíthatók.",
+  "paymentsLockedHint": "Zárolva: {{date}}. Az állapotok és összegek nem módosíthatók.",
   "paymentsDeletePeriod": "Időszak törlése",
   "paymentsDeletePeriodHint": "Törli az időszakot és minden befizetését",
   "paymentsDeleteBlockedPaid_one": "{{count}} befizetés fizetve van, ezért ez az időszak nem törölhető.",

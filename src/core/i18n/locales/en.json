@@ -250,6 +250,7 @@
   "paymentsLockedNotice": "Payments are locked. Unlock them in the ⋮ menu to change a status.",
   "paymentsLockedStatus": "Payments are locked",
   "paymentsLockedRowsHint": "Locked periods can't be changed.",
+  "paymentsLockedHint": "Locked on {{date}}. Statuses and amounts can't be changed.",
   "paymentsDeletePeriod": "Delete period",
   "paymentsDeletePeriodHint": "Removes the period and all its payments",
   "paymentsDeleteBlockedPaid_one": "{{count}} payment is paid, so this period can't be deleted.",

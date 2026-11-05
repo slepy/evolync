@@ -252,6 +252,7 @@
   "paymentsLockedNotice": "Płatności są zablokowane. Odblokuj je w menu ⋮, aby zmienić status.",
   "paymentsLockedStatus": "Płatności są zablokowane",
   "paymentsLockedRowsHint": "Zablokowanych okresów nie można zmieniać.",
+  "paymentsLockedHint": "Zablokowano {{date}}. Statusów i kwot nie można zmieniać.",
   "paymentsDeletePeriod": "Usuń okres",
   "paymentsDeletePeriodHint": "Usuwa okres i wszystkie jego płatności",
   "paymentsDeleteBlockedPaid_one": "{{count}} płatność jest opłacona, więc nie można usunąć tego okresu.",
