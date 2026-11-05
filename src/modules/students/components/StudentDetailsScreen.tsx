@@ -26,8 +26,9 @@ import { ATTENDANCE_STATUS_STYLE, ATTENDANCE_SUMMARY_ORDER } from "@/modules/att
 import { useStudentAttendance } from "@/modules/attendance/hooks";
 import { LoadingScreen } from "@/core/components";
 import { useDirtyFlag } from "@/core/hooks";
+import { confirmLeavePaid } from "@/core/utils/confirmAction";
 import { formatPrice } from "@/core/utils/formatters";
-import { PARTICIPANT_STATUS_STYLE, PARTICIPANT_SUMMARY_ORDER } from "@/modules/events/constants";
+import { PARTICIPANT_STATUS_STYLE, PARTICIPANT_SUMMARY_ORDER, nextParticipantStatus } from "@/modules/events/constants";
 import { formatEventDates } from "@/modules/events/components/formatEventDates";
 import { useStudentEvents, useStudentEventStatuses } from "@/modules/events/hooks";
 import { RankIcon } from "@/modules/grading/components";
@@ -42,6 +43,7 @@ import {
   dateLocaleTag,
   describePeriod,
   formatAmount,
+  leavesPaid,
   nextPaymentStatus,
   parseAmount,
   storedDayKey,
@@ -232,7 +234,7 @@ export const StudentDetailsScreen: React.FC<StudentDetailsScreenProps> = ({
           <SyncedPill />
           <View
             role="button"
-            aria-label={t("studentMoreActions")}
+            aria-label={t("moreActions")}
             onPress={() => setSheet("actions")}
             pressStyle={{ opacity: 0.8 }}
             width={44}
@@ -348,11 +350,15 @@ export const StudentDetailsScreen: React.FC<StudentDetailsScreenProps> = ({
                 {payments.payments.map((item) => {
                   const style = PAYMENT_STATUS_STYLE[item.status];
                   const amount = `${formatAmount(item.amount)} ${item.currency}`;
+                  const periodTitle = describePeriod(storedDayKey(item.cycle.periodStart), storedDayKey(item.cycle.periodEnd), locale).title;
+                  const next = nextPaymentStatus(item.status);
+                  const apply = () =>
+                    payments.updateLocal(item.recordId, { status: next, amount: item.amount, currency: item.currency, method: item.method });
                   return (
                     <ListRow
                       key={item.recordId}
                       size="md"
-                      title={describePeriod(storedDayKey(item.cycle.periodStart), storedDayKey(item.cycle.periodEnd), locale).title}
+                      title={periodTitle}
                       subtitle={item.status === "paid" ? `${amount} · ${t(METHOD_LABEL[item.method])}` : amount}
                       leading={<ListIcon icon={CreditCard} accent="payments" size={44} />}
                       trailing={
@@ -362,12 +368,9 @@ export const StudentDetailsScreen: React.FC<StudentDetailsScreenProps> = ({
                           label={t("statusChangeNow", { status: t(style.label) })}
                           disabled={isSaving}
                           onPress={() =>
-                            payments.updateLocal(item.recordId, {
-                              status: nextPaymentStatus(item.status),
-                              amount: item.amount,
-                              currency: item.currency,
-                              method: item.method,
-                            })
+                            leavesPaid(item.status, next)
+                              ? confirmLeavePaid(periodTitle, t(PAYMENT_STATUS_STYLE[next].label), apply)
+                              : apply()
                           }
                         />
                       }
@@ -501,7 +504,13 @@ export const StudentDetailsScreen: React.FC<StudentDetailsScreenProps> = ({
                           color={{ tint: style.tint, fill: withAlpha(style.tint, 0.16) }}
                           label={t("statusChangeNow", { status: t(style.label) })}
                           disabled={isSaving}
-                          onPress={() => events.toggleStatus(item.participantId)}
+                          onPress={() => {
+                            const next = nextParticipantStatus(item.localStatus);
+                            const apply = () => events.toggleStatus(item.participantId);
+                            if (leavesPaid(item.localStatus, next)) {
+                              confirmLeavePaid(event.name, t(PARTICIPANT_STATUS_STYLE[next].label), apply);
+                            } else apply();
+                          }}
                         />
                       }
                     />

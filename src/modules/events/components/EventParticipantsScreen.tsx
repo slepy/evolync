@@ -4,7 +4,9 @@ import { GraduationCap } from "lucide-react-native";
 import React, { useState, type ReactNode } from "react";
 import { ActivityIndicator } from "react-native";
 import { Text, XStack, YStack } from "tamagui";
-import { nextParticipantStatus } from "../constants";
+import { confirmLeavePaid } from "@/core/utils/confirmAction";
+import { leavesPaid } from "@/modules/payments/paymentPeriod";
+import { PARTICIPANT_STATUS_STYLE, nextParticipantStatus } from "../constants";
 import { useEvent } from "../hooks/useEvent";
 import { useEventParticipants } from "../hooks/useEventParticipants";
 import type { ParticipantContentProps } from "../types";
@@ -145,7 +147,12 @@ export const EventParticipantsScreen: React.FC<EventParticipantsScreenProps> = (
                   <ParticipantStatusButton
                     status={item.status}
                     disabled={busy}
-                    onPress={() => toggleStatus(item.participant.id, nextParticipantStatus(item.status))}
+                    onPress={() => {
+                      const next = nextParticipantStatus(item.status);
+                      const apply = () => toggleStatus(item.participant.id, next);
+                      if (leavesPaid(item.status, next)) confirmLeavePaid(name, t(PARTICIPANT_STATUS_STYLE[next].label), apply);
+                      else apply();
+                    }}
                   />
                 }
                 expanded={hasContent}

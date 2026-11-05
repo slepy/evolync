@@ -13,6 +13,7 @@ import {
 } from "@/core/components";
 import PaymentCycle from "@/database/models/PaymentCycle";
 import { LoadingScreen } from "@/core/components";
+import { confirmLeavePaid } from "@/core/utils/confirmAction";
 import { SUPPORTED_CURRENCIES } from "@/core/utils/currencies";
 import React, { useEffect, useState } from "react";
 import { Text, XStack, YStack } from "tamagui";
@@ -24,6 +25,7 @@ import {
   dateLocaleTag,
   describePeriod,
   formatAmount,
+  leavesPaid,
   nextPaymentStatus,
   parseAmount,
   storedDayKey,
@@ -45,16 +47,15 @@ const isChanged = (item: PaymentWithMember): boolean =>
 interface PaymentPeriodScreenProps {
   schoolId: string;
   cycleId: string;
-  /** After Save: back to the billing periods. */
-  onSaved: () => void;
 }
 
 /**
  * Period details (14B / 14B1): Status summary with the collapsible Amounts,
  * member rows (name opens Edit payment 14C, the status button cycles
- * Pending → Paid → Cancelled); Save appears after a change.
+ * Pending → Paid → Cancelled, asking first when it leaves Paid, 14B5); Save
+ * appears after a change and keeps the screen open.
  */
-export const PaymentPeriodScreen: React.FC<PaymentPeriodScreenProps> = ({ schoolId, cycleId, onSaved }) => {
+export const PaymentPeriodScreen: React.FC<PaymentPeriodScreenProps> = ({ schoolId, cycleId }) => {
   const [cycle, setCycle] = useState<PaymentCycle | null>(null);
   const { paymentList, isLoading, isSaving, error, updateLocal, saveAll } = usePaymentRecords(cycleId, schoolId);
   const [amountsOpen, setAmountsOpen] = useState(false);
@@ -98,10 +99,18 @@ export const PaymentPeriodScreen: React.FC<PaymentPeriodScreenProps> = ({ school
     setSheet(null);
   };
 
+  const toggleStatus = (item: PaymentWithMember, name: string) => {
+    const next = nextPaymentStatus(item.status);
+    const apply = () =>
+      updateLocal(item.member.id, { status: next, amount: item.amount, currency: item.currency, method: item.method });
+    if (leavesPaid(item.status, next)) confirmLeavePaid(name, t(PAYMENT_STATUS_STYLE[next].label), apply);
+    else apply();
+  };
+
   const handleSave = async () => {
     try {
+      // Stays on the period: the saved rows match the records, so Save hides.
       await saveAll();
-      onSaved();
     } catch {
       // The hook keeps the error, shown above the button.
     }
@@ -203,14 +212,7 @@ export const PaymentPeriodScreen: React.FC<PaymentPeriodScreenProps> = ({ school
                       color={{ tint: style.tint, fill: style.fill }}
                       label={t("statusChangeNow", { status: t(style.label) })}
                       disabled={isSaving}
-                      onPress={() =>
-                        updateLocal(item.member.id, {
-                          status: nextPaymentStatus(item.status),
-                          amount: item.amount,
-                          currency: item.currency,
-                          method: item.method,
-                        })
-                      }
+                      onPress={() => toggleStatus(item, name)}
                     />
                   }
                 />
