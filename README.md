@@ -110,7 +110,9 @@ download over 20 s, the app opens on what it has and tries again next launch.
 - **Native change**: a new native dependency, plugins / permissions / icons in
   `app.json`, an Expo SDK upgrade. Build again
   (`eas build -p android --profile preview`) and send the install link. The
-  `fingerprint` runtime version keeps such bundles away from older builds.
+  `fingerprint` runtime version keeps such bundles away from older builds
+  (`fingerprint.config.js` leaves `google-services.json` out, so an update
+  published without that file still matches the build).
 - Broken update: `eas update:rollback`, or publish a fix.
 
 ## Project Scope
