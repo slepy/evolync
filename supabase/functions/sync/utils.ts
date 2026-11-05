@@ -23,6 +23,12 @@ export function convertToSupabaseRecord(record: any, tableName: string): any {
     }
   };
 
+  const convertNullableTimestamp = (fieldName: string) => {
+    if (!(fieldName in record)) return;
+    const value = record[fieldName];
+    supabaseRecord[fieldName] = value && value > 0 ? new Date(value).toISOString() : null;
+  };
+
   // Convert timestamps from milliseconds to ISO strings
   convertOrDeleteTimestamp("created_at");
   // updated_at is server-owned (DEFAULT now() on insert, trigger on update):
@@ -35,6 +41,10 @@ export function convertToSupabaseRecord(record: any, tableName: string): any {
   convertOrDeleteTimestamp("period_start");
   convertOrDeleteTimestamp("period_end");
   convertOrDeleteTimestamp("expires_at");
+  // Nullable timestamps where null means something (payment_cycles.locked_at:
+  // null = unlocked): null is sent, so an unlock reaches the server. A row from
+  // a build without the column has no key and leaves the stored value alone.
+  convertNullableTimestamp("locked_at");
 
   // Convert date fields (stored as timestamp in WatermelonDB, needs DATE format for PostgreSQL)
   // These are DATE type columns, not TIMESTAMP, so we only need YYYY-MM-DD
@@ -95,6 +105,9 @@ export function convertToWatermelonRecord(record: any, tableName: string): any {
   }
   if (record.expires_at) {
     watermelonRecord.expires_at = new Date(record.expires_at).getTime();
+  }
+  if (record.locked_at) {
+    watermelonRecord.locked_at = new Date(record.locked_at).getTime();
   }
 
   // Convert date fields (stored as DATE string in PostgreSQL, needs timestamp for WatermelonDB)

@@ -23,6 +23,8 @@ export default class PaymentCycle extends Model {
   @date("period_start") periodStart!: Date;
   @date("period_end") periodEnd!: Date;
   @field("notes") notes?: string;
+  /** Set while the period is locked (no status or amount can change); null = unlocked. */
+  @date("locked_at") lockedAt?: Date | null;
 
   @relation("schools", "school_id") school!: School;
   @children("payment_records") records!: PaymentRecord[];

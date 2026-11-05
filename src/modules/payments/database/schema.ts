@@ -15,6 +15,7 @@ export const paymentsSchema = [
       { name: "period_start", type: "number" },
       { name: "period_end", type: "number" },
       { name: "notes", type: "string", isOptional: true },
+      { name: "locked_at", type: "number", isOptional: true }, // null = unlocked
       { name: "created_at", type: "number" },
       { name: "updated_at", type: "number" },
       { name: "deleted_at", type: "number", isOptional: true },

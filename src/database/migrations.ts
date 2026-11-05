@@ -8,6 +8,15 @@ import {
 export default schemaMigrations({
   migrations: [
     {
+      toVersion: 24,
+      steps: [
+        addColumns({
+          table: "payment_cycles",
+          columns: [{ name: "locked_at", type: "number", isOptional: true }],
+        }),
+      ],
+    },
+    {
       toVersion: 23,
       steps: [
         addColumns({
