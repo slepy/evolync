@@ -3,7 +3,7 @@ import type SchoolMember from "@/database/models/SchoolMember";
 import type TrainingSession from "@/database/models/TrainingSession";
 import { DateTimeField, LoadingScreen, PillGroup } from "@/core/components";
 import { StudentRepository } from "@/modules/students/repositories";
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { Text, YStack } from "tamagui";
 import { TrainingSessionRepository } from "../repositories";
 import { createSessionWithAttendance } from "../services";
@@ -45,19 +45,37 @@ export const AttendanceCreateScreen: React.FC<AttendanceCreateScreenProps> = ({ 
   const [error, setError] = useState<string | null>(null);
   const locale = dateLocaleTag(t("locale"));
 
+  /*
+   * While Create saves and the screen leaves, the lists stay as they were: the
+   * new session would otherwise flip the whole screen to "already exists"
+   * (every row disabled, Open) in the same frame the route is popped, and on
+   * Android (Fabric) re-parenting views during that removal closes the app.
+   * Emissions that arrive meanwhile are kept and applied if Create fails.
+   */
+  const savingRef = useRef(false);
+  const pendingMembers = useRef<SchoolMember[] | null>(null);
+  const pendingSessions = useRef<TrainingSession[] | null>(null);
+
+  const applyMembers = (members: SchoolMember[]) =>
+    setRows((prev) => {
+      const previous = new Map((prev ?? []).map((row) => [row.member.id, row.status]));
+      return [...members]
+        .sort((a, b) => (a.displayName || "").localeCompare(b.displayName || ""))
+        .map((member) => ({
+          member,
+          status: previous.get(member.id) ?? DEFAULT_ATTENDANCE_STATUS,
+          disabled: false,
+        }));
+    });
+
   useEffect(() => {
     const subscription = StudentRepository.observeActiveBySchoolId(schoolId).subscribe({
       next: (members: SchoolMember[]) => {
-        setRows((prev) => {
-          const previous = new Map((prev ?? []).map((row) => [row.member.id, row.status]));
-          return [...members]
-            .sort((a, b) => (a.displayName || "").localeCompare(b.displayName || ""))
-            .map((member) => ({
-              member,
-              status: previous.get(member.id) ?? DEFAULT_ATTENDANCE_STATUS,
-              disabled: false,
-            }));
-        });
+        if (savingRef.current) {
+          pendingMembers.current = members;
+          return;
+        }
+        applyMembers(members);
       },
       error: (err: Error) => {
         console.error("[AttendanceCreateScreen] Members observer error:", err);
@@ -70,7 +88,13 @@ export const AttendanceCreateScreen: React.FC<AttendanceCreateScreenProps> = ({ 
 
   useEffect(() => {
     const subscription = TrainingSessionRepository.observeBySchoolId(schoolId).subscribe({
-      next: setSessions,
+      next: (next: TrainingSession[]) => {
+        if (savingRef.current) {
+          pendingSessions.current = next;
+          return;
+        }
+        setSessions(next);
+      },
       error: (err: Error) => {
         console.error("[AttendanceCreateScreen] Sessions observer error:", err);
         setError(t("attendanceErrorLoadingAttendance"));
@@ -88,7 +112,8 @@ export const AttendanceCreateScreen: React.FC<AttendanceCreateScreenProps> = ({ 
       onOpenSession(existing.id);
       return;
     }
-    if (!rows || rows.length === 0) return;
+    if (!rows || rows.length === 0 || savingRef.current) return;
+    savingRef.current = true;
     setIsSaving(true);
     setError(null);
     try {
@@ -97,11 +122,16 @@ export const AttendanceCreateScreen: React.FC<AttendanceCreateScreenProps> = ({ 
         sessionDate,
         rows.map((row) => ({ memberId: row.member.id, status: row.status })),
       );
+      // Leave without another render: the screen is being removed.
       onCreated();
     } catch (err) {
       console.error("[AttendanceCreateScreen] Create error:", err);
+      savingRef.current = false;
+      if (pendingMembers.current) applyMembers(pendingMembers.current);
+      if (pendingSessions.current) setSessions(pendingSessions.current);
+      pendingMembers.current = null;
+      pendingSessions.current = null;
       setError(err instanceof Error ? err.message : t("errorSaveFailed"));
-    } finally {
       setIsSaving(false);
     }
   };
