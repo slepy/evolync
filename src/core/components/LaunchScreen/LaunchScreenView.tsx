@@ -14,7 +14,8 @@ export interface LaunchScreenViewProps {
  * Loading between the native splash and the first screen (L2 / L3): the logo
  * stays where the splash drew it, brand glow on top, "Evolync" with its line
  * under the logo, and the sync progress at the bottom. Offline it adds the
- * Offline pill and says the data opens from the device.
+ * Offline pill and says the data opens from the device; while a newer app
+ * bundle downloads the progress says "Updating the app…".
  */
 export function LaunchScreenView({ status }: LaunchScreenViewProps) {
   const offline = status === "offline";
@@ -60,7 +61,7 @@ export function LaunchScreenView({ status }: LaunchScreenViewProps) {
           </>
         ) : (
           <Text fontSize={13} fontWeight="600" color="$neutralMuted">
-            {t("launchSyncing")}
+            {t(status === "updating" ? "launchUpdating" : "launchSyncing")}
           </Text>
         )}
       </YStack>

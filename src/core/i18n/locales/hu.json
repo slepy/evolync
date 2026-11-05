@@ -1033,6 +1033,7 @@
   "authPasswordChangedHint": "Jelentkezz be az új jelszavaddal. A többi eszköz a munkamenet végéig bejelentkezve marad.",
   "launchTagline": "Iskoláid és technikáid egy helyen",
   "launchSyncing": "Iskoláid szinkronizálása…",
+  "launchUpdating": "Az alkalmazás frissítése…",
   "launchOfflineMessage": "Az eszközön mentett adatok megnyitása. A módosítások szinkronizálódnak, amint újra online leszel.",
   "profilePersonalInfo": "Személyes adatok",
   "profilePersonalInfoHint": "Az edzőid és iskoláid látják",

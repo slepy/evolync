@@ -10,4 +10,9 @@ describe("resolveLaunchStatus", () => {
   it("opens the data saved on the device when offline (L3)", () => {
     assert.equal(resolveLaunchStatus({ isOnline: false }), "offline");
   });
+
+  it("says the app is updating while a newer bundle downloads, online or not", () => {
+    assert.equal(resolveLaunchStatus({ isOnline: true, updating: true }), "updating");
+    assert.equal(resolveLaunchStatus({ isOnline: false, updating: true }), "updating");
+  });
 });
