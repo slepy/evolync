@@ -1,5 +1,6 @@
 import {
   CurrencySheet,
+  IconButton,
   IconTabs,
   ListAvatar,
   ListCard,
@@ -54,6 +55,7 @@ import {
   CalendarCheck,
   CalendarDays,
   CreditCard,
+  Lock,
   Mail,
   MoreVertical,
   Phone,
@@ -61,7 +63,7 @@ import {
 } from "lucide-react-native";
 import React, { useEffect, useState } from "react";
 import { Alert, Linking } from "react-native";
-import { Text, View, XStack, YStack } from "tamagui";
+import { Text, XStack, YStack } from "tamagui";
 import { StudentRepository } from "../repositories";
 import { archiveStudent, assignRankToStudent, setStudentPaymentAmount } from "../services";
 import { MemberStatus, getDisplayStatus, type StudentPaymentAmountDraft } from "../types";
@@ -232,22 +234,7 @@ export const StudentDetailsScreen: React.FC<StudentDetailsScreenProps> = ({
       right={
         <XStack alignItems="center" gap={8}>
           <SyncedPill />
-          <View
-            role="button"
-            aria-label={t("moreActions")}
-            onPress={() => setSheet("actions")}
-            pressStyle={{ opacity: 0.8 }}
-            width={44}
-            height={44}
-            borderRadius={22}
-            borderWidth={1}
-            borderColor="$neutralRaisedBorder"
-            backgroundColor="$neutralCard"
-            alignItems="center"
-            justifyContent="center"
-          >
-            <MoreVertical size={20} color={neutral.text} strokeWidth={2.4} />
-          </View>
+          <IconButton icon={MoreVertical} label={t("moreActions")} onPress={() => setSheet("actions")} />
         </XStack>
       }
       footer={
@@ -345,7 +332,13 @@ export const StudentDetailsScreen: React.FC<StudentDetailsScreenProps> = ({
                 accent="payments"
                 items={PAYMENT_SUMMARY_ORDER.map((status) => summaryItem(status, payments.stats[status], PAYMENT_STATUS_STYLE[status]))}
               />
-              <Hint text={t("studentPaymentsStatusHint")} />
+              <Hint
+                text={
+                  payments.payments.some((item) => item.locked)
+                    ? `${t("studentPaymentsStatusHint")} ${t("paymentsLockedRowsHint")}`
+                    : t("studentPaymentsStatusHint")
+                }
+              />
               <ListCard>
                 {payments.payments.map((item) => {
                   const style = PAYMENT_STATUS_STYLE[item.status];
@@ -360,13 +353,15 @@ export const StudentDetailsScreen: React.FC<StudentDetailsScreenProps> = ({
                       size="md"
                       title={periodTitle}
                       subtitle={item.status === "paid" ? `${amount} · ${t(METHOD_LABEL[item.method])}` : amount}
+                      subtitleIcon={item.locked ? Lock : undefined}
                       leading={<ListIcon icon={CreditCard} accent="payments" size={44} />}
                       trailing={
                         <StatusButton
                           icon={style.icon}
                           color={{ tint: style.tint, fill: style.fill }}
-                          label={t("statusChangeNow", { status: t(style.label) })}
-                          disabled={isSaving}
+                          label={item.locked ? t("paymentsLockedStatus") : t("statusChangeNow", { status: t(style.label) })}
+                          disabled={isSaving || item.locked}
+                          dimmed={item.locked}
                           onPress={() =>
                             leavesPaid(item.status, next)
                               ? confirmLeavePaid(periodTitle, t(PAYMENT_STATUS_STYLE[next].label), apply)
