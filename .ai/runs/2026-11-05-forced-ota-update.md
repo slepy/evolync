@@ -32,18 +32,20 @@ reloads on it before the first screen. Offline or slow: open the current bundle.
 
 ## Progress
 
+PR: #79
+
 > Convention: `- [ ]` pending, `- [x]` done. Append ` — <commit sha>` when a step lands. Do not rename step titles.
 
 ### Phase 1: Config
 
-- [ ] 1.1 Install expo-updates and configure runtime version, updates URL and channels
+- [x] 1.1 Install expo-updates and configure runtime version, updates URL and channels — c82c503
 
 ### Phase 2: Launch update flow
 
-- [ ] 2.1 Pure launch update flow with tests
-- [ ] 2.2 Updating state on the launch screen with translations
-- [ ] 2.3 Gate the root layout on the launch update
+- [x] 2.1 Pure launch update flow with tests — e808bf5
+- [x] 2.2 Updating state on the launch screen with translations — e962692
+- [x] 2.3 Gate the root layout on the launch update — 4afa2d6
 
 ### Phase 3: Docs
 
-- [ ] 3.1 Releasing a preview note in the README
+- [x] 3.1 Releasing a preview note in the README — 972c00f
