@@ -95,7 +95,7 @@ None: no table, no schema, no sync change.
   skip, and the state lasts at most about 23 s.
 - Offline (L3): unchanged, with no check and no delay.
 - New translation key `launchUpdating`: en "Updating the app…", pl
-  "Aktualizuję aplikację…", hu "Az alkalmazás frissítése…". `en.json` was
+  "Aktualizacja aplikacji…", hu "Az alkalmazás frissítése…". `en.json` was
   searched and has no existing equivalent.
 
 ## 📝 Edge Cases & Failure Scenarios
@@ -116,6 +116,9 @@ None: no table, no schema, no sync change.
   air.
 - The fingerprint changes whenever native config changes, so a build made
   after such a change does not see older updates. This is intended.
+  `google-services.json` (an EAS file variable on builds, possibly missing
+  where `eas update` runs) is kept out of it by `fingerprint.config.js`.
+  Otherwise the update's runtime version would differ from the build's.
 - Rollback: remove the hook and the config, then build again. The OTA content
   itself is rolled back with `eas update:rollback`.
 - EAS Update free tier limits (monthly active users / bandwidth) are plenty
