@@ -96,6 +96,27 @@ In the project directory, you can run:
 - `npm run android`: Runs the app in the Android Emulator.
 - `npm run ios`: Runs the app in the iOS Simulator (macOS only).
 - `npm run web`: Runs the app in a web browser.
+- `npm run update:preview` / `npm run update:production`: Publishes the current JS to that build profile's channel (EAS Update).
+
+## Releasing a preview
+
+Preview and production builds check their EAS Update channel on every cold
+start. A newer bundle downloads behind the launch screen ("Updating the app…")
+and the app restarts on it. Offline, or when the check takes over 3 s or the
+download over 20 s, the app opens on what it has and tries again next launch.
+
+- **JS / TS only** (screens, logic, translations, images imported in code):
+  `npm run update:preview` (or `update:production` for production builds).
+  Users get it on their next launch, no link. Each profile has its own
+  channel, so a preview update never reaches production installs. Development
+  builds load JS from Metro and never check.
+- **Native change**: a new native dependency, plugins / permissions / icons in
+  `app.json`, an Expo SDK upgrade. Build again
+  (`eas build -p android --profile preview`) and send the install link. The
+  `fingerprint` runtime version keeps such bundles away from older builds
+  (`fingerprint.config.js` leaves `google-services.json` out, so an update
+  published without that file still matches the build).
+- Broken update: `eas update:rollback`, or publish a fix.
 
 ## Project Scope
 

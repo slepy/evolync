@@ -1093,6 +1093,7 @@
   "authPasswordChangedHint": "Zaloguj się nowym hasłem. Inne urządzenia pozostaną zalogowane do końca swojej sesji.",
   "launchTagline": "Twoje szkoły i techniki w jednym miejscu",
   "launchSyncing": "Synchronizacja szkół…",
+  "launchUpdating": "Aktualizacja aplikacji…",
   "launchOfflineMessage": "Otwieramy dane zapisane na tym urządzeniu. Zmiany zsynchronizują się, gdy wrócisz do sieci.",
   "profilePersonalInfo": "Dane osobowe",
   "profilePersonalInfoHint": "Widoczne dla Twoich instruktorów i szkół",

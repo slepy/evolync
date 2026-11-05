@@ -1033,6 +1033,7 @@
   "authPasswordChangedHint": "Sign in with your new password. Other devices stay signed in until their session ends.",
   "launchTagline": "Your schools and techniques in one place",
   "launchSyncing": "Syncing your schools…",
+  "launchUpdating": "Updating the app…",
   "launchOfflineMessage": "Opening data saved on this device. Changes sync when you are back online.",
   "profilePersonalInfo": "Personal info",
   "profilePersonalInfoHint": "Visible to your instructors and schools",

@@ -3,6 +3,14 @@
     "name": "Evolync",
     "slug": "evolync",
     "version": "1.0.0",
+    "runtimeVersion": {
+      "policy": "fingerprint"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/c68650eb-5130-4503-b273-b349a30bdc3a",
+      "checkAutomatically": "NEVER",
+      "fallbackToCacheTimeout": 0
+    },
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "evolync",

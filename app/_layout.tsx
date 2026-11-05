@@ -9,6 +9,8 @@ import { useAuth } from "@/modules/auth/hooks/useAuth";
 import { registerSignOutHandler } from "@/core/utils/signOutBridge";
 import { installCrashRecorder, showLastCrashReport } from "@/core/utils/diagnostics";
 import { useSyncStore } from "@/database/hooks/useSyncStore";
+import { LaunchScreen } from "@/core/components";
+import { useLaunchUpdate } from "@/core/hooks";
 import { NotificationResponseHandler } from "@/modules/notifications";
 import { useOwnMembershipsWatcher } from "@/modules/school";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
@@ -85,11 +87,29 @@ export default function RootLayout() {
     }
   }, [loaded, languageLoaded]);
 
+  // Cold-start update: a newer bundle downloads behind the launch screen and
+  // the app reloads onto it before sync and navigation start.
+  const updatePhase = useLaunchUpdate();
+
   if (!loaded || !languageLoaded) {
     return null;
   }
 
+  if (updatePhase !== "done") {
+    return <LaunchRoot updating={updatePhase === "updating"} />;
+  }
+
   return <RootLayoutNav />;
+}
+
+/** The launch screen outside the navigator, while the launch update runs. */
+function LaunchRoot({ updating }: { updating: boolean }) {
+  return (
+    <TamaguiProvider config={config} defaultTheme="dark">
+      <StatusBar style="light" />
+      <LaunchScreen updating={updating} />
+    </TamaguiProvider>
+  );
 }
 
 function RootLayoutNav() {
