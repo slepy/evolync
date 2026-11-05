@@ -11,6 +11,7 @@
     "check:theme": "node scripts/check-theme-colors.js",
     "postinstall": "patch-package",
     "update:preview": "eas update --channel preview --environment preview",
+    "update:production": "eas update --channel production --environment production",
     "test": "node --require ./test/register.cjs --test \"src/**/__tests__/*.test.ts\"",
     "docs:dev": "npm --prefix docs run dev",
     "docs:build": "npm --prefix docs run build",
