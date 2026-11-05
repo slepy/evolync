@@ -1,8 +1,9 @@
 import { contextColors, neutral } from "@/core/theme/tokens";
 import { LinearGradient } from "expo-linear-gradient";
 import type { ReactNode } from "react";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 import { ScrollView, YStack } from "tamagui";
+import { bottomInsetPadding } from "../../utils/safeArea";
 import { useBottomNavSpace } from "../BottomNav/BottomNav";
 import type { SwitcherContext } from "../ContextSwitcher/contextMeta";
 
@@ -24,6 +25,7 @@ export interface DashboardPageProps {
  */
 export function DashboardPage({ context, header, banner, nav, children }: DashboardPageProps) {
   const navSpace = useBottomNavSpace();
+  const insets = useSafeAreaInsets();
 
   return (
     <YStack flex={1} backgroundColor="$neutralPage">
@@ -38,7 +40,7 @@ export function DashboardPage({ context, header, banner, nav, children }: Dashbo
           {header}
         </YStack>
         {banner}
-        <ScrollView flex={1} contentContainerStyle={{ paddingHorizontal: 20, paddingTop: 12, paddingBottom: nav ? navSpace : 40 }}>
+        <ScrollView flex={1} contentContainerStyle={{ paddingHorizontal: 20, paddingTop: 12, paddingBottom: nav ? navSpace : bottomInsetPadding(40, insets.bottom) }}>
           <YStack width="100%" maxWidth={500} alignSelf="center" gap={24}>
             {children}
           </YStack>

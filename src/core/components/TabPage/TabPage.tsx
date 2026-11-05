@@ -2,8 +2,9 @@ import { contextColors, type ContextKey } from "@/core/theme/tokens";
 import { LinearGradient } from "expo-linear-gradient";
 import type { ReactNode } from "react";
 import { KeyboardAvoidingView, Platform } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 import { ScrollView, Text, XStack, YStack } from "tamagui";
+import { bottomInsetPadding } from "../../utils/safeArea";
 import { useBottomNavSpace } from "../BottomNav/BottomNav";
 import { SyncedPill } from "../SyncedPill/SyncedPill";
 
@@ -33,6 +34,7 @@ export interface TabPageProps {
  */
 export function TabPage({ title, actions, context, nav, footer, gap = 22, children }: TabPageProps) {
   const navSpace = useBottomNavSpace();
+  const insets = useSafeAreaInsets();
 
   return (
     <YStack flex={1} backgroundColor="$neutralPage">
@@ -56,7 +58,7 @@ export function TabPage({ title, actions, context, nav, footer, gap = 22, childr
           <ScrollView
             flex={1}
             keyboardShouldPersistTaps="handled"
-            contentContainerStyle={{ paddingHorizontal: 20, paddingTop: 22, paddingBottom: footer ? 24 : nav ? navSpace : 40 }}
+            contentContainerStyle={{ paddingHorizontal: 20, paddingTop: 22, paddingBottom: footer ? 24 : nav ? navSpace : bottomInsetPadding(40, insets.bottom) }}
           >
             <YStack width="100%" maxWidth={500} alignSelf="center" gap={gap}>
               {children}
