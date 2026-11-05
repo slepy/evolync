@@ -357,6 +357,7 @@
   "eventsShortNotePlaceholder": "Rövid infó a listában (pl. felszerelés szükséges)",
   "eventsAddressPlaceholder": "Add meg az esemény címét",
   "eventsParticipants": "Résztvevők",
+  "eventsManageParticipants": "Résztvevők kezelése",
   "eventsShowParticipants": "Résztvevők megjelenítése",
   "eventsHideParticipants": "Résztvevők elrejtése",
   "actions": "Műveletek",

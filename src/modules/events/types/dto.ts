@@ -135,3 +135,12 @@ export interface ParticipantContentProps {
   takesExam: boolean;
   examsPlanned: boolean;
 }
+
+/** One participant of an expanded event row in the List view. */
+export interface EventRowParticipant {
+  id: string;
+  name: string;
+  avatarUrl?: string | null;
+  rankId?: string | null;
+  status: EventParticipantStatus;
+}

@@ -7,7 +7,8 @@ import { useRouter } from "expo-router";
 /**
  * Organization calendar (board 6): events and trainings of every school,
  * Add new offers an event or a training on the selected day. The List view
- * filters the organization's events by a date range and a type.
+ * filters the organization's events by a date range and a type; a tap on a
+ * participant of an expanded event opens its Participants screen.
  *
  * Route: /organization/calendar
  */
@@ -39,6 +40,7 @@ export default function OrganizationCalendarScreen() {
           organizationId={organization?.id}
           initialRange={range}
           onEventPress={(eventId) => router.push(`/organization/events/${eventId}` as any)}
+          onManageParticipants={(eventId) => router.push(`/organization/events/${eventId}/participants` as any)}
         />
       )}
     />

@@ -28,16 +28,24 @@ interface EventListViewProps {
   /** Default FROM–TO ("YYYY-MM-DD"): the month shown in Month view. */
   initialRange: { from: string; to: string };
   onEventPress: (eventId: string) => void;
+  /** A tap on a participant of an expanded row opens that event's Participants screen. */
+  onManageParticipants: (eventId: string) => void;
 }
 
 /**
  * List view of the organization calendar: FROM / TO and type chips in a
  * filters card, then the events overlapping the range ("N events"), each row
  * `dates · type · place` with a Cancelled badge; its chevron expands the
- * participants with their status, a tap on the row opens the details.
+ * participants with their status, a tap on the row opens the details and a
+ * tap on a participant opens the event's Participants screen.
  * Filters live as long as the view; trainings are not listed (they have no type).
  */
-export const EventListView: React.FC<EventListViewProps> = ({ organizationId, initialRange, onEventPress }) => {
+export const EventListView: React.FC<EventListViewProps> = ({
+  organizationId,
+  initialRange,
+  onEventPress,
+  onManageParticipants,
+}) => {
   const [range, setRange] = useState(initialRange);
   const [typeFilter, setTypeFilter] = useState("");
   const [expandedIds, setExpandedIds] = useState<ReadonlySet<string>>(new Set());
@@ -126,7 +134,12 @@ export const EventListView: React.FC<EventListViewProps> = ({ organizationId, in
                     expanded={expanded}
                     onPress={() => onEventPress(event.id)}
                   >
-                    {expanded ? <EventRowParticipants eventId={event.id} /> : null}
+                    {expanded ? (
+                      <EventRowParticipants
+                        eventId={event.id}
+                        onManageParticipants={() => onManageParticipants(event.id)}
+                      />
+                    ) : null}
                   </ListRow>
                 );
               })}

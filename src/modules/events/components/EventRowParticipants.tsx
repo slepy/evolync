@@ -1,46 +1,37 @@
-import { MemberAvatar } from "@/core/components";
-import { moduleAccents } from "@/core/theme/tokens";
-import React from "react";
-import { ActivityIndicator } from "react-native";
-import { Text, XStack, YStack } from "tamagui";
+import React, { useMemo } from "react";
 import { useEventParticipants } from "../hooks/useEventParticipants";
-import { ParticipantStatusIcon } from "./ParticipantStatusIcon";
+import type { EventRowParticipant } from "../types";
+import { EventRowParticipantsView } from "./EventRowParticipantsView";
 
 interface EventRowParticipantsProps {
   eventId: string;
+  /** Opens the Participants screen of this event. */
+  onManageParticipants: () => void;
 }
 
 /**
- * Participants of an expanded event row in the List view: avatar, name and
- * a read-only status icon each; statuses change on the Participants screen.
+ * Connected participants of an expanded event row in the List view; a tap
+ * on a participant opens the Participants screen.
  */
-export const EventRowParticipants: React.FC<EventRowParticipantsProps> = ({ eventId }) => {
+export const EventRowParticipants: React.FC<EventRowParticipantsProps> = ({ eventId, onManageParticipants }) => {
   const { participantList, isLoading } = useEventParticipants(eventId);
-
-  if (isLoading) return <ActivityIndicator color={moduleAccents.events.tint} />;
-
-  if (participantList.length === 0) {
-    return (
-      <Text fontSize={13} fontWeight="$secondary" color="$neutralMuted">
-        {t("emptyNoParticipants")}
-      </Text>
-    );
-  }
+  const participants = useMemo<EventRowParticipant[]>(
+    () =>
+      participantList.map((item) => ({
+        id: item.participant.id,
+        name: item.member.displayName || t("unknownMember"),
+        avatarUrl: item.member.avatarUrl,
+        rankId: item.member.currentRankId,
+        status: item.status,
+      })),
+    [participantList],
+  );
 
   return (
-    <YStack role="list" aria-label={t("eventsParticipants")} gap={8}>
-      {participantList.map((item) => {
-        const name = item.member.displayName || t("unknownMember");
-        return (
-          <XStack key={item.participant.id} role="listitem" alignItems="center" gap={12}>
-            <MemberAvatar name={name} uri={item.member.avatarUrl} rankId={item.member.currentRankId} size={36} />
-            <Text flex={1} fontSize={14} fontWeight="$rowTitle" color="$neutralText" numberOfLines={1}>
-              {name}
-            </Text>
-            <ParticipantStatusIcon status={item.status} />
-          </XStack>
-        );
-      })}
-    </YStack>
+    <EventRowParticipantsView
+      participants={participants}
+      isLoading={isLoading}
+      onParticipantPress={onManageParticipants}
+    />
   );
 };
