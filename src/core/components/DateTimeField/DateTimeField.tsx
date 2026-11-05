@@ -1,5 +1,8 @@
 import { neutral } from "@/core/theme/tokens";
-import DateTimePicker from "@react-native-community/datetimepicker";
+import DateTimePicker, {
+  DateTimePickerAndroid,
+  type DateTimePickerEvent,
+} from "@react-native-community/datetimepicker";
 import { CalendarDays, ChevronDown } from "lucide-react-native";
 import { createElement, useRef, useState } from "react";
 import { Platform } from "react-native";
@@ -55,6 +58,11 @@ export function DateTimeField({
   const Icon = mode === "date" ? CalendarDays : ChevronDown;
   const shown = format ? format(value) : value;
 
+  const bounds = {
+    minimumDate: mode === "date" && min ? toPickerDate("date", min) : undefined,
+    maximumDate: mode === "date" && max ? toPickerDate("date", max) : undefined,
+  };
+
   const openPicker = () => {
     if (disabled) return;
     if (Platform.OS === "web") {
@@ -63,13 +71,32 @@ export function DateTimeField({
       else input?.focus();
       return;
     }
+    if (Platform.OS === "android") {
+      // Imperative on Android: the declarative <DateTimePicker> calls the native
+      // open() again on every re-render (its effect depends on the inline
+      // onChange), and a second open() before the dialog exists crashes the app
+      // with a NullPointerException in RNDatePickerDialogFragment.update().
+      if (open) return;
+      setOpen(true);
+      DateTimePickerAndroid.open({
+        value: toPickerDate(mode, value),
+        mode,
+        is24Hour: true,
+        display: "default",
+        ...bounds,
+        onChange: (event: DateTimePickerEvent, date?: Date) => {
+          setOpen(false);
+          if (event.type === "set" && date) onChange(fromPickerDate(mode, date));
+        },
+        onError: (err: Error) => {
+          console.error("[DateTimeField] Android picker error:", err);
+          setOpen(false);
+        },
+      });
+      return;
+    }
     setDraft(toPickerDate(mode, value));
     setOpen(true);
-  };
-
-  const bounds = {
-    minimumDate: mode === "date" && min ? toPickerDate("date", min) : undefined,
-    maximumDate: mode === "date" && max ? toPickerDate("date", max) : undefined,
   };
 
   return (
@@ -121,20 +148,6 @@ export function DateTimeField({
         <Text fontSize={12.5} fontWeight="$secondary" color={error ? "$trashText" : "$neutralMuted"}>
           {note}
         </Text>
-      ) : null}
-
-      {Platform.OS === "android" && open ? (
-        <DateTimePicker
-          value={draft}
-          mode={mode}
-          is24Hour
-          display="default"
-          {...bounds}
-          onChange={(_event: unknown, date?: Date) => {
-            setOpen(false);
-            if (date) onChange(fromPickerDate(mode, date));
-          }}
-        />
       ) : null}
 
       {Platform.OS === "ios" ? (
