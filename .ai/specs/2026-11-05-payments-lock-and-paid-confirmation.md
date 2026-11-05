@@ -15,7 +15,7 @@ Proposed: an instructor managing a billing period (14B) gets a `⋮` menu in the
 Three independently shippable parts (see Phasing). They ship from one spec because they all change the same screen (14B) and its menu.
 
 1. **Confirm leaving Paid.** In all four status-button places, a tap on a row whose status *currently shown* is Paid opens a confirmation before the local change is applied: title "Change a paid status?", message "{name} is marked as paid. Change the status to {next status}?", buttons Cancel / Change. Cancel leaves the row as it is. Change applies the same local edit the tap applies today; Save still writes it. Taps on Pending / Cancelled / Absent / Attending rows are unchanged.
-2. **Period menu: lock / unlock and delete.** A 44px `⋮` `IconButton` in the 14B header (left of the Sync pill, as on student details 16G) opens the **Period actions** sheet:
+2. **Period menu: lock / unlock and delete.** A 44px `⋮` `IconButton` in the 14B header (after the Sync pill, as on student details 16E / 16G) opens the **Period actions** sheet:
    - **Lock payments** (lock icon, Payments accent; hint "No status or amount can be changed until you unlock"). When the period is locked the row reads **Unlock payments** (unlocked-lock icon; hint "Statuses and amounts can be changed again"). The action writes at once, with no Save, and closes the sheet. While the screen has unsaved changes, Lock is disabled with the hint "Save your changes first".
    - **Delete period** (red `danger` row). It is enabled only when the period is unlocked and **no stored record is Paid**. Otherwise it shows dimmed, with a reason: "2 payments are paid, so this period can't be deleted" or "Unlock the payments to delete this period". A tap asks for confirmation (`confirmDelete`: "Delete this period?" / "October 2026 and its 12 payments will be removed"). Delete then soft-deletes the period and its records and goes back to the periods list (14A).
 3. **Stay after Save.** Save on 14B writes the batch and keeps the screen open. The Save button disappears because nothing is changed any more, and the Sync pill shows progress. An error stays above the button as today.
@@ -50,15 +50,19 @@ Three independently shippable parts (see Phasing). They ship from one spec becau
 - Delete = `deleted_at` on the cycle and on all its records (existing soft-delete convention). Records are excluded by the existing `Q.where("deleted_at", null)` queries.
 
 ## 📝 UI/UX
-Proposed mockups (illustrative statics, not the canvas boards). When accepted, they should be ported to the canvas "Evolync Redesign Mockups" as boards **14B2 · Period actions**, **14B3 · Locked period** and **14B4 / 10D1 · Change a paid status?**:
+Design: canvas boards in `design/project/` (the repo copy of "Evolync Redesign Mockups"):
 
-| Mockup | Shows |
-|---|---|
-| ![Period actions](assets/payments-lock-and-paid-confirmation/mockup-01-period-actions.png) | 14B with the `⋮` button. Period actions sheet: Lock enabled, Delete blocked by 2 paid payments (left) / Delete enabled when nothing is paid (right) |
-| ![Locked period](assets/payments-lock-and-paid-confirmation/mockup-02-locked-period.png) | 14B locked: lock notice, dimmed status buttons, the sheet now offering Unlock. 14A row with the Locked badge |
-| ![Change a paid status](assets/payments-lock-and-paid-confirmation/mockup-03-paid-confirmation.png) | Confirmation on 14B (Paid → Cancelled) and on 10D event participants (Paid → Absent) |
+| Board | File | Shows |
+|---|---|---|
+| 14A (updated) | `PaymentsList.dc.html` | LOCKED badge on a locked period row (June 2026) |
+| 14B (updated) | `PaymentDetails.dc.html` | `⋮` More actions after the Synced pill (as 16E / 16G); header gap 8px so "October 2026" stays whole |
+| **14B2** | `PaymentPeriodActions.dc.html` | Period actions sheet: Lock payments; Delete period dimmed with "6 payments are paid, so this period can't be deleted." |
+| **14B3** | `PaymentDetailsLocked.dc.html` | Locked period: amber lock notice, rows don't open 14C, lock before each amount, status buttons dimmed, no Save |
+| **14B4** | `PaymentPeriodActionsLocked.dc.html` | Menu of a locked period: Unlock payments; Delete blocked "Unlock the payments to delete this period." |
+| **14B5** | `PaymentPaidConfirm.dc.html` | "Change a paid status?" on 14B (Paid → Cancelled); same alert on 16E Payments tab |
+| **10D2** | `EventParticipantsPaidConfirm.dc.html` | "Change a paid status?" on event participants (Paid → Absent); same alert on 16E3 Events tab |
 
-Sources: [`mockup-01-period-actions.html`](assets/payments-lock-and-paid-confirmation/mockup-01-period-actions.html), [`mockup-02-locked-period.html`](assets/payments-lock-and-paid-confirmation/mockup-02-locked-period.html), [`mockup-03-paid-confirmation.html`](assets/payments-lock-and-paid-confirmation/mockup-03-paid-confirmation.html).
+Delete enabled (nothing paid) is the 14B2 sheet with the Delete row at full opacity and no reason line. Earlier illustrative PNGs stay in [`assets/payments-lock-and-paid-confirmation/`](assets/payments-lock-and-paid-confirmation/) for the PR only; the boards above are the design source.
 
 Design rules applied (design-mockups skill): Payments accent `#4ADE9F` / fill `rgba(52,211,153,0.16)` for the Lock row icon; the Delete row in the trash red (`danger`), as 16G Archive; the amber `Notice` as N3; sheet = standard `FormSheet` (title = period, e.g. "October 2026"); one-word buttons (Cancel / Change / Delete); no chevrons in sheet rows. The confirmation is the native system alert, the same mechanism as every trash-button confirmation (#74), so the mockup only fixes its copy, not its look.
 
@@ -116,4 +120,4 @@ Accessibility: the `⋮` button is labelled "More actions"; disabled sheet rows 
 | Q7 | Does "stay on the screen after Save" also apply to the event participants list (10D)? | No, payments period screen only. | The request names payments only. Student details already stays. |
 | Q8 | Do approved join requests add the member to locked periods? | No: locked periods are hidden from that list. | Consistent with "frozen". The instructor can unlock to add someone. |
 | Q9 | Show the lock to students? | No. | Their Payments screen is read-only already. |
-| Q10 | Which design surface gets the new screens? | Static HTML mockups in this PR, to be ported to the canvas as 14B2 / 14B3 / 14B4 / 10D1 once accepted. | The canvas artifact cannot be written from an unattended run. The mockups use the canvas tokens and components. |
+| Q10 | Which design surface gets the new screens? | Canvas boards 14B2–14B5 and 10D2 in `design/project/` (+ 14A / 14B updated, `canvas.json` positions). | The repo copy of the canvas is what earlier design changes (e.g. 13C1) updated. |
