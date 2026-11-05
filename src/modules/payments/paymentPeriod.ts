@@ -222,3 +222,22 @@ export function paymentUpdate(
   const becomesPaid = next.status === "paid" && stored?.status !== "paid";
   return becomesPaid ? { ...next, paymentDate: now } : { ...next };
 }
+
+/**
+ * A status tap needs "Change a paid status?" first: the status shown now is
+ * Paid and the tap moves it elsewhere (14B5 / 10D2). Works for payment and
+ * event participant statuses alike.
+ */
+export const leavesPaid = (current: string, next: string): boolean => current === "paid" && next !== "paid";
+
+export type CanDeletePeriod = { ok: true } | { ok: false; reason: "locked" } | { ok: false; reason: "paid"; count: number };
+
+/** A period can be deleted while it is unlocked and none of its stored records is Paid (14B2 / 14B4). */
+export function canDeletePeriod(
+  records: ReadonlyArray<{ status: PaymentStatus }>,
+  cycle: { lockedAt?: Date | null },
+): CanDeletePeriod {
+  if (cycle.lockedAt) return { ok: false, reason: "locked" };
+  const count = records.filter((record) => record.status === "paid").length;
+  return count > 0 ? { ok: false, reason: "paid", count } : { ok: true };
+}

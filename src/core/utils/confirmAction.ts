@@ -20,3 +20,16 @@ export const showError = (message: string) => {
   }
   Alert.alert(t("error"), message);
 };
+
+/**
+ * "Change a paid status?" before a tap moves a payment or an event participant
+ * out of Paid (14B5 / 10D2); `name` is the member, or the period / event title on
+ * student details. Cancel leaves the row as it is.
+ */
+export const confirmLeavePaid = (name: string, nextStatusLabel: string, onConfirm: () => void) =>
+  confirmAction(
+    t("paidChangeConfirmTitle"),
+    t("paidChangeConfirmMessage", { name, status: nextStatusLabel }),
+    t("change"),
+    onConfirm,
+  );

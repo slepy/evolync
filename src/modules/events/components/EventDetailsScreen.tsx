@@ -12,7 +12,7 @@ import {
 import { danger, moduleAccents, neutral } from "@/core/theme/tokens";
 import { EVENT_STATUS } from "@/database/models/Event";
 import { formatPrice } from "@/core/utils/formatters";
-import { showError } from "@/modules/trainings/components/confirmAction";
+import { showError } from "@/core/utils/confirmAction";
 import { timestampToDay } from "@/modules/trainings/types/helpers";
 import { CalendarDays, GraduationCap, MapPin, Pencil, RotateCcw, Shapes, XCircle } from "lucide-react-native";
 import React, { useState } from "react";
