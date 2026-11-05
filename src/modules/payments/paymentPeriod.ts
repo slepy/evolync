@@ -241,3 +241,12 @@ export function canDeletePeriod(
   const count = records.filter((record) => record.status === "paid").length;
   return count > 0 ? { ok: false, reason: "paid", count } : { ok: true };
 }
+
+/**
+ * Periods a newly approved member can be added to (16 "add to current billing
+ * periods"): running now and not locked, so a frozen period never gets a new member.
+ */
+export const periodsOpenToJoin = <T extends { periodStart: Date; periodEnd: Date; lockedAt?: Date | null }>(
+  cycles: readonly T[],
+  now: Date,
+): T[] => cycles.filter((c) => !c.lockedAt && new Date(c.periodStart) <= now && now <= new Date(c.periodEnd));

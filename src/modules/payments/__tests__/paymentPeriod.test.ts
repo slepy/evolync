@@ -22,6 +22,7 @@ import {
   periodKind,
   periodOwnAmount,
   periodPresetRange,
+  periodsOpenToJoin,
   storedDayKey,
 } from "@/modules/payments/paymentPeriod";
 
@@ -273,5 +274,25 @@ describe("canDeletePeriod", () => {
 
   it("blocks a locked period first", () => {
     assert.deepEqual(canDeletePeriod([{ status: "paid" }], { lockedAt: new Date() }), { ok: false, reason: "locked" });
+  });
+});
+
+describe("periodsOpenToJoin", () => {
+  const now = new Date("2026-11-05T10:00:00Z");
+  const period = (id: string, start: string, end: string, lockedAt?: Date | null) => ({
+    id,
+    periodStart: new Date(`${start}T00:00:00Z`),
+    periodEnd: new Date(`${end}T23:59:59Z`),
+    lockedAt,
+  });
+
+  it("keeps running, unlocked periods only", () => {
+    const cycles = [
+      period("nov", "2026-11-01", "2026-11-30"),
+      period("nov-locked", "2026-11-01", "2026-11-30", new Date("2026-11-03")),
+      period("oct", "2026-10-01", "2026-10-31"),
+      period("year", "2026-01-01", "2026-12-31", null),
+    ];
+    assert.deepEqual(periodsOpenToJoin(cycles, now).map((c) => c.id), ["nov", "year"]);
   });
 });
