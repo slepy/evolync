@@ -11,14 +11,16 @@ export interface StatusButtonProps {
   label: string;
   /** A tap moves the row to its next status. */
   onPress: () => void;
+  /** Not pressable; `dimmed` also fades it (14B3 locked period). */
   disabled?: boolean;
+  dimmed?: boolean;
 }
 
 /**
  * 44px round status button on the right of a member row (10D, 13B, 14B):
  * icon only, tinted by the status; a tap cycles to the next status.
  */
-export function StatusButton({ icon: Icon, color, label, onPress, disabled }: StatusButtonProps) {
+export function StatusButton({ icon: Icon, color, label, onPress, disabled, dimmed }: StatusButtonProps) {
   const { tint, fill } = resolveStatusColor(color);
   return (
     <XStack
@@ -42,6 +44,7 @@ export function StatusButton({ icon: Icon, color, label, onPress, disabled }: St
       alignItems="center"
       justifyContent="center"
       flexShrink={0}
+      opacity={dimmed ? 0.4 : 1}
     >
       <Icon size={18} color={tint} strokeWidth={2.6} />
     </XStack>
