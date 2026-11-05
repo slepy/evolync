@@ -1,5 +1,6 @@
 import { database } from "@/database";
 import PaymentCycle from "@/database/models/PaymentCycle";
+import PaymentRecord from "@/database/models/PaymentRecord";
 import { Q } from "@nozbe/watermelondb";
 import { v4 as uuidv4 } from "uuid";
 
@@ -61,6 +62,43 @@ export const PaymentCycleRepository = {
     });
   },
 
+  /** Lock (now) or unlock (null) a period. */
+  async setLocked(id: string, locked: boolean): Promise<PaymentCycle> {
+    const cycle = await database.get<PaymentCycle>("payment_cycles").find(id);
+    return await database.write(async () =>
+      cycle.update((record) => {
+        record.lockedAt = locked ? new Date() : null;
+      }),
+    );
+  },
+
+  /**
+   * Soft-deletes a period and all its records in one write. `guard` runs inside
+   * the write with the period's live records and may throw to delete nothing.
+   */
+  async softDeleteWithRecords(id: string, guard?: (cycle: PaymentCycle, records: PaymentRecord[]) => void): Promise<number> {
+    const cycle = await database.get<PaymentCycle>("payment_cycles").find(id);
+    return await database.write(async () => {
+      const records = await database
+        .get<PaymentRecord>("payment_records")
+        .query(Q.where("payment_cycle_id", id), Q.where("deleted_at", null))
+        .fetch();
+      guard?.(cycle, records);
+      const now = new Date();
+      await database.batch([
+        cycle.prepareUpdate((record) => {
+          record.deletedAt = now;
+        }),
+        ...records.map((record) =>
+          record.prepareUpdate((r) => {
+            r.deletedAt = now;
+          }),
+        ),
+      ]);
+      return records.length;
+    });
+  },
+
   // Observable methods for reactive UI
   observeBySchoolId(schoolId: string) {
     const cyclesCollection = database.get<PaymentCycle>("payment_cycles");
@@ -70,12 +108,21 @@ export const PaymentCycleRepository = {
         Q.where("deleted_at", null),
         Q.sortBy("period_start", Q.desc)
       )
-      .observe();
+      // Re-emits when a period is locked / unlocked (14A badge, approve join list).
+      .observeWithColumns(["locked_at"]);
   },
 
   observeById(id: string) {
     const cyclesCollection = database.get<PaymentCycle>("payment_cycles");
     return cyclesCollection.findAndObserve(id);
+  },
+
+  /** Periods by id, re-emitting when one is locked / unlocked (student details Payments tab). */
+  observeByIds(ids: string[]) {
+    return database
+      .get<PaymentCycle>("payment_cycles")
+      .query(Q.where("id", Q.oneOf(ids)), Q.where("deleted_at", null))
+      .observeWithColumns(["locked_at"]);
   },
 
   async findByIds(ids: string[]): Promise<PaymentCycle[]> {

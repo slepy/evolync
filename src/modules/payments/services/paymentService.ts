@@ -23,7 +23,7 @@ import {
   createPaymentCycleSchema,
   paymentRecordEditSchema,
 } from "../validation";
-import { memberPaymentAmount, paymentUpdate, periodOwnAmount } from "../paymentPeriod";
+import { canDeletePeriod, memberPaymentAmount, paymentUpdate, periodOwnAmount } from "../paymentPeriod";
 
 // ============================================================================
 // Payment Cycles
@@ -132,6 +132,36 @@ export const createPaymentCycle = async (
   });
 
   return cycle;
+};
+
+/** Locks a period: no status or amount can change until it is unlocked (14B2). */
+export const lockPaymentCycle = async (cycleId: string): Promise<void> => {
+  await PaymentCycleRepository.setLocked(cycleId, true);
+  sync().catch((err) => console.error("[lockPaymentCycle] Sync failed:", err));
+};
+
+/** Unlocks a period (14B4). */
+export const unlockPaymentCycle = async (cycleId: string): Promise<void> => {
+  await PaymentCycleRepository.setLocked(cycleId, false);
+  sync().catch((err) => console.error("[unlockPaymentCycle] Sync failed:", err));
+};
+
+/**
+ * Soft-deletes a period and its records. Re-checks inside the write that the
+ * period is unlocked and nothing in it is Paid (a record may have become Paid
+ * on another device since the sheet opened); otherwise throws and deletes nothing.
+ */
+export const deletePaymentCycle = async (cycleId: string): Promise<void> => {
+  await PaymentCycleRepository.softDeleteWithRecords(cycleId, (cycle, records) => {
+    const check = canDeletePeriod(records, cycle);
+    if (check.ok) return;
+    throw new Error(
+      check.reason === "paid"
+        ? t("paymentsDeleteBlockedPaid", { count: check.count })
+        : t("paymentsDeleteBlockedLocked"),
+    );
+  });
+  sync().catch((err) => console.error("[deletePaymentCycle] Sync failed:", err));
 };
 
 // ============================================================================

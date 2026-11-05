@@ -31,7 +31,7 @@ import type { SeriesRule } from "../types/dto";
 import { TRAINING_EDIT_SCOPE, type TrainingEditScope } from "../types/enums";
 import { localToday, parseJsonArray, timestampToDay } from "../types/helpers";
 import { audienceLabel } from "./audienceLabel";
-import { confirmAction, showError } from "./confirmAction";
+import { confirmAction, showError } from "@/core/utils/confirmAction";
 import { ExtendSeriesSheet } from "./ExtendSeriesSheet";
 import { formatDay } from "./format";
 import { seriesRulesSummary } from "./trainingFormState";

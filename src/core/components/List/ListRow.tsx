@@ -30,6 +30,12 @@ export interface ListRowProps {
   selected?: boolean;
   /** Destructive action row (16G Archive): title in the trash red. */
   danger?: boolean;
+  /**
+   * Action that can't run now (14B2 Delete period while something is paid):
+   * dimmed to 0.45, `aria-disabled`, not pressable. Put the reason as visible
+   * text in `children` with `expanded` — it stays at full opacity.
+   */
+  disabled?: boolean;
   accent?: ListAccent;
   /** Content shown under the row while `expanded` (12F sizes + quantity). */
   children?: ReactNode;
@@ -56,6 +62,7 @@ export function ListRow({
   size = "lg",
   selected,
   danger,
+  disabled,
   accent = "neutral",
   children,
   expanded,
@@ -64,17 +71,20 @@ export function ListRow({
 }: ListRowProps) {
   const lg = size === "lg";
   const expandable = children !== undefined;
+  const press = disabled ? undefined : onPress;
 
   return (
     <YStack backgroundColor={selected ? resolveListAccent(accent).selectedFill : "transparent"}>
       <XStack
         role={role ?? (onPress ? "button" : undefined)}
+        aria-disabled={disabled || undefined}
         aria-label={aria["aria-label"] ?? title}
         aria-checked={aria["aria-checked"]}
         aria-selected={aria["aria-selected"] ?? selected}
         aria-expanded={expandable ? !!expanded : undefined}
-        onPress={onPress}
-        pressStyle={onPress ? { opacity: 0.85 } : undefined}
+        onPress={press}
+        pressStyle={press ? { opacity: 0.85 } : undefined}
+        opacity={disabled ? 0.45 : 1}
         alignItems="center"
         gap={lg ? 14 : 12}
         minHeight={lg ? undefined : 64}

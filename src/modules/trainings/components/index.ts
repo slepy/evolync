@@ -8,4 +8,3 @@ export { toSchoolAddressItems, pickSchoolAddress } from "./schoolAddress";
 export * from "./format";
 export * from "./trainingFormState";
 export { audienceLabel } from "./audienceLabel";
-export { confirmAction, showError } from "./confirmAction";

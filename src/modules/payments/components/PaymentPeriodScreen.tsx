@@ -1,37 +1,49 @@
 import {
   CurrencySheet,
+  IconButton,
   MemberAvatar,
   ListCard,
   ListChip,
   ListEmpty,
   ListRow,
+  Notice,
   PrimaryButton,
   StatusButton,
   StatusSummary,
   SubScreenPage,
+  SyncedPill,
   ratePercent,
 } from "@/core/components";
 import PaymentCycle from "@/database/models/PaymentCycle";
 import { LoadingScreen } from "@/core/components";
+import { confirmLeavePaid, showError } from "@/core/utils/confirmAction";
+import { confirmDelete } from "@/core/utils/confirmDelete";
 import { SUPPORTED_CURRENCIES } from "@/core/utils/currencies";
+import { Lock, MoreVertical } from "lucide-react-native";
 import React, { useEffect, useState } from "react";
 import { Text, XStack, YStack } from "tamagui";
 import { PAYMENT_METHOD_LABEL, PAYMENT_STATUS_STYLE, PAYMENT_SUMMARY_ORDER } from "../constants";
 import { usePaymentRecords, type PaymentWithMember } from "../hooks/usePaymentRecords";
 import {
   amountsByStatus,
+  canDeletePeriod,
   countPaymentStatuses,
   dateLocaleTag,
   describePeriod,
   formatAmount,
+  formatPeriodDay,
+  leavesPaid,
+  localDayKey,
   nextPaymentStatus,
   parseAmount,
   storedDayKey,
 } from "../paymentPeriod";
 import { PaymentCycleRepository } from "../repositories";
+import { deletePaymentCycle, lockPaymentCycle, unlockPaymentCycle } from "../services";
 import type { PaymentDraft } from "../types";
 import { PaymentEditSheet } from "./PaymentEditSheet";
 import { AmountsToggle } from "./AmountsToggle";
+import { PeriodActionsSheet } from "./PeriodActionsSheet";
 
 
 /** True when the edited values differ from the stored record. */
@@ -45,25 +57,31 @@ const isChanged = (item: PaymentWithMember): boolean =>
 interface PaymentPeriodScreenProps {
   schoolId: string;
   cycleId: string;
-  /** After Save: back to the billing periods. */
-  onSaved: () => void;
+  /** After Delete period: back to the billing periods (14A). */
+  onDeleted: () => void;
 }
 
 /**
  * Period details (14B / 14B1): Status summary with the collapsible Amounts,
  * member rows (name opens Edit payment 14C, the status button cycles
- * Pending → Paid → Cancelled); Save appears after a change.
+ * Pending → Paid → Cancelled, asking first when it leaves Paid, 14B5); Save
+ * appears after a change and keeps the screen open. The ⋮ menu (14B2 / 14B4)
+ * locks / unlocks the period (14B3: everything frozen) and deletes it while
+ * nothing is paid.
  */
-export const PaymentPeriodScreen: React.FC<PaymentPeriodScreenProps> = ({ schoolId, cycleId, onSaved }) => {
-  const [cycle, setCycle] = useState<PaymentCycle | null>(null);
+export const PaymentPeriodScreen: React.FC<PaymentPeriodScreenProps> = ({ schoolId, cycleId, onDeleted }) => {
+  // The observer emits the same model instance on every change; keep lockedAt
+  // next to it so a lock / unlock re-renders.
+  const [period, setPeriod] = useState<{ cycle: PaymentCycle; lockedAt: number | null } | null>(null);
+  const cycle = period?.cycle ?? null;
   const { paymentList, isLoading, isSaving, error, updateLocal, saveAll } = usePaymentRecords(cycleId, schoolId);
   const [amountsOpen, setAmountsOpen] = useState(false);
   const [editing, setEditing] = useState<{ memberId: string; draft: PaymentDraft } | null>(null);
-  const [sheet, setSheet] = useState<"edit" | "currency" | null>(null);
+  const [sheet, setSheet] = useState<"edit" | "currency" | "actions" | null>(null);
 
   useEffect(() => {
     const subscription = PaymentCycleRepository.observeById(cycleId).subscribe({
-      next: setCycle,
+      next: (next: PaymentCycle) => setPeriod({ cycle: next, lockedAt: next.lockedAt?.getTime() ?? null }),
       error: (err: Error) => console.error("[PaymentPeriodScreen] Load period error:", err),
     });
     return () => subscription.unsubscribe();
@@ -71,7 +89,12 @@ export const PaymentPeriodScreen: React.FC<PaymentPeriodScreenProps> = ({ school
 
   if (isLoading || !cycle) return <LoadingScreen />;
 
-  const periodTitle = describePeriod(storedDayKey(cycle.periodStart), storedDayKey(cycle.periodEnd), dateLocaleTag(t("locale"))).title;
+  const locale = dateLocaleTag(t("locale"));
+  const { title: periodTitle, range: periodRange } = describePeriod(storedDayKey(cycle.periodStart), storedDayKey(cycle.periodEnd), locale);
+  const lockedAt = period?.lockedAt ?? null;
+  const locked = lockedAt !== null;
+  const storedRecords = paymentList.flatMap((item) => (item.record ? [item.record] : []));
+  const deletable = canDeletePeriod(storedRecords, { lockedAt: lockedAt === null ? null : new Date(lockedAt) });
   const counts = countPaymentStatuses(paymentList);
   const amounts = amountsByStatus(paymentList);
   const changed = paymentList.some(isChanged);
@@ -98,10 +121,42 @@ export const PaymentPeriodScreen: React.FC<PaymentPeriodScreenProps> = ({ school
     setSheet(null);
   };
 
+  const toggleStatus = (item: PaymentWithMember, name: string) => {
+    const next = nextPaymentStatus(item.status);
+    const apply = () =>
+      updateLocal(item.member.id, { status: next, amount: item.amount, currency: item.currency, method: item.method });
+    if (leavesPaid(item.status, next)) confirmLeavePaid(name, t(PAYMENT_STATUS_STYLE[next].label), apply);
+    else apply();
+  };
+
+  const toggleLock = async () => {
+    try {
+      await (locked ? unlockPaymentCycle(cycleId) : lockPaymentCycle(cycleId));
+    } catch (err) {
+      console.error("[PaymentPeriodScreen] Lock error:", err);
+      showError(t("errorSaveFailed"));
+    }
+  };
+
+  const askDelete = () =>
+    confirmDelete(
+      t("paymentsDeleteConfirmTitle"),
+      t("paymentsDeleteConfirmMessage", { period: periodTitle, count: storedRecords.length }),
+      async () => {
+        try {
+          await deletePaymentCycle(cycleId);
+          onDeleted();
+        } catch (err) {
+          console.error("[PaymentPeriodScreen] Delete error:", err);
+          showError(err instanceof Error ? err.message : t("errorSaveFailed"));
+        }
+      },
+    );
+
   const handleSave = async () => {
     try {
+      // Stays on the period: the saved rows match the records, so Save hides.
       await saveAll();
-      onSaved();
     } catch {
       // The hook keeps the error, shown above the button.
     }
@@ -111,8 +166,14 @@ export const PaymentPeriodScreen: React.FC<PaymentPeriodScreenProps> = ({ school
     <SubScreenPage
       title={periodTitle}
       context="school"
+      right={
+        <XStack alignItems="center" gap={8}>
+          <SyncedPill />
+          <IconButton icon={MoreVertical} label={t("moreActions")} onPress={() => setSheet("actions")} />
+        </XStack>
+      }
       footer={
-        changed ? (
+        changed && !locked ? (
           <YStack gap={10}>
             {error ? (
               <Text fontSize={12.5} fontWeight="$secondary" color="$trashText" textAlign="center">
@@ -125,6 +186,8 @@ export const PaymentPeriodScreen: React.FC<PaymentPeriodScreenProps> = ({ school
       }
     >
       <YStack gap={16}>
+        {locked ? <Notice icon={Lock} text={t("paymentsLockedNotice")} /> : null}
+
         <StatusSummary
           title={t("membersCount", { count: paymentList.length })}
           subtitle={t("paymentsPaidSummary", { count: counts.paid, percent: ratePercent(counts.paid, paymentList.length) })}
@@ -177,7 +240,9 @@ export const PaymentPeriodScreen: React.FC<PaymentPeriodScreenProps> = ({ school
         </StatusSummary>
 
         <Text fontSize={13} fontWeight="$secondary" lineHeight={19} color="$neutralMuted">
-          {t("paymentsStatusHint")}
+          {locked
+            ? t("paymentsLockedHint", { date: formatPeriodDay(localDayKey(new Date(lockedAt)), locale) })
+            : t("paymentsStatusHint")}
         </Text>
 
         {paymentList.length === 0 ? (
@@ -194,23 +259,18 @@ export const PaymentPeriodScreen: React.FC<PaymentPeriodScreenProps> = ({ school
                   size="md"
                   title={name}
                   subtitle={item.status === "paid" ? `${amount} · ${t(PAYMENT_METHOD_LABEL[item.method])}` : amount}
-                  aria-label={t("paymentsEditPayment", { name })}
-                  onPress={isSaving ? undefined : () => openEdit(item)}
+                  subtitleIcon={locked ? Lock : undefined}
+                  aria-label={locked ? name : t("paymentsEditPayment", { name })}
+                  onPress={isSaving || locked ? undefined : () => openEdit(item)}
                   leading={<MemberAvatar name={name} uri={item.member.avatarUrl} rankId={item.member.currentRankId} />}
                   trailing={
                     <StatusButton
                       icon={style.icon}
                       color={{ tint: style.tint, fill: style.fill }}
-                      label={t("statusChangeNow", { status: t(style.label) })}
-                      disabled={isSaving}
-                      onPress={() =>
-                        updateLocal(item.member.id, {
-                          status: nextPaymentStatus(item.status),
-                          amount: item.amount,
-                          currency: item.currency,
-                          method: item.method,
-                        })
-                      }
+                      label={locked ? t("paymentsLockedStatus") : t("statusChangeNow", { status: t(style.label) })}
+                      disabled={isSaving || locked}
+                      dimmed={locked}
+                      onPress={() => toggleStatus(item, name)}
                     />
                   }
                 />
@@ -220,7 +280,19 @@ export const PaymentPeriodScreen: React.FC<PaymentPeriodScreenProps> = ({ school
         )}
       </YStack>
 
-      {editing && editedItem ? (
+      <PeriodActionsSheet
+        open={sheet === "actions"}
+        onOpenChange={(open) => setSheet(open ? "actions" : null)}
+        title={periodTitle}
+        subtitle={`${periodRange} · ${t("membersCount", { count: paymentList.length })}`}
+        locked={locked}
+        changed={changed}
+        deletable={deletable}
+        onToggleLock={toggleLock}
+        onDelete={askDelete}
+      />
+
+      {editing && editedItem && !locked ? (
         <>
           <PaymentEditSheet
             open={sheet === "edit"}

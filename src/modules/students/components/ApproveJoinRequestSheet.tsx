@@ -9,6 +9,7 @@ import {
 } from "@/core/utils/phoneHelpers";
 import { PaymentCycleRepository } from "@/modules/payments/repositories/paymentCycleRepository";
 import { PaymentRecordRepository } from "@/modules/payments/repositories/paymentRecordRepository";
+import { periodsOpenToJoin } from "@/modules/payments/paymentPeriod";
 import { EventRepository } from "@/modules/events/repositories/eventRepository";
 import { EventParticipantRepository } from "@/modules/events/repositories/eventParticipantRepository";
 import { approveJoinRequest } from "../services";
@@ -116,14 +117,9 @@ export const ApproveJoinRequestSheet: React.FC<
         setMode("new");
       }
 
-      // Load active payment cycles (period_start <= today <= period_end)
-      const today = new Date();
+      // Running payment cycles (period_start <= today <= period_end); locked ones are not offered
       const allCycles = await PaymentCycleRepository.findBySchoolId(schoolId);
-      const active = allCycles.filter((c) => {
-        const start = new Date(c.periodStart);
-        const end = new Date(c.periodEnd);
-        return start <= today && today <= end;
-      });
+      const active = periodsOpenToJoin(allCycles, new Date());
 
       // For each active cycle, check if matched member is already in it
       const cyclesWithMembership: CycleWithMembership[] = await Promise.all(

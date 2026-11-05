@@ -7,5 +7,5 @@ export default function SchoolPaymentPeriodScreen() {
   const { schoolId, cycleId } = useLocalSearchParams<{ schoolId: string; cycleId: string }>();
   const router = useRouter();
 
-  return <PaymentPeriodScreen schoolId={schoolId} cycleId={cycleId} onSaved={() => router.back()} />;
+  return <PaymentPeriodScreen schoolId={schoolId} cycleId={cycleId} onDeleted={() => router.back()} />;
 }

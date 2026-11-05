@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   type PaymentStatus,
   type PaymentMethod,
@@ -18,6 +18,11 @@ export interface StudentPaymentCycle {
   id: string;
   periodStart: Date;
   periodEnd: Date;
+}
+
+/** A payment of a locked period can't be changed (status button disabled, lock glyph). */
+export interface StudentPaymentRow extends StudentPaymentItem {
+  locked: boolean;
 }
 
 /**
@@ -61,6 +66,7 @@ export const useStudentPayments = (studentId: string | undefined) => {
   const [payments, setPayments] = useState<StudentPaymentItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
+  const [lockedCycleIds, setLockedCycleIds] = useState<ReadonlySet<string>>(new Set());
 
   // Track original (last-known-committed) data for change detection
   const originalDataRef = useRef<Map<string, OriginalPaymentData>>(new Map());
@@ -155,6 +161,26 @@ export const useStudentPayments = (studentId: string | undefined) => {
 
     return () => subscription.unsubscribe();
   }, [studentId]);
+
+  // Locks are watched apart from the records: locking a period changes no record.
+  const cycleIdsKey = [...new Set(payments.map((item) => item.cycle.id))].sort().join(",");
+  useEffect(() => {
+    const ids = cycleIdsKey ? cycleIdsKey.split(",") : [];
+    if (ids.length === 0) {
+      setLockedCycleIds(new Set());
+      return;
+    }
+    const subscription = PaymentCycleRepository.observeByIds(ids).subscribe({
+      next: (cycles) => setLockedCycleIds(new Set(cycles.filter((c) => c.lockedAt).map((c) => c.id))),
+      error: (err: Error) => console.error("[useStudentPayments] Cycles observer error:", err),
+    });
+    return () => subscription.unsubscribe();
+  }, [cycleIdsKey]);
+
+  const rows = useMemo<StudentPaymentRow[]>(
+    () => payments.map((item) => ({ ...item, locked: lockedCycleIds.has(item.cycle.id) })),
+    [payments, lockedCycleIds],
+  );
 
   // Update local payment state (UI only, no database write)
   const updateLocal = useCallback(
@@ -279,7 +305,7 @@ export const useStudentPayments = (studentId: string | undefined) => {
   };
 
   return {
-    payments,
+    payments: rows,
     stats,
     isLoading,
     isSaving,

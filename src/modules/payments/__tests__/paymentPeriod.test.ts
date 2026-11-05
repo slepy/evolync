@@ -2,6 +2,7 @@ import { describe, it } from "node:test";
 import assert from "node:assert/strict";
 import {
   amountsByStatus,
+  canDeletePeriod,
   countPaymentStatuses,
   countPeriods,
   currentPeriodsFirst,
@@ -12,6 +13,7 @@ import {
   formatPeriodDay,
   formatPeriodRange,
   isCurrentPeriod,
+  leavesPaid,
   localDayKey,
   memberPaymentAmount,
   nextPaymentStatus,
@@ -20,6 +22,7 @@ import {
   periodKind,
   periodOwnAmount,
   periodPresetRange,
+  periodsOpenToJoin,
   storedDayKey,
 } from "@/modules/payments/paymentPeriod";
 
@@ -235,5 +238,61 @@ describe("paymentUpdate", () => {
   it("dates a new paid payment, not a new pending one", () => {
     assert.deepEqual(paymentUpdate(undefined, paid, now), { ...paid, paymentDate: now });
     assert.deepEqual(paymentUpdate(undefined, pending, now), { ...pending });
+  });
+});
+
+describe("leavesPaid", () => {
+  it("is true only when a Paid status moves to another one", () => {
+    assert.equal(leavesPaid("paid", "cancelled"), true);
+    assert.equal(leavesPaid("paid", "absent"), true);
+    assert.equal(leavesPaid("pending", "paid"), false);
+    assert.equal(leavesPaid("cancelled", "pending"), false);
+    assert.equal(leavesPaid("attending", "paid"), false);
+    assert.equal(leavesPaid("paid", "paid"), false);
+  });
+
+  it("follows the payment cycle: only the tap on Paid asks", () => {
+    assert.equal(leavesPaid("paid", nextPaymentStatus("paid")), true);
+    assert.equal(leavesPaid("pending", nextPaymentStatus("pending")), false);
+    assert.equal(leavesPaid("cancelled", nextPaymentStatus("cancelled")), false);
+  });
+});
+
+describe("canDeletePeriod", () => {
+  it("allows an unlocked period with nothing paid, also an empty one", () => {
+    assert.deepEqual(canDeletePeriod([{ status: "pending" }, { status: "cancelled" }], { lockedAt: null }), { ok: true });
+    assert.deepEqual(canDeletePeriod([], {}), { ok: true });
+  });
+
+  it("blocks a period with paid records and counts them", () => {
+    assert.deepEqual(canDeletePeriod([{ status: "paid" }, { status: "pending" }, { status: "paid" }], {}), {
+      ok: false,
+      reason: "paid",
+      count: 2,
+    });
+  });
+
+  it("blocks a locked period first", () => {
+    assert.deepEqual(canDeletePeriod([{ status: "paid" }], { lockedAt: new Date() }), { ok: false, reason: "locked" });
+  });
+});
+
+describe("periodsOpenToJoin", () => {
+  const now = new Date("2026-11-05T10:00:00Z");
+  const period = (id: string, start: string, end: string, lockedAt?: Date | null) => ({
+    id,
+    periodStart: new Date(`${start}T00:00:00Z`),
+    periodEnd: new Date(`${end}T23:59:59Z`),
+    lockedAt,
+  });
+
+  it("keeps running, unlocked periods only", () => {
+    const cycles = [
+      period("nov", "2026-11-01", "2026-11-30"),
+      period("nov-locked", "2026-11-01", "2026-11-30", new Date("2026-11-03")),
+      period("oct", "2026-10-01", "2026-10-31"),
+      period("year", "2026-01-01", "2026-12-31", null),
+    ];
+    assert.deepEqual(periodsOpenToJoin(cycles, now).map((c) => c.id), ["nov", "year"]);
   });
 });

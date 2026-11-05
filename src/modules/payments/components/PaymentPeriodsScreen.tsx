@@ -13,6 +13,7 @@ import { CreditCard } from "lucide-react-native";
 import React from "react";
 import { Text } from "tamagui";
 import { CurrentBadge } from "./CurrentBadge";
+import { LockedBadge } from "./LockedBadge";
 import { usePaymentPeriodList, type PaymentPeriodEntry } from "../hooks/usePaymentPeriodList";
 import { dateLocaleTag, describePeriod, isCurrentPeriod, localDayKey } from "../paymentPeriod";
 
@@ -67,7 +68,14 @@ function PeriodRow({ period, onPress }: PeriodRowProps) {
   return (
     <ListRow
       title={title}
-      badge={current ? <CurrentBadge /> : undefined}
+      badge={
+        current || period.cycle.lockedAt ? (
+          <>
+            {current ? <CurrentBadge /> : null}
+            {period.cycle.lockedAt ? <LockedBadge /> : null}
+          </>
+        ) : undefined
+      }
       subtitle={`${when} · ${t("paymentsPaidOf", { paid: period.paid, total: period.total })}`}
       leading={<ListIcon icon={CreditCard} accent="payments" size={44} />}
       trailing={<ListChip label={`${period.paid}/${period.total}`} accent={rateAccent(period.paid, period.total)} />}
