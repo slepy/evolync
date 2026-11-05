@@ -1,5 +1,6 @@
 import { ListDivider, ListImage, ListRow, ListSection, TrashButton } from "@/core/components";
 import { neutral } from "@/core/theme/tokens";
+import { confirmDelete } from "@/core/utils/confirmDelete";
 import { formatPrice } from "@/core/utils/formatters";
 import { ShoppingBag } from "lucide-react-native";
 import React, { Fragment } from "react";
@@ -95,7 +96,11 @@ export const OrderProductsSection: React.FC<OrderProductsSectionProps> = ({
                 {onChange ? (
                   <TrashButton
                     label={t("ordersRemoveProduct", { name: item.productName })}
-                    onPress={() => onChange(cart.filter((line) => line.id !== item.id))}
+                    onPress={() =>
+                      confirmDelete(t("delete"), t("ordersRemoveProductConfirm", { name: item.productName }), () =>
+                        onChange(cart.filter((line) => line.id !== item.id)),
+                      )
+                    }
                   />
                 ) : null}
               </XStack>

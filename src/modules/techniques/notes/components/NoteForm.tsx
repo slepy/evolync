@@ -1,4 +1,5 @@
 import { DashedButton, TextField } from "@/core/components";
+import { confirmDelete } from "@/core/utils/confirmDelete";
 import { TagsField } from "@/modules/tags";
 import { Text, XStack, YStack } from "tamagui";
 import { v4 as uuidv4 } from "uuid";
@@ -59,7 +60,11 @@ export function NoteForm({ value, onChange, autoFocusTitle, titleError }: NoteFo
                 number={index + 1}
                 onChangeText={(field, text) => updateRow(row.id, { [field]: text })}
                 onToggleDirection={() => updateRow(row.id, { direction: toggleDirection(row.direction) })}
-                onDelete={() => onChange({ ...value, rows: value.rows.filter((r) => r.id !== row.id) })}
+                onDelete={() =>
+                  confirmDelete(t("delete"), t("notesDeleteRowConfirm"), () =>
+                    onChange({ ...value, rows: value.rows.filter((r) => r.id !== row.id) }),
+                  )
+                }
               />
             ))}
           </YStack>
