@@ -473,7 +473,7 @@
     "PaymentDetails.dc.html": {
       "h": 1196,
       "is_interactive": true,
-      "title": "14B · Period details: Amounts collapsed, tap to mark, Save after a change",
+      "title": "14B · Period details: ⋮ menu, Amounts collapsed, tap to mark, Save stays on the screen",
       "w": 390,
       "x": 476,
       "y": 15508
@@ -497,7 +497,7 @@
     "PaymentsList.dc.html": {
       "h": 844,
       "is_interactive": true,
-      "title": "14A · Payments: billing periods, paid count chip",
+      "title": "14A · Payments: billing periods, paid count chip, LOCKED badge",
       "w": 390,
       "x": 6,
       "y": 15508
@@ -860,6 +860,46 @@
       "w": 390,
       "x": 1416,
       "y": 14008
+    },
+    "PaymentPeriodActions.dc.html": {
+      "h": 1196,
+      "is_interactive": true,
+      "title": "14B2 · Period actions (⋮ sheet): Lock payments; Delete period only with nothing paid",
+      "w": 390,
+      "x": 2826,
+      "y": 15508
+    },
+    "PaymentDetailsLocked.dc.html": {
+      "h": 1260,
+      "is_interactive": true,
+      "title": "14B3 · Locked period: lock notice, statuses and amounts frozen, no Save",
+      "w": 390,
+      "x": 3296,
+      "y": 15508
+    },
+    "PaymentPeriodActionsLocked.dc.html": {
+      "h": 1260,
+      "is_interactive": true,
+      "title": "14B4 · Period actions, locked: Unlock payments; Delete blocked until unlock",
+      "w": 390,
+      "x": 3766,
+      "y": 15508
+    },
+    "PaymentPaidConfirm.dc.html": {
+      "h": 1196,
+      "is_interactive": true,
+      "title": "14B5 · Change a paid status? Confirm before a Paid payment moves on (also 16E Payments tab)",
+      "w": 390,
+      "x": 4236,
+      "y": 15508
+    },
+    "EventParticipantsPaidConfirm.dc.html": {
+      "h": 860,
+      "is_interactive": true,
+      "title": "10D2 · Change a paid status? Confirm before a Paid participant moves on (also 16E3 Events tab)",
+      "w": 390,
+      "x": 4236,
+      "y": 10758
     }
   },
   "createdOnFiles": {
@@ -1074,6 +1114,7 @@
     "EventParticipantsExams.dc.html",
     "OrderCreateEventEmpty.dc.html",
     "EventTypePicker.dc.html",
+    "EventParticipantsPaidConfirm.dc.html",
     "EventCancelSheet.dc.html",
     "OrdersOrg.dc.html",
     "OrdersShoppingList.dc.html",
@@ -1094,6 +1135,10 @@
     "PaymentEditSheet.dc.html",
     "PaymentCreate.dc.html",
     "PaymentCreateCustom.dc.html",
+    "PaymentPeriodActions.dc.html",
+    "PaymentDetailsLocked.dc.html",
+    "PaymentPeriodActionsLocked.dc.html",
+    "PaymentPaidConfirm.dc.html",
     "SchoolSettings.dc.html",
     "SchoolSettingsEdited.dc.html",
     "StudentsList.dc.html",
