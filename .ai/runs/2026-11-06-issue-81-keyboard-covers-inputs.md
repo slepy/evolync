@@ -35,7 +35,7 @@ Non-goals: no visual redesign of forms; keyboard not opening on screen entry (#8
 
 ### Phase 1: Keyboard-aware pages
 
-- [ ] 1.1 Add react-native-keyboard-controller and KeyboardProvider
-- [ ] 1.2 Keyboard-aware scroll and sticky footer in the page components
-- [ ] 1.3 FormSheet fill makes room for the keyboard
-- [ ] 1.4 Regression test for keyboard-aware pages and fill sheet
+- [x] 1.1 Add react-native-keyboard-controller and KeyboardProvider — 97672c0
+- [x] 1.2 Keyboard-aware scroll and sticky footer in the page components — 43c866b
+- [x] 1.3 FormSheet fill makes room for the keyboard — 50c3290
+- [x] 1.4 Regression test for keyboard-aware pages and fill sheet — bddae25
