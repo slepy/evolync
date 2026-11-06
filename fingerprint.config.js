@@ -6,5 +6,7 @@
  * @type {import('expo/fingerprint').Config}
  */
 module.exports = {
-  ignorePaths: ["**/google-services.json"],
+  // On EAS the variable resolves to ../eas-environment-secrets/<hash>, not to
+  // a file named google-services.json, so that path is ignored too.
+  ignorePaths: ["**/google-services.json", "../eas-environment-secrets/**"],
 };
