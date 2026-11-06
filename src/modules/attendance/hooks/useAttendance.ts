@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import AttendanceRecord, {
   type AttendanceStatus,
   AttendanceStatus as AttendanceStatusEnum,
@@ -43,6 +43,15 @@ export const useAttendance = (
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const { performSync } = useStore();
+  /*
+   * While a save / delete runs and the screen leaves, the list stays as it is:
+   * re-rendering it in the frame the route is popped (rows reloaded, Save
+   * hidden) left Android with a black screen. The latest emission is kept and
+   * applied if the action fails.
+   */
+  const heldRef = useRef(false);
+  const pendingRef = useRef<AttendanceRecord[] | null>(null);
+  const applyRef = useRef<(records: AttendanceRecord[]) => void>(() => {});
 
   // Load attendance data via repositories
   useEffect(() => {
@@ -52,54 +61,67 @@ export const useAttendance = (
       return;
     }
 
+    // Builds the list: members are loaded based on the records.
+    applyRef.current = async (records: AttendanceRecord[]) => {
+      try {
+        // Get member IDs from attendance records
+        const memberIds = records.map((r) => r.schoolMemberId);
+
+        if (memberIds.length === 0) {
+          setAttendanceList([]);
+          setIsLoading(false);
+          return;
+        }
+
+        // Load members for these attendance records
+        const members = await StudentRepository.findByIds(memberIds);
+        if (heldRef.current) {
+          pendingRef.current = records;
+          return;
+        }
+        const memberById = new Map(members.map((m) => [m.id, m]));
+
+        // Build attendance list with member data
+        const list: AttendanceWithMember[] = records
+          .map((record): AttendanceWithMember | null => {
+            const member = memberById.get(record.schoolMemberId);
+            if (!member) return null;
+
+            return {
+              record,
+              member,
+              status: record.status,
+              disabled: member.status === MemberStatus.ARCHIVED,
+            };
+          })
+          .filter((item): item is AttendanceWithMember => item !== null);
+
+        // Sort by display name
+        list.sort((a, b) =>
+          (a.member.displayName || "").localeCompare(
+            b.member.displayName || "",
+          ),
+        );
+
+        setAttendanceList(list);
+        setIsLoading(false);
+      } catch (err) {
+        console.error("[useAttendance] Error loading members:", err);
+        setError(t("errorLoadingFailed"));
+        setIsLoading(false);
+      }
+    };
+
     // Only observe attendance records - members are loaded based on records
     const recordsSub = AttendanceRecordRepository.observeBySessionId(
       sessionId,
     ).subscribe({
-      next: async (records: AttendanceRecord[]) => {
-        try {
-          // Get member IDs from attendance records
-          const memberIds = records.map((r) => r.schoolMemberId);
-
-          if (memberIds.length === 0) {
-            setAttendanceList([]);
-            setIsLoading(false);
-            return;
-          }
-
-          // Load members for these attendance records
-          const members = await StudentRepository.findByIds(memberIds);
-          const memberById = new Map(members.map((m) => [m.id, m]));
-
-          // Build attendance list with member data
-          const list: AttendanceWithMember[] = records
-            .map((record): AttendanceWithMember | null => {
-              const member = memberById.get(record.schoolMemberId);
-              if (!member) return null;
-
-              return {
-                record,
-                member,
-                status: record.status,
-                disabled: member.status === MemberStatus.ARCHIVED,
-              };
-            })
-            .filter((item): item is AttendanceWithMember => item !== null);
-
-          // Sort by display name
-          list.sort((a, b) =>
-            (a.member.displayName || "").localeCompare(
-              b.member.displayName || "",
-            ),
-          );
-
-          setAttendanceList(list);
-          setIsLoading(false);
-        } catch (err) {
-          console.error("[useAttendance] Error loading members:", err);
-          setError(t("errorLoadingFailed"));
-          setIsLoading(false);
+      next: (records: AttendanceRecord[]) => {
+        if (heldRef.current) {
+          pendingRef.current = records;
+          return;
         }
+        applyRef.current(records);
       },
       error: (err: Error) => {
         console.error("[useAttendance] Records observer error:", err);
@@ -127,32 +149,53 @@ export const useAttendance = (
     [],
   );
 
-  // Save all attendance via service
+  /**
+   * Runs an action after which the screen leaves (Save, Delete): the list is
+   * held from the start and stays held on success; a failure releases it,
+   * applies what arrived meanwhile and rethrows. Ignored while one runs.
+   */
+  const runAndLeave = useCallback(async (action: () => Promise<void>) => {
+    if (heldRef.current) return false;
+    heldRef.current = true;
+    try {
+      await action();
+      return true;
+    } catch (err) {
+      heldRef.current = false;
+      const pending = pendingRef.current;
+      pendingRef.current = null;
+      if (pending) applyRef.current(pending);
+      throw err;
+    }
+  }, []);
+
+  // Save all attendance via service; true once saved (the screen then leaves).
   const saveAll = useCallback(async () => {
     if (!sessionId || attendanceList.length === 0) {
-      return;
+      return false;
     }
 
     setIsSaving(true);
     setError(null);
 
     try {
-      await bulkSaveAttendanceList(
-        sessionId,
-        attendanceList.map((item) => ({
-          memberId: item.member.id,
-          status: item.status,
-        })),
+      return await runAndLeave(() =>
+        bulkSaveAttendanceList(
+          sessionId,
+          attendanceList.map((item) => ({
+            memberId: item.member.id,
+            status: item.status,
+          })),
+        ),
       );
     } catch (err) {
       console.error("[useAttendance] Save error:", err);
       const message = err instanceof Error ? err.message : t("errorSaveFailed");
       setError(message);
-      throw err;
-    } finally {
       setIsSaving(false);
+      throw err;
     }
-  }, [sessionId, attendanceList]);
+  }, [sessionId, attendanceList, runAndLeave]);
 
   // Get attendance statistics
   const stats = {
@@ -191,6 +234,7 @@ export const useAttendance = (
     error,
     toggleStatus,
     saveAll,
+    runAndLeave,
     refresh,
   };
 };

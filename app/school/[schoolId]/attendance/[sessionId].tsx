@@ -7,5 +7,13 @@ export default function SchoolAttendanceSessionScreen() {
   const { schoolId, sessionId } = useLocalSearchParams<{ schoolId: string; sessionId: string }>();
   const router = useRouter();
 
-  return <AttendanceSessionScreen schoolId={schoolId} sessionId={sessionId} onSaved={() => router.back()} />;
+  // To the sessions list even when the session was opened from the dashboard tile's "+" (Create → Open):
+  // back() would land on the school dashboard there.
+  return (
+    <AttendanceSessionScreen
+      schoolId={schoolId}
+      sessionId={sessionId}
+      onSaved={() => router.dismissTo(`/school/${schoolId}/attendance`)}
+    />
+  );
 }

@@ -2,7 +2,7 @@ import { TrashButton } from "@/core/components";
 import TrainingSession from "@/database/models/TrainingSession";
 import { LoadingScreen } from "@/core/components";
 import { confirmDelete } from "@/core/utils/confirmDelete";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useAttendance } from "../hooks/useAttendance";
 import { TrainingSessionRepository } from "../repositories";
 import { deleteTrainingSession } from "../services";
@@ -13,7 +13,7 @@ import { AttendanceSessionBody } from "./AttendanceSessionBody";
 interface AttendanceSessionScreenProps {
   schoolId: string;
   sessionId: string;
-  /** After Save or Delete: back to the sessions. */
+  /** After Save or Delete: to the school's sessions (13A), whatever screen opened this one. */
   onSaved: () => void;
 }
 
@@ -22,11 +22,18 @@ export const AttendanceSessionScreen: React.FC<AttendanceSessionScreenProps> = (
   const [session, setSession] = useState<TrainingSession | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
   const [deleteError, setDeleteError] = useState<string | null>(null);
-  const { attendanceList, isLoading, isSaving, error, toggleStatus, saveAll } = useAttendance(sessionId, schoolId);
+  const { attendanceList, isLoading, isSaving, error, toggleStatus, saveAll, runAndLeave } = useAttendance(
+    sessionId,
+    schoolId,
+  );
+  // Set while Save / Delete runs and after it: the screen is leaving and must not re-render (Android black screen).
+  const leavingRef = useRef(false);
 
   useEffect(() => {
     const subscription = TrainingSessionRepository.observeById(sessionId).subscribe({
-      next: setSession,
+      next: (next: TrainingSession) => {
+        if (!leavingRef.current) setSession(next);
+      },
       error: (err: Error) => console.error("[AttendanceSessionScreen] Load session error:", err),
     });
     return () => subscription.unsubscribe();
@@ -35,22 +42,28 @@ export const AttendanceSessionScreen: React.FC<AttendanceSessionScreenProps> = (
   const changed = attendanceList.some((item) => item.record && item.status !== item.record.status);
 
   const handleSave = async () => {
+    if (leavingRef.current) return;
+    leavingRef.current = true;
     try {
-      await saveAll();
-      onSaved();
+      if (await saveAll()) onSaved();
+      else leavingRef.current = false;
     } catch {
+      leavingRef.current = false;
       // The hook keeps the error, shown above the button.
     }
   };
 
   const handleDelete = () =>
     confirmDelete(t("attendanceDeleteTitle"), t("attendanceDeleteMessage"), async () => {
+      if (leavingRef.current) return;
       setIsDeleting(true);
       setDeleteError(null);
+      leavingRef.current = true;
       try {
-        await deleteTrainingSession(sessionId);
-        onSaved();
+        if (await runAndLeave(() => deleteTrainingSession(sessionId))) onSaved();
+        else leavingRef.current = false;
       } catch (err) {
+        leavingRef.current = false;
         console.error("[AttendanceSessionScreen] Delete error:", err);
         setDeleteError(t("errorDeleteFailed"));
         setIsDeleting(false);
@@ -68,7 +81,8 @@ export const AttendanceSessionScreen: React.FC<AttendanceSessionScreenProps> = (
         if (item) toggleStatus(memberId, nextStatus(item.status));
       }}
       buttonLabel={t("save")}
-      showButton={changed}
+      // Saved records change in place: keep Save (with its spinner) until the screen is gone.
+      showButton={changed || isSaving}
       onSubmit={handleSave}
       isSaving={isSaving || isDeleting}
       error={deleteError ?? error}
