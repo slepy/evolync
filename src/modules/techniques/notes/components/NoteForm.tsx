@@ -12,7 +12,6 @@ export const emptyRow = (): EditableRow => ({ id: uuidv4(), person1Text: "", per
 export interface NoteFormProps {
   value: NoteDraft;
   onChange: (next: NoteDraft) => void;
-  autoFocusTitle?: boolean;
   /** Problem with the title from the last Create / Save, shown under the field. */
   titleError?: string;
 }
@@ -21,7 +20,7 @@ export interface NoteFormProps {
  * Body of the new-note and note screens (T3 / T4): TITLE, TAGS (rose chips,
  * dashed Add tag opening the tags sheet T5) and the Person 1 / Person 2 rows.
  */
-export function NoteForm({ value, onChange, autoFocusTitle, titleError }: NoteFormProps) {
+export function NoteForm({ value, onChange, titleError }: NoteFormProps) {
   const updateRow = (id: string, patch: Partial<EditableRow>) =>
     onChange({ ...value, rows: value.rows.map((row) => (row.id === id ? { ...row, ...patch } : row)) });
 
@@ -36,7 +35,6 @@ export function NoteForm({ value, onChange, autoFocusTitle, titleError }: NoteFo
         accent="notebook"
         maxLength={NOTE_TITLE_MAX}
         error={titleError}
-        autoFocus={autoFocusTitle}
       />
 
       <TagsField tagIds={value.tagIds} onChange={(tagIds) => onChange({ ...value, tagIds })} />

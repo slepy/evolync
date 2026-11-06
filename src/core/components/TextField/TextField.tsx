@@ -28,7 +28,6 @@ export interface TextFieldProps {
   /** Under the input, before the hint (password rule chips). */
   footer?: ReactNode;
   disabled?: boolean;
-  autoFocus?: boolean;
   maxLength?: number;
   onSubmitEditing?: () => void;
   returnKeyType?: TextInputProps["returnKeyType"];
@@ -66,7 +65,6 @@ export function TextField({
   secure,
   footer,
   disabled,
-  autoFocus,
   maxLength,
   onSubmitEditing,
   returnKeyType,
@@ -122,7 +120,6 @@ export function TextField({
           placeholderTextColor={neutral.placeholder}
           editable={!disabled && !locked}
           aria-readonly={locked}
-          autoFocus={autoFocus}
           maxLength={maxLength}
           onSubmitEditing={onSubmitEditing}
           returnKeyType={returnKeyType}

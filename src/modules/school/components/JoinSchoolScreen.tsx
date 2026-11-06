@@ -87,7 +87,6 @@ export const JoinSchoolScreen: React.FC<JoinSchoolScreenProps> = ({ user, onBack
           size="large"
           accent="school"
           invalid={!!error}
-          autoFocus
           autoCapitalize="characters"
           autoComplete="off"
           returnKeyType="send"

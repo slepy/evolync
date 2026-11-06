@@ -146,7 +146,6 @@ export const RankSheet: React.FC<RankSheetProps> = ({
             accent="grading"
             maxLength={NAME_MAX_LENGTH}
             error={error}
-            autoFocus={!editing}
           />
           <SelectField
             label={t("fieldColor")}
