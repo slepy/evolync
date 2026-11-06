@@ -1,9 +1,13 @@
 import { neutral } from "@/core/theme/tokens";
 import { X } from "lucide-react-native";
 import type { ReactNode } from "react";
+import { useKeyboardState } from "react-native-keyboard-controller";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Sheet, Text, View, XStack, YStack } from "tamagui";
 import { bottomInsetPadding } from "../../utils/safeArea";
+
+/** Space between a fill sheet's footer and the open keyboard. */
+const KEYBOARD_GAP = 12;
 
 export interface FormSheetProps {
   open: boolean;
@@ -24,6 +28,8 @@ export interface FormSheetProps {
   /**
    * Tall sheet (12F Add product): nearly full height, the children fill the
    * space between the header and the footer (put a scroll view in them).
+   * With the keyboard open it keeps its height and makes room for the
+   * keyboard at the bottom, so the footer and the content stay above it.
    */
   fill?: boolean;
 }
@@ -46,6 +52,11 @@ export function FormSheet({
   fill,
 }: FormSheetProps) {
   const insets = useSafeAreaInsets();
+  // A 92% sheet cannot slide up by the keyboard height (Tamagui clamps it at the
+  // top of the screen and the bottom stays under the keyboard): it shrinks its
+  // content instead. A small sheet still moves up with the keyboard.
+  const keyboardHeight = useKeyboardState((state) => (state.isVisible ? state.height : 0));
+  const bottomPadding = bottomInsetPadding(fill ? 28 : 36, insets.bottom);
 
   return (
     <Sheet
@@ -55,7 +66,7 @@ export function FormSheet({
       snapPointsMode={fill ? "percent" : "fit"}
       snapPoints={fill ? [92] : undefined}
       dismissOnSnapToBottom
-      moveOnKeyboardChange
+      moveOnKeyboardChange={!fill}
       zIndex={200_000}
     >
       <Sheet.Overlay backgroundColor="rgba(0,0,0,0.5)" enterStyle={{ opacity: 0 }} exitStyle={{ opacity: 0 }} />
@@ -65,7 +76,7 @@ export function FormSheet({
         borderTopRightRadius="$header"
         paddingHorizontal={20}
         paddingTop={10}
-        paddingBottom={bottomInsetPadding(fill ? 28 : 36, insets.bottom)}
+        paddingBottom={fill && keyboardHeight > 0 ? keyboardHeight + KEYBOARD_GAP : bottomPadding}
       >
         <Sheet.Handle backgroundColor="$neutralControl" />
         <YStack gap={fill ? 14 : 20} paddingTop={12} flex={fill ? 1 : undefined}>

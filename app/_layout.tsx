@@ -28,6 +28,7 @@ import { StatusBar } from "expo-status-bar";
 import { useEffect, useState } from "react";
 import { View } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { KeyboardProvider } from "react-native-keyboard-controller";
 import { PortalProvider } from "@tamagui/portal";
 import { TamaguiProvider } from "tamagui";
 import i18n, { languageReady } from "@/core/i18n/config";
@@ -137,36 +138,41 @@ function RootLayoutNav() {
   }, []);
 
   // Gesture root for RNGH gestures; outermost so portaled sheets are inside it too.
+  // KeyboardProvider (outside the portal, so sheets see it too) lets the pages keep
+  // the focused input above the keyboard: on edge-to-edge Android the window is
+  // never resized. The app draws under both system bars.
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <PortalProvider shouldAddRootHost>
-        <TamaguiProvider config={config} defaultTheme="dark">
-          <ThemeProvider value={navigationTheme}>
-            <StatusBar style="light" />
-            <View
-              style={{
-                flex: 1,
-                backgroundColor: themeColors.background,
-              }}
-            >
-              <Stack
-                screenOptions={{
-                  headerShown: false,
-                  contentStyle: { backgroundColor: themeColors.background },
+      <KeyboardProvider statusBarTranslucent navigationBarTranslucent preserveEdgeToEdge>
+        <PortalProvider shouldAddRootHost>
+          <TamaguiProvider config={config} defaultTheme="dark">
+            <ThemeProvider value={navigationTheme}>
+              <StatusBar style="light" />
+              <View
+                style={{
+                  flex: 1,
+                  backgroundColor: themeColors.background,
                 }}
               >
-                {/* Launch path (L2): screens that replace the launch loading
-                  fade in instead of sliding over it. */}
-                <Stack.Screen name="index" options={{ animation: "none" }} />
-                <Stack.Screen name="auth/login" options={{ animation: "fade" }} />
-                <Stack.Screen name="organization/dashboard" options={{ animation: "fade" }} />
-                <Stack.Screen name="user/dashboard" options={{ animation: "fade" }} />
-              </Stack>
-              <NotificationResponseHandler />
-            </View>
-          </ThemeProvider>
-        </TamaguiProvider>
-      </PortalProvider>
+                <Stack
+                  screenOptions={{
+                    headerShown: false,
+                    contentStyle: { backgroundColor: themeColors.background },
+                  }}
+                >
+                  {/* Launch path (L2): screens that replace the launch loading
+                    fade in instead of sliding over it. */}
+                  <Stack.Screen name="index" options={{ animation: "none" }} />
+                  <Stack.Screen name="auth/login" options={{ animation: "fade" }} />
+                  <Stack.Screen name="organization/dashboard" options={{ animation: "fade" }} />
+                  <Stack.Screen name="user/dashboard" options={{ animation: "fade" }} />
+                </Stack>
+                <NotificationResponseHandler />
+              </View>
+            </ThemeProvider>
+          </TamaguiProvider>
+        </PortalProvider>
+      </KeyboardProvider>
     </GestureHandlerRootView>
   );
 }

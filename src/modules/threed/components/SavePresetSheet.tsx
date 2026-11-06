@@ -52,7 +52,6 @@ export function SavePresetSheet({
         accent="threed"
         maxLength={THREED_TITLE_MAX}
         error={error}
-        autoFocus
       />
     </FormSheet>
   );

@@ -95,7 +95,6 @@ export function SaveTechniqueSheet({ open, onOpenChange, bodyPart, onSave }: Sav
         accent="threed"
         maxLength={THREED_TITLE_MAX}
         error={error}
-        autoFocus
       />
     </FormSheet>
   );
