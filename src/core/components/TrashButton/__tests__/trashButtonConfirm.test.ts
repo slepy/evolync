@@ -24,6 +24,8 @@ const CONFIRMED_ELSEWHERE: Record<string, string> = {
   "src/modules/inventory/components/ProductFormScreen.tsx": "app/organization/inventory/[productId]/edit.tsx",
   "src/modules/inventory/components/VariantFields.tsx": "src/modules/inventory/components/ProductFormScreen.tsx",
   "src/modules/techniques/notes/components/NoteRowCard.tsx": "src/modules/techniques/notes/components/NoteForm.tsx",
+  "src/modules/notifications/components/NotificationRow.tsx":
+    "src/modules/notifications/components/NotificationsScreen.tsx",
 };
 
 const read = (file: string) => readFileSync(path.join(ROOT, file), "utf8");

@@ -136,7 +136,7 @@ function RootLayoutNav() {
     showLastCrashReport().catch(console.error);
   }, []);
 
-  // Gesture root for RNGH gestures (SwipeToDelete); outermost so portaled sheets are inside it too.
+  // Gesture root for RNGH gestures; outermost so portaled sheets are inside it too.
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <PortalProvider shouldAddRootHost>
