@@ -5,7 +5,6 @@ import {
   ListSection,
   MainNav,
   Notice,
-  SwipeToDelete,
   TabPage,
   TrashButton,
   useNavHome,
@@ -49,8 +48,8 @@ function useNow(): Date {
 
 /**
  * Alerts tab (N1–N4), shared by owners and students: day groups with the
- * unread count, module-colored rows, Mark all as read, swipe a row left to
- * delete it, Delete all. Reads from WatermelonDB, so it renders offline;
+ * unread count, module-colored rows, Mark all as read, a trash button per
+ * row (asks first, like every other list), Delete all. Reads from WatermelonDB, so it renders offline;
  * marking read and deleting are local-first and sync in the background.
  */
 export function NotificationsScreen() {
@@ -100,7 +99,9 @@ export function NotificationsScreen() {
   }, [userId]);
 
   const handleDelete = useCallback((id: string) => {
-    deleteNotification(id).catch((err) => console.error("[NotificationsScreen] delete:", err));
+    confirmDelete(t("delete"), t("notificationsDeleteConfirm"), () => {
+      deleteNotification(id).catch((err) => console.error("[NotificationsScreen] delete:", err));
+    });
   }, []);
 
   const handleDeleteAll = useCallback(() => {
@@ -150,18 +151,17 @@ export function NotificationsScreen() {
                 const { title, body } = getNotificationContent(notification, t, now, locale);
                 const style = notificationRowStyle(notification.type);
                 return (
-                  <SwipeToDelete key={notification.id} onDelete={() => handleDelete(notification.id)}>
-                    <NotificationRow
-                      title={title}
-                      body={body}
-                      time={inboxTimeLabel(notification.createdAt, now, t, locale)}
-                      unread={!notification.readAt}
-                      icon={style.icon}
-                      accent={style.accent}
-                      onPress={() => handlePress(notification)}
-                      onDelete={() => handleDelete(notification.id)}
-                    />
-                  </SwipeToDelete>
+                  <NotificationRow
+                    key={notification.id}
+                    title={title}
+                    body={body}
+                    time={inboxTimeLabel(notification.createdAt, now, t, locale)}
+                    unread={!notification.readAt}
+                    icon={style.icon}
+                    accent={style.accent}
+                    onPress={() => handlePress(notification)}
+                    onDelete={() => handleDelete(notification.id)}
+                  />
                 );
               })}
             </ListCard>

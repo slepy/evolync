@@ -812,6 +812,7 @@
   "notificationsDeleteAll": "Usuń wszystkie",
   "notificationsDeleteAllTitle": "Usunąć wszystkie powiadomienia?",
   "notificationsDeleteAllMessage": "Znikną też na Twoich pozostałych urządzeniach. Tej operacji nie można cofnąć.",
+  "notificationsDeleteConfirm": "Usunąć to powiadomienie?",
   "notificationsUnread": "Nieprzeczytane",
   "notificationsMinutesAgo": "{{count}} min",
   "notificationsHoursAgo": "{{count}} godz.",

@@ -10,7 +10,6 @@ export * from "./TechniqueNotebook";
 export * from "./SubScreen";
 export * from "./PrimaryButton";
 export * from "./TrashButton";
-export * from "./SwipeToDelete";
 export * from "./TextField";
 export * from "./FormSheet";
 export * from "./SelectField";

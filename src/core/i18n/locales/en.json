@@ -770,6 +770,7 @@
   "notificationsDeleteAll": "Delete all",
   "notificationsDeleteAllTitle": "Delete all notifications?",
   "notificationsDeleteAllMessage": "They will also disappear on your other devices. This cannot be undone.",
+  "notificationsDeleteConfirm": "Delete this notification?",
   "notificationsUnread": "Unread",
   "notificationsMinutesAgo": "{{count}} min",
   "notificationsHoursAgo": "{{count}} h",
