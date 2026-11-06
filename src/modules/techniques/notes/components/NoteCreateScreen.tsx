@@ -54,7 +54,7 @@ export function NoteCreateScreen() {
       }
     >
       {saveError ? <AlertBanner title={t("errorCreateFailed")} onDismiss={() => setSaveError(false)} /> : null}
-      <NoteForm value={draft} onChange={change} autoFocusTitle titleError={titleError} />
+      <NoteForm value={draft} onChange={change} titleError={titleError} />
     </SubScreenPage>
   );
 }

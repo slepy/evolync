@@ -65,7 +65,6 @@ export function SequenceCreateScreen() {
           accent="threed"
           maxLength={THREED_TITLE_MAX}
           error={titleError}
-          autoFocus
         />
         <TextField
           size="large"

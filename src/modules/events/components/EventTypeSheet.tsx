@@ -101,7 +101,6 @@ export const EventTypeSheet: React.FC<EventTypeSheetProps> = ({ open, onOpenChan
           accent="events"
           maxLength={EVENT_TYPE_NAME_MAX}
           error={error}
-          autoFocus
           autoCapitalize="sentences"
           returnKeyType="done"
           onSubmitEditing={handleSubmit}

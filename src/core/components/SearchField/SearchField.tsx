@@ -10,14 +10,13 @@ export interface SearchFieldProps {
   /** Placeholder and accessible label ("Search students"). */
   placeholder: string;
   accent?: ListAccent;
-  autoFocus?: boolean;
 }
 
 /**
  * 48px search above a long list (select sheet with more than 8 options,
  * 12E1): search icon, input, clear button once there is text.
  */
-export function SearchField({ value, onChangeText, placeholder, accent = "neutral", autoFocus }: SearchFieldProps) {
+export function SearchField({ value, onChangeText, placeholder, accent = "neutral" }: SearchFieldProps) {
   const [focused, setFocused] = useState(false);
   const tint = resolveListAccent(accent).tint;
 
@@ -42,7 +41,6 @@ export function SearchField({ value, onChangeText, placeholder, accent = "neutra
         onChangeText={onChangeText}
         placeholder={placeholder}
         placeholderTextColor={neutral.placeholder}
-        autoFocus={autoFocus}
         autoCorrect={false}
         autoCapitalize="none"
         returnKeyType="search"

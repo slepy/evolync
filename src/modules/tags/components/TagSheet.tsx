@@ -88,7 +88,6 @@ export const TagSheet: React.FC<TagSheetProps> = ({ open, onOpenChange, tag, onC
         accent="tags"
         maxLength={TAG_NAME_MAX}
         error={error}
-        autoFocus
         returnKeyType="done"
         onSubmitEditing={handleSubmit}
       />

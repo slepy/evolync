@@ -93,7 +93,6 @@ export const StudentFormScreen: React.FC<StudentFormScreenProps> = ({ initial, o
           }}
           placeholder={t("studentNamePlaceholder")}
           accent="students"
-          autoFocus={!editing}
           autoCapitalize="words"
           maxLength={100}
           error={errors.displayName}
