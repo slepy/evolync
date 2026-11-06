@@ -31,6 +31,8 @@ Non-goals: no visual redesign of forms; keyboard not opening on screen entry (#8
 
 ## Progress
 
+PR: #84
+
 > Convention: `- [ ]` pending, `- [x]` done. Append ` — <commit sha>` when a step lands. Do not rename step titles.
 
 ### Phase 1: Keyboard-aware pages
