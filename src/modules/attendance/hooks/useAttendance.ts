@@ -51,7 +51,9 @@ export const useAttendance = (
    */
   const heldRef = useRef(false);
   const pendingRef = useRef<AttendanceRecord[] | null>(null);
-  const applyRef = useRef<(records: AttendanceRecord[]) => void>(() => {});
+  /** Members whose status the user changed since the list was last built. */
+  const editedRef = useRef(new Set<string>());
+  const applyRef = useRef<(records: AttendanceRecord[], keepDrafts?: boolean) => void>(() => {});
 
   // Load attendance data via repositories
   useEffect(() => {
@@ -61,8 +63,9 @@ export const useAttendance = (
       return;
     }
 
-    // Builds the list: members are loaded based on the records.
-    applyRef.current = async (records: AttendanceRecord[]) => {
+    // Builds the list: members are loaded based on the records. `keepDrafts`
+    // keeps the unsaved statuses on screen (after a failed Save).
+    applyRef.current = async (records: AttendanceRecord[], keepDrafts = false) => {
       try {
         // Get member IDs from attendance records
         const memberIds = records.map((r) => r.schoolMemberId);
@@ -103,7 +106,19 @@ export const useAttendance = (
           ),
         );
 
-        setAttendanceList(list);
+        if (keepDrafts) {
+          setAttendanceList((prev) => {
+            const drafts = new Map(prev.map((item) => [item.member.id, item.status]));
+            return list.map((item) =>
+              item.disabled || !editedRef.current.has(item.member.id)
+                ? item
+                : { ...item, status: drafts.get(item.member.id) ?? item.status },
+            );
+          });
+        } else {
+          editedRef.current.clear();
+          setAttendanceList(list);
+        }
         setIsLoading(false);
       } catch (err) {
         console.error("[useAttendance] Error loading members:", err);
@@ -138,6 +153,7 @@ export const useAttendance = (
   // Toggle attendance status locally (updates local state only)
   const toggleStatus = useCallback(
     (memberId: string, newStatus: AttendanceStatus) => {
+      editedRef.current.add(memberId);
       setAttendanceList((prev) =>
         prev.map((item) =>
           item.member.id === memberId && !item.disabled
@@ -164,14 +180,14 @@ export const useAttendance = (
       heldRef.current = false;
       const pending = pendingRef.current;
       pendingRef.current = null;
-      if (pending) applyRef.current(pending);
+      if (pending) applyRef.current(pending, true);
       throw err;
     }
   }, []);
 
   // Save all attendance via service; true once saved (the screen then leaves).
   const saveAll = useCallback(async () => {
-    if (!sessionId || attendanceList.length === 0) {
+    if (!sessionId || attendanceList.length === 0 || heldRef.current) {
       return false;
     }
 

@@ -33,6 +33,8 @@ stub(
 const { AttendanceSessionScreen } =
   require("../components/AttendanceSessionScreen") as typeof import("../components/AttendanceSessionScreen");
 const { AttendanceRecordRepository } = require("../repositories") as typeof import("../repositories");
+// The hook calls it through the services barrel, which reads this module's live export.
+const services = require("../services/attendanceService") as Record<string, unknown>;
 
 (globalThis as any).IS_REACT_ACT_ENVIRONMENT = true;
 const wait = (ms = 50) => new Promise((r) => setTimeout(r, ms));
@@ -112,6 +114,32 @@ describe("AttendanceSessionScreen", () => {
       ["m2", "present"],
     ]);
     act(() => renderer.unmount());
+  });
+
+  it("a failed Save stays on the screen with the error and keeps the unsaved status", async () => {
+    const original = services.bulkSaveAttendanceList;
+    services.bulkSaveAttendanceList = async () => {
+      throw new Error("disk full");
+    };
+    try {
+      const { renderer, saved } = await mount();
+      await act(async () => {
+        bodyProps(renderer).onToggle("m1");
+      });
+      await act(async () => {
+        bodyProps(renderer).onSubmit();
+        await wait(200);
+      });
+
+      const p = bodyProps(renderer);
+      assert.equal(saved(), 0);
+      assert.equal(p.error, "disk full");
+      assert.equal(p.isSaving, false);
+      assert.deepEqual(shown(p), { showButton: true, statuses: ["absent", "present"] });
+      act(() => renderer.unmount());
+    } finally {
+      services.bulkSaveAttendanceList = original;
+    }
   });
 
   it("Delete removes the session and leaves without emptying the list", async () => {
