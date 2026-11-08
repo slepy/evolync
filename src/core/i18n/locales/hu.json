@@ -770,6 +770,7 @@
   "notificationsDeleteAll": "Összes törlése",
   "notificationsDeleteAllTitle": "Törlöd az összes értesítést?",
   "notificationsDeleteAllMessage": "A többi eszközödről is eltűnnek. Ez nem vonható vissza.",
+  "notificationsDeleteConfirm": "Törlöd ezt az értesítést?",
   "notificationsUnread": "Olvasatlan",
   "notificationsMinutesAgo": "{{count}} perc",
   "notificationsHoursAgo": "{{count}} óra",

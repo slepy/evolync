@@ -137,7 +137,7 @@ function RootLayoutNav() {
     showLastCrashReport().catch(console.error);
   }, []);
 
-  // Gesture root for RNGH gestures (SwipeToDelete); outermost so portaled sheets are inside it too.
+  // Gesture root for RNGH gestures; outermost so portaled sheets are inside it too.
   // KeyboardProvider (outside the portal, so sheets see it too) lets the pages keep
   // the focused input above the keyboard: on edge-to-edge Android the window is
   // never resized. The app draws under both system bars.
