@@ -15,7 +15,7 @@ who:
     outcome: "Sees their events and their school's trainings, read-only, and opens an event to answer"
 rules:
   - "The calendar opens from the dashboard hero (*Next up*) of the current context."
-  - "**Organization**: events and trainings of every school; *Add new* offers an event or a training. A *List* view filters the organization's events by date range and type."
+  - "**Organization**: events and trainings of every school; *Add new* offers an event or a training. A *List* view filters the organization's events by date range and type. The chevron of an event expands its participants; a tap on a participant opens that event's *Participants* screen (*Manage participants*), a tap on the event row opens its details."
   - "**School**: the trainings that concern this school only; *Add new* opens a training for this school."
   - "**Student**: the events they take part in and the trainings of their school (or meant for them); no *Add new*; only events open."
   - "Filter chips *All*, *Events*, *Trainings*. The grid starts on Monday; at most two multi-day events get a bar, the others show as dots."

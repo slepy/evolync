@@ -175,6 +175,8 @@ Native: Expo SecureStore. Web: AsyncStorage.
 
 - The organization and membership reads go straight to Supabase tables, outside the sync. They run only online and the result is cached for offline starts.
 - Signing in with an expired token offline relies on the local database only; nothing is sent until the token is refreshed.
+- **Launch update**: on every cold start a build with EAS Update checks its channel (at most 3 s) and downloads a newer JS bundle (at most 20 s) while the launch screen reads *Updating the app…*, then restarts on it. Offline, a timeout or an error continues on the current bundle (`src/core/hooks/launchUpdate.ts`, `useLaunchUpdate.ts`). Native changes still need a new build; the runtime version follows the native fingerprint.
+- **Diagnostics**: a red *Sync failed* pill opens the sync error (*Close* / *Share* / *Retry*) instead of retrying silently, and a fatal JS error is saved and offered, shareable, on the next launch (`src/core/utils/diagnostics.ts`).
 - Google sign in (`useAuth.signInWithGoogle`, `app/auth/callback.tsx`) works in code, but no screen offers it.
 
 </FeatureView>

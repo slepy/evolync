@@ -17,6 +17,7 @@ rules:
   - "Powiadomienia zapisuje **baza danych** (wyzwalacze), nigdy aplikacja, więc trafiają do odbiorcy niezależnie od tego, które urządzenie działało."
   - "Nikt nie dostaje powiadomienia o własnym działaniu (właściciel zamawiający dla siebie, uczeń dodany przez siebie)."
   - "Skrzynka synchronizuje się jak inne dane i działa offline; wiersze są pogrupowane *Dziś*, *Wczoraj*, *Wcześniej* z liczbą nowych; *Oznacz wszystkie jako przeczytane* oznacza je lokalnie i synchronizuje."
+  - "Wiersz usuwa się **przyciskiem kosza** obok niego, po pytaniu *Usunąć to powiadomienie?*; kosz w nagłówku (*Usuń wszystkie*) pyta *Usunąć wszystkie powiadomienia?*. Usunięcie jest miękkie i synchronizuje się, więc powiadomienie znika też na innych urządzeniach osoby; serwer przyjmuje je tylko dla własnych, żywych wierszy wywołującego."
   - "Dotknięcie oznacza powiadomienie jako przeczytane i otwiera: zamówienie, prośby szkoły, wydarzenie, płatności ucznia, wydarzenia ucznia lub pulpit ucznia. Gdy obiekt już nie istnieje, skrzynka pokazuje *Ten element nie jest już dostępny.*"
   - "**Push** działa per urządzenie: przy pierwszej wizycie na pulpicie arkusz wyjaśnia go przed systemowym pytaniem; Ustawienia mają przełącznik, który uwzględnia wybór użytkownika i zgodę systemu."
   - "Push jest wysyłany w języku urządzenia. Ponad 3 powiadomienia dla jednej osoby w ciągu 60 sekund łączą się w jeden push."
@@ -37,7 +38,7 @@ flows:
     title: "Skrzynka"
     steps:
       - title: "Alerty"
-        text: "Wiersze w kolorach modułów z kropką nieprzeczytanego i czasem; *Oznacz wszystkie jako przeczytane* w nagłówku."
+        text: "Wiersze w kolorach modułów z kropką nieprzeczytanego i czasem; *Oznacz wszystkie jako przeczytane* i kosz (*Usuń wszystkie*) w nagłówku; każdy wiersz ma własny przycisk kosza."
         screen: NotificationsOrg
         api:
           - { id: sync-pull, x: 50, y: 4 }

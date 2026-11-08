@@ -175,6 +175,8 @@ Natywnie: Expo SecureStore. Web: AsyncStorage.
 
 - Odczyt organizacji i członkostw idzie bezpośrednio do tabel Supabase, poza synchronizacją. Działa tylko online, a wynik jest zapisywany na potrzeby startu offline.
 - Logowanie offline z wygasłym tokenem korzysta wyłącznie z lokalnej bazy; nic nie jest wysyłane, dopóki token się nie odświeży.
+- **Aktualizacja przy starcie**: przy każdym zimnym starcie build z EAS Update sprawdza swój kanał (najwyżej 3 s) i pobiera nowszy pakiet JS (najwyżej 20 s), a ekran startowy pokazuje *Aktualizacja aplikacji…*; potem restartuje się na nim. Offline, po przekroczeniu czasu lub błędzie aplikacja startuje na bieżącym pakiecie (`src/core/hooks/launchUpdate.ts`, `useLaunchUpdate.ts`). Zmiany natywne nadal wymagają nowego buildu; wersja runtime wynika z odcisku natywnego.
+- **Diagnostyka**: czerwona plakietka *Błąd synchronizacji* otwiera błąd synchronizacji (*Zamknij* / *Udostępnij* / *Ponów*) zamiast ponawiać po cichu, a krytyczny błąd JS jest zapisywany i oferowany do udostępnienia przy następnym uruchomieniu (`src/core/utils/diagnostics.ts`).
 - Logowanie przez Google (`useAuth.signInWithGoogle`, `app/auth/callback.tsx`) działa w kodzie, ale żaden ekran go nie oferuje.
 
 </FeatureView>

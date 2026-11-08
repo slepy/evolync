@@ -66,9 +66,9 @@
       "request": "{\n  \"changes\": {\n    \"orders\": { \"created\": [...], \"updated\": [...], \"deleted\": [\"id\"] }\n  },\n  \"lastPulledAt\": 1761400000000\n}",
       "response": "{ ... }   // ignored by the client",
       "notes": {
-        "en": "Writes run with the service role but carry the `x-evolync-actor` header, so database triggers (notifications) know who acted.",
-        "pl": "Zapisy idą z rolą service, ale z nagłówkiem `x-evolync-actor`, dzięki czemu triggery bazy (powiadomienia) wiedzą, kto wykonał akcję.",
-        "hu": "Az írások service szereppel futnak, de `x-evolync-actor` fejléccel, így az adatbázis-triggerek (értesítések) tudják, ki végezte a műveletet."
+        "en": "Writes run with the service role but carry the `x-evolync-actor` header, so database triggers (notifications) know who acted. For `notifications` only `read_at` and a deletion (`deleted_at`, stamped with the server clock) are accepted, and only on the caller's own live rows. A failed push shows its Postgres details and hint in the app (red Sync pill).",
+        "pl": "Zapisy idą z rolą service, ale z nagłówkiem `x-evolync-actor`, dzięki czemu triggery bazy (powiadomienia) wiedzą, kto wykonał akcję. Dla `notifications` przyjmowane są tylko `read_at` i usunięcie (`deleted_at`, z zegarem serwera), wyłącznie dla własnych, żywych wierszy wywołującego. Nieudany push pokazuje w aplikacji szczegóły Postgresa i podpowiedź (czerwona plakietka Sync).",
+        "hu": "Az írások service szereppel futnak, de `x-evolync-actor` fejléccel, így az adatbázis-triggerek (értesítések) tudják, ki végezte a műveletet. A `notifications` esetén csak a `read_at` és a törlés (`deleted_at`, a szerver órájával) fogadható el, kizárólag a hívó saját, élő soraira. A sikertelen feltöltés az alkalmazásban megmutatja a Postgres részleteit és a tippet (piros Sync jelvény)."
       },
       "source": [
         "src/database/sync.ts",

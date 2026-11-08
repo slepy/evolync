@@ -14,7 +14,8 @@ who:
   - role: "Student"
     outcome: "Sees their own sessions and the share of sessions they attended, read-only"
 rules:
-  - "A school has **one session per day**. *Add new* opens today's session when it already exists."
+  - "A school has **one session per day**. *Add new* always opens the *New session* screen; when the picked day already has a session, the button reads *Open* and shows it."
+  - "The **Day** choice is *Today* or *Past date*. A past date is picked with a date field that stops at today and is saved at local midnight; future days cannot be picked."
   - "A new session lists every student who is active or has no account; **everyone starts Present**."
   - "A tap on the status button cycles **Present → Absent → Excused**. Nothing is stored until *Create* or *Save*."
   - "A session keeps the students it was taken with. A student added later does not appear in older sessions; an **archived** student keeps their status, greyed out, and cannot be changed."
@@ -37,11 +38,14 @@ flows:
         text: "The school dashboard opens Attendance from its tile."
         screen: School
       - title: "Sessions"
-        text: "Sessions by month with how many were present. *Add new* opens today's session, or a new one when there is none yet."
+        text: "Sessions by month with how many were present. *Add new* opens the new session screen, also when today already has a session, so a past day can be added."
         screen: AttendanceList
       - title: "Today"
         text: "Every student starts Present. Taps change the exceptions; the summary counts along."
         screen: AttendanceCreate
+      - title: "Past date"
+        text: "*Past date* shows a DATE field that stops at today. When that day already has a session, the button reads *Open* and the existing session opens instead of a duplicate."
+        screen: AttendanceCreatePastDate
       - title: "Create"
         text: "The session and the attendance of every listed student are written in one transaction and synced; the app goes back to the sessions."
         screen: AttendanceCreate
@@ -68,7 +72,7 @@ flows:
     title: "Correcting a session"
     steps:
       - title: "Session"
-        text: "An earlier session shows its students with their statuses; *Save* appears after a change and writes the changed list in one batch."
+        text: "An earlier session shows its students with their statuses; *Save* appears after a change and writes the changed list in one batch; after *Save* or *Delete* the app returns to the sessions. A failed *Save* keeps the statuses you changed."
         screen: AttendanceDetails
         api:
           - { id: sync-push, x: 84, y: 9 }

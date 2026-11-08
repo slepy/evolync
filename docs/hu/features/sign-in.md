@@ -175,6 +175,8 @@ A `useAuth.ts` `mapSupabaseError` függvénye a Supabase-hibákat `invalid_crede
 
 - A szervezet és a tagságok lekérdezése közvetlenül a Supabase táblákhoz megy, a szinkronizáláson kívül. Csak online fut, az eredményt az offline indításhoz tároljuk.
 - Lejárt tokennel offline csak a helyi adatbázis használható; semmi nem megy ki, amíg a token nem frissül.
+- **Indításkori frissítés**: minden hidegindításkor az EAS Update-es build ellenőrzi a csatornáját (legfeljebb 3 mp), és letölti az újabb JS-csomagot (legfeljebb 20 mp), miközben az indítóképernyő az *Az alkalmazás frissítése…* feliratot mutatja; ezután újraindul rajta. Offline, időtúllépéskor vagy hibánál az aktuális csomaggal indul (`src/core/hooks/launchUpdate.ts`, `useLaunchUpdate.ts`). Natív változáshoz továbbra is új build kell; a runtime verzió a natív ujjlenyomatot követi.
+- **Diagnosztika**: a piros *Sikertelen szinkronizálás* jelvény megnyitja a szinkronhibát (*Bezárás* / *Megosztás* / *Újra*) a néma újrapróbálás helyett, a végzetes JS-hibát pedig elmenti, és a következő indításkor megosztásra kínálja (`src/core/utils/diagnostics.ts`).
 - A Google-bejelentkezés (`useAuth.signInWithGoogle`, `app/auth/callback.tsx`) a kódban működik, de egyetlen képernyő sem kínálja.
 
 </FeatureView>

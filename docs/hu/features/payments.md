@@ -23,6 +23,9 @@ rules:
   - "Az időszakok listáján elöl az aktuálisak, utána a legújabbak; a *6/10* chip 80% befizetéstől zöld, 50%-tól borostyán, alatta piros."
   - "Az összegek **pénznemenként** adódnak össze: egy időszakban lehet PLN és EUR is, az összegeket soha nem váltja át."
   - "A tanulók csak a saját befizetéseiket látják. A *… fizetendő* a függőben lévő befizetéseik összege."
+  - "Az a koppintás, amely egy befizetést **a Fizetve állapotból** léptetne tovább, előbb rákérdez: *Módosítod a fizetett állapotot?*; a *Mégse* változatlanul hagyja a sort. Ugyanez a kérdés védi a *Fizetve* állapotú esemény-résztvevőt is (lásd [Események](./events))."
+  - "Az időszak **⋮ menüje** felkínálja a *Befizetések zárolása* / *Befizetések feloldása* műveletet. A zárolt időszakban minden állapot és összeg rögzített: az állapotgombok elhalványulnak, a sorok nem nyitják meg a szerkesztő lapot, az időszaklistán *Zárolva* jelvény látszik, a tanuló adatlapján lakat, a csatlakozási kérés jóváhagyása pedig nem ajánlja fel az időszakot. A *Zárolás* le van tiltva, amíg vannak mentetlen módosítások."
+  - "Az *Időszak törlése* ugyanebben a menüben van, és csak akkor működik, ha az időszak **fel van oldva**, és **egyetlen befizetése sem Fizetve**; előbb rákérdez, majd törli az időszakot a befizetéseivel együtt."
 messages:
   - situation: "Már van időszak ugyanezekkel a dátumokkal"
     message: "Ilyen időszakra már létezik fizetési ciklus"
@@ -32,6 +35,11 @@ messages:
     message: "Az összegnek számnak kell lennie"
   - situation: "Még nincs időszak"
     message: "Még nincsenek fizetési ciklusok"
+  - situation: "Egy befizetés kilép a Fizetve állapotból"
+    title: "Módosítod a fizetett állapotot?"
+    message: "Anna Kowalska fizetettként van jelölve. Módosítod az állapotot erre: Lemondva?"
+  - situation: "Az időszak nem törölhető"
+    message: "6 befizetés fizetve van, ezért ez az időszak nem törölhető."
   - situation: "Tanuló: új befizetés"
     title: "Új befizetés"
     message: "150 PLN, időszak: okt. 1 – 31"
@@ -93,7 +101,7 @@ flows:
         text: "Az *Összegek* kibontja az állapotonkénti és pénznemenkénti összegeket: beszedve, függőben, lemondva."
         screen: PaymentDetailsAmounts
       - title: "Mentés"
-        text: "A lista alatti *Mentés* egy kötegben írja a módosított befizetéseket, beállítja a fizetés dátumát a Fizetve állapotba kerülteknél, és szinkronizál. Az alkalmazás visszalép az időszakokhoz."
+        text: "A lista alatti *Mentés* egy kötegben írja a módosított befizetéseket, beállítja a fizetés dátumát a Fizetve állapotba kerülteknél, és szinkronizál. Az alkalmazás az időszakon marad; a *Mentés* gomb a következő módosításig eltűnik."
         screen: PaymentDetailsAmounts
         api:
           - { id: sync-push, x: 84, y: 9 }
@@ -107,6 +115,18 @@ flows:
         changed --> save[Mentés: módosított befizetések<br/>egy kötegben]
         save --> date[Fizetés dátuma<br/>az újonnan kifizetetteknél]
         date --> sync[Szinkronizálás]
+  - id: close
+    title: "Időszak zárolása és törlése"
+    steps:
+      - title: "Fizetve állapot"
+        text: "A *Fizetve* állapotra koppintás előbb rákérdez; a *Módosítás* a következő állapotot állítja be a képernyőn, a *Mégse* megtartja a Fizetve állapotot."
+        screen: PaymentPaidConfirm
+      - title: "Az időszak menüje"
+        text: "A ⋮ gomb a *Befizetések zárolása* és az *Időszak törlése* műveletet nyitja meg. Az *Időszak törlése* indokkal elhalványul, ha egy befizetés fizetve van, vagy az időszak zárolt."
+        screen: PaymentPeriodActions
+      - title: "Zárolt időszak"
+        text: "Borostyán értesítés magyarázza a zárolást, az állapotgombok elhalványulnak, a sorok nem nyitják meg a szerkesztő lapot. A menü *Befizetések feloldása* művelete visszavonja."
+        screen: PaymentDetailsLocked
   - id: amounts
     title: "Alapértelmezett összegek"
     steps:
@@ -141,6 +161,7 @@ flows:
 | Új időszak (útvonal `…/payments/create`) | `PaymentPeriodFormScreen.tsx`, `createPaymentCycle` a `services/paymentService.ts` fájlban |
 | Az időszak részletei (útvonal `…/payments/{cycleId}`) | `PaymentPeriodScreen.tsx`, `PaymentEditSheet.tsx`, `hooks/usePaymentRecords.ts`, `bulkSavePaymentList` |
 | A tanuló befizetései (útvonal `/user/payments`) | `app/user/payments.tsx`, `StudentPaymentsScreen.tsx`, `PaymentRow.tsx`, `hooks/useStudentPayments.ts` |
+| Az időszak menüje, zár jelvény | `PeriodActionsSheet.tsx`, `LockedBadge.tsx`, `lockPaymentCycle` / `unlockPaymentCycle` / `deletePaymentCycle` a `services/paymentService.ts` fájlban |
 | Időszakok, összegek, állapotok (tiszta logika) | `src/modules/payments/paymentPeriod.ts` |
 | Validáció | `src/modules/payments/validation/paymentSchema.ts` |
 | Az iskola alapértelmezett összege | `src/modules/school/components/SchoolSettingsScreen.tsx` |
@@ -150,7 +171,7 @@ flows:
 
 | Tábla | Oszlopok |
 | --- | --- |
-| `payment_cycles` | `school_id`, `period_start`, `period_end`, `notes` |
+| `payment_cycles` | `school_id`, `period_start`, `period_end`, `notes`, `locked_at` |
 | `payment_records` | `payment_cycle_id`, `school_member_id`, `amount`, `currency`, `status` (`pending` / `paid` / `cancelled`), `method` (`cash` / `transfer` / `other`), `payment_date` |
 
 Az időszaknak nincs saját összege: a létrehozáskor választott összeg minden befizetésbe beíródik.
@@ -165,5 +186,6 @@ Az időszaknak nincs saját összege: a létrehozáskor választott összeg mind
 
 - Az időszak részletei csak azokat a tanulókat mutatják, akiknek van benne befizetésük; a később felvett tanuló akkor jelenik meg, ha az oktató a kérés jóváhagyásakor hozzáadja.
 - Az iskola befizetési képernyőin nincs meg a Tanulók tulajdonosi védelme (`useRequireOrganizationOwner`); az egyetlen bejárat az iskola irányítópultja.
+- A zárolást **csak az alkalmazás** érvényesíti (migráció: `20261105000000_payment_cycles_locked_at`): egy régi verziójú, offline eszköz továbbra is módosíthatja a zárolt időszak befizetéseit.
 
 </FeatureView>

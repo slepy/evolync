@@ -17,7 +17,7 @@ rules:
   - "An event has a name, a **type** (Camp, Seminar, Exam… kept by the organization), optional short note and location, start and end day, price and currency, and *Exams planned*."
   - "**Who is it for?** The whole organization, one school, or selected members. Matching active students and students without an account become **participants**, all starting *Absent*."
   - "Editing an event adds students who now match; it never removes participants."
-  - "Participant status: **Absent → Attending → Paid**. The instructor sets any status and saves with *Save*; the student answers Attending / Absent at once, unless the instructor marked them *Paid* or the event is cancelled or over."
+  - "Participant status: **Absent → Attending → Paid**. The instructor sets any status and saves with *Save*; the student answers Attending / Absent at once, unless the instructor marked them *Paid* or the event is cancelled or over. Moving a participant out of *Paid* asks *Change a paid status?* first."
   - "With *Exams planned*, each participant has a **Takes exam** switch, stored immediately. Only exam takers can get an **order for the event** (e.g. exam fee, belt), drafted on the participants screen and stored with *Save*."
   - "An event with **paid participants cannot be deleted**: it can only be **cancelled**. A cancelled event stays in the calendar and can be restored."
   - "An event type used by events cannot be deleted; the sheet says how many events use it."

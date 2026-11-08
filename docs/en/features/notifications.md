@@ -17,6 +17,7 @@ rules:
   - "Notifications are written **by the database** (triggers), never by the app, so they reach the recipient whichever device acted."
   - "Nobody is notified about their own action (an owner ordering for themselves, a student added by themselves)."
   - "The inbox is synced like other data and works offline; rows are grouped *Today*, *Yesterday*, *Earlier* with the count of new ones; *Mark all as read* marks them locally and syncs."
+  - "A row is deleted with the **trash button** next to it, after *Delete this notification?*; the header trash (*Delete all*) asks *Delete all notifications?*. Deletion is a soft delete that syncs, so the notification also disappears on the person's other devices; the server accepts it only on the caller's own live rows."
   - "A tap marks the notification read and opens: the order, the school's requests, the event, the student's payments, the student's events or the student dashboard. When the item no longer exists, the inbox shows *This item is no longer available.*"
   - "**Push** is per device: the first dashboard visit explains it in a sheet before the system prompt; Settings has a switch that follows both the user's choice and the system permission."
   - "Push messages are sent in the device's language. More than 3 notifications for one person within 60 seconds collapse into one push."
@@ -37,7 +38,7 @@ flows:
     title: "Inbox"
     steps:
       - title: "Alerts"
-        text: "Rows tinted by module with the unread dot and the time; *Mark all as read* in the header."
+        text: "Rows tinted by module with the unread dot and the time; *Mark all as read* and the trash (*Delete all*) in the header; each row has its own trash button."
         screen: NotificationsOrg
         api:
           - { id: sync-pull, x: 50, y: 4 }

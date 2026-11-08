@@ -15,15 +15,19 @@ const nav = (prefix: string, l: NavLabels): DefaultTheme.NavItem[] => [
   { text: l.endpoints, link: `${prefix}endpoints` },
 ];
 
+// GitHub Pages serves a project site under /<repo>/; the workflow sets DOCS_BASE=/evolync/.
+const base = process.env.DOCS_BASE ?? '/';
+
 export default withMermaid(
   defineConfig({
     title: 'Evolync Docs',
+    base,
     cleanUrls: true,
     appearance: 'force-dark',
     srcExclude: ['README.md'],
     rewrites: { 'en/:rest*': ':rest*' },
     head: [
-      ['link', { rel: 'icon', href: '/logo.svg' }],
+      ['link', { rel: 'icon', href: `${base}logo.svg` }],
       ['link', { rel: 'preconnect', href: 'https://fonts.googleapis.com' }],
       ['link', { rel: 'preconnect', href: 'https://fonts.gstatic.com', crossorigin: '' }],
       ['link', { rel: 'stylesheet', href: 'https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap' }],

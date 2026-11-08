@@ -17,6 +17,7 @@ rules:
   - "Az értesítéseket **az adatbázis** írja (triggerek), soha nem az alkalmazás, így a címzetthez jutnak, bármelyik eszköz cselekedett."
   - "Senki nem kap értesítést a saját műveletéről (a magának rendelő tulajdonos, a magát hozzáadó tanuló)."
   - "A postafiók a többi adathoz hasonlóan szinkronizálódik és offline működik; a sorok *Ma*, *Tegnap*, *Korábban* csoportokba rendeződnek az újak számával; az *Összes megjelölése olvasottként* helyben jelöl és szinkronizál."
+  - "Egy sort a mellette lévő **kuka gombbal** lehet törölni, a *Törlöd ezt az értesítést?* kérdés után; a fejlécben lévő kuka (*Összes törlése*) a *Törlöd az összes értesítést?* kérdést teszi fel. A törlés puha törlés, amely szinkronizálódik, így az értesítés a személy többi eszközéről is eltűnik; a szerver csak a hívó saját, élő soraira fogadja el."
   - "Koppintásra az értesítés olvasott lesz, és megnyílik: a rendelés, az iskola kérései, az esemény, a tanuló befizetései, a tanuló eseményei vagy a tanulói irányítópult. Ha az elem már nem létezik, a postafiók ezt mutatja: *Ez az elem már nem érhető el.*"
   - "A **push** eszközönként működik: az első irányítópult-látogatáskor egy lap elmagyarázza a rendszerkérdés előtt; a Beállításokban kapcsoló van, amely a felhasználó döntését és a rendszer engedélyét is követi."
   - "A push üzenetek az eszköz nyelvén mennek. Ha valaki 60 másodpercen belül 3-nál több értesítést kap, egyetlen push megy ki."
@@ -37,7 +38,7 @@ flows:
     title: "Postafiók"
     steps:
       - title: "Riasztások"
-        text: "Modulszínű sorok az olvasatlan ponttal és az idővel; *Összes megjelölése olvasottként* a fejlécben."
+        text: "Modulszínű sorok az olvasatlan ponttal és az idővel; *Összes megjelölése olvasottként* és a kuka (*Összes törlése*) a fejlécben; minden sornak saját kuka gombja van."
         screen: NotificationsOrg
         api:
           - { id: sync-pull, x: 50, y: 4 }

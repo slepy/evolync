@@ -14,7 +14,8 @@ who:
   - role: "Uczeń"
     outcome: "Widzi swoje zajęcia i odsetek obecności, tylko do odczytu"
 rules:
-  - "Szkoła ma **jedne zajęcia dziennie**. *Dodaj* otwiera dzisiejsze zajęcia, jeśli już istnieją."
+  - "Szkoła ma **jedne zajęcia dziennie**. *Dodaj* zawsze otwiera ekran *Nowe zajęcia*; gdy wybrany dzień ma już zajęcia, przycisk brzmi *Otwórz* i pokazuje je."
+  - "Wybór **Dnia** to *Dziś* lub *Wcześniejsza data*. Wcześniejszą datę wybiera się polem daty, które kończy się na dziś; zajęcia zapisują się o północy czasu lokalnego, a dni przyszłych nie można wybrać."
   - "Nowe zajęcia wymieniają każdego ucznia aktywnego lub bez konta; **wszyscy startują jako Obecni**."
   - "Dotknięcie przycisku statusu zmienia go po kolei: **Obecny → Nieobecny → Usprawiedliwiony**. Nic nie jest zapisywane przed *Utwórz* lub *Zapisz*."
   - "Zajęcia zachowują uczniów, z którymi je utworzono. Uczeń dodany później nie pojawia się w starszych zajęciach; **zarchiwizowany** uczeń zachowuje swój status, wyszarzony, bez możliwości zmiany."
@@ -37,11 +38,14 @@ flows:
         text: "Pulpit szkoły otwiera Obecności z kafelka."
         screen: School
       - title: "Zajęcia"
-        text: "Zajęcia po miesiącach z liczbą obecnych. *Dodaj* otwiera dzisiejsze zajęcia albo nowe, jeśli jeszcze ich nie ma."
+        text: "Zajęcia po miesiącach z liczbą obecnych. *Dodaj* otwiera ekran nowych zajęć, także gdy dziś już są zajęcia, więc można dodać wcześniejszy dzień."
         screen: AttendanceList
       - title: "Dziś"
         text: "Każdy uczeń startuje jako Obecny. Dotknięcia zmieniają wyjątki; podsumowanie liczy na bieżąco."
         screen: AttendanceCreate
+      - title: "Wcześniejsza data"
+        text: "*Wcześniejsza data* pokazuje pole DATA, które kończy się na dziś. Gdy ten dzień ma już zajęcia, przycisk brzmi *Otwórz* i otwiera istniejące zajęcia zamiast duplikatu."
+        screen: AttendanceCreatePastDate
       - title: "Utwórz"
         text: "Zajęcia i obecność każdego ucznia z listy są zapisywane w jednej transakcji i synchronizowane; aplikacja wraca do listy zajęć."
         screen: AttendanceCreate
@@ -68,7 +72,7 @@ flows:
     title: "Poprawianie zajęć"
     steps:
       - title: "Zajęcia"
-        text: "Wcześniejsze zajęcia pokazują uczniów z ich statusami; *Zapisz* pojawia się po zmianie i zapisuje zmienioną listę w jednej paczce."
+        text: "Wcześniejsze zajęcia pokazują uczniów z ich statusami; *Zapisz* pojawia się po zmianie i zapisuje zmienioną listę w jednej paczce; po *Zapisz* lub *Usuń* aplikacja wraca do listy zajęć. Nieudany *Zapisz* zachowuje zmienione statusy."
         screen: AttendanceDetails
         api:
           - { id: sync-push, x: 84, y: 9 }

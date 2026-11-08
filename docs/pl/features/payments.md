@@ -23,6 +23,9 @@ rules:
   - "Lista okresów pokazuje najpierw bieżące, potem najnowsze; chip *6/10* jest zielony od 80% opłaconych, bursztynowy od 50%, czerwony poniżej."
   - "Kwoty są sumowane **osobno dla każdej waluty**: okres może łączyć PLN i EUR, sumy nigdy nie są przeliczane."
   - "Uczniowie widzą tylko swoje płatności. *… do zapłaty* sumuje ich oczekujące płatności."
+  - "Dotknięcie, które przeniosłoby płatność **z Opłacone**, najpierw pyta *Zmienić status Opłacone?*; *Anuluj* zostawia wiersz bez zmian. To samo pytanie chroni uczestnika wydarzenia ze statusem *Opłacone* (zobacz [Wydarzenia](./events))."
+  - "**Menu ⋮** okresu oferuje *Zablokuj płatności* / *Odblokuj płatności*. Zablokowany okres zamraża każdy status i kwotę: przyciski statusu są przyciemnione, wiersze nie otwierają arkusza edycji, lista okresów pokazuje plakietkę *Zablokowany*, karta ucznia pokazuje kłódkę, a akceptacja prośby o dołączenie nie proponuje tego okresu. *Zablokuj* jest wyłączone, gdy są niezapisane zmiany."
+  - "*Usuń okres* jest w tym samym menu i działa tylko, gdy okres jest **odblokowany** i **żadna płatność w nim nie jest Opłacona**; najpierw pyta i usuwa okres razem z płatnościami."
 messages:
   - situation: "Istnieje okres o tych samych datach"
     message: "Cykl płatności z tym okresem już istnieje"
@@ -32,6 +35,11 @@ messages:
     message: "Kwota musi być liczbą"
   - situation: "Brak okresów"
     message: "Brak cykli płatności"
+  - situation: "Płatność traci status Opłacone"
+    title: "Zmienić status Opłacone?"
+    message: "Anna Kowalska ma status Opłacone. Zmienić status na Anulowane?"
+  - situation: "Nie można usunąć okresu"
+    message: "6 płatności jest opłaconych, więc nie można usunąć tego okresu."
   - situation: "Uczeń: nowa płatność"
     title: "Nowa płatność"
     message: "150 PLN za 1 – 31 paź"
@@ -93,7 +101,7 @@ flows:
         text: "*Kwoty* rozwija sumy według statusu i waluty: zebrane, oczekujące, anulowane."
         screen: PaymentDetailsAmounts
       - title: "Zapisz"
-        text: "*Zapisz* pod listą zapisuje zmienione płatności w jednej paczce, ustawia datę zapłaty tym, które stały się Opłacone, i synchronizuje. Aplikacja wraca do okresów."
+        text: "*Zapisz* pod listą zapisuje zmienione płatności w jednej paczce, ustawia datę zapłaty tym, które stały się Opłacone, i synchronizuje. Aplikacja zostaje na okresie; przycisk *Zapisz* znika do następnej zmiany."
         screen: PaymentDetailsAmounts
         api:
           - { id: sync-push, x: 84, y: 9 }
@@ -107,6 +115,18 @@ flows:
         changed --> save[Zapisz: zmienione płatności<br/>w jednej paczce]
         save --> date[Data zapłaty<br/>dla nowo opłaconych]
         date --> sync[Synchronizacja]
+  - id: close
+    title: "Blokowanie i usuwanie okresu"
+    steps:
+      - title: "Status Opłacone"
+        text: "Dotknięcie statusu *Opłacone* najpierw pyta; *Zmień* ustawia kolejny status na ekranie, *Anuluj* zostawia Opłacone."
+        screen: PaymentPaidConfirm
+      - title: "Menu okresu"
+        text: "Przycisk ⋮ otwiera *Zablokuj płatności* i *Usuń okres*. *Usuń okres* jest przyciemnione z powodem, gdy płatność jest opłacona albo okres zablokowany."
+        screen: PaymentPeriodActions
+      - title: "Zablokowany okres"
+        text: "Bursztynowa informacja tłumaczy blokadę, przyciski statusu są przyciemnione, a wiersze nie otwierają arkusza edycji. *Odblokuj płatności* w menu to cofa."
+        screen: PaymentDetailsLocked
   - id: amounts
     title: "Domyślne kwoty"
     steps:
@@ -141,6 +161,7 @@ flows:
 | Nowy okres (trasa `…/payments/create`) | `PaymentPeriodFormScreen.tsx`, `createPaymentCycle` w `services/paymentService.ts` |
 | Szczegóły okresu (trasa `…/payments/{cycleId}`) | `PaymentPeriodScreen.tsx`, `PaymentEditSheet.tsx`, `hooks/usePaymentRecords.ts`, `bulkSavePaymentList` |
 | Płatności ucznia (trasa `/user/payments`) | `app/user/payments.tsx`, `StudentPaymentsScreen.tsx`, `PaymentRow.tsx`, `hooks/useStudentPayments.ts` |
+| Menu okresu, plakietka blokady | `PeriodActionsSheet.tsx`, `LockedBadge.tsx`, `lockPaymentCycle` / `unlockPaymentCycle` / `deletePaymentCycle` w `services/paymentService.ts` |
 | Okresy, kwoty, statusy (czysta logika) | `src/modules/payments/paymentPeriod.ts` |
 | Walidacja | `src/modules/payments/validation/paymentSchema.ts` |
 | Domyślna kwota szkoły | `src/modules/school/components/SchoolSettingsScreen.tsx` |
@@ -150,7 +171,7 @@ flows:
 
 | Tabela | Kolumny |
 | --- | --- |
-| `payment_cycles` | `school_id`, `period_start`, `period_end`, `notes` |
+| `payment_cycles` | `school_id`, `period_start`, `period_end`, `notes`, `locked_at` |
 | `payment_records` | `payment_cycle_id`, `school_member_id`, `amount`, `currency`, `status` (`pending` / `paid` / `cancelled`), `method` (`cash` / `transfer` / `other`), `payment_date` |
 
 Okres nie ma własnej kwoty: kwota wybrana przy tworzeniu jest zapisywana w każdej płatności.
@@ -165,5 +186,6 @@ Okres nie ma własnej kwoty: kwota wybrana przy tworzeniu jest zapisywana w każ
 
 - Szczegóły okresu pokazują tylko uczniów, którzy mają w nim płatność; uczeń dodany później pojawia się, gdy instruktor doda go przy akceptacji prośby.
 - Ekrany płatności szkoły nie mają strażnika właściciela, który mają Uczniowie (`useRequireOrganizationOwner`); jedynym wejściem jest pulpit szkoły.
+- Blokada jest egzekwowana **tylko w aplikacji** (migracja `20261105000000_payment_cycles_locked_at`): urządzenie offline ze starą wersją nadal może zmienić płatności zablokowanego okresu.
 
 </FeatureView>

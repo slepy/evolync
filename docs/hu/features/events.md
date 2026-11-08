@@ -17,7 +17,7 @@ rules:
   - "Az eseménynek van neve, **típusa** (Tábor, Szeminárium, Vizsga… a szervezet vezeti), opcionális rövid megjegyzése és helyszíne, kezdő és záró napja, ára és pénzneme, valamint *Vizsgák tervezve* kapcsolója."
   - "**Kinek szól?** Az egész szervezetnek, egy iskolának vagy kiválasztott tagoknak. Az illeszkedő aktív és fiók nélküli tanulók **résztvevők** lesznek, mind *Hiányzik* állapotban."
   - "Az esemény szerkesztése hozzáadja az újonnan illeszkedő tanulókat; résztvevőt soha nem távolít el."
-  - "Résztvevői állapot: **Hiányzik → Részt vesz → Fizetve**. Az oktató bármelyiket beállítja és a *Mentés* gombbal menti; a tanuló a Részt vesz / Hiányzik választ azonnal menti, kivéve ha az oktató *Fizetve* állapotba tette, vagy az esemény lemondott vagy véget ért."
+  - "Résztvevői állapot: **Hiányzik → Részt vesz → Fizetve**. Az oktató bármelyiket beállítja és a *Mentés* gombbal menti; a tanuló a Részt vesz / Hiányzik választ azonnal menti, kivéve ha az oktató *Fizetve* állapotba tette, vagy az esemény lemondott vagy véget ért. A *Fizetve* állapotból való továbbléptetés előbb rákérdez: *Módosítod a fizetett állapotot?*."
   - "*Vizsgák tervezve* esetén minden résztvevőnek van **Vizsgázik** kapcsolója, amely azonnal mentődik. Csak a vizsgázók kaphatnak **eseményrendelést** (pl. vizsgadíj, öv), amelyet a résztvevők képernyőjén vázolnak fel és a *Mentés* tárol el."
   - "**Fizető résztvevőkkel rendelkező esemény nem törölhető**, csak **lemondható**. A lemondott esemény a naptárban marad, és visszaállítható."
   - "Eseményekben használt típus nem törölhető; a lap megmondja, hány esemény használja."

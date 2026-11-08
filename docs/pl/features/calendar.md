@@ -15,7 +15,7 @@ who:
     outcome: "Widzi swoje wydarzenia i treningi swojej szkoły, tylko do odczytu, i otwiera wydarzenie, żeby odpowiedzieć"
 rules:
   - "Kalendarz otwiera się z nagłówka pulpitu (*Najbliższe*) bieżącego kontekstu."
-  - "**Organizacja**: wydarzenia i treningi wszystkich szkół; *Dodaj* proponuje wydarzenie lub trening. Widok *Lista* filtruje wydarzenia organizacji po zakresie dat i typie."
+  - "**Organizacja**: wydarzenia i treningi wszystkich szkół; *Dodaj* proponuje wydarzenie lub trening. Widok *Lista* filtruje wydarzenia organizacji po zakresie dat i typie. Strzałka wydarzenia rozwija jego uczestników; dotknięcie uczestnika otwiera ekran *Uczestnicy* tego wydarzenia (*Zarządzaj uczestnikami*), dotknięcie wiersza wydarzenia otwiera jego szczegóły."
   - "**Szkoła**: tylko treningi dotyczące tej szkoły; *Dodaj* otwiera trening dla tej szkoły."
   - "**Uczeń**: wydarzenia, w których bierze udział, i treningi jego szkoły (lub przeznaczone dla niego); bez *Dodaj*; otwierają się tylko wydarzenia."
   - "Chipy *Wszystko*, *Wydarzenia*, *Treningi*. Siatka zaczyna się od poniedziałku; najwyżej dwa wydarzenia wielodniowe dostają pasek, pozostałe są kropkami."

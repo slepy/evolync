@@ -14,7 +14,8 @@ who:
   - role: "Tanuló"
     outcome: "Csak olvasásra látja a saját edzéseit és a jelenléti arányát"
 rules:
-  - "Egy iskolának **naponta egy edzése** van. Az *Új hozzáadása* a mai edzést nyitja meg, ha az már létezik."
+  - "Egy iskolának **naponta egy edzése** van. Az *Új hozzáadása* mindig az *Új edzés* képernyőt nyitja meg; ha a választott napnak már van edzése, a gomb felirata *Megnyitás*, és azt mutatja."
+  - "A **Nap** választása *Ma* vagy *Korábbi nap*. A korábbi napot egy mai napig tartó dátummező adja, az edzés helyi éjfélkor mentődik, jövőbeli nap nem választható."
   - "Az új edzés minden aktív vagy fiók nélküli tanulót felsorol; **mindenki Jelen állapotban indul**."
   - "Az állapotgombra koppintás sorban vált: **Jelen → Hiányzik → Igazolt**. Semmi sem mentődik a *Létrehozás* vagy a *Mentés* előtt."
   - "Az edzés megtartja azokat a tanulókat, akikkel felvették. A később felvett tanuló nem jelenik meg a régebbi edzésekben; az **archivált** tanuló megtartja az állapotát, szürkén, és nem módosítható."
@@ -37,11 +38,14 @@ flows:
         text: "Az iskola irányítópultja a csempéről nyitja meg a Jelenlétet."
         screen: School
       - title: "Edzések"
-        text: "Edzések hónapok szerint, a jelenlévők számával. Az *Új hozzáadása* a mai edzést nyitja meg, vagy újat, ha még nincs."
+        text: "Edzések hónapok szerint, a jelenlévők számával. Az *Új hozzáadása* az új edzés képernyőjét nyitja meg akkor is, ha a mai napnak már van edzése, így korábbi nap is felvehető."
         screen: AttendanceList
       - title: "Ma"
         text: "Minden tanuló Jelen állapotban indul. A koppintások a kivételeket módosítják; az összesítő közben számol."
         screen: AttendanceCreate
+      - title: "Korábbi nap"
+        text: "A *Korábbi nap* egy DÁTUM mezőt mutat, amely a mai napig tart. Ha annak a napnak már van edzése, a gomb felirata *Megnyitás*, és a meglévő edzés nyílik meg duplikátum helyett."
+        screen: AttendanceCreatePastDate
       - title: "Létrehozás"
         text: "Az edzés és a felsorolt tanulók jelenléte egy tranzakcióban íródik és szinkronizálódik; az alkalmazás visszalép az edzésekhez."
         screen: AttendanceCreate
@@ -68,7 +72,7 @@ flows:
     title: "Edzés javítása"
     steps:
       - title: "Edzés"
-        text: "Egy korábbi edzés a tanulóit az állapotukkal mutatja; a *Mentés* módosítás után jelenik meg, és egy kötegben írja a módosított listát."
+        text: "Egy korábbi edzés a tanulóit az állapotukkal mutatja; a *Mentés* módosítás után jelenik meg, és egy kötegben írja a módosított listát; a *Mentés* vagy a *Törlés* után az alkalmazás visszalép az edzésekhez. A sikertelen *Mentés* megtartja a módosított állapotokat."
         screen: AttendanceDetails
         api:
           - { id: sync-push, x: 84, y: 9 }

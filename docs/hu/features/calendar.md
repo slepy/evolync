@@ -15,7 +15,7 @@ who:
     outcome: "Csak olvasásra látja az eseményeit és az iskolája edzéseit, és megnyit egy eseményt, hogy válaszoljon"
 rules:
   - "A naptár az aktuális környezet irányítópultjának fejlécéből (*Következő*) nyílik."
-  - "**Szervezet**: minden iskola eseményei és edzései; az *Új hozzáadása* eseményt vagy edzést kínál. A *Lista* nézet dátumtartomány és típus szerint szűri a szervezet eseményeit."
+  - "**Szervezet**: minden iskola eseményei és edzései; az *Új hozzáadása* eseményt vagy edzést kínál. A *Lista* nézet dátumtartomány és típus szerint szűri a szervezet eseményeit. Az esemény nyila kibontja a résztvevőit; egy résztvevőre koppintva az adott esemény *Résztvevők* képernyője nyílik meg (*Résztvevők kezelése*), az esemény sorára koppintva a részletei."
   - "**Iskola**: csak az iskolát érintő edzések; az *Új hozzáadása* edzést nyit ennek az iskolának."
   - "**Tanuló**: azok az események, amelyekben részt vesz, és az iskolája (vagy neki szóló) edzései; nincs *Új hozzáadása*; csak az események nyithatók meg."
   - "Szűrő chipek: *Mind*, *Események*, *Edzések*. A rács hétfővel kezdődik; legfeljebb két többnapos esemény kap sávot, a többi pontként látszik."

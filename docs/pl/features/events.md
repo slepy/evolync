@@ -17,7 +17,7 @@ rules:
   - "Wydarzenie ma nazwę, **typ** (Obóz, Seminarium, Egzamin… prowadzone przez organizację), opcjonalną krótką notatkę i miejsce, dzień początku i końca, cenę i walutę oraz *Planowane egzaminy*."
   - "**Dla kogo?** Cała organizacja, jedna szkoła albo wybrani członkowie. Pasujący uczniowie aktywni i bez konta stają się **uczestnikami**, wszyscy jako *Nieobecni*."
   - "Edycja wydarzenia dodaje uczniów, którzy teraz pasują; nigdy nie usuwa uczestników."
-  - "Status uczestnika: **Nieobecny → Biorę udział → Opłacone**. Instruktor ustawia dowolny i zapisuje *Zapisz*; uczeń odpowiada Biorę udział / Nieobecny od razu, chyba że instruktor oznaczył go *Opłacone* albo wydarzenie jest anulowane lub zakończone."
+  - "Status uczestnika: **Nieobecny → Biorę udział → Opłacone**. Instruktor ustawia dowolny i zapisuje *Zapisz*; uczeń odpowiada Biorę udział / Nieobecny od razu, chyba że instruktor oznaczył go *Opłacone* albo wydarzenie jest anulowane lub zakończone. Przeniesienie uczestnika z *Opłacone* najpierw pyta *Zmienić status Opłacone?*."
   - "Przy *Planowanych egzaminach* każdy uczestnik ma przełącznik **Zdaje egzamin**, zapisywany od razu. Tylko zdający mogą dostać **zamówienie na wydarzenie** (np. opłata egzaminacyjna, pas), przygotowane na ekranie uczestników i zapisywane przez *Zapisz*."
   - "Wydarzenia z **opłaconymi uczestnikami nie można usunąć**: można je tylko **anulować**. Anulowane wydarzenie zostaje w kalendarzu i można je przywrócić."
   - "Typu używanego przez wydarzenia nie można usunąć; arkusz mówi, ile wydarzeń go używa."
