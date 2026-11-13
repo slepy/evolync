@@ -58,6 +58,8 @@ On the students list, put an action in the top-right corner (like other screens)
 
 ## Progress
 
+PR: #86
+
 > Convention: `- [ ]` pending, `- [x]` done. Append ` — <commit sha>` when a step lands. Do not rename step titles.
 
 ### Phase 1: Designs
