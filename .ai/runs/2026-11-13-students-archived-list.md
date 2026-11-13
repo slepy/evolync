@@ -72,10 +72,10 @@ On the students list, put an action in the top-right corner (like other screens)
 
 ### Phase 3: UI
 
-- [ ] 3.1 Header Archive button on 16A and archived route
-- [ ] 3.2 ArchivedStudentsScreen (16H)
-- [ ] 3.3 Restore in the details actions sheet (16G1)
-- [ ] 3.4 Translations en / pl / hu
+- [x] 3.1 Header Archive button on 16A and archived route — 3e85e7f
+- [x] 3.2 ArchivedStudentsScreen (16H) — 00ba535
+- [x] 3.3 Restore in the details actions sheet (16G1) — 5174737
+- [x] 3.4 Translations en / pl / hu — 3655e5e
 
 ### Phase 4: Docs
 
