@@ -65,7 +65,8 @@ import React, { useEffect, useState } from "react";
 import { Alert, Linking } from "react-native";
 import { Text, XStack, YStack } from "tamagui";
 import { StudentRepository } from "../repositories";
-import { archiveStudent, assignRankToStudent, setStudentPaymentAmount } from "../services";
+import { archiveStudent, assignRankToStudent, restoreStudent, setStudentPaymentAmount } from "../services";
+import { showError } from "@/core/utils/confirmAction";
 import { MemberStatus, getDisplayStatus, type StudentPaymentAmountDraft } from "../types";
 import { studentStatusPill } from "../studentList";
 import { StudentPaymentAmountSheet } from "./StudentPaymentAmountSheet";
@@ -91,7 +92,8 @@ interface StudentDetailsScreenProps {
  * Student details (16E–16E3): profile card (avatar with the rank corner,
  * status, joined date, email / phone, RANK field opening 16F), History tabs
  * with a Status summary and rows whose status button cycles on tap, Orders
- * opening their details; Save after a change. ⋮ opens 16G (Edit, Archive).
+ * opening their details; Save after a change. ⋮ opens 16G (Edit, Archive), for
+ * an archived student 16G1 (Restore).
  * PAYMENT AMOUNT, on top of the Payments tab above its summary, opens the student's
  * own fee for new periods (or the school default).
  */
@@ -224,6 +226,15 @@ export const StudentDetailsScreen: React.FC<StudentDetailsScreenProps> = ({
         },
       },
     ]);
+
+  const handleRestore = async () => {
+    try {
+      await restoreStudent(studentId);
+    } catch (err) {
+      console.error("[StudentDetails] Restore error:", err);
+      showError(t("errorUpdateFailed"));
+    }
+  };
 
   const pill = studentStatusPill(student.status, student.userId);
 
@@ -553,7 +564,8 @@ export const StudentDetailsScreen: React.FC<StudentDetailsScreenProps> = ({
         onOpenChange={(open) => setSheet(open ? "actions" : null)}
         name={name}
         onEdit={displayStatus === MemberStatus.OFFLINE ? onEdit : undefined}
-        onArchive={handleArchive}
+        onArchive={student.status === MemberStatus.ARCHIVED ? undefined : handleArchive}
+        onRestore={student.status === MemberStatus.ARCHIVED ? handleRestore : undefined}
       />
     </SubScreenPage>
   );
