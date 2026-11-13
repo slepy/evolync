@@ -706,6 +706,12 @@
   "studentOrdersHint": "Koppints egy rendelésre a termékei megtekintéséhez.",
   "studentEditHint": "Név, e-mail, telefon. Csak fiók nélküli tanulóknál",
   "studentArchiveHint": "Elrejti a tanulót a listákból. Az előzmények megmaradnak",
+  "studentRestoreHint": "A tanuló újra megjelenik a listákban",
+  "studentsArchivedTitle": "Archivált tanulók",
+  "studentsArchivedCount_one": "{{count}} archivált",
+  "studentsArchivedCount_other": "{{count}} archivált",
+  "studentsArchivedHint": "Nyiss meg egy tanulót a visszaállításhoz",
+  "studentsArchivedEmpty": "Nincs archivált tanuló",
 
   "joinRequests": "Kérések",
   "joinRequestsEmpty": "Nincsenek függő kérések.",
