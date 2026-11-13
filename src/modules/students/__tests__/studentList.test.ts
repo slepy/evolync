@@ -75,6 +75,11 @@ describe("studentStatusPill", () => {
     assert.deepEqual(studentStatusPill("active", null), { label: "statusNoAccount", tone: "neutral" });
     assert.deepEqual(studentStatusPill("pending", "u1"), { label: "statusPending", tone: "warning" });
   });
+
+  it("shows Archived for an archived student, with or without an account", () => {
+    assert.deepEqual(studentStatusPill("archived", "u1"), { label: "statusArchived", tone: "muted" });
+    assert.deepEqual(studentStatusPill("archived", null), { label: "statusArchived", tone: "muted" });
+  });
 });
 
 describe("requestAge", () => {
