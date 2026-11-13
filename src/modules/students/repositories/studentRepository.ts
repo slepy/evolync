@@ -187,6 +187,18 @@ export const StudentRepository = {
       .observe();
   },
 
+  /** Archived students of a school (16H). */
+  observeArchivedBySchoolId(schoolId: string) {
+    const membersCollection = database.get<SchoolMember>("school_members");
+    return membersCollection
+      .query(
+        Q.where("school_id", schoolId),
+        Q.where("deleted_at", null),
+        Q.where("status", MemberStatus.ARCHIVED),
+      )
+      .observeWithColumns(["status", "display_name", "email", "phone_number", "avatar_url", "current_rank_id"]);
+  },
+
   observeActiveBySchoolId(schoolId: string) {
     const membersCollection = database.get<SchoolMember>("school_members");
     return membersCollection

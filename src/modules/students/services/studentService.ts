@@ -3,6 +3,7 @@ import { sync } from "@/database/sync";
 import School from "@/database/models/School";
 import SchoolMember from "@/database/models/SchoolMember";
 import { MemberStatus, type CreateStudentDto } from "../types";
+import { restoredStatus } from "../studentList";
 import { StudentRepository } from "../repositories";
 import { SchoolJoinRequestRepository } from "@/modules/school/repositories/schoolJoinRequestRepository";
 import { SchoolSettingsRepository } from "@/modules/school/repositories";
@@ -146,6 +147,21 @@ export const archiveStudent = async (studentId: string): Promise<void> => {
   } as Partial<SchoolMember>);
   sync().catch((err) => {
     console.error("[archiveStudent] Sync failed:", err);
+  });
+};
+
+/**
+ * Restores an archived student (16G1): back to `active` with an app account,
+ * `offline` without one. Triggers background sync.
+ */
+export const restoreStudent = async (studentId: string): Promise<void> => {
+  const student = await StudentRepository.findById(studentId);
+  if (!student || student.status !== MemberStatus.ARCHIVED) return;
+  await StudentRepository.update(studentId, {
+    status: restoredStatus(student.userId),
+  } as Partial<SchoolMember>);
+  sync().catch((err) => {
+    console.error("[restoreStudent] Sync failed:", err);
   });
 };
 

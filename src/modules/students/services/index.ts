@@ -1,1 +1,1 @@
-export { createStudent, observeStudentsCount, updateStudent, archiveStudent, approveJoinRequest, rejectJoinRequest, assignRankToStudent, setStudentPaymentAmount } from './studentService';
+export { createStudent, observeStudentsCount, updateStudent, archiveStudent, restoreStudent, approveJoinRequest, rejectJoinRequest, assignRankToStudent, setStudentPaymentAmount } from './studentService';
