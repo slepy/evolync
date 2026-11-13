@@ -6,3 +6,4 @@ export { InviteCreateScreen } from "./InviteCreateScreen";
 export { StudentDetailsScreen } from "./StudentDetailsScreen";
 export { StudentActionsSheet } from "./StudentActionsSheet";
 export { StudentRankSheet } from "./StudentRankSheet";
+export { ArchivedStudentsScreen } from "./ArchivedStudentsScreen";
