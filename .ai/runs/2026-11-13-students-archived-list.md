@@ -79,4 +79,4 @@ On the students list, put an action in the top-right corner (like other screens)
 
 ### Phase 4: Docs
 
-- [ ] 4.1 Update CLAUDE.md and the design-mockups skill
+- [x] 4.1 Update CLAUDE.md and the design-mockups skill — 914802f
