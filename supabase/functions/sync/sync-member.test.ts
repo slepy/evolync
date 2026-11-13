@@ -210,6 +210,7 @@ Deno.test("an owner's answer, order and join request in another school reach tha
   ];
   tables.event_participants = [
     { id: "my-answer", event_id: "foreign-event", school_member_id: "me-there", ...stamps(OLD) },
+    { id: "student-answer", event_id: "own-event", school_member_id: "my-student", ...stamps(OLD) },
   ];
   tables.orders = [{ id: "own-order", school_id: "own-s", ...stamps(OLD) }];
   tables.products = [{ id: "belt", organization_id: "org-other", ...stamps(OLD) }];

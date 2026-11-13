@@ -123,6 +123,11 @@ export async function syncOrganization(ctx: SyncContext): Promise<SyncPullChange
           }
         }
       } else {
+        // Updated rows the server doesn't hold (a device kept a row that
+        // never reached it): an update matches nothing without an error, and
+        // rows referencing it (a new variant of an edited product) then fail
+        // their foreign key. Inserted instead, as WatermelonDB sync expects.
+        const missing: any[] = [];
         for (const record of updated) {
           const supabaseRecord = convertToSupabaseRecord(record, tableName);
           let updateQuery = supabaseClient
@@ -131,10 +136,25 @@ export async function syncOrganization(ctx: SyncContext): Promise<SyncPullChange
             .eq("id", record.id);
           // Only the organization's own types (never re-homes a foreign one).
           if (tableName === "event_types") updateQuery = updateQuery.eq("organization_id", organizationId);
-          const { error } = await updateQuery;
+          const { data, error } = await updateQuery.select("id");
 
           if (error) {
             throw new Error(`Failed to update ${tableName}: ${describeError(error)}`);
+          }
+          if (!data || data.length === 0) missing.push(supabaseRecord);
+        }
+
+        if (missing.length > 0) {
+          console.log(
+            `[SYNC:ORGANIZATION] Inserting ${missing.length} updated ${tableName} rows missing on the server`,
+          );
+          // Never overwrites an existing row (another organization's event type).
+          const { error } = await supabaseClient
+            .from(tableName)
+            .upsert(missing, { ignoreDuplicates: true });
+
+          if (error) {
+            throw new Error(`Failed to insert to ${tableName}: ${describeError(error)}`);
           }
         }
       }
