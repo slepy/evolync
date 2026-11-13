@@ -80,3 +80,7 @@ On the students list, put an action in the top-right corner (like other screens)
 ### Phase 4: Docs
 
 - [x] 4.1 Update CLAUDE.md and the design-mockups skill — 914802f
+
+### Phase 5: Review fixes
+
+- [x] 5.1 Archived status wins over No account on the details screen — 634fe81
