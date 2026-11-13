@@ -27,6 +27,19 @@ export const visibleStudents = <T extends StudentListItem>(students: T[], query:
         (a.displayName ?? "").localeCompare(b.displayName ?? ""),
     );
 
+/** Archived students (16H) matching the search, by name. */
+export const archivedStudents = <T extends StudentListItem>(students: T[], query: string): T[] =>
+  students
+    .filter((s) => s.status === MemberStatus.ARCHIVED && matchesSearch(query, s.displayName, s.email))
+    .sort((a, b) => (a.displayName ?? "").localeCompare(b.displayName ?? ""));
+
+/**
+ * Status after Restore (16G1): `active` for a student with an app account,
+ * `offline` for one the instructor added without an account.
+ */
+export const restoredStatus = (userId?: string | null): MemberStatus =>
+  userId ? MemberStatus.ACTIVE : MemberStatus.OFFLINE;
+
 /**
  * Status pill on the right of a 16A row: none for an active member; "No
  * account" (neutral) for a student added by the instructor; the others by name.

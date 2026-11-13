@@ -18,6 +18,7 @@ export default function StudentsRoute() {
       onStudentPress={(studentId) => router.push(`/school/${schoolId}/students/${studentId}`)}
       onAddStudent={() => router.push(`/school/${schoolId}/students/create`)}
       onNewInvite={() => router.push(`/school/${schoolId}/students/generate-invite`)}
+      onArchived={() => router.push(`/school/${schoolId}/students/archived`)}
     />
   );
 }

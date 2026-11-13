@@ -1,12 +1,52 @@
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
-import { inviteExpiry, latestInvite, requestAge, studentStatusPill, visibleStudents } from "../studentList";
+import {
+  archivedStudents,
+  inviteExpiry,
+  latestInvite,
+  requestAge,
+  restoredStatus,
+  studentStatusPill,
+  visibleStudents,
+} from "../studentList";
 
 const student = (displayName: string, status: "active" | "archived" | "pending", userId: string | null, email = "") => ({
   displayName,
   email,
   status,
   userId,
+});
+
+describe("archivedStudents", () => {
+  const list = [
+    student("Tomasz Wójcik", "archived", "u3", "t.wojcik@gmail.com"),
+    student("Anna Kowalska", "active", "u2", "anna@gmail.com"),
+    student("Marek Nowicki", "archived", null, "marek@wp.pl"),
+  ];
+
+  it("keeps only archived students, by name", () => {
+    assert.deepEqual(
+      archivedStudents(list, "").map((s) => s.displayName),
+      ["Marek Nowicki", "Tomasz Wójcik"],
+    );
+  });
+
+  it("matches the name without diacritics, or the email", () => {
+    assert.deepEqual(archivedStudents(list, "wojcik").map((s) => s.displayName), ["Tomasz Wójcik"]);
+    assert.deepEqual(archivedStudents(list, "wp.pl").map((s) => s.displayName), ["Marek Nowicki"]);
+    assert.deepEqual(archivedStudents(list, "anna"), []);
+  });
+});
+
+describe("restoredStatus", () => {
+  it("is active for a student with an app account", () => {
+    assert.equal(restoredStatus("u1"), "active");
+  });
+
+  it("is offline for a student without an account", () => {
+    assert.equal(restoredStatus(null), "offline");
+    assert.equal(restoredStatus(undefined), "offline");
+  });
 });
 
 describe("visibleStudents", () => {
@@ -34,6 +74,11 @@ describe("studentStatusPill", () => {
     assert.equal(studentStatusPill("active", "u1"), null);
     assert.deepEqual(studentStatusPill("active", null), { label: "statusNoAccount", tone: "neutral" });
     assert.deepEqual(studentStatusPill("pending", "u1"), { label: "statusPending", tone: "warning" });
+  });
+
+  it("shows Archived for an archived student, with or without an account", () => {
+    assert.deepEqual(studentStatusPill("archived", "u1"), { label: "statusArchived", tone: "muted" });
+    assert.deepEqual(studentStatusPill("archived", null), { label: "statusArchived", tone: "muted" });
   });
 });
 

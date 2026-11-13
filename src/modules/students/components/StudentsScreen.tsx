@@ -1,4 +1,5 @@
 import {
+  IconButton,
   ListAvatar,
   ListCard,
   ListEmpty,
@@ -8,13 +9,14 @@ import {
   SearchField,
   StatusBadge,
   SubScreenPage,
+  SyncedPill,
   ViewSwitch,
   memberInitials,
 } from "@/core/components";
 import type SchoolJoinRequest from "@/database/models/SchoolJoinRequest";
 import { LoadingScreen } from "@/core/components";
 import * as Clipboard from "expo-clipboard";
-import { QrCode, UserPlus, Users } from "lucide-react-native";
+import { Archive, QrCode, UserPlus, Users } from "lucide-react-native";
 import React, { useMemo, useState } from "react";
 import { Alert } from "react-native";
 import { XStack, YStack } from "tamagui";
@@ -35,6 +37,8 @@ interface StudentsScreenProps {
   onStudentPress: (studentId: string) => void;
   onAddStudent: () => void;
   onNewInvite: () => void;
+  /** Archive button in the header: the archived students (16H). */
+  onArchived: () => void;
 }
 
 const localeTag = () => intlLocaleTag(t("locale"), "en-GB");
@@ -60,7 +64,8 @@ const requestAgeLabel = (sentAt: Date, now: Date): string => {
 };
 
 /**
- * Students (16A) and Join requests (16B) of a school: the active invite code
+ * Students (16A) and Join requests (16B) of a school: the Archive button in
+ * the header (archived students, 16H), the active invite code
  * (tap copies it), the Students / Requests switch with the pending count,
  * the searchable list (avatar with the rank corner, status pill for students
  * without an account) and the requests with Reject / Approve in the row.
@@ -71,6 +76,7 @@ export const StudentsScreen: React.FC<StudentsScreenProps> = ({
   onStudentPress,
   onAddStudent,
   onNewInvite,
+  onArchived,
 }) => {
   const { students, requests, invites, organizationId, isLoading } = useStudentsOverview(schoolId);
   const [tab, setTab] = useState<StudentsTab>(initialTab);
@@ -114,7 +120,16 @@ export const StudentsScreen: React.FC<StudentsScreenProps> = ({
   if (isLoading) return <LoadingScreen />;
 
   return (
-    <SubScreenPage title={t("studentsTitle")} context="school">
+    <SubScreenPage
+      title={t("studentsTitle")}
+      context="school"
+      right={
+        <XStack alignItems="center" gap={8}>
+          <SyncedPill />
+          <IconButton icon={Archive} label={t("studentsArchivedTitle")} onPress={onArchived} />
+        </XStack>
+      }
+    >
       <YStack gap={16}>
         {invite ? (
           <InviteCodeCard

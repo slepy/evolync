@@ -645,7 +645,7 @@
     "StudentsList.dc.html": {
       "h": 940,
       "is_interactive": true,
-      "title": "16A · Students: invite code, search, belt ring, status pill",
+      "title": "16A · Students: invite code, search, belt ring, status pill, Archived in the header",
       "w": 390,
       "x": 6,
       "y": 18508
@@ -900,6 +900,20 @@
       "w": 390,
       "x": 4236,
       "y": 10758
+    },
+    "StudentsArchived.dc.html": {
+      "h": 560,
+      "title": "16H · Archived students: opened from the 16A header, tap opens the student",
+      "w": 390,
+      "x": 4706,
+      "y": 18508
+    },
+    "StudentActionsSheetArchived.dc.html": {
+      "h": 844,
+      "title": "16G1 · More actions sheet of an archived student: Restore",
+      "w": 390,
+      "x": 5176,
+      "y": 18508
     }
   },
   "createdOnFiles": {
@@ -1151,6 +1165,8 @@
     "StudentDetailsEvents.dc.html",
     "StudentRankSheet.dc.html",
     "StudentActionsSheet.dc.html",
+    "StudentActionsSheetArchived.dc.html",
+    "StudentsArchived.dc.html",
     "AuthLogin.dc.html",
     "AuthLoginError.dc.html",
     "AuthRegisterType.dc.html",

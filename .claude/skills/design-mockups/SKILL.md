@@ -107,6 +107,8 @@ List rows never end with a `>` chevron. The whole row is the link (`<a>`), and t
 
 A screen opened from the main screen (list, form, sheet parent) starts with the sub-screen header: chevron back button (never the module icon), title, and the Synced pill on the right (see "Shared pieces" in [components.md](components.md)). This is the usual header whenever we enter from the main screen.
 
+Header actions sit after the Synced pill (8px gap) as 44px round neutral buttons (`#131823` fill, `#2A3345` border, 20px icon, `aria-label`). One extra action gets its own icon (16A: Archive opens 16H Archived students); two or more go behind ⋮ into a More actions sheet (16E → 16G). Archived records live on their own sub-screen, never mixed into the active list: dimmed avatar, muted "Archived" badge, and Restore (module accent) in place of the red Archive in the ⋮ sheet (16G1).
+
 ### Known exceptions to fix
 
 - Grading is gray (tile on 1A / 1C, boards 8A–8D). Rank icons keep their belt colors (data, not accent). Gray is also the neutral tint of settings rows and count chips, so keep those on a different screen area from the Grading tile or accept the similarity.

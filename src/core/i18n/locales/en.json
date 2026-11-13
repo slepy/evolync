@@ -706,6 +706,12 @@
   "studentOrdersHint": "Tap an order to see its products.",
   "studentEditHint": "Name, email, phone. Only for students without an account",
   "studentArchiveHint": "Hides the student from lists. History stays",
+  "studentRestoreHint": "Shows the student in lists again",
+  "studentsArchivedTitle": "Archived students",
+  "studentsArchivedCount_one": "{{count}} archived",
+  "studentsArchivedCount_other": "{{count}} archived",
+  "studentsArchivedHint": "Open a student to restore them",
+  "studentsArchivedEmpty": "No archived students",
 
   "joinRequests": "Requests",
   "joinRequestsEmpty": "No pending requests.",
