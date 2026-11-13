@@ -62,9 +62,9 @@ On the students list, put an action in the top-right corner (like other screens)
 
 ### Phase 1: Designs
 
-- [ ] 1.1 Update 16A and add 16H / 16G1 boards
-- [ ] 1.2 Publish the changed boards to the canvas
-- [ ] 1.3 Pull the published boards back into the repo
+- [x] 1.1 Update 16A and add 16H / 16G1 boards — de8fee6
+- [x] 1.2 Publish the changed boards to the canvas — canvas version 314
+- [x] 1.3 Pull the published boards back into the repo — de8fee6 (pulled copies byte-identical)
 
 ### Phase 2: Data
 
