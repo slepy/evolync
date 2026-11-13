@@ -68,7 +68,7 @@ On the students list, put an action in the top-right corner (like other screens)
 
 ### Phase 2: Data
 
-- [ ] 2.1 Archived query, restore helpers and service with tests
+- [x] 2.1 Archived query, restore helpers and service with tests — 20143a5
 
 ### Phase 3: UI
 
