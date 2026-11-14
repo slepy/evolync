@@ -1,4 +1,5 @@
 import { ListCard, ListRow, MemberAvatar, PrimaryButton, SubScreenPage, ToggleRow } from "@/core/components";
+import { useLeaveScreen } from "@/core/hooks";
 import { neutral } from "@/core/theme/tokens";
 import { GraduationCap } from "lucide-react-native";
 import React, { useState, type ReactNode } from "react";
@@ -47,26 +48,29 @@ export const EventParticipantsScreen: React.FC<EventParticipantsScreenProps> = (
     useEventParticipants(eventId);
   const [extraError, setExtraError] = useState<string | null>(null);
   const [isSavingExtra, setIsSavingExtra] = useState(false);
+  // Saved statuses / orders re-emit and Save hides: the screen stays as it is until it is popped (Android black screen).
+  const { leaving, leave, hold } = useLeaveScreen();
   const changed = hasStatusChanges || extraChanges;
   const examsPlanned = !!event?.examsPlanned;
-  const busy = isSaving || isSavingExtra;
+  const busy = isSaving || isSavingExtra || leaving;
 
   const handleSave = async () => {
     setExtraError(null);
     try {
-      if (extraChanges && onSaveExtra) {
-        setIsSavingExtra(true);
-        try {
-          await onSaveExtra();
-        } catch (err) {
-          setExtraError(t(err instanceof Error ? err.message : "errorSaveFailed"));
-          throw err;
-        } finally {
-          setIsSavingExtra(false);
+      await leave(async () => {
+        if (extraChanges && onSaveExtra) {
+          setIsSavingExtra(true);
+          try {
+            await onSaveExtra();
+          } catch (err) {
+            setExtraError(t(err instanceof Error ? err.message : "errorSaveFailed"));
+            throw err;
+          } finally {
+            setIsSavingExtra(false);
+          }
         }
-      }
-      if (hasStatusChanges) await saveAll();
-      onSaved();
+        if (hasStatusChanges) await saveAll();
+      }, onSaved);
     } catch {
       // The hook (statuses) or extraError keeps the message, shown above the button.
     }
@@ -74,7 +78,7 @@ export const EventParticipantsScreen: React.FC<EventParticipantsScreenProps> = (
 
   const message = extraError ?? error;
 
-  return (
+  return hold(
     <SubScreenPage
       title={t("eventsParticipants")}
       footer={

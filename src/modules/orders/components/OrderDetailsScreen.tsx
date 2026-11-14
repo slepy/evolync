@@ -10,6 +10,7 @@ import {
   TrashButton,
   resolveListAccent,
 } from "@/core/components";
+import { useLeaveScreen } from "@/core/hooks";
 import { neutral } from "@/core/theme/tokens";
 import { formatEventDates } from "@/modules/events/components/formatEventDates";
 import { timestampToDay } from "@/modules/trainings/types/helpers";
@@ -79,6 +80,8 @@ export const OrderDetailsScreen: React.FC<OrderDetailsScreenProps> = ({
   const [status, setStatus] = useState<OrderStatus | null>(null);
   const [sheet, setSheet] = useState<"status" | "product" | null>(null);
   const [focusProductId, setFocusProductId] = useState<string | null>(null);
+  // The saved / deleted order re-emits (Save hides, a deleted order reads "not found"): the screen stays as it is until it is popped (Android black screen).
+  const { leaving, leave, hold } = useLeaveScreen();
 
   const openProducts = (productId: string | null) => {
     setFocusProductId(productId);
@@ -89,11 +92,11 @@ export const OrderDetailsScreen: React.FC<OrderDetailsScreenProps> = ({
     if (orderDetails && cart === null) setCart(toCart(orderDetails.items));
   }, [orderDetails, cart]);
 
-  if (isLoading || (orderDetails && cart === null)) return <LoadingScreen />;
+  if (isLoading || (orderDetails && cart === null)) return hold(<LoadingScreen />);
 
   const notOwn = scope === "student" && orderDetails?.order.schoolMemberId !== memberId;
   if (!orderDetails || !cart || notOwn) {
-    return (
+    return hold(
       <SubScreenPage title={t("ordersDetailsTitle")}>
         <Text fontSize={15} fontWeight="$secondary" color="$neutralMuted" textAlign="center">
           {t("errorNotFound")}
@@ -111,12 +114,13 @@ export const OrderDetailsScreen: React.FC<OrderDetailsScreenProps> = ({
 
   const handleSave = async () => {
     try {
-      if (statusChanged) await updateStatus(currentStatus);
-      const diff = diffCart(items, cart);
-      if (diff.itemIdsToRemove.length || diff.itemsToAdd.length || diff.quantityUpdates.length) {
-        await updateItems(diff.itemIdsToRemove, diff.itemsToAdd, diff.quantityUpdates);
-      }
-      onDone();
+      await leave(async () => {
+        if (statusChanged) await updateStatus(currentStatus);
+        const diff = diffCart(items, cart);
+        if (diff.itemIdsToRemove.length || diff.itemsToAdd.length || diff.quantityUpdates.length) {
+          await updateItems(diff.itemIdsToRemove, diff.itemsToAdd, diff.quantityUpdates);
+        }
+      }, onDone);
     } catch {
       // The hook keeps the error, shown above the button.
     }
@@ -125,8 +129,7 @@ export const OrderDetailsScreen: React.FC<OrderDetailsScreenProps> = ({
   const handleDelete = () =>
     confirmDelete(t("ordersDeleteTitle"), t("ordersDeleteMessage"), async () => {
       try {
-        await deleteOrder();
-        onDone();
+        await leave(deleteOrder, onDone);
       } catch {
         // The hook keeps the error.
       }
@@ -135,12 +138,12 @@ export const OrderDetailsScreen: React.FC<OrderDetailsScreenProps> = ({
   const statusStyle = ORDER_STATUS_STYLE[currentStatus];
   const changeStatus = canChangeOrderStatus(scope);
 
-  return (
+  return hold(
     <SubScreenPage
       title={t("ordersDetailsTitle")}
       right={
         canDeleteOrder(scope, order.status) ? (
-          <TrashButton label={t("ordersDeleteTitle")} onPress={handleDelete} disabled={isUpdating} />
+          <TrashButton label={t("ordersDeleteTitle")} onPress={handleDelete} disabled={isUpdating || leaving} />
         ) : undefined
       }
       footer={
@@ -155,7 +158,7 @@ export const OrderDetailsScreen: React.FC<OrderDetailsScreenProps> = ({
               label={t("save")}
               accent="orders"
               onPress={handleSave}
-              loading={isUpdating}
+              loading={isUpdating || leaving}
               disabled={cart.length === 0}
             />
           </YStack>
