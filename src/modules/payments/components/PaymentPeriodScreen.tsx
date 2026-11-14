@@ -16,6 +16,7 @@ import {
 } from "@/core/components";
 import PaymentCycle from "@/database/models/PaymentCycle";
 import { LoadingScreen } from "@/core/components";
+import { useLeaveScreen } from "@/core/hooks";
 import { confirmLeavePaid, showError } from "@/core/utils/confirmAction";
 import { confirmDelete } from "@/core/utils/confirmDelete";
 import { SUPPORTED_CURRENCIES } from "@/core/utils/currencies";
@@ -78,6 +79,8 @@ export const PaymentPeriodScreen: React.FC<PaymentPeriodScreenProps> = ({ school
   const [amountsOpen, setAmountsOpen] = useState(false);
   const [editing, setEditing] = useState<{ memberId: string; draft: PaymentDraft } | null>(null);
   const [sheet, setSheet] = useState<"edit" | "currency" | "actions" | null>(null);
+  // Delete empties the period in the frame the route is popped: the screen stays as it is (Android black screen).
+  const { hold, leave } = useLeaveScreen();
 
   useEffect(() => {
     const subscription = PaymentCycleRepository.observeById(cycleId).subscribe({
@@ -87,7 +90,7 @@ export const PaymentPeriodScreen: React.FC<PaymentPeriodScreenProps> = ({ school
     return () => subscription.unsubscribe();
   }, [cycleId]);
 
-  if (isLoading || !cycle) return <LoadingScreen />;
+  if (isLoading || !cycle) return hold(<LoadingScreen />);
 
   const locale = dateLocaleTag(t("locale"));
   const { title: periodTitle, range: periodRange } = describePeriod(storedDayKey(cycle.periodStart), storedDayKey(cycle.periodEnd), locale);
@@ -144,8 +147,7 @@ export const PaymentPeriodScreen: React.FC<PaymentPeriodScreenProps> = ({ school
       t("paymentsDeleteConfirmMessage", { period: periodTitle, count: storedRecords.length }),
       async () => {
         try {
-          await deletePaymentCycle(cycleId);
-          onDeleted();
+          await leave(() => deletePaymentCycle(cycleId), onDeleted);
         } catch (err) {
           console.error("[PaymentPeriodScreen] Delete error:", err);
           showError(err instanceof Error ? err.message : t("errorSaveFailed"));
@@ -162,7 +164,7 @@ export const PaymentPeriodScreen: React.FC<PaymentPeriodScreenProps> = ({ school
     }
   };
 
-  return (
+  return hold(
     <SubScreenPage
       title={periodTitle}
       context="school"

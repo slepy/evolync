@@ -1,6 +1,7 @@
 import { AlertBanner, PrimaryButton, SubScreenPage, TrashButton } from "@/core/components";
 import type TechniqueNoteRow from "@/database/models/TechniqueNoteRow";
 import { LoadingScreen } from "@/core/components";
+import { useLeaveScreen } from "@/core/hooks";
 import { confirmDelete } from "@/core/utils/confirmDelete";
 import { useEntityTags } from "@/modules/tags";
 import { useRouter } from "expo-router";
@@ -46,6 +47,8 @@ export function NoteDetailsScreen({ documentId }: NoteDetailsScreenProps) {
   // What the last Save wrote: once the database shows it, the form takes the
   // stored rows (with their real ids) so the next Save updates, not duplicates.
   const pendingSave = useRef<NoteDraft | null>(null);
+  // Delete empties the note in the frame the route is popped: the screen stays as it is (Android black screen).
+  const { hold, leave } = useLeaveScreen();
 
   useEffect(() => {
     if (loading || !saved) return;
@@ -57,8 +60,8 @@ export function NoteDetailsScreen({ documentId }: NoteDetailsScreenProps) {
     }
   }, [loading, saved, draft]);
 
-  if (loading || (document && !draft)) return <LoadingScreen />;
-  if (!document || !saved || !draft) return <SubScreenPage title={t("notesTitle")}>{null}</SubScreenPage>;
+  if (loading || (document && !draft)) return hold(<LoadingScreen />);
+  if (!document || !saved || !draft) return hold(<SubScreenPage title={t("notesTitle")}>{null}</SubScreenPage>);
 
   const dirty = isNoteChanged(saved, draft);
 
@@ -86,11 +89,10 @@ export function NoteDetailsScreen({ documentId }: NoteDetailsScreenProps) {
 
   const handleDelete = () =>
     confirmDelete(t("notesDeleteDocument"), t("notesDeleteDocumentConfirm"), async () => {
-      await deleteNoteDocument(documentId);
-      router.back();
+      await leave(() => deleteNoteDocument(documentId), () => router.back());
     });
 
-  return (
+  return hold(
     <SubScreenPage
       title={document.title}
       right={<TrashButton label={t("notesDeleteDocument")} onPress={handleDelete} />}
