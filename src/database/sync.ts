@@ -1,6 +1,7 @@
 import { synchronize } from "@nozbe/watermelondb/sync";
 import { database, resetLocalDatabase } from "./index";
 import { resendPendingJoinRequestsOnce } from "./resendJoinRequests";
+import { withVariantProducts } from "./pushVariantProducts";
 
 // Import supabase using require to avoid Metro bundler issues
 const { supabase } = require("@/config/supabase");
@@ -232,7 +233,7 @@ async function performSync(options: SyncOptions = {}): Promise<SyncResult> {
         );
 
         const body = {
-          changes,
+          changes: await withVariantProducts(changes),
           lastPulledAt: lastPulledAt || 0,
         };
 
