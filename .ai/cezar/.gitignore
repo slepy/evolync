@@ -33,3 +33,4 @@ layouts/
 mcp.local.json
 mcp.local.json.cez-tmp-*
 webhooks/
+artifacts/
