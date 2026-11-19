@@ -88,6 +88,10 @@ export async function syncOrganization(ctx: SyncContext): Promise<SyncPullChange
       updated = ownEventTypesPush(updated, organizationId);
     }
 
+    if (tableName === "product_variants") {
+      ({ created, updated } = await withoutOrphanVariants(supabaseClient, created, updated));
+    }
+
     // Update existing records first: a soft delete frees a unique slot (one live
     // training session per school per day) before a created row takes it.
     if (updated.length > 0) {
@@ -566,6 +570,33 @@ async function existingIds(
     found.push(...(data || []).map((r: any) => r.id));
   }
   return found;
+}
+
+/**
+ * Pushed variants without their product on the server (pushed before them,
+ * so already stored when it came): neither the device nor the server holds
+ * it, so the variant can never be stored and its foreign key error would
+ * block every later sync of the device. Skipped and logged instead.
+ */
+async function withoutOrphanVariants(
+  supabaseClient: any,
+  created: any[],
+  updated: any[],
+): Promise<{ created: any[]; updated: any[] }> {
+  const productIds = [...created, ...updated].map((v) => v.product_id).filter(Boolean);
+  if (productIds.length === 0) return { created, updated };
+  const stored = new Set(await existingIds(supabaseClient, "products", productIds, (q) => q));
+  const orphans = [...created, ...updated].filter((v) => !stored.has(v.product_id));
+  if (orphans.length === 0) return { created, updated };
+  console.log(
+    `[SYNC:ORGANIZATION] Skipping ${orphans.length} product_variants of products missing on the server: ${
+      orphans.map((v) => `${v.id} (product ${v.product_id})`).join(", ")
+    }`,
+  );
+  return {
+    created: created.filter((v) => stored.has(v.product_id)),
+    updated: updated.filter((v) => stored.has(v.product_id)),
+  };
 }
 
 /**
